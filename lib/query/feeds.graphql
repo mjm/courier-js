@@ -1,0 +1,8 @@
+query AllFeeds {
+  allFeeds {
+    id
+    url
+    title
+    homePageURL
+  }
+}

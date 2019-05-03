@@ -1,8 +1,13 @@
 overwrite: true
 schema: "schema.graphql"
-documents: null
+documents: lib/query/*.graphql
 generates:
   lib/generated/graphql.ts:
     plugins:
       - "typescript"
       - "typescript-resolvers"
+  lib/generated/graphql-components.tsx:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"

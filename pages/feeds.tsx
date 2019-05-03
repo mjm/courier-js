@@ -1,42 +1,34 @@
 import React from "react"
-import { NextContext } from "next"
 import Head from "../components/head"
 import Nav from "../components/nav"
-import fetch from "isomorphic-unfetch"
-import url from "../lib/url"
-import { Feed } from "../lib/data/types"
+import { AllFeedsComponent } from "../lib/generated/graphql-components"
+import withData from "../lib/apollo"
 
-interface Props {
-  feeds: Feed[]
-}
-
-const Feeds = ({ feeds }: Props) => {
+const Feeds = () => {
   return (
     <div>
       <Head />
       <Nav />
+      <AllFeedsComponent>
+        {({ data }) => {
+          if (!data) {
+            return null
+          }
 
-      <ul>
-        {feeds.map(feed => (
-          <li key={feed.id}>{feed.url}</li>
-        ))}
-      </ul>
+          const { allFeeds: feeds } = data
+          return (
+            <ul>
+              {feeds.map(feed => (
+                <li key={feed.id}>
+                  <a href={feed.homePageURL}>{feed.title}</a>
+                </li>
+              ))}
+            </ul>
+          )
+        }}
+      </AllFeedsComponent>
     </div>
   )
 }
 
-Feeds.getInitialProps = async ({ req }: NextContext) => {
-  const props = { feeds: [] }
-
-  try {
-    const response = await fetch(url("/api/feeds", req))
-    const feeds = await response.json()
-    props.feeds = feeds
-  } catch (e) {
-    console.error(e.message)
-  }
-
-  return props
-}
-
-export default Feeds
+export default withData(Feeds)
