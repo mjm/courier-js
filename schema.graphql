@@ -1,0 +1,21 @@
+type Query {
+  allFeeds: [Feed!]!
+  feed(id: ID!): Feed!
+}
+
+type Mutation {
+  createFeed(feed: FeedInput!): Feed!
+}
+
+type Feed {
+  id: ID!
+  url: String!
+  title: String!
+  homePageURL: String!
+}
+
+input FeedInput {
+  url: String!
+  title: String!
+  homePageURL: String!
+}

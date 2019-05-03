@@ -1,21 +1,16 @@
-import { ApolloServer, gql } from "apollo-server-micro"
+import { ApolloServer, makeExecutableSchema, gql } from "apollo-server-micro"
 import micro from "../lib/micro"
+import { readFileSync } from "fs"
+import * as path from "path"
+import resolvers from "../lib/resolvers"
 
 const typeDefs = gql`
-  type Query {
-    sayHello: String!
-  }
+  ${readFileSync(path.join(__dirname, "../schema.graphql")).toString("utf8")}
 `
 
-const resolvers = {
-  Query: {
-    sayHello() {
-      return "Hello World!"
-    },
-  },
-}
+const schema = makeExecutableSchema({ typeDefs, resolvers: resolvers as any })
 
-const server = new ApolloServer({ typeDefs, resolvers })
+const server = new ApolloServer({ schema })
 const handler = server.createHandler()
 
 export default micro(handler)
