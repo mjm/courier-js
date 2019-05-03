@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "*": ["types/*"] },
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "preserve",

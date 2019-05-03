@@ -9,6 +9,21 @@ export async function allFeeds(): Promise<Feed[]> {
   return rows.map(fromRow)
 }
 
+export async function getFeed(id: string): Promise<Feed> {
+  const { rows } = await db.query(`SELECT * FROM feeds WHERE id = $1 LIMIT 1`, [
+    id,
+  ])
+
+  if (rows.length) {
+    return fromRow(rows[0])
+  } else {
+    const err = new Error(`No feed found with ID ${id}`)
+    // @ts-ignore
+    err.statusCode = 404
+    throw err
+  }
+}
+
 export async function createFeed(input: FeedInput): Promise<Feed> {
   const { rows } = await db.query(
     `INSERT INTO feeds(url, title, home_page_url)
