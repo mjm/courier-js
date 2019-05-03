@@ -5,5 +5,8 @@
     { "src": "next.config.js", "use": "@now/next" },
     { "src": "api/**/*.ts", "use": "@now/node" }
   ],
-  "routes": [{ "src": "/api/(.*)", "dest": "/api/$1.ts" }]
+  "routes": [{ "src": "/api/(.*)", "dest": "/api/$1.ts" }],
+  "env": {
+    "DATABASE_URL": "@database-url"
+  }
 }
