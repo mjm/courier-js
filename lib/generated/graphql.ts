@@ -30,12 +30,19 @@ export type MutationCreateFeedArgs = {
 }
 
 export type Query = {
+  currentUser?: Maybe<User>
   allFeeds: Array<Feed>
   feed: Feed
 }
 
 export type QueryFeedArgs = {
   id: Scalars["ID"]
+}
+
+export type User = {
+  name: Scalars["String"]
+  nickname: Scalars["String"]
+  picture: Scalars["String"]
 }
 
 import { GraphQLResolveInfo } from "graphql"
@@ -112,9 +119,10 @@ export type DirectiveResolverFn<
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Query: {}
+  User: User
+  String: Scalars["String"]
   Feed: Feed
   ID: Scalars["ID"]
-  String: Scalars["String"]
   Mutation: {}
   FeedInput: FeedInput
   Boolean: Scalars["Boolean"]
@@ -146,6 +154,7 @@ export type QueryResolvers<
   ContextType = any,
   ParentType = ResolversTypes["Query"]
 > = {
+  currentUser?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>
   allFeeds?: Resolver<Array<ResolversTypes["Feed"]>, ParentType, ContextType>
   feed?: Resolver<
     ResolversTypes["Feed"],
@@ -155,10 +164,20 @@ export type QueryResolvers<
   >
 }
 
+export type UserResolvers<
+  ContextType = any,
+  ParentType = ResolversTypes["User"]
+> = {
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  nickname?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  picture?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+}
+
 export type Resolvers<ContextType = any> = {
   Feed?: FeedResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
+  User?: UserResolvers<ContextType>
 }
 
 /**

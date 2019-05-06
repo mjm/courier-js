@@ -30,12 +30,19 @@ export type MutationCreateFeedArgs = {
 }
 
 export type Query = {
+  currentUser?: Maybe<User>
   allFeeds: Array<Feed>
   feed: Feed
 }
 
 export type QueryFeedArgs = {
   id: Scalars["ID"]
+}
+
+export type User = {
+  name: Scalars["String"]
+  nickname: Scalars["String"]
+  picture: Scalars["String"]
 }
 export type AllFeedsQueryVariables = {}
 

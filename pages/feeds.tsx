@@ -10,7 +10,11 @@ const Feeds = () => {
       <Head />
       <Nav />
       <AllFeedsComponent>
-        {({ data }) => {
+        {({ data, error }) => {
+          if (error) {
+            return <p>{error.message}</p>
+          }
+
           if (!data) {
             return null
           }

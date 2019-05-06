@@ -37,6 +37,18 @@ export function setToken(idToken: string, accessToken: string) {
 
 export function getUser(req: any): any {
   if (req) {
+    const jwt = getToken(req)
+    if (!jwt) {
+      return undefined
+    }
+    return jwtDecode(jwt)
+  } else {
+    return Cookie.getJSON("user")
+  }
+}
+
+export function getToken(req: any): string | undefined {
+  if (req) {
     if (!req.headers.cookie) {
       return undefined
     }
@@ -47,8 +59,8 @@ export function getUser(req: any): any {
       return undefined
     }
     const [, jwt] = jwtCookie.split("=")
-    return jwtDecode(jwt)
+    return jwt
   } else {
-    return Cookie.getJSON("user")
+    return Cookie.getJSON("idToken")
   }
 }

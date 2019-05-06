@@ -1,4 +1,6 @@
 type Query {
+  currentUser: User
+
   allFeeds: [Feed!]!
   feed(id: ID!): Feed!
 }
@@ -18,4 +20,10 @@ input FeedInput {
   url: String!
   title: String!
   homePageURL: String!
+}
+
+type User {
+  name: String!
+  nickname: String!
+  picture: String!
 }
