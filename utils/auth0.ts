@@ -3,8 +3,8 @@ import Cookie from "js-cookie"
 import jwtDecode from "jwt-decode"
 
 const client = new auth0.WebAuth({
-  clientID: "OtyKJMJBiL09j2OAcX6yENl07rMDGx1l",
-  domain: "courier-staging.auth0.com",
+  clientID: process.env.CLIENT_ID || "",
+  domain: process.env.AUTH_DOMAIN || "",
 })
 
 function getBaseUrl(): string {

@@ -2,7 +2,7 @@
   "version": 2,
   "name": "courier",
   "builds": [
-    { "src": "next.config.js", "use": "@now/next" },
+    { "src": "next.config.js", "use": "@now/next@canary" },
     { "src": "api/**/*.ts", "use": "@now/node" }
   ],
   "routes": [

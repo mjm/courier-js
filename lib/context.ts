@@ -28,8 +28,8 @@ function getToken(headers: { [key: string]: string }): string | null {
 }
 
 const jwtOptions: jwt.VerifyOptions = {
-  audience: "OtyKJMJBiL09j2OAcX6yENl07rMDGx1l",
-  issuer: "https://courier-staging.auth0.com/",
+  audience: process.env.CLIENT_ID,
+  issuer: `https://${process.env.AUTH_DOMAIN}/`,
   algorithms: ["RS256"],
 }
 
@@ -52,7 +52,7 @@ async function verify(token: string | null): Promise<any> {
 }
 
 const client = jwksClient({
-  jwksUri: "https://courier-staging.auth0.com/.well-known/jwks.json",
+  jwksUri: `https://${process.env.AUTH_DOMAIN}/.well-known/jwks.json`,
 })
 
 const getKey: jwt.GetPublicKeyOrSecret = (header, cb) => {
