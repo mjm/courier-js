@@ -16,6 +16,7 @@ function getOptions(): AuthorizeOptions {
     responseType: "token id_token",
     redirectUri: `${getBaseUrl()}/logged-in`,
     scope: "openid profile email",
+    audience: process.env.API_IDENTIFIER,
   }
 }
 
@@ -47,20 +48,23 @@ export function getUser(req: any): any {
   }
 }
 
-export function getToken(req: any): string | undefined {
+export function getToken(
+  req: any,
+  type: "idToken" | "accessToken" = "idToken"
+): string | undefined {
   if (req) {
     if (!req.headers.cookie) {
       return undefined
     }
     const jwtCookie = (req.headers.cookie as string)
       .split(";")
-      .find(c => c.trim().startsWith("idToken="))
+      .find(c => c.trim().startsWith(`${type}=`))
     if (!jwtCookie) {
       return undefined
     }
     const [, jwt] = jwtCookie.split("=")
     return jwt
   } else {
-    return Cookie.getJSON("idToken")
+    return Cookie.getJSON(type)
   }
 }

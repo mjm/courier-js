@@ -8,7 +8,7 @@ import { getToken } from "../utils/auth0"
 const config = (ctx: NextContext) => {
   const req = ctx && ctx.req
   const authLink = setContext((_, { headers }) => {
-    const token = getToken(req)
+    const token = getToken(req, "accessToken")
     return {
       headers: {
         ...headers,
