@@ -20,5 +20,8 @@ mutation AddFeed($feed: FeedInput!) {
 mutation RefreshFeed($id: ID!) {
   refreshFeed(id: $id) {
     id
+    title
+    homePageURL
+    refreshedAt
   }
 }

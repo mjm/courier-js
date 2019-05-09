@@ -7,6 +7,8 @@ import {
   AddFeedComponent,
   AllFeedsDocument,
   AllFeedsQuery,
+  Feed,
+  RefreshFeedComponent,
 } from "../lib/generated/graphql-components"
 import withData from "../lib/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
@@ -68,6 +70,7 @@ const FeedsList = () => {
                       Refreshed at: {moment.utc(feed.refreshedAt).format("lll")}
                     </div>
                   )}
+                  <RefreshButton feed={feed} />
                 </li>
               ))}
             </ul>
@@ -100,6 +103,29 @@ const FeedsList = () => {
         }
       `}</style>
     </div>
+  )
+}
+
+interface RefreshButtonProps {
+  feed: {
+    id: string
+  }
+}
+
+const RefreshButton = ({ feed }: RefreshButtonProps) => {
+  return (
+    <RefreshFeedComponent>
+      {refreshFeed => (
+        <button
+          type="button"
+          onClick={() => {
+            refreshFeed({ variables: { id: feed.id } })
+          }}
+        >
+          Refresh
+        </button>
+      )}
+    </RefreshFeedComponent>
   )
 }
 

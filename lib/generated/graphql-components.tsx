@@ -78,7 +78,10 @@ export type RefreshFeedMutationVariables = {
 }
 
 export type RefreshFeedMutation = { __typename?: "Mutation" } & {
-  refreshFeed: { __typename?: "Feed" } & Pick<Feed, "id">
+  refreshFeed: { __typename?: "Feed" } & Pick<
+    Feed,
+    "id" | "title" | "homePageURL" | "refreshedAt"
+  >
 }
 
 import gql from "graphql-tag"
@@ -191,6 +194,9 @@ export const RefreshFeedDocument = gql`
   mutation RefreshFeed($id: ID!) {
     refreshFeed(id: $id) {
       id
+      title
+      homePageURL
+      refreshedAt
     }
   }
 `
