@@ -36,13 +36,8 @@ export async function addFeed(input: FeedInput): Promise<Feed> {
     [feedURL]
   )
 
-  return {
-    url: feedURL,
-    title: "",
-    homePageURL: "",
-    cachingHeaders: null,
-    id: rows[0].id,
-  }
+  const id = rows[0].id
+  return await refreshFeed(id)
 }
 
 export async function refreshFeed(id: string): Promise<Feed> {
