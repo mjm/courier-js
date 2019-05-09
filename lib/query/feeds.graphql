@@ -4,6 +4,7 @@ query AllFeeds {
     url
     title
     homePageURL
+    refreshedAt
   }
 }
 
@@ -13,5 +14,11 @@ mutation AddFeed($feed: FeedInput!) {
     url
     title
     homePageURL
+  }
+}
+
+mutation RefreshFeed($id: ID!) {
+  refreshFeed(id: $id) {
+    id
   }
 }

@@ -6,6 +6,7 @@ export type Scalars = {
   Boolean: boolean
   Int: number
   Float: number
+  DateTime: Date
 }
 
 export type Feed = {
@@ -13,6 +14,9 @@ export type Feed = {
   url: Scalars["String"]
   title: Scalars["String"]
   homePageURL: Scalars["String"]
+  refreshedAt?: Maybe<Scalars["DateTime"]>
+  createdAt: Scalars["DateTime"]
+  updatedAt: Scalars["DateTime"]
 }
 
 export type FeedInput = {
@@ -48,7 +52,11 @@ export type User = {
   picture: Scalars["String"]
 }
 
-import { GraphQLResolveInfo } from "graphql"
+import {
+  GraphQLResolveInfo,
+  GraphQLScalarType,
+  GraphQLScalarTypeConfig,
+} from "graphql"
 
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 
@@ -126,9 +134,15 @@ export type ResolversTypes = {
   String: Scalars["String"]
   Feed: Feed
   ID: Scalars["ID"]
+  DateTime: Scalars["DateTime"]
   Mutation: {}
   FeedInput: FeedInput
   Boolean: Scalars["Boolean"]
+}
+
+export interface DateTimeScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["DateTime"], any> {
+  name: "DateTime"
 }
 
 export type FeedResolvers<
@@ -139,6 +153,13 @@ export type FeedResolvers<
   url?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   title?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   homePageURL?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  refreshedAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>
+  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>
 }
 
 export type MutationResolvers<
@@ -183,6 +204,7 @@ export type UserResolvers<
 }
 
 export type Resolvers<ContextType = any> = {
+  DateTime?: GraphQLScalarType
   Feed?: FeedResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
   Query?: QueryResolvers<ContextType>

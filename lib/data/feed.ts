@@ -4,9 +4,7 @@ import { locateFeed } from "feed-locator"
 import { scrapeFeed } from "scrape-feed"
 
 export async function allFeeds(): Promise<Feed[]> {
-  const { rows } = await db.query(
-    `SELECT id, url, title, home_page_url FROM feeds`
-  )
+  const { rows } = await db.query(`SELECT * FROM feeds`)
 
   return rows.map(fromRow)
 }
@@ -70,6 +68,9 @@ interface FeedRow {
   title: string
   home_page_url: string
   caching_headers: any
+  refreshed_at: Date | null
+  created_at: Date
+  updated_at: Date
 }
 
 function fromRow({
@@ -78,6 +79,9 @@ function fromRow({
   title,
   home_page_url,
   caching_headers,
+  refreshed_at,
+  created_at,
+  updated_at,
 }: FeedRow): Feed {
   return {
     id,
@@ -85,5 +89,8 @@ function fromRow({
     title,
     homePageURL: home_page_url,
     cachingHeaders: caching_headers,
+    refreshedAt: refreshed_at,
+    createdAt: created_at,
+    updatedAt: updated_at,
   }
 }

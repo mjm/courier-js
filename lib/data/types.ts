@@ -6,6 +6,9 @@ export interface Feed {
   title: string
   homePageURL: string
   cachingHeaders: CachingHeaders | null
+  refreshedAt: Date | null
+  createdAt: Date
+  updatedAt: Date
 }
 
 export interface FeedInput {

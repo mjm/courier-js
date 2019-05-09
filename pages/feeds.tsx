@@ -12,6 +12,7 @@ import withData from "../lib/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
 import * as yup from "yup"
 import { isApolloError } from "apollo-client"
+import moment from "moment"
 
 const Feeds = () => (
   <div>
@@ -62,6 +63,11 @@ const FeedsList = () => {
                   <div>
                     Feed: <a href={feed.url}>{feed.url}</a>
                   </div>
+                  {feed.refreshedAt && (
+                    <div>
+                      Refreshed at: {moment.utc(feed.refreshedAt).format("lll")}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

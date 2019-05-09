@@ -6,6 +6,7 @@ export type Scalars = {
   Boolean: boolean
   Int: number
   Float: number
+  DateTime: any
 }
 
 export type Feed = {
@@ -13,6 +14,9 @@ export type Feed = {
   url: Scalars["String"]
   title: Scalars["String"]
   homePageURL: Scalars["String"]
+  refreshedAt?: Maybe<Scalars["DateTime"]>
+  createdAt: Scalars["DateTime"]
+  updatedAt: Scalars["DateTime"]
 }
 
 export type FeedInput = {
@@ -51,7 +55,10 @@ export type AllFeedsQueryVariables = {}
 
 export type AllFeedsQuery = { __typename?: "Query" } & {
   allFeeds: Array<
-    { __typename?: "Feed" } & Pick<Feed, "id" | "url" | "title" | "homePageURL">
+    { __typename?: "Feed" } & Pick<
+      Feed,
+      "id" | "url" | "title" | "homePageURL" | "refreshedAt"
+    >
   >
 }
 
@@ -66,6 +73,14 @@ export type AddFeedMutation = { __typename?: "Mutation" } & {
   >
 }
 
+export type RefreshFeedMutationVariables = {
+  id: Scalars["ID"]
+}
+
+export type RefreshFeedMutation = { __typename?: "Mutation" } & {
+  refreshFeed: { __typename?: "Feed" } & Pick<Feed, "id">
+}
+
 import gql from "graphql-tag"
 import * as React from "react"
 import * as ReactApollo from "react-apollo"
@@ -78,6 +93,7 @@ export const AllFeedsDocument = gql`
       url
       title
       homePageURL
+      refreshedAt
     }
   }
 `
@@ -168,6 +184,58 @@ export function withAddFeed<TProps, TChildProps = {}>(
     AddFeedProps<TChildProps>
   >(AddFeedDocument, {
     alias: "withAddFeed",
+    ...operationOptions,
+  })
+}
+export const RefreshFeedDocument = gql`
+  mutation RefreshFeed($id: ID!) {
+    refreshFeed(id: $id) {
+      id
+    }
+  }
+`
+export type RefreshFeedMutationFn = ReactApollo.MutationFn<
+  RefreshFeedMutation,
+  RefreshFeedMutationVariables
+>
+
+export const RefreshFeedComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<
+        RefreshFeedMutation,
+        RefreshFeedMutationVariables
+      >,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: RefreshFeedMutationVariables }
+) => (
+  <ReactApollo.Mutation<RefreshFeedMutation, RefreshFeedMutationVariables>
+    mutation={RefreshFeedDocument}
+    {...props}
+  />
+)
+
+export type RefreshFeedProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<RefreshFeedMutation, RefreshFeedMutationVariables>
+> &
+  TChildProps
+export function withRefreshFeed<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    RefreshFeedMutation,
+    RefreshFeedMutationVariables,
+    RefreshFeedProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    RefreshFeedMutation,
+    RefreshFeedMutationVariables,
+    RefreshFeedProps<TChildProps>
+  >(RefreshFeedDocument, {
+    alias: "withRefreshFeed",
     ...operationOptions,
   })
 }

@@ -1,3 +1,5 @@
+scalar DateTime
+
 type Query {
   currentUser: User
 
@@ -15,6 +17,9 @@ type Feed {
   url: String!
   title: String!
   homePageURL: String!
+  refreshedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 input FeedInput {
