@@ -21,10 +21,15 @@ export type FeedInput = {
 
 export type Mutation = {
   addFeed: Feed
+  refreshFeed: Feed
 }
 
 export type MutationAddFeedArgs = {
   feed: FeedInput
+}
+
+export type MutationRefreshFeedArgs = {
+  id: Scalars["ID"]
 }
 
 export type Query = {
@@ -145,6 +150,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     MutationAddFeedArgs
+  >
+  refreshFeed?: Resolver<
+    ResolversTypes["Feed"],
+    ParentType,
+    ContextType,
+    MutationRefreshFeedArgs
   >
 }
 

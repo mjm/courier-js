@@ -1,6 +1,7 @@
 import db from "../db"
 import { Feed, FeedInput } from "./types"
 import { locateFeed } from "feed-locator"
+import { scrapeFeed } from "scrape-feed"
 
 export async function allFeeds(): Promise<Feed[]> {
   const { rows } = await db.query(
@@ -41,6 +42,26 @@ export async function addFeed(input: FeedInput): Promise<Feed> {
     homePageURL: "",
     id: rows[0].id,
   }
+}
+
+export async function refreshFeed(id: string): Promise<Feed> {
+  const feed = await getFeed(id)
+
+  // TODO reuse caching headers
+  const feedContents = await scrapeFeed(feed.url)
+  if (!feedContents) {
+    return feed
+  }
+
+  const { title, homePageURL } = feedContents
+  await db.query(
+    `UPDATE feeds
+     SET title = $2, home_page_url = $3
+     WHERE id = $1`,
+    [id, title, homePageURL]
+  )
+
+  return { ...feed, title, homePageURL }
 }
 
 interface FeedRow {
