@@ -23,6 +23,7 @@
     "apollo-server-micro": "^2.4.8",
     "auth0": "^2.17.0",
     "auth0-js": "^9.10.2",
+    "feed-locator": "^1.0.0",
     "graphql": "^14.2.1",
     "graphql-tag": "^2.10.1",
     "isomorphic-unfetch": "^3.0.0",

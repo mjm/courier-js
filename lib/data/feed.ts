@@ -1,5 +1,6 @@
 import db from "../db"
 import { Feed, FeedInput } from "./types"
+import { locateFeed } from "feed-locator"
 
 export async function allFeeds(): Promise<Feed[]> {
   const { rows } = await db.query(
@@ -24,15 +25,22 @@ export async function getFeed(id: string): Promise<Feed> {
   }
 }
 
-export async function createFeed(input: FeedInput): Promise<Feed> {
+export async function addFeed(input: FeedInput): Promise<Feed> {
+  const feedURL = await locateFeed(input.url)
+
   const { rows } = await db.query(
     `INSERT INTO feeds(url, title, home_page_url)
-     VALUES($1, $2, $3)
+     VALUES($1, '', '')
      RETURNING id`,
-    [input.url, input.title, input.homePageURL]
+    [feedURL]
   )
 
-  return { ...input, id: rows[0].id }
+  return {
+    url: feedURL,
+    title: "",
+    homePageURL: "",
+    id: rows[0].id,
+  }
 }
 
 interface FeedRow {

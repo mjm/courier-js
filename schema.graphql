@@ -6,7 +6,7 @@ type Query {
 }
 
 type Mutation {
-  createFeed(feed: FeedInput!): Feed!
+  addFeed(feed: FeedInput!): Feed!
 }
 
 type Feed {
@@ -18,8 +18,6 @@ type Feed {
 
 input FeedInput {
   url: String!
-  title: String!
-  homePageURL: String!
 }
 
 type User {

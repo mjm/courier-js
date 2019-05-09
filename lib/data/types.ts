@@ -7,6 +7,4 @@ export interface Feed {
 
 export interface FeedInput {
   url: string
-  title: string
-  homePageURL: string
 }

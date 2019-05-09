@@ -17,15 +17,13 @@ export type Feed = {
 
 export type FeedInput = {
   url: Scalars["String"]
-  title: Scalars["String"]
-  homePageURL: Scalars["String"]
 }
 
 export type Mutation = {
-  createFeed: Feed
+  addFeed: Feed
 }
 
-export type MutationCreateFeedArgs = {
+export type MutationAddFeedArgs = {
   feed: FeedInput
 }
 
@@ -142,11 +140,11 @@ export type MutationResolvers<
   ContextType = any,
   ParentType = ResolversTypes["Mutation"]
 > = {
-  createFeed?: Resolver<
+  addFeed?: Resolver<
     ResolversTypes["Feed"],
     ParentType,
     ContextType,
-    MutationCreateFeedArgs
+    MutationAddFeedArgs
   >
 }
 
