@@ -55,6 +55,17 @@ export type AllFeedsQuery = { __typename?: "Query" } & {
   >
 }
 
+export type AddFeedMutationVariables = {
+  feed: FeedInput
+}
+
+export type AddFeedMutation = { __typename?: "Mutation" } & {
+  addFeed: { __typename?: "Feed" } & Pick<
+    Feed,
+    "id" | "url" | "title" | "homePageURL"
+  >
+}
+
 import gql from "graphql-tag"
 import * as React from "react"
 import * as ReactApollo from "react-apollo"
@@ -105,6 +116,58 @@ export function withAllFeeds<TProps, TChildProps = {}>(
     AllFeedsProps<TChildProps>
   >(AllFeedsDocument, {
     alias: "withAllFeeds",
+    ...operationOptions,
+  })
+}
+export const AddFeedDocument = gql`
+  mutation AddFeed($feed: FeedInput!) {
+    addFeed(feed: $feed) {
+      id
+      url
+      title
+      homePageURL
+    }
+  }
+`
+export type AddFeedMutationFn = ReactApollo.MutationFn<
+  AddFeedMutation,
+  AddFeedMutationVariables
+>
+
+export const AddFeedComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<AddFeedMutation, AddFeedMutationVariables>,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: AddFeedMutationVariables }
+) => (
+  <ReactApollo.Mutation<AddFeedMutation, AddFeedMutationVariables>
+    mutation={AddFeedDocument}
+    {...props}
+  />
+)
+
+export type AddFeedProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<AddFeedMutation, AddFeedMutationVariables>
+> &
+  TChildProps
+export function withAddFeed<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    AddFeedMutation,
+    AddFeedMutationVariables,
+    AddFeedProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    AddFeedMutation,
+    AddFeedMutationVariables,
+    AddFeedProps<TChildProps>
+  >(AddFeedDocument, {
+    alias: "withAddFeed",
     ...operationOptions,
   })
 }

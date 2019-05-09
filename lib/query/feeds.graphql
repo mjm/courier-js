@@ -6,3 +6,12 @@ query AllFeeds {
     homePageURL
   }
 }
+
+mutation AddFeed($feed: FeedInput!) {
+  addFeed(feed: $feed) {
+    id
+    url
+    title
+    homePageURL
+  }
+}
