@@ -30,8 +30,8 @@ export async function addFeed(input: FeedInput): Promise<Feed> {
   const feedURL = await locateFeed(input.url)
 
   const { rows } = await db.query(
-    `INSERT INTO feeds(url, title, home_page_url)
-     VALUES($1, '', '')
+    `INSERT INTO feeds(url)
+     VALUES($1)
      RETURNING id`,
     [feedURL]
   )
@@ -40,6 +40,7 @@ export async function addFeed(input: FeedInput): Promise<Feed> {
     url: feedURL,
     title: "",
     homePageURL: "",
+    cachingHeaders: null,
     id: rows[0].id,
   }
 }
@@ -47,21 +48,25 @@ export async function addFeed(input: FeedInput): Promise<Feed> {
 export async function refreshFeed(id: string): Promise<Feed> {
   const feed = await getFeed(id)
 
-  // TODO reuse caching headers
-  const feedContents = await scrapeFeed(feed.url)
+  const currentHeaders = feed.cachingHeaders || {}
+  const feedContents = await scrapeFeed(feed.url, currentHeaders)
   if (!feedContents) {
+    // feed is already up-to-date
     return feed
   }
 
-  const { title, homePageURL } = feedContents
+  const { title, homePageURL, cachingHeaders } = feedContents
   await db.query(
     `UPDATE feeds
-     SET title = $2, home_page_url = $3
+     SET title = $2,
+         home_page_url = $3,
+         caching_headers = $4,
+         refreshed_at = CURRENT_TIMESTAMP
      WHERE id = $1`,
-    [id, title, homePageURL]
+    [id, title, homePageURL, cachingHeaders]
   )
 
-  return { ...feed, title, homePageURL }
+  return { ...feed, title, homePageURL, cachingHeaders }
 }
 
 interface FeedRow {
@@ -69,13 +74,21 @@ interface FeedRow {
   url: string
   title: string
   home_page_url: string
+  caching_headers: any
 }
 
-function fromRow({ id, url, title, home_page_url }: FeedRow): Feed {
+function fromRow({
+  id,
+  url,
+  title,
+  home_page_url,
+  caching_headers,
+}: FeedRow): Feed {
   return {
     id,
     url,
     title,
     homePageURL: home_page_url,
+    cachingHeaders: caching_headers,
   }
 }
