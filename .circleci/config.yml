@@ -16,3 +16,8 @@ jobs:
             else
               now --token $NOW_TOKEN --target staging
             fi
+workflows:
+  version: 2
+  release:
+    jobs:
+      - deploy
