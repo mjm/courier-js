@@ -1,6 +1,6 @@
 import React from "react"
 import Link from "next/link"
-import { font, colors, spacing } from "../utils/theme"
+import { font, colors, spacing, shadow } from "../utils/theme"
 
 const Nav = () => (
   <nav>
@@ -25,6 +25,7 @@ const Nav = () => (
       nav {
         text-align: center;
         background-color: ${colors.primary[700]};
+        box-shadow: ${shadow.sm};
       }
       ul {
         margin: 0;
