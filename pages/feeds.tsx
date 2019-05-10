@@ -15,6 +15,7 @@ import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
 import * as yup from "yup"
 import { isApolloError } from "apollo-client"
 import moment from "moment"
+import withSecurePage from "../hocs/securePage"
 
 const Feeds = () => (
   <div>
@@ -42,7 +43,11 @@ const FeedsList = () => {
   return (
     <div>
       <AllFeedsComponent>
-        {({ data, error }) => {
+        {({ data, error, loading }) => {
+          if (loading) {
+            return <p>Loading...</p>
+          }
+
           if (error) {
             return <p>{error.message}</p>
           }
@@ -50,7 +55,6 @@ const FeedsList = () => {
           if (!data) {
             return null
           }
-
           const { allFeeds: feeds } = data
           return (
             <ul>
@@ -264,4 +268,4 @@ const AddFeed = () => (
   </AddFeedComponent>
 )
 
-export default withData(Feeds)
+export default withSecurePage(withData(Feeds))

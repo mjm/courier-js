@@ -63,21 +63,7 @@ export function getToken(
   req: any,
   type: "idToken" | "accessToken" = "idToken"
 ): string | undefined {
-  if (req) {
-    if (!req.headers.cookie) {
-      return undefined
-    }
-    const jwtCookie = (req.headers.cookie as string)
-      .split(";")
-      .find(c => c.trim().startsWith(`${type}=`))
-    if (!jwtCookie) {
-      return undefined
-    }
-    const [, jwt] = jwtCookie.split("=")
-    return jwt
-  } else {
-    return Cookie.getJSON(type)
-  }
+  return getCookie(req, type)
 }
 
 export async function renewSession(): Promise<void> {
@@ -95,8 +81,8 @@ export async function renewSession(): Promise<void> {
   })
 }
 
-export function isAuthenticated(): boolean {
-  const expiresAtStr = Cookie.get("expiresAt")
+export function isAuthenticated(req?: any): boolean {
+  const expiresAtStr = getCookie(req, "expiresAt")
   if (!expiresAtStr) {
     return false
   }
@@ -115,4 +101,31 @@ export function logout() {
   client.logout({ returnTo: window.location.origin })
 
   Router.push("/")
+}
+
+function getCookie(req: any, key: string): string | undefined {
+  if (req) {
+    return getServerCookie(req, key)
+  } else {
+    return Cookie.get(key)
+  }
+}
+
+function getServerCookie(req: any, key: string): string | undefined {
+  if (!req) {
+    return undefined
+  }
+
+  if (!req.headers.cookie) {
+    return undefined
+  }
+
+  const cookie = (req.headers.cookie as string)
+    .split(";")
+    .find(c => c.trim().startsWith(`${key}=`))
+  if (!cookie) {
+    return undefined
+  }
+  const [, value] = cookie.split("=")
+  return value
 }

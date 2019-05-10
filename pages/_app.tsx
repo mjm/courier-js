@@ -4,8 +4,13 @@ import Router from "next/router"
 import { renewSession, isAuthenticated } from "../utils/auth0"
 
 class MyApp extends App {
+  state = {
+    isAuthenticating: true,
+  }
+
   async componentDidMount() {
     if (Router.pathname === "/logged-in") {
+      this.setState({ isAuthenticating: false })
       return
     }
 
@@ -18,12 +23,12 @@ class MyApp extends App {
         Router.replace(Router.asPath!)
       }
     } catch (err) {
-      if (err.error === "login_required") {
-        return
+      if (err.error !== "login_required") {
+        console.error(err.error)
       }
-
-      console.error(err.error)
     }
+
+    this.setState({ isAuthenticating: false })
   }
 
   render() {
@@ -31,7 +36,10 @@ class MyApp extends App {
 
     return (
       <Container>
-        <Component {...pageProps} />
+        <Component
+          {...pageProps}
+          isAuthenticating={this.state.isAuthenticating}
+        />
       </Container>
     )
   }

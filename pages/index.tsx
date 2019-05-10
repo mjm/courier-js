@@ -1,12 +1,10 @@
 import React from "react"
-import { NextContext } from "next"
 import Link from "next/link"
 import Head from "../components/head"
 import Nav from "../components/nav"
-import { getUser } from "../utils/auth0"
+import withDefaultPage from "../hocs/defaultPage"
 
 const Home = ({ user }: any) => {
-  console.log(user)
   return (
     <div>
       <Head title="Home" />
@@ -15,15 +13,14 @@ const Home = ({ user }: any) => {
       <div className="hero">
         <h1 className="title">Welcome to Next!</h1>
         <p className="description">
-          To get started, edit <code>pages/index.js</code> and save to reload.
+          {user ? (
+            <>
+              You're logged in as {user.name} ({user.nickname})
+            </>
+          ) : (
+            <>You're not logged in yet</>
+          )}
         </p>
-        {user ? (
-          <p>
-            You're logged in as {user.name} ({user.nickname})
-          </p>
-        ) : (
-          <p>You're not logged in yet</p>
-        )}
 
         <div className="row">
           <Link href="https://github.com/zeit/next.js#getting-started">
@@ -100,8 +97,4 @@ const Home = ({ user }: any) => {
   )
 }
 
-Home.getInitialProps = ({ req }: NextContext) => {
-  return { user: getUser(req) }
-}
-
-export default Home
+export default withDefaultPage(Home)
