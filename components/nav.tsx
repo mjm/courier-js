@@ -66,6 +66,7 @@ const Nav = ({ user, isAuthenticating }: Props) => (
       }
       a {
         color: white;
+        font-weight: 500;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
