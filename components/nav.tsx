@@ -19,7 +19,6 @@ const Nav = () => (
 
     <style jsx>{`
       :global(body) {
-        margin: 0;
         font-family: ${font.family};
       }
       nav {

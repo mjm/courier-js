@@ -19,11 +19,12 @@ export const colors = {
   gray: {
     100: "#F7FAFC",
     200: "#EDF2F7",
+    400: "#CBD5E0",
     800: "#2D3748",
     900: "#1A202C",
   },
 }
 
 export function spacing(multiplier: number): string {
-  return `${multiplier * 0.2}rem`
+  return `${multiplier * 0.25}rem`
 }
