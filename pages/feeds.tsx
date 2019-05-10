@@ -249,8 +249,16 @@ const AddFeed = () => (
             div :global(input) {
               font-size: 1.5rem;
               width: 50%;
+              min-width: 300px;
               padding: 0.5rem;
               margin-bottom: 0.75rem;
+            }
+
+            @media (max-width: 300px) {
+              div :global(input) {
+                min-width: 0;
+                width: 100%;
+              }
             }
 
             button {
