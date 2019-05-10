@@ -10,8 +10,8 @@ const LoggedIn = () => {
         return
       }
 
-      if (result && result.idToken && result.accessToken) {
-        setToken(result.idToken, result.accessToken)
+      if (result) {
+        setToken(result)
         Router.push("/")
       }
     })
