@@ -80,8 +80,10 @@ const FeedsList = () => {
                       Refreshed at: {moment.utc(feed.refreshedAt).format("lll")}
                     </div>
                   )}
-                  <RefreshButton feed={feed} />
-                  <DeleteButton feed={feed} />
+                  <div className="buttons">
+                    <RefreshButton feed={feed} />
+                    <DeleteButton feed={feed} />
+                  </div>
                 </li>
               ))}
             </ul>
@@ -96,24 +98,57 @@ const FeedsList = () => {
         }
 
         li {
-          padding: 1rem;
-          border: 1px solid turquoise;
-          border-radius: 0.5rem;
-          margin-bottom: 0.75rem;
+          padding: ${spacing(3)} ${spacing(4)};
+          background-color: ${colors.gray[100]};
+          border-top: 3px solid ${colors.primary[500]};
+          margin-bottom: ${spacing(4)};
+        }
+
+        li div {
+          line-height: 1.375em;
         }
 
         h3 {
           font-size: 1.2rem;
+          font-weight: 900;
           margin: 0;
-          margin-bottom: 0.6rem;
+          margin-bottom: ${spacing(2)};
         }
 
         a {
-          color: #222;
+          color: ${colors.primary[800]};
           text-decoration: none;
+        }
+
+        .buttons {
+          margin-top: ${spacing(2)};
         }
       `}</style>
     </div>
+  )
+}
+
+const Button = ({ children, ...props }: any) => {
+  return (
+    <button {...props}>
+      {children}
+      <style jsx>{`
+        button {
+          background-color: ${colors.primary[600]};
+          color: white;
+          border: 0;
+          padding: ${spacing(1)} ${spacing(3)};
+          line-height: 1.5em;
+          font-size: 0.9rem;
+          border-radius: 0.6rem;
+          margin-right: ${spacing(2)};
+        }
+
+        button:hover {
+          background-color: ${colors.primary[500]};
+        }
+      `}</style>
+    </button>
   )
 }
 
@@ -127,14 +162,14 @@ const RefreshButton = ({ feed }: RefreshButtonProps) => {
   return (
     <RefreshFeedComponent>
       {refreshFeed => (
-        <button
+        <Button
           type="button"
           onClick={() => {
             refreshFeed({ variables: { id: feed.id } })
           }}
         >
           Refresh
-        </button>
+        </Button>
       )}
     </RefreshFeedComponent>
   )
@@ -166,7 +201,7 @@ const DeleteButton = ({ feed }: DeleteButtonProps) => {
       }}
     >
       {deleteFeed => (
-        <button
+        <Button
           type="button"
           onClick={() => {
             deleteFeed({
@@ -179,7 +214,7 @@ const DeleteButton = ({ feed }: DeleteButtonProps) => {
           }}
         >
           Delete
-        </button>
+        </Button>
       )}
     </DeleteFeedComponent>
   )
