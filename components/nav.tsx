@@ -1,53 +1,59 @@
 import React from "react"
 import Link from "next/link"
-
-const links = [
-  { href: "https://github.com/segmentio/create-next-app", label: "Github" },
-].map(link => ({ ...link, key: `nav-link-${link.href}-${link.label}` }))
+import { font, colors, spacing } from "../utils/theme"
 
 const Nav = () => (
   <nav>
     <ul>
       <li>
         <Link prefetch href="/">
-          <a>Home</a>
+          <a className="brand">Courier</a>
         </Link>
       </li>
-      <ul>
-        {links.map(({ key, href, label }) => (
-          <li key={key}>
-            <Link href={href}>
-              <a>{label}</a>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <li>
+        <Link prefetch href="/feeds">
+          <a>Feeds</a>
+        </Link>
+      </li>
     </ul>
 
     <style jsx>{`
       :global(body) {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, Avenir Next, Avenir,
-          Helvetica, sans-serif;
+        font-family: ${font.family};
       }
       nav {
         text-align: center;
+        background-color: ${colors.primary[700]};
       }
       ul {
+        margin: 0;
         display: flex;
         justify-content: space-between;
+        align-items: baseline;
+        line-height: 1.8rem;
       }
       nav > ul {
-        padding: 4px 16px;
+        padding: 0 ${spacing(4)};
       }
       li {
         display: flex;
-        padding: 6px 8px;
+        align-items: stretch;
+        height: 100%;
       }
       a {
-        color: #067df7;
+        color: white;
         text-decoration: none;
-        font-size: 13px;
+        display: block;
+        padding: ${spacing(3)} ${spacing(4)};
+        height: 100%;
+      }
+      a.brand {
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+      a:hover {
+        background-color: ${colors.primary[600]};
       }
     `}</style>
   </nav>
