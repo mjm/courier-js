@@ -1,19 +1,20 @@
 query AllFeeds {
   allFeeds {
-    id
-    url
-    title
-    homePageURL
-    refreshedAt
+    ...allFeedsFields
   }
+}
+
+fragment allFeedsFields on Feed {
+  id
+  url
+  title
+  homePageURL
+  refreshedAt
 }
 
 mutation AddFeed($feed: FeedInput!) {
   addFeed(feed: $feed) {
-    id
-    url
-    title
-    homePageURL
+    ...allFeedsFields
   }
 }
 
@@ -24,4 +25,8 @@ mutation RefreshFeed($id: ID!) {
     homePageURL
     refreshedAt
   }
+}
+
+mutation DeleteFeed($id: ID!) {
+  deleteFeed(id: $id)
 }

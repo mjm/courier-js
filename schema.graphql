@@ -10,6 +10,7 @@ type Query {
 type Mutation {
   addFeed(feed: FeedInput!): Feed!
   refreshFeed(id: ID!): Feed!
+  deleteFeed(id: ID!): ID!
 }
 
 type Feed {

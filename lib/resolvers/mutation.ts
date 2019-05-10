@@ -1,5 +1,5 @@
 import { MutationResolvers } from "../generated/graphql"
-import { addFeed, refreshFeed } from "../data/feed"
+import { addFeed, refreshFeed, deleteFeed } from "../data/feed"
 
 export const Mutation: MutationResolvers = {
   async addFeed(_, { feed }) {
@@ -8,5 +8,10 @@ export const Mutation: MutationResolvers = {
 
   async refreshFeed(_, { id }) {
     return await refreshFeed(id)
+  },
+
+  async deleteFeed(_, { id }) {
+    await deleteFeed(id)
+    return id
   },
 }

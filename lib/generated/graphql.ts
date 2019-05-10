@@ -26,6 +26,7 @@ export type FeedInput = {
 export type Mutation = {
   addFeed: Feed
   refreshFeed: Feed
+  deleteFeed: Scalars["ID"]
 }
 
 export type MutationAddFeedArgs = {
@@ -33,6 +34,10 @@ export type MutationAddFeedArgs = {
 }
 
 export type MutationRefreshFeedArgs = {
+  id: Scalars["ID"]
+}
+
+export type MutationDeleteFeedArgs = {
   id: Scalars["ID"]
 }
 
@@ -177,6 +182,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     MutationRefreshFeedArgs
+  >
+  deleteFeed?: Resolver<
+    ResolversTypes["ID"],
+    ParentType,
+    ContextType,
+    MutationDeleteFeedArgs
   >
 }
 

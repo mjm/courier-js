@@ -7,8 +7,8 @@ import {
   AddFeedComponent,
   AllFeedsDocument,
   AllFeedsQuery,
-  Feed,
   RefreshFeedComponent,
+  DeleteFeedComponent,
 } from "../lib/generated/graphql-components"
 import withData from "../lib/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
@@ -71,6 +71,7 @@ const FeedsList = () => {
                     </div>
                   )}
                   <RefreshButton feed={feed} />
+                  <DeleteButton feed={feed} />
                 </li>
               ))}
             </ul>
@@ -126,6 +127,51 @@ const RefreshButton = ({ feed }: RefreshButtonProps) => {
         </button>
       )}
     </RefreshFeedComponent>
+  )
+}
+
+interface DeleteButtonProps {
+  feed: {
+    id: string
+  }
+}
+
+const DeleteButton = ({ feed }: DeleteButtonProps) => {
+  return (
+    <DeleteFeedComponent
+      update={(cache, { data }) => {
+        if (!data) {
+          return
+        }
+
+        const { deleteFeed } = data
+        const { allFeeds } = cache.readQuery<AllFeedsQuery>({
+          query: AllFeedsDocument,
+        })!
+        const newFeeds = allFeeds.filter(f => f.id !== deleteFeed)
+        cache.writeQuery<AllFeedsQuery>({
+          query: AllFeedsDocument,
+          data: { allFeeds: newFeeds },
+        })
+      }}
+    >
+      {deleteFeed => (
+        <button
+          type="button"
+          onClick={() => {
+            deleteFeed({
+              variables: { id: feed.id },
+              optimisticResponse: {
+                __typename: "Mutation",
+                deleteFeed: feed.id,
+              },
+            })
+          }}
+        >
+          Delete
+        </button>
+      )}
+    </DeleteFeedComponent>
   )
 }
 

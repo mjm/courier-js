@@ -26,6 +26,7 @@ export type FeedInput = {
 export type Mutation = {
   addFeed: Feed
   refreshFeed: Feed
+  deleteFeed: Scalars["ID"]
 }
 
 export type MutationAddFeedArgs = {
@@ -33,6 +34,10 @@ export type MutationAddFeedArgs = {
 }
 
 export type MutationRefreshFeedArgs = {
+  id: Scalars["ID"]
+}
+
+export type MutationDeleteFeedArgs = {
   id: Scalars["ID"]
 }
 
@@ -54,23 +59,20 @@ export type User = {
 export type AllFeedsQueryVariables = {}
 
 export type AllFeedsQuery = { __typename?: "Query" } & {
-  allFeeds: Array<
-    { __typename?: "Feed" } & Pick<
-      Feed,
-      "id" | "url" | "title" | "homePageURL" | "refreshedAt"
-    >
-  >
+  allFeeds: Array<{ __typename?: "Feed" } & AllFeedsFieldsFragment>
 }
+
+export type AllFeedsFieldsFragment = { __typename?: "Feed" } & Pick<
+  Feed,
+  "id" | "url" | "title" | "homePageURL" | "refreshedAt"
+>
 
 export type AddFeedMutationVariables = {
   feed: FeedInput
 }
 
 export type AddFeedMutation = { __typename?: "Mutation" } & {
-  addFeed: { __typename?: "Feed" } & Pick<
-    Feed,
-    "id" | "url" | "title" | "homePageURL"
-  >
+  addFeed: { __typename?: "Feed" } & AllFeedsFieldsFragment
 }
 
 export type RefreshFeedMutationVariables = {
@@ -84,21 +86,35 @@ export type RefreshFeedMutation = { __typename?: "Mutation" } & {
   >
 }
 
+export type DeleteFeedMutationVariables = {
+  id: Scalars["ID"]
+}
+
+export type DeleteFeedMutation = { __typename?: "Mutation" } & Pick<
+  Mutation,
+  "deleteFeed"
+>
+
 import gql from "graphql-tag"
 import * as React from "react"
 import * as ReactApollo from "react-apollo"
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-
+export const allFeedsFieldsFragmentDoc = gql`
+  fragment allFeedsFields on Feed {
+    id
+    url
+    title
+    homePageURL
+    refreshedAt
+  }
+`
 export const AllFeedsDocument = gql`
   query AllFeeds {
     allFeeds {
-      id
-      url
-      title
-      homePageURL
-      refreshedAt
+      ...allFeedsFields
     }
   }
+  ${allFeedsFieldsFragmentDoc}
 `
 
 export const AllFeedsComponent = (
@@ -141,12 +157,10 @@ export function withAllFeeds<TProps, TChildProps = {}>(
 export const AddFeedDocument = gql`
   mutation AddFeed($feed: FeedInput!) {
     addFeed(feed: $feed) {
-      id
-      url
-      title
-      homePageURL
+      ...allFeedsFields
     }
   }
+  ${allFeedsFieldsFragmentDoc}
 `
 export type AddFeedMutationFn = ReactApollo.MutationFn<
   AddFeedMutation,
@@ -242,6 +256,56 @@ export function withRefreshFeed<TProps, TChildProps = {}>(
     RefreshFeedProps<TChildProps>
   >(RefreshFeedDocument, {
     alias: "withRefreshFeed",
+    ...operationOptions,
+  })
+}
+export const DeleteFeedDocument = gql`
+  mutation DeleteFeed($id: ID!) {
+    deleteFeed(id: $id)
+  }
+`
+export type DeleteFeedMutationFn = ReactApollo.MutationFn<
+  DeleteFeedMutation,
+  DeleteFeedMutationVariables
+>
+
+export const DeleteFeedComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<
+        DeleteFeedMutation,
+        DeleteFeedMutationVariables
+      >,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: DeleteFeedMutationVariables }
+) => (
+  <ReactApollo.Mutation<DeleteFeedMutation, DeleteFeedMutationVariables>
+    mutation={DeleteFeedDocument}
+    {...props}
+  />
+)
+
+export type DeleteFeedProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<DeleteFeedMutation, DeleteFeedMutationVariables>
+> &
+  TChildProps
+export function withDeleteFeed<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    DeleteFeedMutation,
+    DeleteFeedMutationVariables,
+    DeleteFeedProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    DeleteFeedMutation,
+    DeleteFeedMutationVariables,
+    DeleteFeedProps<TChildProps>
+  >(DeleteFeedDocument, {
+    alias: "withDeleteFeed",
     ...operationOptions,
   })
 }

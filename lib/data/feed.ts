@@ -49,17 +49,29 @@ export async function refreshFeed(id: string): Promise<Feed> {
   }
 
   const { title, homePageURL, cachingHeaders } = feedContents
-  await db.query(
+  const { rows } = await db.query(
     `UPDATE feeds
      SET title = $2,
          home_page_url = $3,
          caching_headers = $4,
          refreshed_at = CURRENT_TIMESTAMP
-     WHERE id = $1`,
+     WHERE id = $1
+     RETURNING refreshed_at`,
     [id, title, homePageURL, cachingHeaders]
   )
 
-  return { ...feed, title, homePageURL, cachingHeaders }
+  return {
+    ...feed,
+    title,
+    homePageURL,
+    cachingHeaders,
+    refreshedAt: rows[0].refreshed_at,
+  }
+}
+
+// TODO this should only delete a subscription eventually
+export async function deleteFeed(id: string): Promise<void> {
+  await db.query(`DELETE FROM feeds WHERE id = $1`, [id])
 }
 
 interface FeedRow {
