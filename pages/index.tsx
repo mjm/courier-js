@@ -8,7 +8,7 @@ const Home = ({ user }: any) => {
   return (
     <div>
       <Head title="Home" />
-      <Nav />
+      <Nav user={user} />
 
       <div className="hero">
         <h1 className="title">Welcome to Next!</h1>

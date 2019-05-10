@@ -19,10 +19,10 @@ import moment from "moment"
 import withSecurePage from "../hocs/securePage"
 import { colors, spacing, font, shadow } from "../utils/theme"
 
-const Feeds = () => (
+const Feeds = ({ user }: any) => (
   <div>
     <Head title="Feeds to Watch" />
-    <Nav />
+    <Nav user={user} />
 
     <div className="container">
       <PageHeader>Feeds to Watch</PageHeader>
