@@ -1,6 +1,6 @@
 export const font = {
-  family:
-    "-apple-system, BlinkMacSystemFont, Avenir Next, Avenir, Helvetica, sans-serif",
+  display: "Rubik, Helvetica, sans-serif",
+  body: '"IBM Plex Sans", Helvetica, sans-seif',
 }
 
 export const colors = {

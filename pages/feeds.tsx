@@ -17,7 +17,7 @@ import * as yup from "yup"
 import { isApolloError } from "apollo-client"
 import moment from "moment"
 import withSecurePage from "../hocs/securePage"
-import { colors, spacing } from "../utils/theme"
+import { colors, spacing, font } from "../utils/theme"
 
 const Feeds = () => (
   <div>
@@ -109,8 +109,9 @@ const FeedsList = () => {
         }
 
         h3 {
+          font-family: ${font.display};
           font-size: 1.2rem;
-          font-weight: 900;
+          font-weight: 500;
           margin: 0;
           margin-bottom: ${spacing(2)};
         }
@@ -140,6 +141,7 @@ const Button = ({ children, ...props }: any) => {
           padding: ${spacing(1)} ${spacing(3)};
           line-height: 1.5em;
           font-size: 0.9rem;
+          font-weight: 500;
           border-radius: 0.6rem;
           margin-right: ${spacing(2)};
         }
@@ -316,6 +318,7 @@ const AddFeed = () => (
 
             button {
               font-size: 1.4rem;
+              font-weight: 500;
               background-color: ${colors.primary[500]};
               border-color: transparent;
               border-radius: 0.5rem;

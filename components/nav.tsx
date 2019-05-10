@@ -19,7 +19,8 @@ const Nav = () => (
 
     <style jsx>{`
       :global(body) {
-        font-family: ${font.family};
+        font-family: ${font.body};
+        background-color: #f9ffff;
       }
       nav {
         text-align: center;
@@ -49,7 +50,8 @@ const Nav = () => (
       }
       a.brand {
         font-size: 1.2rem;
-        font-weight: 500;
+        font-weight: 700;
+        font-family: ${font.display};
       }
       a:hover {
         background-color: ${colors.primary[600]};

@@ -2,7 +2,10 @@ import React from "react"
 import App, { Container } from "next/app"
 import Router from "next/router"
 import { renewSession, isAuthenticated } from "../utils/auth0"
+
 import "normalizecss/normalize.css"
+import "typeface-rubik"
+import "typeface-ibm-plex-sans"
 
 class MyApp extends App {
   state = {
