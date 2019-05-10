@@ -43,7 +43,13 @@ export function setToken(result: Auth0DecodedHash) {
 function scheduleRenewal(expiresAt: number) {
   const timeout = expiresAt - Date.now()
   if (timeout > 0) {
-    tokenRenewalTimeout = setTimeout(renewSession, timeout)
+    tokenRenewalTimeout = setTimeout(async () => {
+      try {
+        await renewSession()
+      } catch (err) {
+        logout()
+      }
+    }, timeout)
   }
 }
 
@@ -70,8 +76,6 @@ export async function renewSession(): Promise<void> {
   return new Promise((resolve, reject) => {
     client.checkSession({}, (err, result) => {
       if (err) {
-        logout()
-        console.error(err)
         reject(err)
       } else if (result) {
         setToken(result)
