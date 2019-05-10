@@ -1,6 +1,7 @@
 import React from "react"
 import Head from "../components/head"
 import Nav from "../components/nav"
+import { PageHeader } from "../components/header"
 import {
   AllFeedsComponent,
   FeedInput,
@@ -23,7 +24,7 @@ const Feeds = () => (
     <Nav />
 
     <div className="container">
-      <h1>Feeds to Watch</h1>
+      <PageHeader>Feeds to Watch</PageHeader>
       <p>
         The feeds you add here will be checked for new posts that need to be
         tweeted.
@@ -34,6 +35,10 @@ const Feeds = () => (
     <style jsx>{`
       .container {
         padding: 0 1rem;
+      }
+
+      .container > p {
+        text-align: center;
       }
     `}</style>
   </div>
