@@ -2,7 +2,12 @@ import React from "react"
 import Link from "next/link"
 import { font, colors, spacing, shadow } from "../utils/theme"
 
-const Nav = ({ user }: any) => (
+interface Props {
+  user: any
+  isAuthenticating: boolean
+}
+
+const Nav = ({ user, isAuthenticating }: Props) => (
   <nav>
     <ul>
       <li>
@@ -22,7 +27,7 @@ const Nav = ({ user }: any) => (
             <img src={user.picture} /> {user.name}
           </a>
         </li>
-      ) : (
+      ) : isAuthenticating ? null : (
         <li>
           <Link href="/login">
             <a>Login</a>

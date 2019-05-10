@@ -1,8 +1,15 @@
 import React from "react"
 import { getUser, isAuthenticated } from "../utils/auth0"
+import Nav from "../components/nav"
+
+interface Props {
+  user: any
+  isAuthenticating: boolean
+  [key: string]: any
+}
 
 export default (Page: any) =>
-  class DefaultPage extends React.Component {
+  class DefaultPage extends React.Component<Props> {
     static async getInitialProps(ctx: any): Promise<any> {
       const req = ctx && ctx.req
       const user = getUser(req)
@@ -20,6 +27,14 @@ export default (Page: any) =>
     }
 
     render() {
-      return <Page {...this.props} />
+      return (
+        <>
+          <Nav
+            user={this.props.user}
+            isAuthenticating={this.props.isAuthenticating}
+          />
+          <Page {...this.props} />
+        </>
+      )
     }
   }

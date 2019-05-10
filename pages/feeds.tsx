@@ -1,6 +1,5 @@
 import React from "react"
 import Head from "../components/head"
-import Nav from "../components/nav"
 import { PageHeader } from "../components/header"
 import {
   AllFeedsComponent,
@@ -19,20 +18,17 @@ import moment from "moment"
 import withSecurePage from "../hocs/securePage"
 import { colors, spacing, font, shadow } from "../utils/theme"
 
-const Feeds = ({ user }: any) => (
-  <div>
+const Feeds = () => (
+  <div className="container">
     <Head title="Feeds to Watch" />
-    <Nav user={user} />
 
-    <div className="container">
-      <PageHeader>Feeds to Watch</PageHeader>
-      <p>
-        The feeds you add here will be checked for new posts that need to be
-        tweeted.
-      </p>
-      <FeedsList />
-      <AddFeed />
-    </div>
+    <PageHeader>Feeds to Watch</PageHeader>
+    <p>
+      The feeds you add here will be checked for new posts that need to be
+      tweeted.
+    </p>
+    <FeedsList />
+    <AddFeed />
     <style jsx>{`
       .container {
         padding: 0 1rem;

@@ -1,14 +1,12 @@
 import React from "react"
 import Link from "next/link"
 import Head from "../components/head"
-import Nav from "../components/nav"
 import withDefaultPage from "../hocs/defaultPage"
 
 const Home = ({ user }: any) => {
   return (
     <div>
       <Head title="Home" />
-      <Nav user={user} />
 
       <div className="hero">
         <h1 className="title">Welcome to Next!</h1>
