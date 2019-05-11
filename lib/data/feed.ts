@@ -1,7 +1,8 @@
 import db from "../db"
-import { Feed, FeedInput } from "./types"
+import { Feed, FeedId, FeedInput } from "./types"
 import { locateFeed } from "feed-locator"
 import { scrapeFeed } from "scrape-feed"
+import { importPosts } from "./post"
 
 export async function allFeeds(): Promise<Feed[]> {
   const { rows } = await db.query(`SELECT * FROM feeds`)
@@ -9,7 +10,7 @@ export async function allFeeds(): Promise<Feed[]> {
   return rows.map(fromRow)
 }
 
-export async function getFeed(id: string): Promise<Feed> {
+export async function getFeed(id: FeedId): Promise<Feed> {
   const { rows } = await db.query(`SELECT * FROM feeds WHERE id = $1 LIMIT 1`, [
     id,
   ])
@@ -38,10 +39,17 @@ export async function addFeed(input: FeedInput): Promise<Feed> {
   return await refreshFeed(id)
 }
 
-export async function refreshFeed(id: string): Promise<Feed> {
+interface RefreshFeedOptions {
+  force?: boolean
+}
+
+export async function refreshFeed(
+  id: FeedId,
+  options: RefreshFeedOptions = {}
+): Promise<Feed> {
   const feed = await getFeed(id)
 
-  const currentHeaders = feed.cachingHeaders || {}
+  const currentHeaders = options.force ? {} : feed.cachingHeaders || {}
   const feedContents = await scrapeFeed(feed.url, currentHeaders)
   if (!feedContents) {
     // feed is already up-to-date
@@ -60,6 +68,14 @@ export async function refreshFeed(id: string): Promise<Feed> {
     [id, title, homePageURL, cachingHeaders]
   )
 
+  const { created, updated, unchanged } = await importPosts(
+    id,
+    feedContents.entries
+  )
+  console.log(
+    `Imported posts. Created: ${created}. Updated: ${updated}. Unchanged: ${unchanged}`
+  )
+
   return {
     ...feed,
     title,
@@ -70,7 +86,7 @@ export async function refreshFeed(id: string): Promise<Feed> {
 }
 
 // TODO this should only delete a subscription eventually
-export async function deleteFeed(id: string): Promise<void> {
+export async function deleteFeed(id: FeedId): Promise<void> {
   await db.query(`DELETE FROM feeds WHERE id = $1`, [id])
 }
 
