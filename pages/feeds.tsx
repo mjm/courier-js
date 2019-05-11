@@ -248,8 +248,7 @@ const AddFeed = () => (
         actions: FormikActions<FeedInput>
       ) => {
         try {
-          const result = await addFeed({ variables: { feed } })
-          console.log(result)
+          await addFeed({ variables: { feed } })
           actions.resetForm(initialNewFeed)
         } catch (e) {
           // figure out something smart to do with these
