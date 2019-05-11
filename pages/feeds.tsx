@@ -31,7 +31,7 @@ const Feeds = () => (
     <AddFeed />
     <style jsx>{`
       .container {
-        padding: 0 1rem;
+        padding: 0 1rem 6rem 1rem;
       }
 
       .container > p {
