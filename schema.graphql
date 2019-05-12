@@ -34,17 +34,13 @@ type User {
 
 type FeedConnection {
   edges: [FeedEdge!]!
-
   nodes: [Feed!]!
-
   pageInfo: PageInfo!
-
   totalCount: Int!
 }
 
 type FeedEdge {
   cursor: Cursor!
-
   node: Feed!
 }
 
@@ -57,7 +53,7 @@ type Feed {
   createdAt: DateTime!
   updatedAt: DateTime!
 
-  posts(first: Int, last: Int, before: String, after: String): PostConnection!
+  posts(first: Int, last: Int, before: Cursor, after: Cursor): PostConnection!
 }
 
 input FeedInput {
@@ -66,23 +62,19 @@ input FeedInput {
 
 type PostConnection {
   edges: [PostEdge!]!
-
   nodes: [Post!]!
-
   pageInfo: PageInfo!
-
   totalCount: Int!
 }
 
 type PostEdge {
   cursor: Cursor!
-
   node: Post!
 }
 
 type Post {
   id: ID!
-  feed: Feed
+  feed: Feed!
   itemId: String!
   url: String!
   title: String!

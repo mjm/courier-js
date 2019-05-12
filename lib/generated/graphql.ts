@@ -117,7 +117,7 @@ export type User = {
   nickname: Scalars["String"]
   picture: Scalars["String"]
 }
-import { FeedPager, DBFeed } from "../data/types"
+import { DBFeed, FeedPager, DBPost, PostPager } from "../data/types"
 
 import {
   GraphQLResolveInfo,
@@ -206,9 +206,9 @@ export type ResolversTypes = {
   Feed: DBFeed
   ID: Scalars["ID"]
   DateTime: Scalars["DateTime"]
-  PostConnection: PostConnection
-  PostEdge: PostEdge
-  Post: Omit<Post, "feed"> & { feed?: Maybe<ResolversTypes["Feed"]> }
+  PostConnection: PostPager
+  PostEdge: Omit<PostEdge, "node"> & { node: ResolversTypes["Post"] }
+  Post: DBPost
   PageInfo: PageInfo
   Boolean: Scalars["Boolean"]
   Mutation: {}

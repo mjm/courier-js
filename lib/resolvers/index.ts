@@ -3,6 +3,7 @@ import * as mutation from "./mutation"
 import * as paging from "./paging"
 import * as date from "./date"
 import * as feed from "./feed"
+import * as post from "./post"
 import { Resolvers } from "../generated/graphql"
 
 const resolvers: Resolvers = {
@@ -11,6 +12,7 @@ const resolvers: Resolvers = {
   ...paging,
   ...date,
   ...feed,
+  ...post,
 }
 
 export default resolvers

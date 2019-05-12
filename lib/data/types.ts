@@ -50,6 +50,9 @@ export interface Post {
   updatedAt: Date
 }
 
+export type PostPager = Pager<Post, Date>
+export type DBPost = Post
+
 export interface NewPostInput {
   feedId: FeedId
   itemId: string

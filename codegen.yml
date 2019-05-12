@@ -11,8 +11,10 @@ generates:
         Cursor: string
         DateTime: Date
       mappers:
-        FeedConnection: ../data/types#FeedPager
         Feed: ../data/types#DBFeed
+        FeedConnection: ../data/types#FeedPager
+        Post: ../data/types#DBPost
+        PostConnection: ../data/types#PostPager
   lib/generated/graphql-components.tsx:
     plugins:
       - "typescript"

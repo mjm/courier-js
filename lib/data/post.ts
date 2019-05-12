@@ -5,9 +5,34 @@ import {
   FeedId,
   PostImportResult,
   UpdatePostInput,
+  PagingOptions,
 } from "./types"
 import { ScrapedEntry } from "scrape-feed"
 import countBy from "lodash/countBy"
+import { Pager } from "./pager"
+import moment from "moment"
+
+export function allPostsForFeed(
+  feedId: FeedId,
+  options: PagingOptions = {}
+): Pager<Post, Date> {
+  return new Pager({
+    query: `SELECT * FROM posts WHERE feed_id = $1`,
+    args: [feedId],
+    orderColumn: "published_at",
+    totalQuery: `SELECT COUNT(*) FROM posts WHERE feed_id = $1`,
+    variables: options,
+    makeEdge(row) {
+      return {
+        node: fromRow(row),
+        cursor: moment.utc(row.published_at).format(),
+      }
+    },
+    getCursorValue(cursor) {
+      return moment.utc(cursor).toDate()
+    },
+  })
+}
 
 type ImportResultType = "created" | "updated" | "unchanged"
 

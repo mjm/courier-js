@@ -6,6 +6,7 @@ type CursorValueFn<C> = (cursor: string) => C
 
 export interface PagerOptions<T, C> {
   query: string
+  args?: any[]
   orderColumn: string
   totalQuery: string
   variables: PagingOptions
@@ -15,6 +16,7 @@ export interface PagerOptions<T, C> {
 
 export class Pager<T, C> {
   private query: string
+  private args: any[]
   private orderColumn: string
   private totalQuery: string
   private makeEdge: MakeEdgeFn<T>
@@ -26,6 +28,7 @@ export class Pager<T, C> {
 
   constructor({
     query,
+    args = [],
     orderColumn,
     totalQuery,
     variables,
@@ -50,6 +53,7 @@ export class Pager<T, C> {
     }
 
     this.query = query
+    this.args = args
     this.orderColumn = orderColumn
     this.totalQuery = totalQuery
     this.makeEdge = makeEdge
@@ -61,6 +65,7 @@ export class Pager<T, C> {
   async getTotalCount(): Promise<number> {
     const { rows } = await db.query({
       text: this.totalQuery,
+      values: this.args,
       rowMode: "array",
     })
 
@@ -88,18 +93,19 @@ export class Pager<T, C> {
     }
 
     result.startCursor = edges[0].cursor
-    result.endCursor = edges[edges.length - 1].cursor
+    result.endCursor = edges[Math.min(edges.length, this.limit) - 1].cursor
 
     return result
   }
 
   async getNodes(): Promise<T[]> {
-    const results = await this.results
-    return results.map(edge => edge.node)
+    const edges = await this.getEdges()
+    return edges.map(edge => edge.node)
   }
 
   async getEdges(): Promise<PagerEdge<T>[]> {
-    return this.results
+    const results = await this.results
+    return results.slice(0, this.limit)
   }
 
   private async fetchResults(): Promise<PagerEdge<T>[]> {
@@ -111,13 +117,15 @@ export class Pager<T, C> {
 
   private buildQuery(): [string, any[]] {
     const queryClauses = [this.query]
-    const args = []
+    const args = [...this.args]
+
     if (this.cursor) {
+      const WHERE = this.query.toUpperCase().includes("WHERE") ? "AND" : "WHERE"
       args.push(this.cursor)
       queryClauses.push(
-        `WHERE ${this.orderColumn} ${this.direction === "ASC" ? ">" : "<"} $${
-          args.length
-        }`
+        `${WHERE} ${this.orderColumn} ${
+          this.direction === "ASC" ? ">" : "<"
+        } $${args.length}`
       )
     }
     queryClauses.push(`ORDER BY ${this.orderColumn} ${this.direction}`)

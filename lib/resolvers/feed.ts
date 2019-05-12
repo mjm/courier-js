@@ -1,4 +1,5 @@
 import { FeedResolvers, FeedConnectionResolvers } from "../generated/graphql"
+import { allPostsForFeed } from "../data/post"
 
 export const FeedConnection: FeedConnectionResolvers = {
   async edges(pager) {
@@ -18,4 +19,8 @@ export const FeedConnection: FeedConnectionResolvers = {
   },
 }
 
-export const Feed: FeedResolvers = {}
+export const Feed: FeedResolvers = {
+  posts(feed, args) {
+    return allPostsForFeed(feed.id, args)
+  },
+}
