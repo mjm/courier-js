@@ -1,9 +1,15 @@
+scalar Cursor
 scalar DateTime
 
 type Query {
   currentUser: User
 
-  allFeeds: [Feed!]!
+  allFeeds(
+    first: Int
+    last: Int
+    before: Cursor
+    after: Cursor
+  ): FeedConnection!
   feed(id: ID!): Feed!
 }
 
@@ -11,6 +17,35 @@ type Mutation {
   addFeed(feed: FeedInput!): Feed!
   refreshFeed(id: ID!): Feed!
   deleteFeed(id: ID!): ID!
+}
+
+type PageInfo {
+  startCursor: Cursor
+  endCursor: Cursor
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+}
+
+type User {
+  name: String!
+  nickname: String!
+  picture: String!
+}
+
+type FeedConnection {
+  edges: [FeedEdge!]!
+
+  nodes: [Feed!]!
+
+  pageInfo: PageInfo!
+
+  totalCount: Int!
+}
+
+type FeedEdge {
+  cursor: Cursor!
+
+  node: Feed!
 }
 
 type Feed {
@@ -21,14 +56,40 @@ type Feed {
   refreshedAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
+
+  posts(first: Int, last: Int, before: String, after: String): PostConnection!
 }
 
 input FeedInput {
   url: String!
 }
 
-type User {
-  name: String!
-  nickname: String!
-  picture: String!
+type PostConnection {
+  edges: [PostEdge!]!
+
+  nodes: [Post!]!
+
+  pageInfo: PageInfo!
+
+  totalCount: Int!
+}
+
+type PostEdge {
+  cursor: Cursor!
+
+  node: Post!
+}
+
+type Post {
+  id: ID!
+  feed: Feed
+  itemId: String!
+  url: String!
+  title: String!
+  textContent: String!
+  htmlContent: String!
+  publishedAt: DateTime
+  modifiedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }

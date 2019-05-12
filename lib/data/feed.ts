@@ -1,13 +1,23 @@
 import db from "../db"
-import { Feed, FeedId, FeedInput } from "./types"
+import { Feed, FeedId, FeedInput, PagingOptions } from "./types"
 import { locateFeed } from "feed-locator"
 import { scrapeFeed } from "scrape-feed"
 import { importPosts } from "./post"
+import { Pager } from "./pager"
 
-export async function allFeeds(): Promise<Feed[]> {
-  const { rows } = await db.query(`SELECT * FROM feeds`)
-
-  return rows.map(fromRow)
+export async function allFeeds(
+  options: PagingOptions = {}
+): Promise<Pager<Feed, string>> {
+  return new Pager({
+    query: "SELECT * FROM feeds",
+    orderColumn: "url",
+    totalQuery: "SELECT COUNT(*) FROM feeds",
+    variables: options,
+    makeEdge(row) {
+      return { node: fromRow(row), cursor: row.url }
+    },
+    getCursorValue: val => val,
+  })
 }
 
 export async function getFeed(id: FeedId): Promise<Feed> {

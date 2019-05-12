@@ -6,6 +6,7 @@ export type Scalars = {
   Boolean: boolean
   Int: number
   Float: number
+  Cursor: string
   DateTime: Date
 }
 
@@ -17,6 +18,26 @@ export type Feed = {
   refreshedAt?: Maybe<Scalars["DateTime"]>
   createdAt: Scalars["DateTime"]
   updatedAt: Scalars["DateTime"]
+  posts: PostConnection
+}
+
+export type FeedPostsArgs = {
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["String"]>
+  after?: Maybe<Scalars["String"]>
+}
+
+export type FeedConnection = {
+  edges: Array<FeedEdge>
+  nodes: Array<Feed>
+  pageInfo: PageInfo
+  totalCount: Scalars["Int"]
+}
+
+export type FeedEdge = {
+  cursor: Scalars["Cursor"]
+  node: Feed
 }
 
 export type FeedInput = {
@@ -41,10 +62,50 @@ export type MutationDeleteFeedArgs = {
   id: Scalars["ID"]
 }
 
+export type PageInfo = {
+  startCursor?: Maybe<Scalars["Cursor"]>
+  endCursor?: Maybe<Scalars["Cursor"]>
+  hasNextPage: Scalars["Boolean"]
+  hasPreviousPage: Scalars["Boolean"]
+}
+
+export type Post = {
+  id: Scalars["ID"]
+  feed?: Maybe<Feed>
+  itemId: Scalars["String"]
+  url: Scalars["String"]
+  title: Scalars["String"]
+  textContent: Scalars["String"]
+  htmlContent: Scalars["String"]
+  publishedAt?: Maybe<Scalars["DateTime"]>
+  modifiedAt?: Maybe<Scalars["DateTime"]>
+  createdAt: Scalars["DateTime"]
+  updatedAt: Scalars["DateTime"]
+}
+
+export type PostConnection = {
+  edges: Array<PostEdge>
+  nodes: Array<Post>
+  pageInfo: PageInfo
+  totalCount: Scalars["Int"]
+}
+
+export type PostEdge = {
+  cursor: Scalars["Cursor"]
+  node: Post
+}
+
 export type Query = {
   currentUser?: Maybe<User>
-  allFeeds: Array<Feed>
+  allFeeds: FeedConnection
   feed: Feed
+}
+
+export type QueryAllFeedsArgs = {
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
 }
 
 export type QueryFeedArgs = {
@@ -56,6 +117,7 @@ export type User = {
   nickname: Scalars["String"]
   picture: Scalars["String"]
 }
+import { FeedPager, DBFeed } from "../data/types"
 
 import {
   GraphQLResolveInfo,
@@ -137,12 +199,25 @@ export type ResolversTypes = {
   Query: {}
   User: User
   String: Scalars["String"]
-  Feed: Feed
+  Int: Scalars["Int"]
+  Cursor: Scalars["Cursor"]
+  FeedConnection: FeedPager
+  FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
+  Feed: DBFeed
   ID: Scalars["ID"]
   DateTime: Scalars["DateTime"]
+  PostConnection: PostConnection
+  PostEdge: PostEdge
+  Post: Omit<Post, "feed"> & { feed?: Maybe<ResolversTypes["Feed"]> }
+  PageInfo: PageInfo
+  Boolean: Scalars["Boolean"]
   Mutation: {}
   FeedInput: FeedInput
-  Boolean: Scalars["Boolean"]
+}
+
+export interface CursorScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["Cursor"], any> {
+  name: "Cursor"
 }
 
 export interface DateTimeScalarConfig
@@ -165,6 +240,30 @@ export type FeedResolvers<
   >
   createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>
   updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>
+  posts?: Resolver<
+    ResolversTypes["PostConnection"],
+    ParentType,
+    ContextType,
+    FeedPostsArgs
+  >
+}
+
+export type FeedConnectionResolvers<
+  ContextType = any,
+  ParentType = ResolversTypes["FeedConnection"]
+> = {
+  edges?: Resolver<Array<ResolversTypes["FeedEdge"]>, ParentType, ContextType>
+  nodes?: Resolver<Array<ResolversTypes["Feed"]>, ParentType, ContextType>
+  pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>
+  totalCount?: Resolver<ResolversTypes["Int"], ParentType, ContextType>
+}
+
+export type FeedEdgeResolvers<
+  ContextType = any,
+  ParentType = ResolversTypes["FeedEdge"]
+> = {
+  cursor?: Resolver<ResolversTypes["Cursor"], ParentType, ContextType>
+  node?: Resolver<ResolversTypes["Feed"], ParentType, ContextType>
 }
 
 export type MutationResolvers<
@@ -191,12 +290,74 @@ export type MutationResolvers<
   >
 }
 
+export type PageInfoResolvers<
+  ContextType = any,
+  ParentType = ResolversTypes["PageInfo"]
+> = {
+  startCursor?: Resolver<
+    Maybe<ResolversTypes["Cursor"]>,
+    ParentType,
+    ContextType
+  >
+  endCursor?: Resolver<Maybe<ResolversTypes["Cursor"]>, ParentType, ContextType>
+  hasNextPage?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>
+  hasPreviousPage?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>
+}
+
+export type PostResolvers<
+  ContextType = any,
+  ParentType = ResolversTypes["Post"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>
+  feed?: Resolver<Maybe<ResolversTypes["Feed"]>, ParentType, ContextType>
+  itemId?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  url?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  title?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  textContent?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  htmlContent?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  publishedAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >
+  modifiedAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>
+  updatedAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>
+}
+
+export type PostConnectionResolvers<
+  ContextType = any,
+  ParentType = ResolversTypes["PostConnection"]
+> = {
+  edges?: Resolver<Array<ResolversTypes["PostEdge"]>, ParentType, ContextType>
+  nodes?: Resolver<Array<ResolversTypes["Post"]>, ParentType, ContextType>
+  pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>
+  totalCount?: Resolver<ResolversTypes["Int"], ParentType, ContextType>
+}
+
+export type PostEdgeResolvers<
+  ContextType = any,
+  ParentType = ResolversTypes["PostEdge"]
+> = {
+  cursor?: Resolver<ResolversTypes["Cursor"], ParentType, ContextType>
+  node?: Resolver<ResolversTypes["Post"], ParentType, ContextType>
+}
+
 export type QueryResolvers<
   ContextType = any,
   ParentType = ResolversTypes["Query"]
 > = {
   currentUser?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>
-  allFeeds?: Resolver<Array<ResolversTypes["Feed"]>, ParentType, ContextType>
+  allFeeds?: Resolver<
+    ResolversTypes["FeedConnection"],
+    ParentType,
+    ContextType,
+    QueryAllFeedsArgs
+  >
   feed?: Resolver<
     ResolversTypes["Feed"],
     ParentType,
@@ -215,9 +376,16 @@ export type UserResolvers<
 }
 
 export type Resolvers<ContextType = any> = {
+  Cursor?: GraphQLScalarType
   DateTime?: GraphQLScalarType
   Feed?: FeedResolvers<ContextType>
+  FeedConnection?: FeedConnectionResolvers<ContextType>
+  FeedEdge?: FeedEdgeResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
+  PageInfo?: PageInfoResolvers<ContextType>
+  Post?: PostResolvers<ContextType>
+  PostConnection?: PostConnectionResolvers<ContextType>
+  PostEdge?: PostEdgeResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
   User?: UserResolvers<ContextType>
 }

@@ -1,6 +1,12 @@
-query AllFeeds {
-  allFeeds {
-    ...allFeedsFields
+query AllFeeds($cursor: Cursor) {
+  allFeeds(first: 20, after: $cursor) @connection(key: "allFeeds") {
+    nodes {
+      ...allFeedsFields
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
   }
 }
 

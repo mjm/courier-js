@@ -1,4 +1,16 @@
 import { CachingHeaders } from "scrape-feed"
+import { Pager } from "./pager"
+
+export type PagingOptions =
+  | {}
+  | {
+      first: number
+      after?: string | null
+    }
+  | {
+      last: number
+      before?: string | null
+    }
 
 export type FeedId = string
 
@@ -12,6 +24,11 @@ export interface Feed {
   createdAt: Date
   updatedAt: Date
 }
+
+export type FeedPager = Pager<Feed, string>
+
+// An alias to prevent GraphQL collisions
+export type DBFeed = Feed
 
 export interface FeedInput {
   url: string

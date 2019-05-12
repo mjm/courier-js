@@ -8,7 +8,11 @@ generates:
       - "typescript-resolvers"
     config:
       scalars:
+        Cursor: string
         DateTime: Date
+      mappers:
+        FeedConnection: ../data/types#FeedPager
+        Feed: ../data/types#DBFeed
   lib/generated/graphql-components.tsx:
     plugins:
       - "typescript"

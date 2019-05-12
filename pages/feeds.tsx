@@ -57,10 +57,10 @@ const FeedsList = () => {
           if (!data) {
             return null
           }
-          const { allFeeds: feeds } = data
+          const nodes = data.allFeeds.nodes
           return (
             <ul>
-              {feeds.map(feed => (
+              {nodes.map(feed => (
                 <li key={feed.id}>
                   <h3>
                     <a href={feed.homePageURL}>{feed.title}</a>
@@ -192,10 +192,16 @@ const DeleteButton = ({ feed }: DeleteButtonProps) => {
         const { allFeeds } = cache.readQuery<AllFeedsQuery>({
           query: AllFeedsDocument,
         })!
-        const newFeeds = allFeeds.filter(f => f.id !== deleteFeed)
+        const newFeeds = allFeeds.nodes.filter(f => f.id !== deleteFeed)
         cache.writeQuery<AllFeedsQuery>({
           query: AllFeedsDocument,
-          data: { allFeeds: newFeeds },
+          data: {
+            allFeeds: {
+              __typename: "FeedConnection",
+              nodes: newFeeds,
+              pageInfo: allFeeds.pageInfo,
+            },
+          },
         })
       }}
     >
@@ -237,7 +243,11 @@ const AddFeed = () => (
       cache.writeQuery<AllFeedsQuery>({
         query: AllFeedsDocument,
         data: {
-          allFeeds: allFeeds.concat([data.addFeed]),
+          allFeeds: {
+            __typename: "FeedConnection",
+            nodes: allFeeds.nodes.concat([data.addFeed]),
+            pageInfo: allFeeds.pageInfo,
+          },
         },
       })
     }}

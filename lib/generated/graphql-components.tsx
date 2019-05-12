@@ -6,6 +6,7 @@ export type Scalars = {
   Boolean: boolean
   Int: number
   Float: number
+  Cursor: any
   DateTime: any
 }
 
@@ -17,6 +18,26 @@ export type Feed = {
   refreshedAt?: Maybe<Scalars["DateTime"]>
   createdAt: Scalars["DateTime"]
   updatedAt: Scalars["DateTime"]
+  posts: PostConnection
+}
+
+export type FeedPostsArgs = {
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["String"]>
+  after?: Maybe<Scalars["String"]>
+}
+
+export type FeedConnection = {
+  edges: Array<FeedEdge>
+  nodes: Array<Feed>
+  pageInfo: PageInfo
+  totalCount: Scalars["Int"]
+}
+
+export type FeedEdge = {
+  cursor: Scalars["Cursor"]
+  node: Feed
 }
 
 export type FeedInput = {
@@ -41,10 +62,50 @@ export type MutationDeleteFeedArgs = {
   id: Scalars["ID"]
 }
 
+export type PageInfo = {
+  startCursor?: Maybe<Scalars["Cursor"]>
+  endCursor?: Maybe<Scalars["Cursor"]>
+  hasNextPage: Scalars["Boolean"]
+  hasPreviousPage: Scalars["Boolean"]
+}
+
+export type Post = {
+  id: Scalars["ID"]
+  feed?: Maybe<Feed>
+  itemId: Scalars["String"]
+  url: Scalars["String"]
+  title: Scalars["String"]
+  textContent: Scalars["String"]
+  htmlContent: Scalars["String"]
+  publishedAt?: Maybe<Scalars["DateTime"]>
+  modifiedAt?: Maybe<Scalars["DateTime"]>
+  createdAt: Scalars["DateTime"]
+  updatedAt: Scalars["DateTime"]
+}
+
+export type PostConnection = {
+  edges: Array<PostEdge>
+  nodes: Array<Post>
+  pageInfo: PageInfo
+  totalCount: Scalars["Int"]
+}
+
+export type PostEdge = {
+  cursor: Scalars["Cursor"]
+  node: Post
+}
+
 export type Query = {
   currentUser?: Maybe<User>
-  allFeeds: Array<Feed>
+  allFeeds: FeedConnection
   feed: Feed
+}
+
+export type QueryAllFeedsArgs = {
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
 }
 
 export type QueryFeedArgs = {
@@ -56,10 +117,18 @@ export type User = {
   nickname: Scalars["String"]
   picture: Scalars["String"]
 }
-export type AllFeedsQueryVariables = {}
+export type AllFeedsQueryVariables = {
+  cursor?: Maybe<Scalars["Cursor"]>
+}
 
 export type AllFeedsQuery = { __typename?: "Query" } & {
-  allFeeds: Array<{ __typename?: "Feed" } & AllFeedsFieldsFragment>
+  allFeeds: { __typename?: "FeedConnection" } & {
+    nodes: Array<{ __typename?: "Feed" } & AllFeedsFieldsFragment>
+    pageInfo: { __typename?: "PageInfo" } & Pick<
+      PageInfo,
+      "endCursor" | "hasNextPage"
+    >
+  }
 }
 
 export type AllFeedsFieldsFragment = { __typename?: "Feed" } & Pick<
@@ -109,9 +178,15 @@ export const allFeedsFieldsFragmentDoc = gql`
   }
 `
 export const AllFeedsDocument = gql`
-  query AllFeeds {
-    allFeeds {
-      ...allFeedsFields
+  query AllFeeds($cursor: Cursor) {
+    allFeeds(first: 20, after: $cursor) @connection(key: "allFeeds") {
+      nodes {
+        ...allFeedsFields
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
     }
   }
   ${allFeedsFieldsFragmentDoc}
