@@ -46,6 +46,7 @@ export type DBFeed = Feed
 export type DBSubscribedFeed = SubscribedFeed
 
 export interface FeedInput {
+  userId: UserId
   url: string
 }
 

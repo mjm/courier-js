@@ -57,11 +57,11 @@ const FeedsList = () => {
           if (!data) {
             return null
           }
-          const nodes = data.allFeeds.nodes
+          const nodes = data.allSubscribedFeeds.nodes
           return (
             <ul>
-              {nodes.map(feed => (
-                <li key={feed.id}>
+              {nodes.map(({ id, feed }) => (
+                <li key={id}>
                   <h3>
                     <a href={feed.homePageURL}>{feed.title}</a>
                   </h3>
@@ -78,7 +78,7 @@ const FeedsList = () => {
                   )}
                   <div className="buttons">
                     <RefreshButton feed={feed} />
-                    <DeleteButton feed={feed} />
+                    <DeleteButton id={id} />
                   </div>
                 </li>
               ))}
@@ -175,12 +175,10 @@ const RefreshButton = ({ feed }: RefreshButtonProps) => {
 }
 
 interface DeleteButtonProps {
-  feed: {
-    id: string
-  }
+  id: string
 }
 
-const DeleteButton = ({ feed }: DeleteButtonProps) => {
+const DeleteButton = ({ id }: DeleteButtonProps) => {
   return (
     <DeleteFeedComponent
       update={(cache, { data }) => {
@@ -189,17 +187,19 @@ const DeleteButton = ({ feed }: DeleteButtonProps) => {
         }
 
         const { deleteFeed } = data
-        const { allFeeds } = cache.readQuery<AllFeedsQuery>({
+        const { allSubscribedFeeds } = cache.readQuery<AllFeedsQuery>({
           query: AllFeedsDocument,
         })!
-        const newFeeds = allFeeds.nodes.filter(f => f.id !== deleteFeed)
+        const newFeeds = allSubscribedFeeds.nodes.filter(
+          f => f.id !== deleteFeed
+        )
         cache.writeQuery<AllFeedsQuery>({
           query: AllFeedsDocument,
           data: {
-            allFeeds: {
-              __typename: "FeedConnection",
+            allSubscribedFeeds: {
+              __typename: "SubscribedFeedConnection",
               nodes: newFeeds,
-              pageInfo: allFeeds.pageInfo,
+              pageInfo: allSubscribedFeeds.pageInfo,
             },
           },
         })
@@ -210,10 +210,10 @@ const DeleteButton = ({ feed }: DeleteButtonProps) => {
           type="button"
           onClick={() => {
             deleteFeed({
-              variables: { id: feed.id },
+              variables: { id: id },
               optimisticResponse: {
                 __typename: "Mutation",
-                deleteFeed: feed.id,
+                deleteFeed: id,
               },
             })
           }}
@@ -237,16 +237,16 @@ const AddFeed = () => (
         return
       }
 
-      const { allFeeds } = cache.readQuery<AllFeedsQuery>({
+      const { allSubscribedFeeds } = cache.readQuery<AllFeedsQuery>({
         query: AllFeedsDocument,
       })!
       cache.writeQuery<AllFeedsQuery>({
         query: AllFeedsDocument,
         data: {
-          allFeeds: {
-            __typename: "FeedConnection",
-            nodes: allFeeds.nodes.concat([data.addFeed]),
-            pageInfo: allFeeds.pageInfo,
+          allSubscribedFeeds: {
+            __typename: "SubscribedFeedConnection",
+            nodes: allSubscribedFeeds.nodes.concat([data.addFeed]),
+            pageInfo: allSubscribedFeeds.pageInfo,
           },
         },
       })

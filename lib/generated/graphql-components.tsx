@@ -45,7 +45,7 @@ export type FeedInput = {
 }
 
 export type Mutation = {
-  addFeed: Feed
+  addFeed: SubscribedFeed
   refreshFeed: Feed
   deleteFeed: Scalars["ID"]
 }
@@ -148,8 +148,10 @@ export type AllFeedsQueryVariables = {
 }
 
 export type AllFeedsQuery = { __typename?: "Query" } & {
-  allFeeds: { __typename?: "FeedConnection" } & {
-    nodes: Array<{ __typename?: "Feed" } & AllFeedsFieldsFragment>
+  allSubscribedFeeds: { __typename?: "SubscribedFeedConnection" } & {
+    nodes: Array<
+      { __typename?: "SubscribedFeed" } & AllFeedSubscriptionsFieldsFragment
+    >
     pageInfo: { __typename?: "PageInfo" } & Pick<
       PageInfo,
       "endCursor" | "hasNextPage"
@@ -157,17 +159,23 @@ export type AllFeedsQuery = { __typename?: "Query" } & {
   }
 }
 
-export type AllFeedsFieldsFragment = { __typename?: "Feed" } & Pick<
-  Feed,
-  "id" | "url" | "title" | "homePageURL" | "refreshedAt"
->
+export type AllFeedSubscriptionsFieldsFragment = {
+  __typename?: "SubscribedFeed"
+} & Pick<SubscribedFeed, "id" | "autopost"> & {
+    feed: { __typename?: "Feed" } & Pick<
+      Feed,
+      "id" | "url" | "title" | "homePageURL" | "refreshedAt"
+    >
+  }
 
 export type AddFeedMutationVariables = {
   feed: FeedInput
 }
 
 export type AddFeedMutation = { __typename?: "Mutation" } & {
-  addFeed: { __typename?: "Feed" } & AllFeedsFieldsFragment
+  addFeed: {
+    __typename?: "SubscribedFeed"
+  } & AllFeedSubscriptionsFieldsFragment
 }
 
 export type RefreshFeedMutationVariables = {
@@ -194,20 +202,25 @@ import gql from "graphql-tag"
 import * as React from "react"
 import * as ReactApollo from "react-apollo"
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-export const allFeedsFieldsFragmentDoc = gql`
-  fragment allFeedsFields on Feed {
+export const allFeedSubscriptionsFieldsFragmentDoc = gql`
+  fragment allFeedSubscriptionsFields on SubscribedFeed {
     id
-    url
-    title
-    homePageURL
-    refreshedAt
+    feed {
+      id
+      url
+      title
+      homePageURL
+      refreshedAt
+    }
+    autopost
   }
 `
 export const AllFeedsDocument = gql`
   query AllFeeds($cursor: Cursor) {
-    allFeeds(first: 20, after: $cursor) @connection(key: "allFeeds") {
+    allSubscribedFeeds(first: 20, after: $cursor)
+      @connection(key: "allSubscribedFeeds") {
       nodes {
-        ...allFeedsFields
+        ...allFeedSubscriptionsFields
       }
       pageInfo {
         endCursor
@@ -215,7 +228,7 @@ export const AllFeedsDocument = gql`
       }
     }
   }
-  ${allFeedsFieldsFragmentDoc}
+  ${allFeedSubscriptionsFieldsFragmentDoc}
 `
 
 export const AllFeedsComponent = (
@@ -258,10 +271,10 @@ export function withAllFeeds<TProps, TChildProps = {}>(
 export const AddFeedDocument = gql`
   mutation AddFeed($feed: FeedInput!) {
     addFeed(feed: $feed) {
-      ...allFeedsFields
+      ...allFeedSubscriptionsFields
     }
   }
-  ${allFeedsFieldsFragmentDoc}
+  ${allFeedSubscriptionsFieldsFragmentDoc}
 `
 export type AddFeedMutationFn = ReactApollo.MutationFn<
   AddFeedMutation,

@@ -6,6 +6,7 @@ import {
   PagingOptions,
   UserId,
   SubscribedFeed,
+  FeedSubscriptionId,
 } from "./types"
 import { locateFeed } from "feed-locator"
 import { scrapeFeed } from "scrape-feed"
@@ -44,7 +45,8 @@ export function allFeedsForUser(
         FROM feed_subscriptions
         JOIN feeds
           ON feed_subscriptions.feed_id = feeds.id
-       WHERE feed_subscriptions.user_id = $1`,
+       WHERE feed_subscriptions.user_id = $1
+         AND feed_subscriptions.discarded_at IS NULL`,
     args: [userId],
     orderColumn: "url",
     totalQuery: `SELECT COUNT(*) FROM feed_subscriptions WHERE user_id = $1`,
@@ -74,18 +76,58 @@ export async function getFeed(id: FeedId): Promise<Feed> {
   }
 }
 
-export async function addFeed(input: FeedInput): Promise<Feed> {
-  const feedURL = await locateFeed(input.url)
-
+export async function getSubscribedFeed(
+  id: FeedSubscriptionId
+): Promise<SubscribedFeed> {
   const { rows } = await db.query(
-    `INSERT INTO feeds(url)
-     VALUES($1)
-     RETURNING id`,
-    [feedURL]
+    `SELECT feed_subscriptions.*,
+            feeds.url,
+            feeds.title,
+            feeds.home_page_url,
+            feeds.caching_headers,
+            feeds.refreshed_at,
+            feeds.created_at AS feed_created_at,
+            feeds.updated_at AS feed_updated_at
+       FROM feed_subscriptions
+       JOIN feeds
+         ON feed_subscriptions.feed_id = feeds.id
+      WHERE feed_subscriptions.id = $1`,
+    [id]
   )
 
-  const id = rows[0].id
-  return await refreshFeed(id)
+  if (rows.length) {
+    return fromSubscriptionRow(rows[0])
+  } else {
+    const err = new Error(`No feed subscription found with ID ${id}`)
+    // @ts-ignore
+    err.statusCode = 404
+    throw err
+  }
+}
+
+/**
+ * Adds a feed to a user's list of subscribed feeds.
+ *
+ * @param input - A description of the feed to add
+ * @returns The feed subscription
+ */
+export async function addFeed(input: FeedInput): Promise<SubscribedFeed> {
+  const feedURL = await locateFeed(input.url)
+
+  let feed = await getFeedByURL(feedURL)
+  if (!feed) {
+    feed = await createFeed(feedURL)
+  }
+
+  const { rows } = await db.query(
+    `INSERT INTO feed_subscriptions (feed_id, user_id)
+     VALUES ($1, $2)
+     RETURNING id`,
+    [feed.id, input.userId]
+  )
+
+  // we need the feed info, so we might as well just fetch out the whole dang thing
+  return await getSubscribedFeed(rows[0].id)
 }
 
 interface RefreshFeedOptions {
@@ -134,9 +176,48 @@ export async function refreshFeed(
   }
 }
 
-// TODO this should only delete a subscription eventually
-export async function deleteFeed(id: FeedId): Promise<void> {
-  await db.query(`DELETE FROM feeds WHERE id = $1`, [id])
+/**
+ * Removes a feed from a user's subscribed feeds.
+ *
+ * @remarks
+ * Feed subscriptions are not removed, because it would break the connection
+ * of which user a tweet belongs to. Instead, they are marked as discarded,
+ * and can be restored if the user readds them later.
+ *
+ * @param id - The ID of the subscription to remove.
+ */
+export async function deleteFeed(id: FeedSubscriptionId): Promise<void> {
+  await db.query(
+    `UPDATE feed_subscriptions
+        SET discarded_at = CURRENT_TIMESTAMP
+      WHERE id = $1`,
+    [id]
+  )
+}
+
+async function getFeedByURL(url: string): Promise<Feed | null> {
+  const { rows } = await db.query(
+    `SELECT * FROM feeds WHERE url = $1 LIMIT 1`,
+    [url]
+  )
+
+  if (rows.length) {
+    return fromRow(rows[0])
+  } else {
+    return null
+  }
+}
+
+async function createFeed(url: string): Promise<Feed> {
+  const { rows } = await db.query(
+    `INSERT INTO feeds(url)
+     VALUES($1)
+     RETURNING id`,
+    [url]
+  )
+
+  const id = rows[0].id
+  return await refreshFeed(id)
 }
 
 interface FeedRow {

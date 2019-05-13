@@ -1,7 +1,8 @@
 query AllFeeds($cursor: Cursor) {
-  allFeeds(first: 20, after: $cursor) @connection(key: "allFeeds") {
+  allSubscribedFeeds(first: 20, after: $cursor)
+    @connection(key: "allSubscribedFeeds") {
     nodes {
-      ...allFeedsFields
+      ...allFeedSubscriptionsFields
     }
     pageInfo {
       endCursor
@@ -10,17 +11,21 @@ query AllFeeds($cursor: Cursor) {
   }
 }
 
-fragment allFeedsFields on Feed {
+fragment allFeedSubscriptionsFields on SubscribedFeed {
   id
-  url
-  title
-  homePageURL
-  refreshedAt
+  feed {
+    id
+    url
+    title
+    homePageURL
+    refreshedAt
+  }
+  autopost
 }
 
 mutation AddFeed($feed: FeedInput!) {
   addFeed(feed: $feed) {
-    ...allFeedsFields
+    ...allFeedSubscriptionsFields
   }
 }
 

@@ -45,7 +45,7 @@ export type FeedInput = {
 }
 
 export type Mutation = {
-  addFeed: Feed
+  addFeed: SubscribedFeed
   refreshFeed: Feed
   deleteFeed: Scalars["ID"]
 }
@@ -310,7 +310,7 @@ export type MutationResolvers<
   ParentType = ResolversTypes["Mutation"]
 > = {
   addFeed?: Resolver<
-    ResolversTypes["Feed"],
+    ResolversTypes["SubscribedFeed"],
     ParentType,
     ContextType,
     MutationAddFeedArgs

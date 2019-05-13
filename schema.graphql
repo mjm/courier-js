@@ -21,7 +21,7 @@ type Query {
 }
 
 type Mutation {
-  addFeed(feed: FeedInput!): Feed!
+  addFeed(feed: FeedInput!): SubscribedFeed!
   refreshFeed(id: ID!): Feed!
   deleteFeed(id: ID!): ID!
 }
