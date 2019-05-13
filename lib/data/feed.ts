@@ -122,6 +122,8 @@ export async function addFeed(input: FeedInput): Promise<SubscribedFeed> {
   const { rows } = await db.query(
     `INSERT INTO feed_subscriptions (feed_id, user_id)
      VALUES ($1, $2)
+     ON CONFLICT (feed_id, user_id)
+     DO UPDATE SET discarded_at = NULL
      RETURNING id`,
     [feed.id, input.userId]
   )
