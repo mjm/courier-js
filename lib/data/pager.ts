@@ -62,7 +62,7 @@ export class Pager<T, C> {
     this.results = this.fetchResults()
   }
 
-  async getTotalCount(): Promise<number> {
+  async totalCount(): Promise<number> {
     const { rows } = await db.query({
       text: this.totalQuery,
       values: this.args,
@@ -72,7 +72,7 @@ export class Pager<T, C> {
     return rows[0][0]
   }
 
-  async getPageInfo(): Promise<PageInfo> {
+  async pageInfo(): Promise<PageInfo> {
     const result: PageInfo = {
       hasNextPage: false,
       hasPreviousPage: false,
@@ -98,12 +98,12 @@ export class Pager<T, C> {
     return result
   }
 
-  async getNodes(): Promise<T[]> {
-    const edges = await this.getEdges()
+  async nodes(): Promise<T[]> {
+    const edges = await this.edges()
     return edges.map(edge => edge.node)
   }
 
-  async getEdges(): Promise<PagerEdge<T>[]> {
+  async edges(): Promise<PagerEdge<T>[]> {
     const results = await this.results
     return results.slice(0, this.limit)
   }
