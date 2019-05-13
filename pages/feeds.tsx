@@ -17,6 +17,7 @@ import { isApolloError } from "apollo-client"
 import moment from "moment"
 import withSecurePage from "../hocs/securePage"
 import { colors, spacing, font, shadow } from "../utils/theme"
+import { DataProxy } from "apollo-cache"
 
 const Feeds = () => (
   <div className="container">
@@ -182,27 +183,10 @@ const DeleteButton = ({ id }: DeleteButtonProps) => {
   return (
     <DeleteFeedComponent
       update={(cache, { data }) => {
-        if (!data) {
-          return
-        }
-
-        const { deleteFeed } = data
-        const { allSubscribedFeeds } = cache.readQuery<AllFeedsQuery>({
-          query: AllFeedsDocument,
-        })!
-        const newFeeds = allSubscribedFeeds.nodes.filter(
-          f => f.id !== deleteFeed
-        )
-        cache.writeQuery<AllFeedsQuery>({
-          query: AllFeedsDocument,
-          data: {
-            allSubscribedFeeds: {
-              __typename: "SubscribedFeedConnection",
-              nodes: newFeeds,
-              pageInfo: allSubscribedFeeds.pageInfo,
-            },
-          },
-        })
+        data &&
+          updateCachedFeeds(cache, nodes =>
+            nodes.filter(f => f.id !== data.deleteFeed)
+          )
       }}
     >
       {deleteFeed => (
@@ -233,23 +217,7 @@ const initialNewFeed: FeedInput = { url: "" }
 const AddFeed = () => (
   <AddFeedComponent
     update={(cache, { data }) => {
-      if (!data) {
-        return
-      }
-
-      const { allSubscribedFeeds } = cache.readQuery<AllFeedsQuery>({
-        query: AllFeedsDocument,
-      })!
-      cache.writeQuery<AllFeedsQuery>({
-        query: AllFeedsDocument,
-        data: {
-          allSubscribedFeeds: {
-            __typename: "SubscribedFeedConnection",
-            nodes: allSubscribedFeeds.nodes.concat([data.addFeed]),
-            pageInfo: allSubscribedFeeds.pageInfo,
-          },
-        },
-      })
+      data && updateCachedFeeds(cache, nodes => [...nodes, data.addFeed])
     }}
   >
     {addFeed => {
@@ -339,5 +307,27 @@ const AddFeed = () => (
     }}
   </AddFeedComponent>
 )
+
+type Nodes = AllFeedsQuery["allSubscribedFeeds"]["nodes"]
+
+function updateCachedFeeds(
+  cache: DataProxy,
+  updateFn: (nodes: Nodes) => Nodes
+) {
+  const { allSubscribedFeeds } = cache.readQuery<AllFeedsQuery>({
+    query: AllFeedsDocument,
+  })!
+  const newNodes = updateFn(allSubscribedFeeds.nodes)
+  cache.writeQuery<AllFeedsQuery>({
+    query: AllFeedsDocument,
+    data: {
+      allSubscribedFeeds: {
+        __typename: "SubscribedFeedConnection",
+        nodes: newNodes,
+        pageInfo: allSubscribedFeeds.pageInfo,
+      },
+    },
+  })
+}
 
 export default withSecurePage(withData(Feeds))
