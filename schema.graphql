@@ -4,6 +4,13 @@ scalar DateTime
 type Query {
   currentUser: User
 
+  allSubscribedFeeds(
+    first: Int
+    last: Int
+    before: Cursor
+    after: Cursor
+  ): SubscribedFeedConnection!
+
   allFeeds(
     first: Int
     last: Int
@@ -84,4 +91,22 @@ type Post {
   modifiedAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+type SubscribedFeed {
+  id: ID!
+  feed: Feed!
+  autopost: Boolean!
+}
+
+type SubscribedFeedConnection {
+  edges: [SubscribedFeedEdge!]!
+  nodes: [SubscribedFeed!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type SubscribedFeedEdge {
+  cursor: Cursor!
+  node: SubscribedFeed!
 }

@@ -7,6 +7,7 @@ generates:
       - "typescript"
       - "typescript-resolvers"
     config:
+      contextType: ../context#CourierContext
       scalars:
         Cursor: string
         DateTime: Date
@@ -15,6 +16,8 @@ generates:
         FeedConnection: ../data/types#FeedPager
         Post: ../data/types#DBPost
         PostConnection: ../data/types#PostPager
+        SubscribedFeed: ../data/types#DBSubscribedFeed
+        SubscribedFeedConnection: ../data/types#SubscribedFeedPager
   lib/generated/graphql-components.tsx:
     plugins:
       - "typescript"

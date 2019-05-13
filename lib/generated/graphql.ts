@@ -24,8 +24,8 @@ export type Feed = {
 export type FeedPostsArgs = {
   first?: Maybe<Scalars["Int"]>
   last?: Maybe<Scalars["Int"]>
-  before?: Maybe<Scalars["String"]>
-  after?: Maybe<Scalars["String"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
 }
 
 export type FeedConnection = {
@@ -71,7 +71,7 @@ export type PageInfo = {
 
 export type Post = {
   id: Scalars["ID"]
-  feed?: Maybe<Feed>
+  feed: Feed
   itemId: Scalars["String"]
   url: Scalars["String"]
   title: Scalars["String"]
@@ -97,8 +97,16 @@ export type PostEdge = {
 
 export type Query = {
   currentUser?: Maybe<User>
+  allSubscribedFeeds: SubscribedFeedConnection
   allFeeds: FeedConnection
   feed: Feed
+}
+
+export type QueryAllSubscribedFeedsArgs = {
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
 }
 
 export type QueryAllFeedsArgs = {
@@ -112,12 +120,38 @@ export type QueryFeedArgs = {
   id: Scalars["ID"]
 }
 
+export type SubscribedFeed = {
+  id: Scalars["ID"]
+  feed: Feed
+  autopost: Scalars["Boolean"]
+}
+
+export type SubscribedFeedConnection = {
+  edges: Array<SubscribedFeedEdge>
+  nodes: Array<SubscribedFeed>
+  pageInfo: PageInfo
+  totalCount: Scalars["Int"]
+}
+
+export type SubscribedFeedEdge = {
+  cursor: Scalars["Cursor"]
+  node: SubscribedFeed
+}
+
 export type User = {
   name: Scalars["String"]
   nickname: Scalars["String"]
   picture: Scalars["String"]
 }
-import { DBFeed, FeedPager, DBPost, PostPager } from "../data/types"
+import {
+  DBFeed,
+  FeedPager,
+  DBPost,
+  PostPager,
+  DBSubscribedFeed,
+  SubscribedFeedPager,
+} from "../data/types"
+import { CourierContext } from "../context"
 
 import {
   GraphQLResolveInfo,
@@ -201,16 +235,21 @@ export type ResolversTypes = {
   String: Scalars["String"]
   Int: Scalars["Int"]
   Cursor: Scalars["Cursor"]
-  FeedConnection: FeedPager
-  FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
-  Feed: DBFeed
+  SubscribedFeedConnection: SubscribedFeedPager
+  SubscribedFeedEdge: Omit<SubscribedFeedEdge, "node"> & {
+    node: ResolversTypes["SubscribedFeed"]
+  }
+  SubscribedFeed: DBSubscribedFeed
   ID: Scalars["ID"]
+  Feed: DBFeed
   DateTime: Scalars["DateTime"]
   PostConnection: PostPager
   PostEdge: Omit<PostEdge, "node"> & { node: ResolversTypes["Post"] }
   Post: DBPost
   PageInfo: PageInfo
   Boolean: Scalars["Boolean"]
+  FeedConnection: FeedPager
+  FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
   Mutation: {}
   FeedInput: FeedInput
 }
@@ -226,7 +265,7 @@ export interface DateTimeScalarConfig
 }
 
 export type FeedResolvers<
-  ContextType = any,
+  ContextType = CourierContext,
   ParentType = ResolversTypes["Feed"]
 > = {
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>
@@ -249,7 +288,7 @@ export type FeedResolvers<
 }
 
 export type FeedConnectionResolvers<
-  ContextType = any,
+  ContextType = CourierContext,
   ParentType = ResolversTypes["FeedConnection"]
 > = {
   edges?: Resolver<Array<ResolversTypes["FeedEdge"]>, ParentType, ContextType>
@@ -259,7 +298,7 @@ export type FeedConnectionResolvers<
 }
 
 export type FeedEdgeResolvers<
-  ContextType = any,
+  ContextType = CourierContext,
   ParentType = ResolversTypes["FeedEdge"]
 > = {
   cursor?: Resolver<ResolversTypes["Cursor"], ParentType, ContextType>
@@ -267,7 +306,7 @@ export type FeedEdgeResolvers<
 }
 
 export type MutationResolvers<
-  ContextType = any,
+  ContextType = CourierContext,
   ParentType = ResolversTypes["Mutation"]
 > = {
   addFeed?: Resolver<
@@ -291,7 +330,7 @@ export type MutationResolvers<
 }
 
 export type PageInfoResolvers<
-  ContextType = any,
+  ContextType = CourierContext,
   ParentType = ResolversTypes["PageInfo"]
 > = {
   startCursor?: Resolver<
@@ -305,11 +344,11 @@ export type PageInfoResolvers<
 }
 
 export type PostResolvers<
-  ContextType = any,
+  ContextType = CourierContext,
   ParentType = ResolversTypes["Post"]
 > = {
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>
-  feed?: Resolver<Maybe<ResolversTypes["Feed"]>, ParentType, ContextType>
+  feed?: Resolver<ResolversTypes["Feed"], ParentType, ContextType>
   itemId?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   url?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   title?: Resolver<ResolversTypes["String"], ParentType, ContextType>
@@ -330,7 +369,7 @@ export type PostResolvers<
 }
 
 export type PostConnectionResolvers<
-  ContextType = any,
+  ContextType = CourierContext,
   ParentType = ResolversTypes["PostConnection"]
 > = {
   edges?: Resolver<Array<ResolversTypes["PostEdge"]>, ParentType, ContextType>
@@ -340,7 +379,7 @@ export type PostConnectionResolvers<
 }
 
 export type PostEdgeResolvers<
-  ContextType = any,
+  ContextType = CourierContext,
   ParentType = ResolversTypes["PostEdge"]
 > = {
   cursor?: Resolver<ResolversTypes["Cursor"], ParentType, ContextType>
@@ -348,10 +387,16 @@ export type PostEdgeResolvers<
 }
 
 export type QueryResolvers<
-  ContextType = any,
+  ContextType = CourierContext,
   ParentType = ResolversTypes["Query"]
 > = {
   currentUser?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>
+  allSubscribedFeeds?: Resolver<
+    ResolversTypes["SubscribedFeedConnection"],
+    ParentType,
+    ContextType,
+    QueryAllSubscribedFeedsArgs
+  >
   allFeeds?: Resolver<
     ResolversTypes["FeedConnection"],
     ParentType,
@@ -366,8 +411,43 @@ export type QueryResolvers<
   >
 }
 
+export type SubscribedFeedResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["SubscribedFeed"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>
+  feed?: Resolver<ResolversTypes["Feed"], ParentType, ContextType>
+  autopost?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>
+}
+
+export type SubscribedFeedConnectionResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["SubscribedFeedConnection"]
+> = {
+  edges?: Resolver<
+    Array<ResolversTypes["SubscribedFeedEdge"]>,
+    ParentType,
+    ContextType
+  >
+  nodes?: Resolver<
+    Array<ResolversTypes["SubscribedFeed"]>,
+    ParentType,
+    ContextType
+  >
+  pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>
+  totalCount?: Resolver<ResolversTypes["Int"], ParentType, ContextType>
+}
+
+export type SubscribedFeedEdgeResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["SubscribedFeedEdge"]
+> = {
+  cursor?: Resolver<ResolversTypes["Cursor"], ParentType, ContextType>
+  node?: Resolver<ResolversTypes["SubscribedFeed"], ParentType, ContextType>
+}
+
 export type UserResolvers<
-  ContextType = any,
+  ContextType = CourierContext,
   ParentType = ResolversTypes["User"]
 > = {
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>
@@ -375,7 +455,7 @@ export type UserResolvers<
   picture?: Resolver<ResolversTypes["String"], ParentType, ContextType>
 }
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = CourierContext> = {
   Cursor?: GraphQLScalarType
   DateTime?: GraphQLScalarType
   Feed?: FeedResolvers<ContextType>
@@ -387,6 +467,9 @@ export type Resolvers<ContextType = any> = {
   PostConnection?: PostConnectionResolvers<ContextType>
   PostEdge?: PostEdgeResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
+  SubscribedFeed?: SubscribedFeedResolvers<ContextType>
+  SubscribedFeedConnection?: SubscribedFeedConnectionResolvers<ContextType>
+  SubscribedFeedEdge?: SubscribedFeedEdgeResolvers<ContextType>
   User?: UserResolvers<ContextType>
 }
 
@@ -394,4 +477,4 @@ export type Resolvers<ContextType = any> = {
  * @deprecated
  * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
  */
-export type IResolvers<ContextType = any> = Resolvers<ContextType>
+export type IResolvers<ContextType = CourierContext> = Resolvers<ContextType>

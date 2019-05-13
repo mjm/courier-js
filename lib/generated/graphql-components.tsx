@@ -24,8 +24,8 @@ export type Feed = {
 export type FeedPostsArgs = {
   first?: Maybe<Scalars["Int"]>
   last?: Maybe<Scalars["Int"]>
-  before?: Maybe<Scalars["String"]>
-  after?: Maybe<Scalars["String"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
 }
 
 export type FeedConnection = {
@@ -71,7 +71,7 @@ export type PageInfo = {
 
 export type Post = {
   id: Scalars["ID"]
-  feed?: Maybe<Feed>
+  feed: Feed
   itemId: Scalars["String"]
   url: Scalars["String"]
   title: Scalars["String"]
@@ -97,8 +97,16 @@ export type PostEdge = {
 
 export type Query = {
   currentUser?: Maybe<User>
+  allSubscribedFeeds: SubscribedFeedConnection
   allFeeds: FeedConnection
   feed: Feed
+}
+
+export type QueryAllSubscribedFeedsArgs = {
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
 }
 
 export type QueryAllFeedsArgs = {
@@ -110,6 +118,24 @@ export type QueryAllFeedsArgs = {
 
 export type QueryFeedArgs = {
   id: Scalars["ID"]
+}
+
+export type SubscribedFeed = {
+  id: Scalars["ID"]
+  feed: Feed
+  autopost: Scalars["Boolean"]
+}
+
+export type SubscribedFeedConnection = {
+  edges: Array<SubscribedFeedEdge>
+  nodes: Array<SubscribedFeed>
+  pageInfo: PageInfo
+  totalCount: Scalars["Int"]
+}
+
+export type SubscribedFeedEdge = {
+  cursor: Scalars["Cursor"]
+  node: SubscribedFeed
 }
 
 export type User = {

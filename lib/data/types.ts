@@ -12,6 +12,8 @@ export type PagingOptions =
       before?: string | null
     }
 
+export type UserId = string
+
 export type FeedId = string
 
 export interface Feed {
@@ -27,8 +29,21 @@ export interface Feed {
 
 export type FeedPager = Pager<Feed, string>
 
-// An alias to prevent GraphQL collisions
+export type FeedSubscriptionId = string
+
+export interface SubscribedFeed {
+  id: FeedSubscriptionId
+  feed: Feed
+  autopost: boolean
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type SubscribedFeedPager = Pager<SubscribedFeed, string>
+
+// Aliases to prevent GraphQL collisions
 export type DBFeed = Feed
+export type DBSubscribedFeed = SubscribedFeed
 
 export interface FeedInput {
   url: string

@@ -1,5 +1,12 @@
 import db from "../db"
-import { Feed, FeedId, FeedInput, PagingOptions } from "./types"
+import {
+  Feed,
+  FeedId,
+  FeedInput,
+  PagingOptions,
+  UserId,
+  SubscribedFeed,
+} from "./types"
 import { locateFeed } from "feed-locator"
 import { scrapeFeed } from "scrape-feed"
 import { importPosts } from "./post"
@@ -15,6 +22,38 @@ export async function allFeeds(
     variables: options,
     makeEdge(row) {
       return { node: fromRow(row), cursor: row.url }
+    },
+    getCursorValue: val => val,
+  })
+}
+
+export function allFeedsForUser(
+  userId: UserId,
+  options: PagingOptions = {}
+): Pager<SubscribedFeed, string> {
+  return new Pager({
+    query: `
+      SELECT feed_subscriptions.*,
+             feeds.url,
+             feeds.title,
+             feeds.home_page_url,
+             feeds.caching_headers,
+             feeds.refreshed_at,
+             feeds.created_at AS feed_created_at,
+             feeds.updated_at AS feed_updated_at
+        FROM feed_subscriptions
+        JOIN feeds
+          ON feed_subscriptions.feed_id = feeds.id
+       WHERE feed_subscriptions.user_id = $1`,
+    args: [userId],
+    orderColumn: "url",
+    totalQuery: `SELECT COUNT(*) FROM feed_subscriptions WHERE user_id = $1`,
+    variables: options,
+    makeEdge(row) {
+      return {
+        node: fromSubscriptionRow(row),
+        cursor: row.url,
+      }
     },
     getCursorValue: val => val,
   })
@@ -130,5 +169,36 @@ function fromRow({
     refreshedAt: refreshed_at,
     createdAt: created_at,
     updatedAt: updated_at,
+  }
+}
+
+interface FeedSubscriptionRow extends FeedRow {
+  feed_id: string
+  autopost: boolean
+  feed_created_at: Date
+  feed_updated_at: Date
+}
+
+function fromSubscriptionRow({
+  id,
+  feed_id,
+  autopost,
+  created_at,
+  updated_at,
+  feed_created_at,
+  feed_updated_at,
+  ...rest
+}: FeedSubscriptionRow): SubscribedFeed {
+  return {
+    id,
+    autopost,
+    createdAt: created_at,
+    updatedAt: updated_at,
+    feed: fromRow({
+      id: feed_id,
+      created_at: feed_created_at,
+      updated_at: feed_updated_at,
+      ...rest,
+    }),
   }
 }

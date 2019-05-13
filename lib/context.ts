@@ -1,7 +1,11 @@
 import { ContextFunction } from "apollo-server-core"
 import { getToken, verify } from "./auth"
 
-const context: ContextFunction = ({ req }) => {
+export interface CourierContext {
+  getUser: () => Promise<any>
+}
+
+const context: ContextFunction<any, CourierContext> = ({ req }) => {
   const token = getToken(req.headers)
 
   return {
