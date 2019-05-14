@@ -47,8 +47,8 @@ export function allTweets(
   if (filter) {
     const expr = sql.comparisonPredicate(
       sql.identifier(["tweets", "status"]),
-      filter === "UPCOMING" ? "<>" : "=",
-      "posted"
+      filter === "UPCOMING" ? "=" : "<>",
+      "draft"
     )
     filterCondition = sql`AND ${expr}`
   }
