@@ -2,12 +2,13 @@ import React from "react"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import {
-  AllTweetsComponent,
+  UpcomingTweetsComponent,
+  PastTweetsComponent,
   AllTweetsFieldsFragment,
 } from "../lib/generated/graphql-components"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
-import { spacing, shadow, colors } from "../utils/theme"
+import { spacing, shadow, colors, font } from "../utils/theme"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faAngleDoubleDown } from "@fortawesome/free-solid-svg-icons"
 import Loading from "../components/loading"
@@ -18,14 +19,21 @@ const Tweets = () => (
 
     <PageHeader>Your Tweets</PageHeader>
     <p>These are the tweets Courier has translated from your feeds.</p>
-    <TweetsList />
+    <h2>Upcoming Tweets</h2>
+    <TweetsList query={UpcomingTweetsComponent} />
+    <h2>Past Tweets</h2>
+    <TweetsList query={PastTweetsComponent} />
     <style jsx>{`
       .container {
         padding: 0 1rem 6rem 1rem;
       }
-
       .container > p {
         text-align: center;
+      }
+      h2 {
+        font-family: ${font.display};
+        color: ${colors.primary[900]};
+        letter-spacing: -0.025em;
       }
     `}</style>
   </div>
@@ -33,10 +41,15 @@ const Tweets = () => (
 
 export default withSecurePage(withData(Tweets))
 
-const TweetsList = () => {
+interface TweetsListProps {
+  // this type should match both upcoming and past.
+  // we just had to pick one to use to grab the type
+  query: typeof UpcomingTweetsComponent
+}
+const TweetsList = ({ query: QueryComponent }: TweetsListProps) => {
   return (
     <div>
-      <AllTweetsComponent>
+      <QueryComponent>
         {({ data, error, loading, fetchMore }) => {
           if (loading) {
             return <Loading />
@@ -87,7 +100,7 @@ const TweetsList = () => {
             </ul>
           )
         }}
-      </AllTweetsComponent>
+      </QueryComponent>
       <style jsx>{`
         ul {
           list-style: none;

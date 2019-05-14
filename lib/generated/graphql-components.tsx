@@ -111,6 +111,7 @@ export type QueryAllSubscribedFeedsArgs = {
 }
 
 export type QueryAllTweetsArgs = {
+  filter?: Maybe<TweetFilter>
   first?: Maybe<Scalars["Int"]>
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
@@ -167,6 +168,11 @@ export type TweetConnection = {
 export type TweetEdge = {
   cursor: Scalars["Cursor"]
   node: Tweet
+}
+
+export enum TweetFilter {
+  Upcoming = "UPCOMING",
+  Past = "PAST",
 }
 
 export enum TweetStatus {
@@ -235,18 +241,30 @@ export type DeleteFeedMutation = { __typename?: "Mutation" } & Pick<
   "deleteFeed"
 >
 
-export type AllTweetsQueryVariables = {
+export type UpcomingTweetsQueryVariables = {
   cursor?: Maybe<Scalars["Cursor"]>
 }
 
-export type AllTweetsQuery = { __typename?: "Query" } & {
-  allTweets: { __typename?: "TweetConnection" } & {
-    nodes: Array<{ __typename?: "Tweet" } & AllTweetsFieldsFragment>
-    pageInfo: { __typename?: "PageInfo" } & Pick<
-      PageInfo,
-      "hasPreviousPage" | "endCursor"
-    >
-  }
+export type UpcomingTweetsQuery = { __typename?: "Query" } & {
+  allTweets: { __typename?: "TweetConnection" } & TweetConnectionFieldsFragment
+}
+
+export type PastTweetsQueryVariables = {
+  cursor?: Maybe<Scalars["Cursor"]>
+}
+
+export type PastTweetsQuery = { __typename?: "Query" } & {
+  allTweets: { __typename?: "TweetConnection" } & TweetConnectionFieldsFragment
+}
+
+export type TweetConnectionFieldsFragment = {
+  __typename?: "TweetConnection"
+} & {
+  nodes: Array<{ __typename?: "Tweet" } & AllTweetsFieldsFragment>
+  pageInfo: { __typename?: "PageInfo" } & Pick<
+    PageInfo,
+    "hasPreviousPage" | "endCursor"
+  >
 }
 
 export type AllTweetsFieldsFragment = { __typename?: "Tweet" } & Pick<
@@ -289,6 +307,18 @@ export const allTweetsFieldsFragmentDoc = gql`
     mediaURLs
     status
   }
+`
+export const tweetConnectionFieldsFragmentDoc = gql`
+  fragment tweetConnectionFields on TweetConnection {
+    nodes {
+      ...allTweetsFields
+    }
+    pageInfo {
+      hasPreviousPage
+      endCursor
+    }
+  }
+  ${allTweetsFieldsFragmentDoc}
 `
 export const AllFeedsDocument = gql`
   query AllFeeds($cursor: Cursor) {
@@ -498,55 +528,97 @@ export function withDeleteFeed<TProps, TChildProps = {}>(
     ...operationOptions,
   })
 }
-export const AllTweetsDocument = gql`
-  query AllTweets($cursor: Cursor) {
-    allTweets(last: 10, before: $cursor) @connection(key: "allTweets") {
-      nodes {
-        ...allTweetsFields
-      }
-      pageInfo {
-        hasPreviousPage
-        endCursor
-      }
+export const UpcomingTweetsDocument = gql`
+  query UpcomingTweets($cursor: Cursor) {
+    allTweets(filter: UPCOMING, last: 10, before: $cursor)
+      @connection(key: "upcomingTweets") {
+      ...tweetConnectionFields
     }
   }
-  ${allTweetsFieldsFragmentDoc}
+  ${tweetConnectionFieldsFragmentDoc}
 `
 
-export const AllTweetsComponent = (
+export const UpcomingTweetsComponent = (
   props: Omit<
     Omit<
-      ReactApollo.QueryProps<AllTweetsQuery, AllTweetsQueryVariables>,
+      ReactApollo.QueryProps<UpcomingTweetsQuery, UpcomingTweetsQueryVariables>,
       "query"
     >,
     "variables"
-  > & { variables?: AllTweetsQueryVariables }
+  > & { variables?: UpcomingTweetsQueryVariables }
 ) => (
-  <ReactApollo.Query<AllTweetsQuery, AllTweetsQueryVariables>
-    query={AllTweetsDocument}
+  <ReactApollo.Query<UpcomingTweetsQuery, UpcomingTweetsQueryVariables>
+    query={UpcomingTweetsDocument}
     {...props}
   />
 )
 
-export type AllTweetsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<AllTweetsQuery, AllTweetsQueryVariables>
+export type UpcomingTweetsProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<UpcomingTweetsQuery, UpcomingTweetsQueryVariables>
 > &
   TChildProps
-export function withAllTweets<TProps, TChildProps = {}>(
+export function withUpcomingTweets<TProps, TChildProps = {}>(
   operationOptions?: ReactApollo.OperationOption<
     TProps,
-    AllTweetsQuery,
-    AllTweetsQueryVariables,
-    AllTweetsProps<TChildProps>
+    UpcomingTweetsQuery,
+    UpcomingTweetsQueryVariables,
+    UpcomingTweetsProps<TChildProps>
   >
 ) {
   return ReactApollo.withQuery<
     TProps,
-    AllTweetsQuery,
-    AllTweetsQueryVariables,
-    AllTweetsProps<TChildProps>
-  >(AllTweetsDocument, {
-    alias: "withAllTweets",
+    UpcomingTweetsQuery,
+    UpcomingTweetsQueryVariables,
+    UpcomingTweetsProps<TChildProps>
+  >(UpcomingTweetsDocument, {
+    alias: "withUpcomingTweets",
+    ...operationOptions,
+  })
+}
+export const PastTweetsDocument = gql`
+  query PastTweets($cursor: Cursor) {
+    allTweets(filter: PAST, last: 10, before: $cursor)
+      @connection(key: "pastTweets") {
+      ...tweetConnectionFields
+    }
+  }
+  ${tweetConnectionFieldsFragmentDoc}
+`
+
+export const PastTweetsComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.QueryProps<PastTweetsQuery, PastTweetsQueryVariables>,
+      "query"
+    >,
+    "variables"
+  > & { variables?: PastTweetsQueryVariables }
+) => (
+  <ReactApollo.Query<PastTweetsQuery, PastTweetsQueryVariables>
+    query={PastTweetsDocument}
+    {...props}
+  />
+)
+
+export type PastTweetsProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<PastTweetsQuery, PastTweetsQueryVariables>
+> &
+  TChildProps
+export function withPastTweets<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    PastTweetsQuery,
+    PastTweetsQueryVariables,
+    PastTweetsProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    PastTweetsQuery,
+    PastTweetsQueryVariables,
+    PastTweetsProps<TChildProps>
+  >(PastTweetsDocument, {
+    alias: "withPastTweets",
     ...operationOptions,
   })
 }

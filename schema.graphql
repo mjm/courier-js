@@ -12,6 +12,7 @@ type Query {
   ): SubscribedFeedConnection!
 
   allTweets(
+    filter: TweetFilter
     first: Int
     last: Int
     before: Cursor
@@ -133,6 +134,11 @@ enum TweetStatus {
   DRAFT
   CANCELED
   POSTED
+}
+
+enum TweetFilter {
+  UPCOMING
+  PAST
 }
 
 type TweetConnection {

@@ -114,6 +114,7 @@ export type QueryAllSubscribedFeedsArgs = {
 }
 
 export type QueryAllTweetsArgs = {
+  filter?: Maybe<TweetFilter>
   first?: Maybe<Scalars["Int"]>
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
@@ -170,6 +171,11 @@ export type TweetConnection = {
 export type TweetEdge = {
   cursor: Scalars["Cursor"]
   node: Tweet
+}
+
+export enum TweetFilter {
+  Upcoming = "UPCOMING",
+  Past = "PAST",
 }
 
 export enum TweetStatus {
@@ -280,6 +286,7 @@ export type ResolversTypes = {
   Post: types.Post
   PageInfo: PageInfo
   Boolean: Scalars["Boolean"]
+  TweetFilter: TweetFilter
   TweetConnection: Pager<types.Tweet>
   TweetEdge: Omit<TweetEdge, "node"> & { node: ResolversTypes["Tweet"] }
   Tweet: types.Tweet

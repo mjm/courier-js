@@ -16,6 +16,7 @@ import { PostRow, fromRow as fromPostRow } from "./post"
 import { translate } from "html-to-tweets"
 import db, { sql } from "../db"
 import zip from "lodash/zip"
+import { ValueExpressionType } from "slonik"
 
 const tweetSelect = sql`
        tweets.*,
@@ -34,24 +35,40 @@ const tweetSelect = sql`
     ON tweets.post_id = posts.id
 `
 
+type AllTweetsOptions = PagingOptions & {
+  filter?: "UPCOMING" | "PAST" | null
+}
+
 export function allTweets(
   userId: UserId,
-  options: PagingOptions = {}
+  { filter, ...variables }: AllTweetsOptions = {}
 ): Pager<Tweet, TweetRow> {
+  let filterCondition: ValueExpressionType = sql.raw("")
+  if (filter) {
+    const expr = sql.comparisonPredicate(
+      sql.identifier(["tweets", "status"]),
+      filter === "UPCOMING" ? "<>" : "=",
+      "posted"
+    )
+    filterCondition = sql`AND ${expr}`
+  }
+
   return new Pager({
     query: sql`
       SELECT ${tweetSelect}
         JOIN feed_subscriptions
           ON tweets.feed_subscription_id = feed_subscriptions.id
-       WHERE feed_subscriptions.user_id = ${userId}`,
+       WHERE feed_subscriptions.user_id = ${userId}
+         ${filterCondition}`,
     orderColumn: "published_at",
     totalQuery: sql`
       SELECT COUNT(*)
         FROM tweets
         JOIN feed_subscriptions
           ON tweets.feed_subscription_id = feed_subscriptions.id
-       WHERE feed_subscriptions.user_id = ${userId}`,
-    variables: options,
+       WHERE feed_subscriptions.user_id = ${userId}
+         ${filterCondition}`,
+    variables,
     makeEdge(row) {
       return {
         // TODO what about NULL published_at
