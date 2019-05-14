@@ -1,40 +1,47 @@
-import db from "../db"
+import db, {
+  SqlSqlTokenType,
+  sql,
+  RawSqlTokenType,
+  PrimitiveValueExpressionType,
+  ValueExpressionType,
+} from "../db"
 import { PagingOptions } from "./types"
 
-type MakeEdgeFn<T> = (row: any) => PagerEdge<T>
-type CursorValueFn<C> = (cursor: string) => C
+type MakeEdgeFn<ResultType, RowType> = (row: RowType) => PagerEdge<ResultType>
+type CursorValueFn = (cursor: string) => PrimitiveValueExpressionType
 
-export interface PagerOptions<T, C> {
-  query: string
-  args?: any[]
-  orderColumn: string
-  totalQuery: string
-  variables: PagingOptions
-  makeEdge: MakeEdgeFn<T>
-  getCursorValue: CursorValueFn<C>
+interface CountResult {
+  count: number
 }
 
-export class Pager<T, C> {
-  private query: string
-  private args: any[]
+export interface PagerOptions<ResultType, RowType = any> {
+  query: SqlSqlTokenType<RowType>
+  orderColumn: string
+  totalQuery: SqlSqlTokenType<CountResult>
+  variables: PagingOptions
+  makeEdge: MakeEdgeFn<ResultType, RowType>
+  getCursorValue: CursorValueFn
+}
+
+export class Pager<ResultType, RowType = any> {
+  private query: SqlSqlTokenType<RowType>
   private orderColumn: string
-  private totalQuery: string
-  private makeEdge: MakeEdgeFn<T>
+  private totalQuery: SqlSqlTokenType<CountResult>
+  private makeEdge: MakeEdgeFn<ResultType, RowType>
 
   private limit: number
   private direction: "ASC" | "DESC"
-  private cursor: C | undefined
-  private results: Promise<PagerEdge<T>[]>
+  private cursor: PrimitiveValueExpressionType | undefined
+  private results: Promise<PagerEdge<ResultType>[]>
 
   constructor({
     query,
-    args = [],
     orderColumn,
     totalQuery,
     variables,
     makeEdge,
     getCursorValue,
-  }: PagerOptions<T, C>) {
+  }: PagerOptions<ResultType, RowType>) {
     if ("first" in variables) {
       this.limit = variables.first
       this.direction = "ASC"
@@ -53,7 +60,6 @@ export class Pager<T, C> {
     }
 
     this.query = query
-    this.args = args
     this.orderColumn = orderColumn
     this.totalQuery = totalQuery
     this.makeEdge = makeEdge
@@ -63,13 +69,7 @@ export class Pager<T, C> {
   }
 
   async totalCount(): Promise<number> {
-    const { rows } = await db.query({
-      text: this.totalQuery,
-      values: this.args,
-      rowMode: "array",
-    })
-
-    return rows[0][0]
+    return await db.oneFirst(this.totalQuery)
   }
 
   async pageInfo(): Promise<PageInfo> {
@@ -98,42 +98,47 @@ export class Pager<T, C> {
     return result
   }
 
-  async nodes(): Promise<T[]> {
+  async nodes(): Promise<ResultType[]> {
     const edges = await this.edges()
     return edges.map(edge => edge.node)
   }
 
-  async edges(): Promise<PagerEdge<T>[]> {
+  async edges(): Promise<PagerEdge<ResultType>[]> {
     const results = await this.results
     return results.slice(0, this.limit)
   }
 
-  private async fetchResults(): Promise<PagerEdge<T>[]> {
-    const [query, args] = this.buildQuery()
-    const { rows } = await db.query(query, args)
+  private async fetchResults(): Promise<PagerEdge<ResultType>[]> {
+    const query = this.buildQuery()
+    const rows = await db.any(query)
 
     return rows.map(this.makeEdge)
   }
 
-  private buildQuery(): [string, any[]] {
-    const queryClauses = [this.query]
-    const args = [...this.args]
+  private buildQuery(): SqlSqlTokenType<RowType> {
+    const orderColumn = sql.identifier([this.orderColumn])
 
+    let filter: ValueExpressionType = sql.raw("")
     if (this.cursor) {
-      const WHERE = this.query.toUpperCase().includes("WHERE") ? "AND" : "WHERE"
-      args.push(this.cursor)
-      queryClauses.push(
-        `${WHERE} ${this.orderColumn} ${
-          this.direction === "ASC" ? ">" : "<"
-        } $${args.length}`
+      const condition = sql.comparisonPredicate(
+        orderColumn,
+        this.direction === "ASC" ? ">" : "<",
+        this.cursor
       )
+      filter = sql`${this.whereJoiner} ${condition}`
     }
-    queryClauses.push(`ORDER BY ${this.orderColumn} ${this.direction}`)
 
-    args.push(this.limit + 1)
-    queryClauses.push(`LIMIT $${args.length}`)
+    return sql`
+      ${this.query}
+      ${filter}
+      ORDER BY ${orderColumn} ${sql.raw(this.direction)}
+      LIMIT ${this.limit + 1}
+    `
+  }
 
-    return [queryClauses.join("\n"), args]
+  private get whereJoiner(): RawSqlTokenType {
+    const sqlString = this.query.sql.toUpperCase()
+    return sql.raw(sqlString.includes("WHERE") ? "AND" : "WHERE")
   }
 }
 

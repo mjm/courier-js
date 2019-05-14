@@ -1,4 +1,4 @@
-import db from "../db"
+import db, { sql, NotFoundError } from "../db"
 import {
   Feed,
   FeedId,
@@ -15,11 +15,11 @@ import { Pager } from "./pager"
 
 export async function allFeeds(
   options: PagingOptions = {}
-): Promise<Pager<Feed, string>> {
+): Promise<Pager<Feed, FeedRow>> {
   return new Pager({
-    query: "SELECT * FROM feeds",
+    query: sql`SELECT * FROM feeds`,
     orderColumn: "url",
-    totalQuery: "SELECT COUNT(*) FROM feeds",
+    totalQuery: sql`SELECT COUNT(*) FROM feeds`,
     variables: options,
     makeEdge(row) {
       return { node: fromRow(row), cursor: row.url }
@@ -28,28 +28,32 @@ export async function allFeeds(
   })
 }
 
+const feedSubscriptionsSelect = sql`
+       feed_subscriptions.*,
+       feeds.url,
+       feeds.title,
+       feeds.home_page_url,
+       feeds.caching_headers,
+       feeds.refreshed_at,
+       feeds.created_at AS feed_created_at,
+       feeds.updated_at AS feed_updated_at
+  FROM feed_subscriptions
+  JOIN feeds
+    ON feed_subscriptions.feed_id = feeds.id
+`
+
 export function allFeedsForUser(
   userId: UserId,
   options: PagingOptions = {}
-): Pager<SubscribedFeed, string> {
+): Pager<SubscribedFeed, FeedSubscriptionRow> {
   return new Pager({
-    query: `
-      SELECT feed_subscriptions.*,
-             feeds.url,
-             feeds.title,
-             feeds.home_page_url,
-             feeds.caching_headers,
-             feeds.refreshed_at,
-             feeds.created_at AS feed_created_at,
-             feeds.updated_at AS feed_updated_at
-        FROM feed_subscriptions
-        JOIN feeds
-          ON feed_subscriptions.feed_id = feeds.id
-       WHERE feed_subscriptions.user_id = $1
+    query: sql`
+      SELECT ${feedSubscriptionsSelect}
+       WHERE feed_subscriptions.user_id = ${userId}
          AND feed_subscriptions.discarded_at IS NULL`,
-    args: [userId],
     orderColumn: "url",
-    totalQuery: `SELECT COUNT(*) FROM feed_subscriptions WHERE user_id = $1`,
+    totalQuery: sql`
+      SELECT COUNT(*) FROM feed_subscriptions WHERE user_id = ${userId}`,
     variables: options,
     makeEdge(row) {
       return {
@@ -62,16 +66,17 @@ export function allFeedsForUser(
 }
 
 export async function getFeed(id: FeedId): Promise<Feed> {
-  const { rows } = await db.query(`SELECT * FROM feeds WHERE id = $1 LIMIT 1`, [
-    id,
-  ])
+  try {
+    const result = await db.one<FeedRow>(sql`
+      SELECT * FROM feeds WHERE id = ${id}
+    `)
+    return fromRow(result)
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      // @ts-ignore
+      err.statusCode = 404
+    }
 
-  if (rows.length) {
-    return fromRow(rows[0])
-  } else {
-    const err = new Error(`No feed found with ID ${id}`)
-    // @ts-ignore
-    err.statusCode = 404
     throw err
   }
 }
@@ -79,28 +84,18 @@ export async function getFeed(id: FeedId): Promise<Feed> {
 export async function getSubscribedFeed(
   id: FeedSubscriptionId
 ): Promise<SubscribedFeed> {
-  const { rows } = await db.query(
-    `SELECT feed_subscriptions.*,
-            feeds.url,
-            feeds.title,
-            feeds.home_page_url,
-            feeds.caching_headers,
-            feeds.refreshed_at,
-            feeds.created_at AS feed_created_at,
-            feeds.updated_at AS feed_updated_at
-       FROM feed_subscriptions
-       JOIN feeds
-         ON feed_subscriptions.feed_id = feeds.id
-      WHERE feed_subscriptions.id = $1`,
-    [id]
-  )
+  try {
+    const row = await db.one<FeedSubscriptionRow>(sql`
+      SELECT ${feedSubscriptionsSelect}
+      WHERE feed_subscriptions.id = ${id}
+    `)
+    return fromSubscriptionRow(row)
+  } catch (err) {
+    if (err instanceof NotFoundError) {
+      // @ts-ignore
+      err.statusCode = 404
+    }
 
-  if (rows.length) {
-    return fromSubscriptionRow(rows[0])
-  } else {
-    const err = new Error(`No feed subscription found with ID ${id}`)
-    // @ts-ignore
-    err.statusCode = 404
     throw err
   }
 }
@@ -119,17 +114,16 @@ export async function addFeed(input: FeedInput): Promise<SubscribedFeed> {
     feed = await createFeed(feedURL)
   }
 
-  const { rows } = await db.query(
-    `INSERT INTO feed_subscriptions (feed_id, user_id)
-     VALUES ($1, $2)
-     ON CONFLICT (feed_id, user_id)
-     DO UPDATE SET discarded_at = NULL
-     RETURNING id`,
-    [feed.id, input.userId]
-  )
+  const id = await db.oneFirst<Pick<FeedSubscriptionRow, "id">>(sql`
+    INSERT INTO feed_subscriptions (feed_id, user_id)
+    VALUES (${feed.id}, ${input.userId})
+    ON CONFLICT (feed_id, user_id)
+    DO UPDATE SET discarded_at = NULL
+    RETURNING id
+  `)
 
   // we need the feed info, so we might as well just fetch out the whole dang thing
-  return await getSubscribedFeed(rows[0].id)
+  return await getSubscribedFeed(id)
 }
 
 interface RefreshFeedOptions {
@@ -150,16 +144,15 @@ export async function refreshFeed(
   }
 
   const { title, homePageURL, cachingHeaders } = feedContents
-  const { rows } = await db.query(
-    `UPDATE feeds
-     SET title = $2,
-         home_page_url = $3,
-         caching_headers = $4,
-         refreshed_at = CURRENT_TIMESTAMP
-     WHERE id = $1
-     RETURNING refreshed_at`,
-    [id, title, homePageURL, cachingHeaders]
-  )
+  const refreshedAt = await db.oneFirst<Pick<FeedRow, "refreshed_at">>(sql`
+    UPDATE feeds
+       SET title = ${title},
+           home_page_url = ${homePageURL},
+           caching_headers = ${JSON.stringify(cachingHeaders)},
+           refreshed_at = CURRENT_TIMESTAMP
+     WHERE id = ${id}
+    RETURNING refreshed_at
+  `)
 
   const { created, updated, unchanged } = await importPosts(
     id,
@@ -174,7 +167,7 @@ export async function refreshFeed(
     title,
     homePageURL,
     cachingHeaders,
-    refreshedAt: rows[0].refreshed_at,
+    refreshedAt,
   }
 }
 
@@ -189,36 +182,28 @@ export async function refreshFeed(
  * @param id - The ID of the subscription to remove.
  */
 export async function deleteFeed(id: FeedSubscriptionId): Promise<void> {
-  await db.query(
-    `UPDATE feed_subscriptions
-        SET discarded_at = CURRENT_TIMESTAMP
-      WHERE id = $1`,
-    [id]
-  )
+  await db.query(sql`
+    UPDATE feed_subscriptions
+       SET discarded_at = CURRENT_TIMESTAMP
+     WHERE id = ${id}
+  `)
 }
 
 async function getFeedByURL(url: string): Promise<Feed | null> {
-  const { rows } = await db.query(
-    `SELECT * FROM feeds WHERE url = $1 LIMIT 1`,
-    [url]
-  )
+  const row = await db.maybeOne<FeedRow>(sql`
+    SELECT * FROM feeds WHERE url = ${url}
+  `)
 
-  if (rows.length) {
-    return fromRow(rows[0])
-  } else {
-    return null
-  }
+  return row && fromRow(row)
 }
 
 async function createFeed(url: string): Promise<Feed> {
-  const { rows } = await db.query(
-    `INSERT INTO feeds(url)
-     VALUES($1)
-     RETURNING id`,
-    [url]
-  )
+  const id = await db.oneFirst<Pick<FeedRow, "id">>(sql`
+    INSERT INTO feeds (url)
+    VALUES (${url})
+    RETURNING id
+  `)
 
-  const id = rows[0].id
   return await refreshFeed(id)
 }
 

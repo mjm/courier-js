@@ -1,4 +1,4 @@
-import db from "../db"
+import db, { sql } from "../db"
 import {
   Post,
   NewPostInput,
@@ -15,21 +15,21 @@ import moment from "moment"
 export function allPostsForFeed(
   feedId: FeedId,
   options: PagingOptions = {}
-): Pager<Post, Date> {
+): Pager<Post, PostRow> {
   return new Pager({
-    query: `SELECT * FROM posts WHERE feed_id = $1`,
-    args: [feedId],
+    query: sql`SELECT * FROM posts WHERE feed_id = ${feedId}`,
     orderColumn: "published_at",
-    totalQuery: `SELECT COUNT(*) FROM posts WHERE feed_id = $1`,
+    totalQuery: sql`SELECT COUNT(*) FROM posts WHERE feed_id = ${feedId}`,
     variables: options,
     makeEdge(row) {
       return {
         node: fromRow(row),
-        cursor: moment.utc(row.published_at).format(),
+        // TODO oh no what if the published_at is NULL
+        cursor: row.published_at ? moment.utc(row.published_at).format() : "",
       }
     },
     getCursorValue(cursor) {
-      return moment.utc(cursor).toDate()
+      return cursor || null
     },
   })
 }
@@ -91,25 +91,20 @@ async function getPostByItemId(
   feedId: FeedId,
   itemId: string
 ): Promise<Post | null> {
-  const { rows } = await db.query(
-    `SELECT * FROM posts
-      WHERE feed_id = $1
-        AND item_id = $2
-      LIMIT 1`,
-    [feedId, itemId]
-  )
+  const row = await db.maybeOne<PostRow>(sql`
+    SELECT * FROM posts
+     WHERE feed_id = ${feedId}
+       AND item_id = ${itemId}
+  `)
 
-  if (rows.length) {
-    const row: PostRow = rows[0]
-    return fromRow(row)
-  } else {
-    return null
-  }
+  return row && fromRow(row)
 }
 
+type CreatePostResult = Pick<PostRow, "id" | "created_at" | "updated_at">
+
 export async function createPost(input: NewPostInput): Promise<Post> {
-  const { rows } = await db.query(
-    `INSERT INTO posts(
+  const { id, created_at, updated_at } = await db.one<CreatePostResult>(sql`
+    INSERT INTO posts(
       feed_id,
       item_id,
       url,
@@ -119,21 +114,17 @@ export async function createPost(input: NewPostInput): Promise<Post> {
       published_at,
       modified_at
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8
-    ) RETURNING (id, created_at, updated_at)`,
-    [
-      input.feedId,
-      input.itemId,
-      input.url,
-      input.title,
-      input.textContent,
-      input.htmlContent,
-      input.publishedAt,
-      input.modifiedAt,
-    ]
-  )
-
-  const { id, created_at, updated_at } = rows[0]
+      ${input.feedId},
+      ${input.itemId},
+      ${input.url},
+      ${input.title},
+      ${input.textContent},
+      ${input.htmlContent},
+      ${input.publishedAt && input.publishedAt.toISOString()},
+      ${input.modifiedAt && input.modifiedAt.toISOString()}
+    )
+    RETURNING id, created_at, updated_at
+  `)
 
   return {
     ...input,
@@ -143,30 +134,26 @@ export async function createPost(input: NewPostInput): Promise<Post> {
   }
 }
 
-async function updatePost(input: UpdatePostInput): Promise<Post> {
-  const { rows } = await db.query(
-    `UPDATE posts
-        SET url = $2,
-            title = $3,
-            text_content = $4,
-            html_content = $5,
-            published_at = $6,
-            modified_at = $7,
-            updated_at = CURRENT_TIMESTAMP
-      WHERE id = $1
-    RETURNING feed_id, item_id, created_at, updated_at`,
-    [
-      input.id,
-      input.url,
-      input.title,
-      input.textContent,
-      input.htmlContent,
-      input.publishedAt,
-      input.modifiedAt,
-    ]
-  )
+type UpdatePostResult = Pick<
+  PostRow,
+  "feed_id" | "item_id" | "created_at" | "updated_at"
+>
 
-  const row = rows[0]
+async function updatePost(input: UpdatePostInput): Promise<Post> {
+  const row = await db.one<UpdatePostResult>(sql`
+    UPDATE posts
+       SET url = ${input.url},
+           title = ${input.title},
+           text_content = ${input.textContent},
+           html_content = ${input.htmlContent},
+           published_at = ${input.publishedAt &&
+             input.publishedAt.toISOString()},
+           modified_at = ${input.modifiedAt && input.modifiedAt.toISOString()},
+           updated_at = CURRENT_TIMESTAMP
+     WHERE id = ${input.id}
+    RETURNING feed_id, item_id, created_at, updated_at
+  `)
+
   return {
     ...input,
     feedId: row.feed_id,
@@ -198,7 +185,7 @@ function isSameDate(d1: Date | null, d2: Date | null): boolean {
   return d1.getTime() === d2.getTime()
 }
 
-interface PostRow {
+export interface PostRow {
   id: string
   feed_id: string
   item_id: string
@@ -212,7 +199,7 @@ interface PostRow {
   updated_at: Date
 }
 
-function fromRow(row: PostRow): Post {
+export function fromRow(row: PostRow): Post {
   return {
     id: row.id,
     feedId: row.feed_id,

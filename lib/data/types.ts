@@ -27,7 +27,7 @@ export interface Feed {
   updatedAt: Date
 }
 
-export type FeedPager = Pager<Feed, string>
+export type FeedPager = Pager<Feed>
 
 export type FeedSubscriptionId = string
 
@@ -39,7 +39,7 @@ export interface SubscribedFeed {
   updatedAt: Date
 }
 
-export type SubscribedFeedPager = Pager<SubscribedFeed, string>
+export type SubscribedFeedPager = Pager<SubscribedFeed>
 
 // Aliases to prevent GraphQL collisions
 export type DBFeed = Feed
@@ -66,7 +66,7 @@ export interface Post {
   updatedAt: Date
 }
 
-export type PostPager = Pager<Post, Date>
+export type PostPager = Pager<Post>
 export type DBPost = Post
 
 export interface NewPostInput {
