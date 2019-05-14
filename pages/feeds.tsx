@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import {
@@ -178,16 +178,24 @@ interface RefreshButtonProps {
 }
 
 const RefreshButton = ({ feed }: RefreshButtonProps) => {
+  const [refreshing, setRefreshing] = useState(false)
+
   return (
     <RefreshFeedComponent>
       {refreshFeed => (
         <Button
           type="button"
-          onClick={() => {
-            refreshFeed({ variables: { id: feed.id } })
+          disabled={refreshing}
+          onClick={async () => {
+            setRefreshing(true)
+            try {
+              await refreshFeed({ variables: { id: feed.id } })
+            } finally {
+              setRefreshing(false)
+            }
           }}
         >
-          <FontAwesomeIcon icon={faSyncAlt} />
+          <FontAwesomeIcon icon={faSyncAlt} spin={refreshing} />
           Refresh
         </Button>
       )}
@@ -272,7 +280,10 @@ const AddFeed = () => (
                 <Field type="text" name="url" placeholder="https://" />
                 <ErrorMessage name="url" component="div" />
                 <button type="submit" disabled={isSubmitting}>
-                  <FontAwesomeIcon icon={faPlusCircle} />
+                  <FontAwesomeIcon
+                    icon={isSubmitting ? faSyncAlt : faPlusCircle}
+                    spin={isSubmitting}
+                  />
                   Add Feed
                 </button>
               </Form>
