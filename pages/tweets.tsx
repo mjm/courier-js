@@ -8,6 +8,8 @@ import {
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
 import { spacing, shadow, colors } from "../utils/theme"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faAngleDoubleDown } from "@fortawesome/free-solid-svg-icons"
 
 const Tweets = () => (
   <div className="container">
@@ -78,9 +80,7 @@ const TweetsList = () => {
               ))}
               {pageInfo.hasPreviousPage && (
                 <li>
-                  <button type="button" onClick={loadMore}>
-                    Load More…
-                  </button>
+                  <LoadMoreButton onClick={loadMore} />
                 </li>
               )}
             </ul>
@@ -126,3 +126,30 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
     </li>
   )
 }
+
+type LoadMoreButtonProps = React.PropsWithoutRef<
+  JSX.IntrinsicElements["button"]
+>
+const LoadMoreButton = ({ children, ...props }: LoadMoreButtonProps) => (
+  <button type="button" {...props}>
+    <FontAwesomeIcon icon={faAngleDoubleDown} />
+    {children || "Load More…"}
+    <style jsx>{`
+      button {
+        display: block;
+        margin: 0 auto;
+        padding: ${spacing(1)} ${spacing(3)};
+        border: 0;
+        background-color: ${colors.primary[500]};
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 500;
+        border-radius: 0.5rem;
+        box-shadow: ${shadow.md};
+      }
+      button > :global(svg) {
+        margin-right: ${spacing(1)};
+      }
+    `}</style>
+  </button>
+)
