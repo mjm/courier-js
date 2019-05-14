@@ -1,6 +1,7 @@
 import React from "react"
 import withDefaultPage from "./defaultPage"
 import Link from "next/link"
+import Loading from "../components/loading"
 
 interface Props {
   isAuthenticated: boolean
@@ -22,7 +23,7 @@ const securePage = (Page: any) =>
     render() {
       if (!this.props.isAuthenticated) {
         if (this.props.isAuthenticating) {
-          return <p>Checking for an existing session...</p>
+          return <Loading />
         } else {
           return (
             <p>

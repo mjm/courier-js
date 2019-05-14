@@ -10,6 +10,7 @@ import withData from "../hocs/apollo"
 import { spacing, shadow, colors } from "../utils/theme"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faAngleDoubleDown } from "@fortawesome/free-solid-svg-icons"
+import Loading from "../components/loading"
 
 const Tweets = () => (
   <div className="container">
@@ -38,7 +39,7 @@ const TweetsList = () => {
       <AllTweetsComponent>
         {({ data, error, loading, fetchMore }) => {
           if (loading) {
-            return <p>Loading...</p>
+            return <Loading />
           }
 
           if (error) {

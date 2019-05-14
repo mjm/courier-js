@@ -27,6 +27,7 @@ import {
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons"
 import Moment from "react-moment"
+import Loading from "../components/loading"
 
 const Feeds = () => (
   <div className="container">
@@ -57,7 +58,7 @@ const FeedsList = () => {
       <AllFeedsComponent>
         {({ data, error, loading }) => {
           if (loading) {
-            return <p>Loading...</p>
+            return <Loading />
           }
 
           if (error) {
