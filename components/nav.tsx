@@ -1,6 +1,9 @@
 import React from "react"
 import Link from "next/link"
 import { font, colors, spacing, shadow } from "../utils/theme"
+import { faPaperPlane, faRss } from "@fortawesome/free-solid-svg-icons"
+import { faTwitter } from "@fortawesome/free-brands-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface Props {
   user: any
@@ -12,17 +15,26 @@ const Nav = ({ user, isAuthenticating }: Props) => (
     <ul>
       <li>
         <Link prefetch href="/">
-          <a className="brand">Courier</a>
+          <a className="brand">
+            <FontAwesomeIcon icon={faPaperPlane} />
+            Courier
+          </a>
         </Link>
       </li>
       <li>
         <Link prefetch href="/tweets">
-          <a>Tweets</a>
+          <a>
+            <FontAwesomeIcon icon={faTwitter} />
+            Tweets
+          </a>
         </Link>
       </li>
       <li>
         <Link prefetch href="/feeds">
-          <a>Feeds</a>
+          <a>
+            <FontAwesomeIcon icon={faRss} />
+            Feeds
+          </a>
         </Link>
       </li>
       <li className="spacer" />
@@ -85,6 +97,10 @@ const Nav = ({ user, isAuthenticating }: Props) => (
       }
       a:hover {
         background-color: ${colors.primary[600]};
+      }
+      a > :global(svg) {
+        margin-right: ${spacing(2)};
+        color: ${colors.primary[100]};
       }
       img {
         width: 1.2rem;

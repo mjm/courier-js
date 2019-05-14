@@ -18,6 +18,15 @@ import moment from "moment"
 import withSecurePage from "../hocs/securePage"
 import { colors, spacing, font, shadow } from "../utils/theme"
 import { DataProxy } from "apollo-cache"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {
+  faHome,
+  faRss,
+  faHistory,
+  faSyncAlt,
+  faTrashAlt,
+  faPlusCircle,
+} from "@fortawesome/free-solid-svg-icons"
 
 const Feeds = () => (
   <div className="container">
@@ -67,13 +76,20 @@ const FeedsList = () => {
                     <a href={feed.homePageURL}>{feed.title}</a>
                   </h3>
                   <div>
-                    Home: <a href={feed.homePageURL}>{feed.homePageURL}</a>
+                    <a href={feed.homePageURL}>
+                      <FontAwesomeIcon icon={faHome} fixedWidth />
+                      {feed.homePageURL}
+                    </a>
                   </div>
                   <div>
-                    Feed: <a href={feed.url}>{feed.url}</a>
+                    <a href={feed.url}>
+                      <FontAwesomeIcon icon={faRss} fixedWidth />
+                      {feed.url}
+                    </a>
                   </div>
                   {feed.refreshedAt && (
                     <div>
+                      <FontAwesomeIcon icon={faHistory} fixedWidth />
                       Refreshed at: {moment.utc(feed.refreshedAt).format("lll")}
                     </div>
                   )}
@@ -93,7 +109,6 @@ const FeedsList = () => {
           margin-left: 0;
           padding-left: 0;
         }
-
         li {
           padding: ${spacing(3)} ${spacing(4)};
           background-color: ${colors.gray[100]};
@@ -101,11 +116,9 @@ const FeedsList = () => {
           margin-bottom: ${spacing(4)};
           box-shadow: ${shadow.md};
         }
-
         li div {
           line-height: 1.375em;
         }
-
         h3 {
           font-family: ${font.display};
           font-size: 1.2rem;
@@ -113,12 +126,14 @@ const FeedsList = () => {
           margin: 0;
           margin-bottom: ${spacing(2)};
         }
-
+        * > :global(svg) {
+          color: ${colors.primary[700]};
+          margin-right: ${spacing(2)};
+        }
         a {
           color: ${colors.primary[800]};
           text-decoration: none;
         }
-
         .buttons {
           margin-top: ${spacing(2)};
         }
@@ -147,6 +162,10 @@ const Button = ({ children, ...props }: any) => {
         button:hover {
           background-color: ${colors.primary[500]};
         }
+
+        button > :global(svg) {
+          margin-right: ${spacing(1)};
+        }
       `}</style>
     </button>
   )
@@ -168,6 +187,7 @@ const RefreshButton = ({ feed }: RefreshButtonProps) => {
             refreshFeed({ variables: { id: feed.id } })
           }}
         >
+          <FontAwesomeIcon icon={faSyncAlt} />
           Refresh
         </Button>
       )}
@@ -202,6 +222,7 @@ const DeleteButton = ({ id }: DeleteButtonProps) => {
             })
           }}
         >
+          <FontAwesomeIcon icon={faTrashAlt} />
           Delete
         </Button>
       )}
@@ -251,6 +272,7 @@ const AddFeed = () => (
                 <Field type="text" name="url" placeholder="https://" />
                 <ErrorMessage name="url" component="div" />
                 <button type="submit" disabled={isSubmitting}>
+                  <FontAwesomeIcon icon={faPlusCircle} />
                   Add Feed
                 </button>
               </Form>
@@ -262,7 +284,6 @@ const AddFeed = () => (
               flex-direction: column;
               align-items: center;
             }
-
             div :global(input) {
               font-size: 1.5rem;
               width: 50%;
@@ -275,22 +296,18 @@ const AddFeed = () => (
               color: ${colors.primary[700]};
               box-shadow: ${shadow.sm};
             }
-
             div :global(input):focus {
               outline: none;
             }
-
             div :global(input)::placeholder {
               color: ${colors.gray[400]};
             }
-
             @media (max-width: 300px) {
               div :global(input) {
                 min-width: 0;
                 width: 100%;
               }
             }
-
             button {
               font-size: 1.4rem;
               font-weight: 500;
@@ -298,8 +315,11 @@ const AddFeed = () => (
               border-color: transparent;
               border-radius: 0.5rem;
               color: white;
-              padding: ${spacing(2)} ${spacing(5)};
+              padding: ${spacing(2)} ${spacing(4)};
               box-shadow: ${shadow.sm};
+            }
+            button > :global(svg) {
+              margin-right: ${spacing(2)};
             }
           `}</style>
         </div>
