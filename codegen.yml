@@ -4,6 +4,8 @@ documents: lib/query/*.graphql
 generates:
   lib/generated/graphql.ts:
     plugins:
+      - add: 'import * as types from "../data/types"'
+      - add: 'import { Pager } from "../data/pager"'
       - "typescript"
       - "typescript-resolvers"
     config:
@@ -12,12 +14,14 @@ generates:
         Cursor: string
         DateTime: Date
       mappers:
-        Feed: ../data/types#DBFeed
-        FeedConnection: ../data/types#FeedPager
-        Post: ../data/types#DBPost
-        PostConnection: ../data/types#PostPager
-        SubscribedFeed: ../data/types#DBSubscribedFeed
-        SubscribedFeedConnection: ../data/types#SubscribedFeedPager
+        Feed: types.Feed
+        FeedConnection: Pager<types.Feed>
+        Post: types.Post
+        PostConnection: Pager<types.Post>
+        SubscribedFeed: types.SubscribedFeed
+        SubscribedFeedConnection: Pager<types.SubscribedFeed>
+        Tweet: types.Tweet
+        TweetConnection: Pager<types.Tweet>
   lib/generated/graphql-components.tsx:
     plugins:
       - "typescript"

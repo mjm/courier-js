@@ -11,6 +11,8 @@ import { ScrapedEntry } from "scrape-feed"
 import countBy from "lodash/countBy"
 import { Pager } from "./pager"
 import moment from "moment"
+import { importTweets } from "./tweet"
+import { getFeedSubscriptions } from "./feed"
 
 export function allPostsForFeed(
   feedId: FeedId,
@@ -126,12 +128,15 @@ export async function createPost(input: NewPostInput): Promise<Post> {
     RETURNING id, created_at, updated_at
   `)
 
-  return {
+  const post = {
     ...input,
     id,
     createdAt: created_at,
     updatedAt: updated_at,
   }
+
+  await createTweets(post)
+  return post
 }
 
 type UpdatePostResult = Pick<
@@ -154,13 +159,29 @@ async function updatePost(input: UpdatePostInput): Promise<Post> {
     RETURNING feed_id, item_id, created_at, updated_at
   `)
 
-  return {
+  const post = {
     ...input,
     feedId: row.feed_id,
     itemId: row.item_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }
+
+  await createTweets(post)
+  return post
+}
+
+async function createTweets(post: Post): Promise<void> {
+  const subscriptions = await getFeedSubscriptions(post.feedId)
+
+  await Promise.all(
+    subscriptions.map(async sub => {
+      return await importTweets({
+        feedSubscriptionId: sub.id,
+        post,
+      })
+    })
+  )
 }
 
 function hasChanges(input: UpdatePostInput, existingPost: Post): boolean {

@@ -98,11 +98,19 @@ export type PostEdge = {
 export type Query = {
   currentUser?: Maybe<User>
   allSubscribedFeeds: SubscribedFeedConnection
+  allTweets: TweetConnection
   allFeeds: FeedConnection
   feed: Feed
 }
 
 export type QueryAllSubscribedFeedsArgs = {
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
+}
+
+export type QueryAllTweetsArgs = {
   first?: Maybe<Scalars["Int"]>
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
@@ -136,6 +144,35 @@ export type SubscribedFeedConnection = {
 export type SubscribedFeedEdge = {
   cursor: Scalars["Cursor"]
   node: SubscribedFeed
+}
+
+export type Tweet = {
+  id: Scalars["ID"]
+  feed: SubscribedFeed
+  post: Post
+  body: Scalars["String"]
+  mediaURLs: Array<Scalars["String"]>
+  status: TweetStatus
+  postedAt?: Maybe<Scalars["DateTime"]>
+  postedTweetID?: Maybe<Scalars["String"]>
+}
+
+export type TweetConnection = {
+  edges: Array<TweetEdge>
+  nodes: Array<Tweet>
+  pageInfo: PageInfo
+  totalCount: Scalars["Int"]
+}
+
+export type TweetEdge = {
+  cursor: Scalars["Cursor"]
+  node: Tweet
+}
+
+export enum TweetStatus {
+  Draft = "DRAFT",
+  Canceled = "CANCELED",
+  Posted = "POSTED",
 }
 
 export type User = {

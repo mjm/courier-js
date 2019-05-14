@@ -1,3 +1,6 @@
+import * as types from "../data/types"
+import { Pager } from "../data/pager"
+
 export type Maybe<T> = T | null
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -98,11 +101,19 @@ export type PostEdge = {
 export type Query = {
   currentUser?: Maybe<User>
   allSubscribedFeeds: SubscribedFeedConnection
+  allTweets: TweetConnection
   allFeeds: FeedConnection
   feed: Feed
 }
 
 export type QueryAllSubscribedFeedsArgs = {
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
+}
+
+export type QueryAllTweetsArgs = {
   first?: Maybe<Scalars["Int"]>
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
@@ -138,19 +149,40 @@ export type SubscribedFeedEdge = {
   node: SubscribedFeed
 }
 
+export type Tweet = {
+  id: Scalars["ID"]
+  feed: SubscribedFeed
+  post: Post
+  body: Scalars["String"]
+  mediaURLs: Array<Scalars["String"]>
+  status: TweetStatus
+  postedAt?: Maybe<Scalars["DateTime"]>
+  postedTweetID?: Maybe<Scalars["String"]>
+}
+
+export type TweetConnection = {
+  edges: Array<TweetEdge>
+  nodes: Array<Tweet>
+  pageInfo: PageInfo
+  totalCount: Scalars["Int"]
+}
+
+export type TweetEdge = {
+  cursor: Scalars["Cursor"]
+  node: Tweet
+}
+
+export enum TweetStatus {
+  Draft = "DRAFT",
+  Canceled = "CANCELED",
+  Posted = "POSTED",
+}
+
 export type User = {
   name: Scalars["String"]
   nickname: Scalars["String"]
   picture: Scalars["String"]
 }
-import {
-  DBFeed,
-  FeedPager,
-  DBPost,
-  PostPager,
-  DBSubscribedFeed,
-  SubscribedFeedPager,
-} from "../data/types"
 import { CourierContext } from "../context"
 
 import {
@@ -235,20 +267,24 @@ export type ResolversTypes = {
   String: Scalars["String"]
   Int: Scalars["Int"]
   Cursor: Scalars["Cursor"]
-  SubscribedFeedConnection: SubscribedFeedPager
+  SubscribedFeedConnection: Pager<types.SubscribedFeed>
   SubscribedFeedEdge: Omit<SubscribedFeedEdge, "node"> & {
     node: ResolversTypes["SubscribedFeed"]
   }
-  SubscribedFeed: DBSubscribedFeed
+  SubscribedFeed: types.SubscribedFeed
   ID: Scalars["ID"]
-  Feed: DBFeed
+  Feed: types.Feed
   DateTime: Scalars["DateTime"]
-  PostConnection: PostPager
+  PostConnection: Pager<types.Post>
   PostEdge: Omit<PostEdge, "node"> & { node: ResolversTypes["Post"] }
-  Post: DBPost
+  Post: types.Post
   PageInfo: PageInfo
   Boolean: Scalars["Boolean"]
-  FeedConnection: FeedPager
+  TweetConnection: Pager<types.Tweet>
+  TweetEdge: Omit<TweetEdge, "node"> & { node: ResolversTypes["Tweet"] }
+  Tweet: types.Tweet
+  TweetStatus: TweetStatus
+  FeedConnection: Pager<types.Feed>
   FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
   Mutation: {}
   FeedInput: FeedInput
@@ -397,6 +433,12 @@ export type QueryResolvers<
     ContextType,
     QueryAllSubscribedFeedsArgs
   >
+  allTweets?: Resolver<
+    ResolversTypes["TweetConnection"],
+    ParentType,
+    ContextType,
+    QueryAllTweetsArgs
+  >
   allFeeds?: Resolver<
     ResolversTypes["FeedConnection"],
     ParentType,
@@ -446,6 +488,46 @@ export type SubscribedFeedEdgeResolvers<
   node?: Resolver<ResolversTypes["SubscribedFeed"], ParentType, ContextType>
 }
 
+export type TweetResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["Tweet"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>
+  feed?: Resolver<ResolversTypes["SubscribedFeed"], ParentType, ContextType>
+  post?: Resolver<ResolversTypes["Post"], ParentType, ContextType>
+  body?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  mediaURLs?: Resolver<Array<ResolversTypes["String"]>, ParentType, ContextType>
+  status?: Resolver<ResolversTypes["TweetStatus"], ParentType, ContextType>
+  postedAt?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >
+  postedTweetID?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >
+}
+
+export type TweetConnectionResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["TweetConnection"]
+> = {
+  edges?: Resolver<Array<ResolversTypes["TweetEdge"]>, ParentType, ContextType>
+  nodes?: Resolver<Array<ResolversTypes["Tweet"]>, ParentType, ContextType>
+  pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>
+  totalCount?: Resolver<ResolversTypes["Int"], ParentType, ContextType>
+}
+
+export type TweetEdgeResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["TweetEdge"]
+> = {
+  cursor?: Resolver<ResolversTypes["Cursor"], ParentType, ContextType>
+  node?: Resolver<ResolversTypes["Tweet"], ParentType, ContextType>
+}
+
 export type UserResolvers<
   ContextType = CourierContext,
   ParentType = ResolversTypes["User"]
@@ -470,6 +552,9 @@ export type Resolvers<ContextType = CourierContext> = {
   SubscribedFeed?: SubscribedFeedResolvers<ContextType>
   SubscribedFeedConnection?: SubscribedFeedConnectionResolvers<ContextType>
   SubscribedFeedEdge?: SubscribedFeedEdgeResolvers<ContextType>
+  Tweet?: TweetResolvers<ContextType>
+  TweetConnection?: TweetConnectionResolvers<ContextType>
+  TweetEdge?: TweetEdgeResolvers<ContextType>
   User?: UserResolvers<ContextType>
 }
 

@@ -11,6 +11,13 @@ type Query {
     after: Cursor
   ): SubscribedFeedConnection!
 
+  allTweets(
+    first: Int
+    last: Int
+    before: Cursor
+    after: Cursor
+  ): TweetConnection!
+
   allFeeds(
     first: Int
     last: Int
@@ -109,4 +116,33 @@ type SubscribedFeedConnection {
 type SubscribedFeedEdge {
   cursor: Cursor!
   node: SubscribedFeed!
+}
+
+type Tweet {
+  id: ID!
+  feed: SubscribedFeed!
+  post: Post!
+  body: String!
+  mediaURLs: [String!]!
+  status: TweetStatus!
+  postedAt: DateTime
+  postedTweetID: String
+}
+
+enum TweetStatus {
+  DRAFT
+  CANCELED
+  POSTED
+}
+
+type TweetConnection {
+  edges: [TweetEdge!]!
+  nodes: [Tweet!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type TweetEdge {
+  cursor: Cursor!
+  node: Tweet!
 }

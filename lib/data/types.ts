@@ -1,5 +1,4 @@
 import { CachingHeaders } from "scrape-feed"
-import { Pager } from "./pager"
 
 export type PagingOptions =
   | {}
@@ -27,8 +26,6 @@ export interface Feed {
   updatedAt: Date
 }
 
-export type FeedPager = Pager<Feed>
-
 export type FeedSubscriptionId = string
 
 export interface SubscribedFeed {
@@ -38,12 +35,6 @@ export interface SubscribedFeed {
   createdAt: Date
   updatedAt: Date
 }
-
-export type SubscribedFeedPager = Pager<SubscribedFeed>
-
-// Aliases to prevent GraphQL collisions
-export type DBFeed = Feed
-export type DBSubscribedFeed = SubscribedFeed
 
 export interface FeedInput {
   userId: UserId
@@ -65,9 +56,6 @@ export interface Post {
   createdAt: Date
   updatedAt: Date
 }
-
-export type PostPager = Pager<Post>
-export type DBPost = Post
 
 export interface NewPostInput {
   feedId: FeedId
@@ -94,4 +82,38 @@ export interface PostImportResult {
   created: number
   updated: number
   unchanged: number
+}
+
+export type TweetId = string
+
+export interface Tweet {
+  id: TweetId
+  feedSubscriptionId: FeedSubscriptionId
+  post: Post
+  body: string
+  mediaURLs: string[]
+  status: TweetStatus
+  postedAt: Date | null
+  postedTweetID: string | null
+}
+
+export type TweetStatus = "draft" | "canceled" | "posted"
+
+export interface ImportTweetsInput {
+  feedSubscriptionId: FeedSubscriptionId
+  post: Post
+}
+
+export interface NewTweetInput {
+  feedSubscriptionId: FeedSubscriptionId
+  postId: PostId
+  body: string
+  mediaURLs: string[]
+  position: number
+}
+
+export interface UpdateTweetInput {
+  id: TweetId
+  body: string
+  mediaURLs: string[]
 }
