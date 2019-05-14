@@ -235,6 +235,30 @@ export type DeleteFeedMutation = { __typename?: "Mutation" } & Pick<
   "deleteFeed"
 >
 
+export type AllTweetsQueryVariables = {
+  cursor?: Maybe<Scalars["Cursor"]>
+}
+
+export type AllTweetsQuery = { __typename?: "Query" } & {
+  allTweets: { __typename?: "TweetConnection" } & {
+    nodes: Array<{ __typename?: "Tweet" } & AllTweetsFieldsFragment>
+    pageInfo: { __typename?: "PageInfo" } & Pick<
+      PageInfo,
+      "hasPreviousPage" | "endCursor"
+    >
+  }
+}
+
+export type AllTweetsFieldsFragment = { __typename?: "Tweet" } & Pick<
+  Tweet,
+  "id" | "body" | "mediaURLs" | "status"
+> & {
+    post: { __typename?: "Post" } & Pick<
+      Post,
+      "id" | "url" | "publishedAt" | "modifiedAt"
+    >
+  }
+
 import gql from "graphql-tag"
 import * as React from "react"
 import * as ReactApollo from "react-apollo"
@@ -250,6 +274,20 @@ export const allFeedSubscriptionsFieldsFragmentDoc = gql`
       refreshedAt
     }
     autopost
+  }
+`
+export const allTweetsFieldsFragmentDoc = gql`
+  fragment allTweetsFields on Tweet {
+    id
+    post {
+      id
+      url
+      publishedAt
+      modifiedAt
+    }
+    body
+    mediaURLs
+    status
   }
 `
 export const AllFeedsDocument = gql`
@@ -457,6 +495,58 @@ export function withDeleteFeed<TProps, TChildProps = {}>(
     DeleteFeedProps<TChildProps>
   >(DeleteFeedDocument, {
     alias: "withDeleteFeed",
+    ...operationOptions,
+  })
+}
+export const AllTweetsDocument = gql`
+  query AllTweets($cursor: Cursor) {
+    allTweets(last: 10, before: $cursor) @connection(key: "allTweets") {
+      nodes {
+        ...allTweetsFields
+      }
+      pageInfo {
+        hasPreviousPage
+        endCursor
+      }
+    }
+  }
+  ${allTweetsFieldsFragmentDoc}
+`
+
+export const AllTweetsComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.QueryProps<AllTweetsQuery, AllTweetsQueryVariables>,
+      "query"
+    >,
+    "variables"
+  > & { variables?: AllTweetsQueryVariables }
+) => (
+  <ReactApollo.Query<AllTweetsQuery, AllTweetsQueryVariables>
+    query={AllTweetsDocument}
+    {...props}
+  />
+)
+
+export type AllTweetsProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<AllTweetsQuery, AllTweetsQueryVariables>
+> &
+  TChildProps
+export function withAllTweets<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    AllTweetsQuery,
+    AllTweetsQueryVariables,
+    AllTweetsProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    AllTweetsQuery,
+    AllTweetsQueryVariables,
+    AllTweetsProps<TChildProps>
+  >(AllTweetsDocument, {
+    alias: "withAllTweets",
     ...operationOptions,
   })
 }

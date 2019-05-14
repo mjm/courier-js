@@ -1,0 +1,24 @@
+query AllTweets($cursor: Cursor) {
+  allTweets(last: 10, before: $cursor) @connection(key: "allTweets") {
+    nodes {
+      ...allTweetsFields
+    }
+    pageInfo {
+      hasPreviousPage
+      endCursor
+    }
+  }
+}
+
+fragment allTweetsFields on Tweet {
+  id
+  post {
+    id
+    url
+    publishedAt
+    modifiedAt
+  }
+  body
+  mediaURLs
+  status
+}

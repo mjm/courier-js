@@ -16,6 +16,11 @@ const Nav = ({ user, isAuthenticating }: Props) => (
         </Link>
       </li>
       <li>
+        <Link prefetch href="/tweets">
+          <a>Tweets</a>
+        </Link>
+      </li>
+      <li>
         <Link prefetch href="/feeds">
           <a>Feeds</a>
         </Link>

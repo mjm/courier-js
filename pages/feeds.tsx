@@ -10,7 +10,7 @@ import {
   RefreshFeedComponent,
   DeleteFeedComponent,
 } from "../lib/generated/graphql-components"
-import withData from "../lib/apollo"
+import withData from "../hocs/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
 import * as yup from "yup"
 import { isApolloError } from "apollo-client"

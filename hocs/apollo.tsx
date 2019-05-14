@@ -1,7 +1,7 @@
 import { withData } from "next-apollo"
 import { HttpLink } from "apollo-link-http"
 import { setContext } from "apollo-link-context"
-import url from "./url"
+import url from "../lib/url"
 import { NextContext } from "next"
 import { getToken } from "../utils/auth0"
 
