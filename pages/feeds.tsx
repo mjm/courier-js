@@ -14,7 +14,6 @@ import withData from "../hocs/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
 import * as yup from "yup"
 import { isApolloError } from "apollo-client"
-import moment from "moment"
 import withSecurePage from "../hocs/securePage"
 import { colors, spacing, font, shadow } from "../utils/theme"
 import { DataProxy } from "apollo-cache"
@@ -27,6 +26,7 @@ import {
   faTrashAlt,
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons"
+import Moment from "react-moment"
 
 const Feeds = () => (
   <div className="container">
@@ -90,7 +90,7 @@ const FeedsList = () => {
                   {feed.refreshedAt && (
                     <div>
                       <FontAwesomeIcon icon={faHistory} fixedWidth />
-                      Refreshed at: {moment.utc(feed.refreshedAt).format("lll")}
+                      Checked <Moment fromNow>{feed.refreshedAt}</Moment>
                     </div>
                   )}
                   <div className="buttons">
