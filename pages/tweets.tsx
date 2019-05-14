@@ -7,6 +7,7 @@ import {
 } from "../lib/generated/graphql-components"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
+import { spacing, shadow, colors } from "../utils/theme"
 
 const Tweets = () => (
   <div className="container">
@@ -86,6 +87,12 @@ const TweetsList = () => {
           )
         }}
       </AllTweetsComponent>
+      <style jsx>{`
+        ul {
+          list-style: none;
+          padding-left: 0;
+        }
+      `}</style>
     </div>
   )
 }
@@ -97,12 +104,25 @@ interface TweetCardProps {
 const TweetCard = ({ tweet }: TweetCardProps) => {
   return (
     <li>
-      <p>{tweet.body}</p>
+      <div className="body">{tweet.body}</div>
       {tweet.mediaURLs.map(url => (
         <figure key={url}>
           <img src={url} style={{ width: "300px" }} />
         </figure>
       ))}
+      <style jsx>{`
+        li {
+          background-color: white;
+          padding: ${spacing(4)};
+          box-shadow: ${shadow.md};
+          margin-bottom: ${spacing(4)};
+          border-top: 3px solid ${colors.primary[500]};
+        }
+
+        .body {
+          white-space: pre-wrap;
+        }
+      `}</style>
     </li>
   )
 }
