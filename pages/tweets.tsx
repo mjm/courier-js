@@ -33,7 +33,7 @@ const TweetsList = () => {
   return (
     <div>
       <AllTweetsComponent>
-        {({ data, error, loading }) => {
+        {({ data, error, loading, fetchMore }) => {
           if (loading) {
             return <p>Loading...</p>
           }
@@ -45,12 +45,43 @@ const TweetsList = () => {
           if (!data) {
             return null
           }
-          const nodes = data.allTweets.nodes
+
+          const loadMore = () => {
+            fetchMore({
+              variables: {
+                cursor: pageInfo.endCursor,
+              },
+              updateQuery(previousResult, { fetchMoreResult }) {
+                if (!fetchMoreResult) {
+                  return previousResult
+                }
+                const oldNodes = previousResult.allTweets.nodes
+                const { nodes: newNodes, pageInfo } = fetchMoreResult.allTweets
+
+                return {
+                  allTweets: {
+                    __typename: "TweetConnection",
+                    nodes: [...oldNodes, ...newNodes],
+                    pageInfo,
+                  },
+                }
+              },
+            })
+          }
+
+          const { nodes, pageInfo } = data.allTweets
           return (
             <ul>
               {nodes.map(tweet => (
                 <TweetCard key={tweet.id} tweet={tweet} />
               ))}
+              {pageInfo.hasPreviousPage && (
+                <li>
+                  <button type="button" onClick={loadMore}>
+                    Load More…
+                  </button>
+                </li>
+              )}
             </ul>
           )
         }}
