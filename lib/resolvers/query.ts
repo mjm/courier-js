@@ -1,6 +1,7 @@
 import { QueryResolvers } from "../generated/graphql"
 import { allFeeds, getFeed, allFeedsForUser } from "../data/feed"
 import { allTweets } from "../data/tweet"
+import { getUserInfo } from "../auth"
 
 export const Query: QueryResolvers = {
   async allSubscribedFeeds(_parent, args, { getUser }) {
@@ -23,7 +24,7 @@ export const Query: QueryResolvers = {
     return await getFeed(id)
   },
 
-  async currentUser(_parent, _args, { getUser }) {
-    return await getUser()
+  async currentUser(_parent, _args, { token }) {
+    return await getUserInfo(token)
   },
 }

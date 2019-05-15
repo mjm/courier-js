@@ -13,6 +13,24 @@ export type PagingOptions =
 
 export type UserId = string
 
+export interface UserToken {
+  sub: UserId
+  iss: string
+  aud: string[]
+  iat: number
+  exp: number
+  azp: string
+  scope: string
+}
+
+export interface UserInfo {
+  sub: UserId
+  name: string
+  nickname: string
+  picture: string
+  updated_at: string
+}
+
 export type FeedId = string
 
 export interface Feed {

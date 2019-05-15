@@ -2,6 +2,8 @@ import jwksClient from "jwks-rsa"
 import * as jwt from "jsonwebtoken"
 import { AuthenticationError } from "apollo-server-core"
 import { IncomingHttpHeaders } from "http"
+import { UserInfo } from "./data/types"
+import { AuthenticationClient } from "auth0"
 
 export function getToken(headers: IncomingHttpHeaders): string | null {
   const authz = headers.authorization
@@ -58,4 +60,17 @@ const getKey: jwt.GetPublicKeyOrSecret = (header, cb) => {
       cb(null, signingKey)
     }
   })
+}
+
+const authClient = new AuthenticationClient({
+  clientId: process.env.CLIENT_ID,
+  domain: process.env.AUTH_DOMAIN || "",
+})
+
+export async function getUserInfo(token: string | null): Promise<UserInfo> {
+  if (!token) {
+    throw new AuthenticationError("No user token was provided")
+  }
+
+  return await authClient.getProfile(token)
 }
