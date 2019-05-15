@@ -49,9 +49,13 @@ export function allFeedsForUser(
 ): Pager<SubscribedFeed, FeedSubscriptionRow> {
   return new Pager({
     query: sql`
-      SELECT ${feedSubscriptionsSelect}
-       WHERE feed_subscriptions.user_id = ${userId}
-         AND feed_subscriptions.discarded_at IS NULL`,
+      SELECT feed_subscriptions.*,
+             feeds.url
+        FROM feed_subscriptions
+        JOIN feeds
+          ON feed_subscriptions.feed_id = feeds.id
+       WHERE user_id = ${userId}
+         AND discarded_at IS NULL`,
     orderColumn: "url",
     totalQuery: sql`
       SELECT COUNT(*) FROM feed_subscriptions WHERE user_id = ${userId}`,
@@ -263,11 +267,15 @@ function fromRow({
   }
 }
 
-interface FeedSubscriptionRow extends FeedRow {
+interface FeedSubscriptionRow {
+  id: string
   feed_id: string
   autopost: boolean
-  feed_created_at: Date
-  feed_updated_at: Date
+  created_at: Date
+  updated_at: Date
+
+  // pulled in from the feed to use as a cursor
+  url: string
 }
 
 function fromSubscriptionRow({
@@ -276,20 +284,12 @@ function fromSubscriptionRow({
   autopost,
   created_at,
   updated_at,
-  feed_created_at,
-  feed_updated_at,
-  ...rest
 }: FeedSubscriptionRow): SubscribedFeed {
   return {
     id,
+    feedId: feed_id,
     autopost,
     createdAt: created_at,
     updatedAt: updated_at,
-    feed: fromRow({
-      id: feed_id,
-      created_at: feed_created_at,
-      updated_at: feed_updated_at,
-      ...rest,
-    }),
   }
 }

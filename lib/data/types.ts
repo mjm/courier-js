@@ -48,7 +48,7 @@ export type FeedSubscriptionId = string
 
 export interface SubscribedFeed {
   id: FeedSubscriptionId
-  feed: Feed
+  feedId: FeedId
   autopost: boolean
   createdAt: Date
   updatedAt: Date
