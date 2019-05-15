@@ -127,6 +127,8 @@ export async function addFeed(input: FeedInput): Promise<SubscribedFeed> {
     RETURNING *
   `)
 
+  // TODO translate the last several posts to tweets
+
   return fromSubscriptionRow(row)
 }
 
