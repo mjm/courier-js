@@ -12,6 +12,7 @@ import { locateFeed } from "feed-locator"
 import { scrapeFeed } from "scrape-feed"
 import { importPosts } from "./post"
 import { Pager } from "./pager"
+import keyBy from "lodash/keyby"
 
 export async function allFeeds(
   options: PagingOptions = {}
@@ -79,6 +80,17 @@ export async function getFeed(id: FeedId): Promise<Feed> {
 
     throw err
   }
+}
+
+export async function getFeedsById(ids: FeedId[]): Promise<(Feed | null)[]> {
+  //  const query = sql<FeedRow>`
+  //    SELECT * FROM feeds WHERE id = ANY(${sql.array(ids, "int")})
+  //  `
+  const rows = await db.any(sql<FeedRow>`
+    SELECT * FROM feeds WHERE id IN (${sql.valueList(ids)})
+  `)
+  const byId = keyBy(rows.map(fromRow), "id")
+  return ids.map(id => byId[id])
 }
 
 export async function getSubscribedFeed(

@@ -1,4 +1,4 @@
-import { createPool } from "@mmoriarity/slonik"
+import { createPool, InterceptorType } from "@mmoriarity/slonik"
 import { createInterceptors } from "slonik-interceptor-preset"
 
 const pool = createPool(process.env.DATABASE_URL || "", {
@@ -18,8 +18,22 @@ const pool = createPool(process.env.DATABASE_URL || "", {
       logQueries: false,
       transformFieldNames: false,
     }),
+    createLoggingInterceptor(),
   ],
 })
 
 export default pool
 export * from "@mmoriarity/slonik"
+
+function createLoggingInterceptor(): InterceptorType {
+  return {
+    async afterQueryExecution(_context, query, result) {
+      console.log({
+        sql: query.sql,
+        values: query.values,
+        rows: result.rowCount,
+      })
+      return result
+    },
+  }
+}

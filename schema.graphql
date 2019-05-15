@@ -25,7 +25,8 @@ type Query {
     before: Cursor
     after: Cursor
   ): FeedConnection!
-  feed(id: ID!): Feed!
+
+  feed(id: ID!): Feed
 }
 
 type Mutation {

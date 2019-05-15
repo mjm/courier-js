@@ -1,8 +1,7 @@
 import { PostResolvers } from "../generated/graphql"
-import { getFeed } from "../data/feed"
 
 export const Post: PostResolvers = {
-  async feed(post) {
-    return await getFeed(post.feedId)
+  async feed({ feedId }, {}, { loaders }) {
+    return (await loaders.feeds.load(feedId))!
   },
 }
