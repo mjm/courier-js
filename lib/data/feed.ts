@@ -94,6 +94,19 @@ export async function getFeedsById(ids: FeedId[]): Promise<(Feed | null)[]> {
   return ids.map(id => byId[id] || null)
 }
 
+export async function getSubscriptionsById(
+  userId: UserId,
+  ids: FeedSubscriptionId[]
+): Promise<(SubscribedFeed | null)[]> {
+  const rows = await db.any(sql<FeedSubscriptionRow>`
+    SELECT * FROM feed_subscriptions
+     WHERE user_id = ${userId}
+       AND id = ANY(${sql.array(ids, "int4")})
+  `)
+  const byId = keyBy(rows.map(fromSubscriptionRow), "id")
+  return ids.map(id => byId[id] || null)
+}
+
 export async function getSubscribedFeed(
   id: FeedSubscriptionId
 ): Promise<SubscribedFeed> {

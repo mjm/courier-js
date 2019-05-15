@@ -10,4 +10,8 @@ export const Tweet: TweetResolvers = {
   async post({ postId }, {}, { loaders }) {
     return (await loaders.posts.load(postId))!
   },
+
+  async feed({ feedSubscriptionId }, {}, { loaders }) {
+    return (await loaders.subscribedFeeds.load(feedSubscriptionId))!
+  },
 }
