@@ -107,7 +107,7 @@ export type TweetId = string
 export interface Tweet {
   id: TweetId
   feedSubscriptionId: FeedSubscriptionId
-  post: Post
+  postId: PostId
   body: string
   mediaURLs: string[]
   status: TweetStatus

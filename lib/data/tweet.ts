@@ -12,7 +12,6 @@ import {
 } from "./types"
 import { Pager } from "./pager"
 import moment from "moment"
-import { PostRow, fromRow as fromPostRow } from "./post"
 import { translate } from "html-to-tweets"
 import db, { sql } from "../db"
 import zip from "lodash/zip"
@@ -55,7 +54,11 @@ export function allTweets(
 
   return new Pager({
     query: sql`
-      SELECT ${tweetSelect}
+      SELECT tweets.*,
+             posts.published_at
+        FROM tweets
+        JOIN posts
+          ON tweets.post_id = posts.id
         JOIN feed_subscriptions
           ON tweets.feed_subscription_id = feed_subscriptions.id
        WHERE feed_subscriptions.user_id = ${userId}
@@ -191,7 +194,8 @@ async function getTweet(id: TweetId): Promise<Tweet> {
   return fromRow(row)
 }
 
-interface TweetRow extends PostRow {
+interface TweetRow {
+  id: string
   post_id: string
   feed_subscription_id: string
   body: string
@@ -200,9 +204,11 @@ interface TweetRow extends PostRow {
   posted_at: Date | null
   posted_tweet_id: string
   position: number
+  created_at: Date
+  updated_at: Date
 
-  post_created_at: Date
-  post_updated_at: Date
+  // pulled from posts for use as a cursor
+  published_at: Date | null
 }
 
 function fromRow({
@@ -214,29 +220,15 @@ function fromRow({
   status,
   posted_at,
   posted_tweet_id,
-
-  // ignored at the moment, but this prevents it from being included in the rest spread
-  position,
-
-  created_at,
-  updated_at,
-  post_created_at,
-  post_updated_at,
-  ...rest
 }: TweetRow): Tweet {
   return {
     id,
     feedSubscriptionId: feed_subscription_id,
+    postId: post_id,
     body,
     mediaURLs: media_urls,
     status,
     postedAt: posted_at,
     postedTweetID: posted_tweet_id,
-    post: fromPostRow({
-      id: post_id,
-      created_at: post_created_at,
-      updated_at: post_updated_at,
-      ...rest,
-    }),
   }
 }

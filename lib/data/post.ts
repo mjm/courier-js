@@ -6,6 +6,7 @@ import {
   PostImportResult,
   UpdatePostInput,
   PagingOptions,
+  PostId,
 } from "./types"
 import { ScrapedEntry } from "scrape-feed"
 import countBy from "lodash/countBy"
@@ -13,6 +14,7 @@ import { Pager } from "./pager"
 import moment from "moment"
 import { importTweets } from "./tweet"
 import { getFeedSubscriptions } from "./feed"
+import keyBy from "lodash/keyBy"
 
 export function allPostsForFeed(
   feedId: FeedId,
@@ -34,6 +36,15 @@ export function allPostsForFeed(
       return cursor || null
     },
   })
+}
+
+export async function getPostsById(ids: PostId[]): Promise<(Post | null)[]> {
+  const rows = await db.any(sql<PostRow>`
+    SELECT * FROM posts WHERE id = ANY(${sql.array(ids, "int4")})
+  `)
+  const byId = keyBy(rows.map(fromRow), "id")
+
+  return ids.map(id => byId[id] || null)
 }
 
 type ImportResultType = "created" | "updated" | "unchanged"

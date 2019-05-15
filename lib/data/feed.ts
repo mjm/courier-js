@@ -94,7 +94,7 @@ export async function getFeedsById(ids: FeedId[]): Promise<(Feed | null)[]> {
     SELECT * FROM feeds WHERE id IN (${sql.valueList(ids)})
   `)
   const byId = keyBy(rows.map(fromRow), "id")
-  return ids.map(id => byId[id])
+  return ids.map(id => byId[id] || null)
 }
 
 export async function getSubscribedFeed(
