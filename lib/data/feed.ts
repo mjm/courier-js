@@ -10,9 +10,10 @@ import {
 } from "./types"
 import { locateFeed } from "feed-locator"
 import { scrapeFeed } from "scrape-feed"
-import { importPosts } from "./post"
+import { importPosts, getRecentPosts } from "./post"
 import { Pager } from "./pager"
 import keyBy from "lodash/keyBy"
+import { importTweets } from "./tweet"
 
 export async function allFeeds(
   options: PagingOptions = {}
@@ -127,9 +128,11 @@ export async function addFeed(input: FeedInput): Promise<SubscribedFeed> {
     RETURNING *
   `)
 
-  // TODO translate the last several posts to tweets
+  const subscribedFeed = fromSubscriptionRow(row)
 
-  return fromSubscriptionRow(row)
+  await importRecentPosts(subscribedFeed)
+
+  return subscribedFeed
 }
 
 interface RefreshFeedOptions {
@@ -217,6 +220,20 @@ async function createFeed(url: string): Promise<Feed> {
   `)
 
   return await refreshFeed(id)
+}
+
+async function importRecentPosts(feed: SubscribedFeed): Promise<void> {
+  // translating every post for the new subscription could be an excessive amount of work
+  const posts = await getRecentPosts(feed.feedId)
+
+  await Promise.all(
+    posts.map(async post => {
+      await importTweets({
+        feedSubscriptionId: feed.id,
+        post,
+      })
+    })
+  )
 }
 
 interface FeedRow {

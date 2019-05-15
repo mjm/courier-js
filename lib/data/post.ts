@@ -47,6 +47,18 @@ export async function getPostsById(ids: PostId[]): Promise<(Post | null)[]> {
   return ids.map(id => byId[id] || null)
 }
 
+export async function getRecentPosts(feedId: FeedId): Promise<Post[]> {
+  const rows = await db.any(sql<PostRow>`
+    SELECT *
+      FROM posts
+     WHERE feed_id = ${feedId}
+  ORDER BY published_at DESC
+     LIMIT 10
+  `)
+
+  return rows.map(fromRow)
+}
+
 type ImportResultType = "created" | "updated" | "unchanged"
 
 export async function importPosts(
