@@ -8,7 +8,6 @@ import {
   PostId,
   NewTweetInput,
   UpdateTweetInput,
-  TweetId,
 } from "./types"
 import { Pager } from "./pager"
 import moment from "moment"
@@ -16,23 +15,6 @@ import { translate } from "html-to-tweets"
 import db, { sql } from "../db"
 import zip from "lodash/zip"
 import { ValueExpressionType } from "slonik"
-
-const tweetSelect = sql`
-       tweets.*,
-       posts.feed_id,
-       posts.item_id,
-       posts.text_content,
-       posts.html_content,
-       posts.title,
-       posts.url,
-       posts.published_at,
-       posts.modified_at,
-       posts.created_at AS post_created_at,
-       posts.updated_at AS post_updated_at
-  FROM tweets
-  JOIN posts
-    ON tweets.post_id = posts.id
-`
 
 type AllTweetsOptions = PagingOptions & {
   filter?: "UPCOMING" | "PAST" | null
@@ -131,7 +113,7 @@ export async function importTweets({
         body: tweet.body,
         mediaURLs: tweet.mediaURLs,
       })
-      results.push(updatedTweet)
+      results.push(updatedTweet || existingTweet)
     }
   }
 
@@ -143,7 +125,8 @@ async function getTweetsForPost(
   postId: PostId
 ): Promise<Tweet[]> {
   const rows = await db.any(sql<TweetRow>`
-    SELECT ${tweetSelect}
+    SELECT *
+      FROM tweets
      WHERE feed_subscription_id = ${feedSubscriptionId}
        AND post_id = ${postId}
   ORDER BY position
@@ -153,7 +136,7 @@ async function getTweetsForPost(
 }
 
 async function createTweet(input: NewTweetInput): Promise<Tweet> {
-  const id = await db.oneFirst(sql<Pick<TweetRow, "id">>`
+  const row = await db.one(sql<TweetRow>`
     INSERT INTO tweets (
       feed_subscription_id,
       post_id,
@@ -167,31 +150,24 @@ async function createTweet(input: NewTweetInput): Promise<Tweet> {
       ${sql.array(input.mediaURLs, "text")},
       ${input.position}
     )
-    RETURNING id
-  `)
-
-  return await getTweet(id)
-}
-
-async function updateTweet(input: UpdateTweetInput): Promise<Tweet> {
-  await db.query(sql`
-    UPDATE tweets
-       SET body = ${input.body},
-           media_urls = ${sql.array(input.mediaURLs, "text")}
-     WHERE id = ${input.id}
-       AND status <> 'posted'
-  `)
-
-  return await getTweet(input.id)
-}
-
-async function getTweet(id: TweetId): Promise<Tweet> {
-  const row = await db.one(sql<TweetRow>`
-    SELECT ${tweetSelect}
-     WHERE tweets.id = ${id}
+    RETURNING *
   `)
 
   return fromRow(row)
+}
+
+async function updateTweet(input: UpdateTweetInput): Promise<Tweet | null> {
+  const row = await db.maybeOne(sql<TweetRow>`
+    UPDATE tweets
+       SET body = ${input.body},
+           media_urls = ${sql.array(input.mediaURLs, "text")},
+           updated_at = CURRENT_TIMESTAMP
+     WHERE id = ${input.id}
+       AND status <> 'posted'
+ RETURNING *
+  `)
+
+  return row && fromRow(row)
 }
 
 interface TweetRow {

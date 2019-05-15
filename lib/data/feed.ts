@@ -29,20 +29,6 @@ export async function allFeeds(
   })
 }
 
-const feedSubscriptionsSelect = sql`
-       feed_subscriptions.*,
-       feeds.url,
-       feeds.title,
-       feeds.home_page_url,
-       feeds.caching_headers,
-       feeds.refreshed_at,
-       feeds.created_at AS feed_created_at,
-       feeds.updated_at AS feed_updated_at
-  FROM feed_subscriptions
-  JOIN feeds
-    ON feed_subscriptions.feed_id = feeds.id
-`
-
 export function allFeedsForUser(
   userId: UserId,
   options: PagingOptions = {}
@@ -107,31 +93,13 @@ export async function getSubscriptionsById(
   return ids.map(id => byId[id] || null)
 }
 
-export async function getSubscribedFeed(
-  id: FeedSubscriptionId
-): Promise<SubscribedFeed> {
-  try {
-    const row = await db.one<FeedSubscriptionRow>(sql`
-      SELECT ${feedSubscriptionsSelect}
-      WHERE feed_subscriptions.id = ${id}
-    `)
-    return fromSubscriptionRow(row)
-  } catch (err) {
-    if (err instanceof NotFoundError) {
-      // @ts-ignore
-      err.statusCode = 404
-    }
-
-    throw err
-  }
-}
-
 export async function getFeedSubscriptions(
   id: FeedId
 ): Promise<SubscribedFeed[]> {
   const rows = await db.any(sql<FeedSubscriptionRow>`
-    SELECT ${feedSubscriptionsSelect}
-     WHERE feeds.id = ${id}
+    SELECT *
+      FROM feed_subscriptions
+     WHERE feed_id = ${id}
   `)
 
   return rows.map(fromSubscriptionRow)
@@ -151,16 +119,15 @@ export async function addFeed(input: FeedInput): Promise<SubscribedFeed> {
     feed = await createFeed(feedURL)
   }
 
-  const id = await db.oneFirst<Pick<FeedSubscriptionRow, "id">>(sql`
+  const row = await db.one<FeedSubscriptionRow>(sql`
     INSERT INTO feed_subscriptions (feed_id, user_id)
     VALUES (${feed.id}, ${input.userId})
     ON CONFLICT (feed_id, user_id)
     DO UPDATE SET discarded_at = NULL
-    RETURNING id
+    RETURNING *
   `)
 
-  // we need the feed info, so we might as well just fetch out the whole dang thing
-  return await getSubscribedFeed(id)
+  return fromSubscriptionRow(row)
 }
 
 interface RefreshFeedOptions {
