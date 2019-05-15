@@ -2,7 +2,9 @@
   "name": "courier",
   "license": "MIT",
   "scripts": {
-    "dev": "next",
+    "dev": "concurrently \"npm:dev-*\"",
+    "dev-now": "now dev",
+    "dev-gen": "npm run gen -- --watch",
     "build": "next build",
     "start": "next start",
     "gen": "graphql-codegen --config codegen.yml",
@@ -75,6 +77,7 @@
     "@types/auth0": "^2.9.12",
     "@types/js-cookie": "^2.2.2",
     "@types/jwt-decode": "^2.2.1",
+    "concurrently": "^4.1.0",
     "node-pg-migrate": "^3.20.0",
     "typescript": "^3.4.5"
   }

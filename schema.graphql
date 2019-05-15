@@ -35,6 +35,7 @@ type Mutation {
   deleteFeed(id: ID!): ID!
 
   cancelTweet(id: ID!): Tweet!
+  uncancelTweet(id: ID!): Tweet!
 }
 
 type PageInfo {

@@ -8,12 +8,17 @@ import {
   Tweet,
   CancelTweetComponent,
   TweetStatus,
+  UncancelTweetComponent,
 } from "../lib/generated/graphql-components"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
 import { spacing, shadow, colors, font } from "../utils/theme"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faAngleDoubleDown, faBan } from "@fortawesome/free-solid-svg-icons"
+import {
+  faAngleDoubleDown,
+  faBan,
+  faUndoAlt,
+} from "@fortawesome/free-solid-svg-icons"
 import Loading from "../components/loading"
 import { PillButton } from "../components/button"
 
@@ -130,6 +135,11 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
       ))}
       <div className="buttons">
         {tweet.status === TweetStatus.Draft && <CancelButton id={tweet.id} />}
+        {tweet.status === TweetStatus.Canceled && (
+          <>
+            Canceled. <UncancelButton id={tweet.id} />
+          </>
+        )}
       </div>
       <style jsx>{`
         li {
@@ -181,6 +191,33 @@ const CancelButton = ({ id }: CancelButtonProps) => {
         </PillButton>
       )}
     </CancelTweetComponent>
+  )
+}
+
+const UncancelButton = ({ id }: CancelButtonProps) => {
+  return (
+    <UncancelTweetComponent>
+      {uncancelTweet => (
+        <PillButton
+          onClick={() => {
+            uncancelTweet({
+              variables: { id },
+              optimisticResponse: {
+                __typename: "Mutation",
+                uncancelTweet: {
+                  __typename: "Tweet",
+                  id,
+                  status: TweetStatus.Draft,
+                },
+              },
+            })
+          }}
+        >
+          <FontAwesomeIcon icon={faUndoAlt} />
+          Undo
+        </PillButton>
+      )}
+    </UncancelTweetComponent>
   )
 }
 

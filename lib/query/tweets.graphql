@@ -41,3 +41,10 @@ mutation CancelTweet($id: ID!) {
     status
   }
 }
+
+mutation UncancelTweet($id: ID!) {
+  uncancelTweet(id: $id) {
+    id
+    status
+  }
+}

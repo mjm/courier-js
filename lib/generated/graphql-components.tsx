@@ -49,6 +49,7 @@ export type Mutation = {
   refreshFeed: Feed
   deleteFeed: Scalars["ID"]
   cancelTweet: Tweet
+  uncancelTweet: Tweet
 }
 
 export type MutationAddFeedArgs = {
@@ -64,6 +65,10 @@ export type MutationDeleteFeedArgs = {
 }
 
 export type MutationCancelTweetArgs = {
+  id: Scalars["ID"]
+}
+
+export type MutationUncancelTweetArgs = {
   id: Scalars["ID"]
 }
 
@@ -288,6 +293,14 @@ export type CancelTweetMutationVariables = {
 
 export type CancelTweetMutation = { __typename?: "Mutation" } & {
   cancelTweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "status">
+}
+
+export type UncancelTweetMutationVariables = {
+  id: Scalars["ID"]
+}
+
+export type UncancelTweetMutation = { __typename?: "Mutation" } & {
+  uncancelTweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "status">
 }
 
 import gql from "graphql-tag"
@@ -685,6 +698,59 @@ export function withCancelTweet<TProps, TChildProps = {}>(
     CancelTweetProps<TChildProps>
   >(CancelTweetDocument, {
     alias: "withCancelTweet",
+    ...operationOptions,
+  })
+}
+export const UncancelTweetDocument = gql`
+  mutation UncancelTweet($id: ID!) {
+    uncancelTweet(id: $id) {
+      id
+      status
+    }
+  }
+`
+export type UncancelTweetMutationFn = ReactApollo.MutationFn<
+  UncancelTweetMutation,
+  UncancelTweetMutationVariables
+>
+
+export const UncancelTweetComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<
+        UncancelTweetMutation,
+        UncancelTweetMutationVariables
+      >,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: UncancelTweetMutationVariables }
+) => (
+  <ReactApollo.Mutation<UncancelTweetMutation, UncancelTweetMutationVariables>
+    mutation={UncancelTweetDocument}
+    {...props}
+  />
+)
+
+export type UncancelTweetProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<UncancelTweetMutation, UncancelTweetMutationVariables>
+> &
+  TChildProps
+export function withUncancelTweet<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    UncancelTweetMutation,
+    UncancelTweetMutationVariables,
+    UncancelTweetProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    UncancelTweetMutation,
+    UncancelTweetMutationVariables,
+    UncancelTweetProps<TChildProps>
+  >(UncancelTweetDocument, {
+    alias: "withUncancelTweet",
     ...operationOptions,
   })
 }

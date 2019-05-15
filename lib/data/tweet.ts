@@ -142,6 +142,31 @@ export async function cancelTweet(userId: UserId, id: TweetId): Promise<Tweet> {
   return fromRow(row)
 }
 
+export async function uncancelTweet(
+  userId: UserId,
+  id: TweetId
+): Promise<Tweet> {
+  // this will ensure that we only do this for tweets that belong to the user
+  const existingTweet = await getTweet(userId, id)
+
+  const row = await db.maybeOne(sql<TweetRow>`
+    UPDATE tweets
+       SET status = 'draft',
+           updated_at = CURRENT_TIMESTAMP
+     WHERE id = ${existingTweet.id}
+       AND status = 'canceled'
+ RETURNING *
+  `)
+
+  if (!row) {
+    throw new UserInputError(
+      `A ${existingTweet.status} tweet cannot be uncanceled.`
+    )
+  }
+
+  return fromRow(row)
+}
+
 async function getTweetsForPost(
   feedSubscriptionId: FeedSubscriptionId,
   postId: PostId
