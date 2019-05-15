@@ -12,7 +12,7 @@ import { locateFeed } from "feed-locator"
 import { scrapeFeed } from "scrape-feed"
 import { importPosts } from "./post"
 import { Pager } from "./pager"
-import keyBy from "lodash/keyby"
+import keyBy from "lodash/keyBy"
 
 export async function allFeeds(
   options: PagingOptions = {}
