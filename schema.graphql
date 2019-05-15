@@ -33,6 +33,8 @@ type Mutation {
   addFeed(feed: FeedInput!): SubscribedFeed!
   refreshFeed(id: ID!): Feed!
   deleteFeed(id: ID!): ID!
+
+  cancelTweet(id: ID!): Tweet!
 }
 
 type PageInfo {

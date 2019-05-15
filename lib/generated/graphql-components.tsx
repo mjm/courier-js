@@ -48,6 +48,7 @@ export type Mutation = {
   addFeed: SubscribedFeed
   refreshFeed: Feed
   deleteFeed: Scalars["ID"]
+  cancelTweet: Tweet
 }
 
 export type MutationAddFeedArgs = {
@@ -59,6 +60,10 @@ export type MutationRefreshFeedArgs = {
 }
 
 export type MutationDeleteFeedArgs = {
+  id: Scalars["ID"]
+}
+
+export type MutationCancelTweetArgs = {
   id: Scalars["ID"]
 }
 
@@ -100,7 +105,7 @@ export type Query = {
   allSubscribedFeeds: SubscribedFeedConnection
   allTweets: TweetConnection
   allFeeds: FeedConnection
-  feed: Feed
+  feed?: Maybe<Feed>
 }
 
 export type QueryAllSubscribedFeedsArgs = {

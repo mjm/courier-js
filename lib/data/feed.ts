@@ -183,13 +183,19 @@ export async function refreshFeed(
  * of which user a tweet belongs to. Instead, they are marked as discarded,
  * and can be restored if the user readds them later.
  *
+ * @param userId - The ID of the user who is removing the subscription.
+ *   This must match the user ID on the subscription or this will do nothing.
  * @param id - The ID of the subscription to remove.
  */
-export async function deleteFeed(id: FeedSubscriptionId): Promise<void> {
+export async function deleteFeed(
+  userId: UserId,
+  id: FeedSubscriptionId
+): Promise<void> {
   await db.query(sql`
     UPDATE feed_subscriptions
        SET discarded_at = CURRENT_TIMESTAMP
      WHERE id = ${id}
+       AND user_id = ${userId}
   `)
 }
 

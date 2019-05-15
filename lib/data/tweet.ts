@@ -8,6 +8,7 @@ import {
   PostId,
   NewTweetInput,
   UpdateTweetInput,
+  TweetId,
 } from "./types"
 import { Pager } from "./pager"
 import moment from "moment"
@@ -15,6 +16,7 @@ import { translate } from "html-to-tweets"
 import db, { sql } from "../db"
 import zip from "lodash/zip"
 import { ValueExpressionType } from "slonik"
+import { UserInputError } from "apollo-server-core"
 
 type AllTweetsOptions = PagingOptions & {
   filter?: "UPCOMING" | "PAST" | null
@@ -120,6 +122,26 @@ export async function importTweets({
   return results
 }
 
+export async function cancelTweet(userId: UserId, id: TweetId): Promise<Tweet> {
+  // this will ensure that we only do this for tweets that belong to the user
+  const existingTweet = await getTweet(userId, id)
+
+  const row = await db.maybeOne(sql<TweetRow>`
+    UPDATE tweets
+       SET status = 'canceled',
+           updated_at = CURRENT_TIMESTAMP
+     WHERE id = ${existingTweet.id}
+       AND status <> 'posted'
+ RETURNING *
+  `)
+
+  if (!row) {
+    throw new UserInputError("An already posted tweet cannot be canceled.")
+  }
+
+  return fromRow(row)
+}
+
 async function getTweetsForPost(
   feedSubscriptionId: FeedSubscriptionId,
   postId: PostId
@@ -133,6 +155,18 @@ async function getTweetsForPost(
   `)
 
   return rows.map(fromRow)
+}
+
+async function getTweet(userId: UserId, id: TweetId): Promise<Tweet> {
+  const row = await db.one(sql<TweetRow>`
+    SELECT tweets.*
+      FROM tweets
+      JOIN feed_subscriptions
+        ON tweets.feed_subscription_id = feed_subscriptions.id
+      WHERE tweets.id = ${id}
+        AND feed_subscriptions.user_id = ${userId}
+  `)
+  return fromRow(row)
 }
 
 async function createTweet(input: NewTweetInput): Promise<Tweet> {

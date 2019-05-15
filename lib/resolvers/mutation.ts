@@ -1,5 +1,6 @@
 import { MutationResolvers } from "../generated/graphql"
 import { addFeed, refreshFeed, deleteFeed } from "../data/feed"
+import { cancelTweet } from "../data/tweet"
 
 export const Mutation: MutationResolvers = {
   async addFeed(_, { feed }, { getUser }) {
@@ -13,9 +14,13 @@ export const Mutation: MutationResolvers = {
   },
 
   async deleteFeed(_, { id }, { getUser }) {
-    // TODO ensure the subscription belongs to the user
-    await getUser()
-    await deleteFeed(id)
+    const { sub } = await getUser()
+    await deleteFeed(sub, id)
     return id
+  },
+
+  async cancelTweet(_, { id }, { getUser }) {
+    const { sub } = await getUser()
+    return await cancelTweet(sub, id)
   },
 }
