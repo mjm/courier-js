@@ -282,6 +282,14 @@ export type AllTweetsFieldsFragment = { __typename?: "Tweet" } & Pick<
     >
   }
 
+export type CancelTweetMutationVariables = {
+  id: Scalars["ID"]
+}
+
+export type CancelTweetMutation = { __typename?: "Mutation" } & {
+  cancelTweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "status">
+}
+
 import gql from "graphql-tag"
 import * as React from "react"
 import * as ReactApollo from "react-apollo"
@@ -624,6 +632,59 @@ export function withPastTweets<TProps, TChildProps = {}>(
     PastTweetsProps<TChildProps>
   >(PastTweetsDocument, {
     alias: "withPastTweets",
+    ...operationOptions,
+  })
+}
+export const CancelTweetDocument = gql`
+  mutation CancelTweet($id: ID!) {
+    cancelTweet(id: $id) {
+      id
+      status
+    }
+  }
+`
+export type CancelTweetMutationFn = ReactApollo.MutationFn<
+  CancelTweetMutation,
+  CancelTweetMutationVariables
+>
+
+export const CancelTweetComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<
+        CancelTweetMutation,
+        CancelTweetMutationVariables
+      >,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: CancelTweetMutationVariables }
+) => (
+  <ReactApollo.Mutation<CancelTweetMutation, CancelTweetMutationVariables>
+    mutation={CancelTweetDocument}
+    {...props}
+  />
+)
+
+export type CancelTweetProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<CancelTweetMutation, CancelTweetMutationVariables>
+> &
+  TChildProps
+export function withCancelTweet<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    CancelTweetMutation,
+    CancelTweetMutationVariables,
+    CancelTweetProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    CancelTweetMutation,
+    CancelTweetMutationVariables,
+    CancelTweetProps<TChildProps>
+  >(CancelTweetDocument, {
+    alias: "withCancelTweet",
     ...operationOptions,
   })
 }

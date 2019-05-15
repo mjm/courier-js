@@ -5,13 +5,17 @@ import {
   UpcomingTweetsComponent,
   PastTweetsComponent,
   AllTweetsFieldsFragment,
+  Tweet,
+  CancelTweetComponent,
+  TweetStatus,
 } from "../lib/generated/graphql-components"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
 import { spacing, shadow, colors, font } from "../utils/theme"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faAngleDoubleDown } from "@fortawesome/free-solid-svg-icons"
+import { faAngleDoubleDown, faBan } from "@fortawesome/free-solid-svg-icons"
 import Loading from "../components/loading"
+import { PillButton } from "../components/button"
 
 const Tweets = () => (
   <div className="container">
@@ -117,13 +121,16 @@ interface TweetCardProps {
 
 const TweetCard = ({ tweet }: TweetCardProps) => {
   return (
-    <li>
+    <li className={`${tweet.status.toLowerCase()}`}>
       <div className="body">{tweet.body}</div>
       {tweet.mediaURLs.map(url => (
         <figure key={url}>
           <img src={url} style={{ width: "300px" }} />
         </figure>
       ))}
+      <div className="buttons">
+        {tweet.status === TweetStatus.Draft && <CancelButton id={tweet.id} />}
+      </div>
       <style jsx>{`
         li {
           background-color: white;
@@ -132,12 +139,48 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
           margin-bottom: ${spacing(4)};
           border-top: 3px solid ${colors.primary[500]};
         }
-
+        li.canceled {
+          background-color: ${colors.gray[200]};
+          border-top-color: ${colors.gray[400]};
+        }
         .body {
           white-space: pre-wrap;
         }
+        .buttons {
+          margin-top: ${spacing(3)};
+        }
       `}</style>
     </li>
+  )
+}
+
+interface CancelButtonProps {
+  id: Tweet["id"]
+}
+const CancelButton = ({ id }: CancelButtonProps) => {
+  return (
+    <CancelTweetComponent>
+      {cancelTweet => (
+        <PillButton
+          onClick={() => {
+            cancelTweet({
+              variables: { id },
+              optimisticResponse: {
+                __typename: "Mutation",
+                cancelTweet: {
+                  __typename: "Tweet",
+                  id,
+                  status: TweetStatus.Canceled,
+                },
+              },
+            })
+          }}
+        >
+          <FontAwesomeIcon icon={faBan} />
+          Don't Post
+        </PillButton>
+      )}
+    </CancelTweetComponent>
   )
 }
 

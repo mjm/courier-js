@@ -28,6 +28,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import Moment from "react-moment"
 import Loading from "../components/loading"
+import { PillButton } from "../components/button"
 
 const Feeds = () => (
   <div className="container">
@@ -112,7 +113,7 @@ const FeedsList = () => {
         }
         li {
           padding: ${spacing(3)} ${spacing(4)};
-          background-color: ${colors.gray[100]};
+          background-color: white;
           border-top: 3px solid ${colors.primary[500]};
           margin-bottom: ${spacing(4)};
           box-shadow: ${shadow.md};
@@ -143,35 +144,6 @@ const FeedsList = () => {
   )
 }
 
-const Button = ({ children, ...props }: any) => {
-  return (
-    <button {...props}>
-      {children}
-      <style jsx>{`
-        button {
-          background-color: ${colors.primary[600]};
-          color: white;
-          border: 0;
-          padding: ${spacing(1)} ${spacing(3)};
-          line-height: 1.5em;
-          font-size: 0.9rem;
-          font-weight: 500;
-          border-radius: 0.6rem;
-          margin-right: ${spacing(2)};
-        }
-
-        button:hover {
-          background-color: ${colors.primary[500]};
-        }
-
-        button > :global(svg) {
-          margin-right: ${spacing(1)};
-        }
-      `}</style>
-    </button>
-  )
-}
-
 interface RefreshButtonProps {
   feed: {
     id: string
@@ -184,8 +156,7 @@ const RefreshButton = ({ feed }: RefreshButtonProps) => {
   return (
     <RefreshFeedComponent>
       {refreshFeed => (
-        <Button
-          type="button"
+        <PillButton
           disabled={refreshing}
           onClick={async () => {
             setRefreshing(true)
@@ -198,7 +169,7 @@ const RefreshButton = ({ feed }: RefreshButtonProps) => {
         >
           <FontAwesomeIcon icon={faSyncAlt} spin={refreshing} />
           Refresh
-        </Button>
+        </PillButton>
       )}
     </RefreshFeedComponent>
   )
@@ -219,11 +190,10 @@ const DeleteButton = ({ id }: DeleteButtonProps) => {
       }}
     >
       {deleteFeed => (
-        <Button
-          type="button"
+        <PillButton
           onClick={() => {
             deleteFeed({
-              variables: { id: id },
+              variables: { id },
               optimisticResponse: {
                 __typename: "Mutation",
                 deleteFeed: id,
@@ -233,7 +203,7 @@ const DeleteButton = ({ id }: DeleteButtonProps) => {
         >
           <FontAwesomeIcon icon={faTrashAlt} />
           Delete
-        </Button>
+        </PillButton>
       )}
     </DeleteFeedComponent>
   )

@@ -34,3 +34,10 @@ fragment allTweetsFields on Tweet {
   mediaURLs
   status
 }
+
+mutation CancelTweet($id: ID!) {
+  cancelTweet(id: $id) {
+    id
+    status
+  }
+}
