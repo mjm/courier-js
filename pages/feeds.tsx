@@ -13,7 +13,6 @@ import {
 import withData from "../hocs/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
 import * as yup from "yup"
-import { isApolloError } from "apollo-client"
 import withSecurePage from "../hocs/securePage"
 import { colors, spacing, font, shadow } from "../utils/theme"
 import { DataProxy } from "apollo-cache"
@@ -29,6 +28,7 @@ import {
 import Moment from "react-moment"
 import Loading from "../components/loading"
 import { PillButton } from "../components/button"
+import { ErrorBox } from "../components/error"
 
 const Feeds = () => (
   <div className="container">
@@ -63,7 +63,7 @@ const FeedsList = () => {
           }
 
           if (error) {
-            return <p>{error.message}</p>
+            return <ErrorBox error={error} />
           }
 
           if (!data) {
@@ -228,13 +228,8 @@ const AddFeed = () => (
         try {
           await addFeed({ variables: { feed } })
           actions.resetForm(initialNewFeed)
-        } catch (e) {
-          // figure out something smart to do with these
-          if (isApolloError(e)) {
-            console.log(e.graphQLErrors)
-          } else {
-            console.error(e)
-          }
+        } catch (error) {
+          actions.setStatus({ error })
         } finally {
           actions.setSubmitting(false)
         }
@@ -244,10 +239,12 @@ const AddFeed = () => (
         <div>
           <Formik
             initialValues={initialNewFeed}
+            initialStatus={{ error: null }}
             validationSchema={newFeedSchema}
             onSubmit={onSubmit}
-            render={({ isSubmitting }) => (
+            render={({ isSubmitting, status: { error } }) => (
               <Form>
+                <ErrorBox error={error} />
                 <Field type="text" name="url" placeholder="https://" />
                 <ErrorMessage name="url" component="div" />
                 <button type="submit" disabled={isSubmitting}>

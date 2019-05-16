@@ -54,6 +54,14 @@ const Nav = ({ user, isAuthenticating }: Props) => (
     </ul>
 
     <style jsx>{`
+      :global(html) {
+        box-sizing: border-box;
+      }
+      :global(*),
+      :global(*):before,
+      :global(*):after {
+        box-sizing: inherit;
+      }
       :global(body) {
         font-family: ${font.body};
         background-color: #f9ffff;

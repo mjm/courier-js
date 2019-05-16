@@ -25,6 +25,7 @@ import Loading from "../components/loading"
 import { PillButton } from "../components/button"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import Moment from "react-moment"
+import { ErrorBox } from "../components/error"
 
 const Tweets = () => (
   <div className="container">
@@ -69,7 +70,7 @@ const TweetsList = ({ query: QueryComponent }: TweetsListProps) => {
           }
 
           if (error) {
-            return <p>{error.message}</p>
+            return <ErrorBox error={error} />
           }
 
           if (!data) {
