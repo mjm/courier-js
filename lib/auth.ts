@@ -82,7 +82,7 @@ const managementClient = new ManagementClient({
   scope: "read:users read:user_idp_tokens",
 })
 
-interface TwitterCredentials {
+export interface TwitterCredentials {
   access_token: string
   access_token_secret: string
 }
