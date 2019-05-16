@@ -15,7 +15,7 @@ import moment from "moment"
 import { translate } from "html-to-tweets"
 import db, { sql } from "../db"
 import zip from "lodash/zip"
-import { ValueExpressionType } from "slonik"
+import { ValueExpressionType, NamedAssignmentType } from "slonik"
 import { UserInputError } from "apollo-server-core"
 import { postToTwitter } from "../twitter"
 
@@ -198,6 +198,18 @@ export async function postTweet(userId: UserId, id: TweetId): Promise<Tweet> {
   return fromRow(row)
 }
 
+export async function editTweet(
+  userId: UserId,
+  input: UpdateTweetInput
+): Promise<Tweet> {
+  const existingTweet = await getTweet(userId, input.id)
+  if (existingTweet.status !== "draft") {
+    throw new UserInputError("Only a draft tweet can be edited.")
+  }
+
+  return (await updateTweet(input)) || existingTweet
+}
+
 async function getTweetsForPost(
   feedSubscriptionId: FeedSubscriptionId,
   postId: PostId
@@ -247,11 +259,17 @@ async function createTweet(input: NewTweetInput): Promise<Tweet> {
 }
 
 async function updateTweet(input: UpdateTweetInput): Promise<Tweet | null> {
+  const assignments: NamedAssignmentType = {
+    body: input.body,
+    updated_at: sql.raw("CURRENT_TIMESTAMP"),
+  }
+  if (input.mediaURLs) {
+    assignments.media_urls = sql.array(input.mediaURLs, "text")
+  }
+
   const row = await db.maybeOne(sql<TweetRow>`
     UPDATE tweets
-       SET body = ${input.body},
-           media_urls = ${sql.array(input.mediaURLs, "text")},
-           updated_at = CURRENT_TIMESTAMP
+       SET ${sql.assignmentList(assignments)}
      WHERE id = ${input.id}
        AND status <> 'posted'
  RETURNING *

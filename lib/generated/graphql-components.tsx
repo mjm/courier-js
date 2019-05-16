@@ -10,6 +10,15 @@ export type Scalars = {
   DateTime: any
 }
 
+export type EditTweetInput = {
+  id: Scalars["ID"]
+  body: Scalars["String"]
+}
+
+export type EditTweetPayload = {
+  tweet: Tweet
+}
+
 export type Feed = {
   id: Scalars["ID"]
   url: Scalars["String"]
@@ -50,7 +59,8 @@ export type Mutation = {
   deleteFeed: Scalars["ID"]
   cancelTweet: Tweet
   uncancelTweet: Tweet
-  postTweet: Tweet
+  postTweet: PostTweetPayload
+  editTweet: EditTweetPayload
 }
 
 export type MutationAddFeedArgs = {
@@ -74,7 +84,11 @@ export type MutationUncancelTweetArgs = {
 }
 
 export type MutationPostTweetArgs = {
-  id: Scalars["ID"]
+  input: PostTweetInput
+}
+
+export type MutationEditTweetArgs = {
+  input: EditTweetInput
 }
 
 export type PageInfo = {
@@ -108,6 +122,15 @@ export type PostConnection = {
 export type PostEdge = {
   cursor: Scalars["Cursor"]
   node: Post
+}
+
+export type PostTweetInput = {
+  id: Scalars["ID"]
+  body?: Maybe<Scalars["String"]>
+}
+
+export type PostTweetPayload = {
+  tweet: Tweet
 }
 
 export type Query = {
@@ -309,14 +332,26 @@ export type UncancelTweetMutation = { __typename?: "Mutation" } & {
 }
 
 export type PostTweetMutationVariables = {
-  id: Scalars["ID"]
+  input: PostTweetInput
 }
 
 export type PostTweetMutation = { __typename?: "Mutation" } & {
-  postTweet: { __typename?: "Tweet" } & Pick<
-    Tweet,
-    "id" | "status" | "postedAt" | "postedTweetID"
-  >
+  postTweet: { __typename?: "PostTweetPayload" } & {
+    tweet: { __typename?: "Tweet" } & Pick<
+      Tweet,
+      "id" | "body" | "status" | "postedAt" | "postedTweetID"
+    >
+  }
+}
+
+export type EditTweetMutationVariables = {
+  input: EditTweetInput
+}
+
+export type EditTweetMutation = { __typename?: "Mutation" } & {
+  editTweet: { __typename?: "EditTweetPayload" } & {
+    tweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "body">
+  }
 }
 
 import gql from "graphql-tag"
@@ -773,12 +808,15 @@ export function withUncancelTweet<TProps, TChildProps = {}>(
   })
 }
 export const PostTweetDocument = gql`
-  mutation PostTweet($id: ID!) {
-    postTweet(id: $id) {
-      id
-      status
-      postedAt
-      postedTweetID
+  mutation PostTweet($input: PostTweetInput!) {
+    postTweet(input: $input) {
+      tweet {
+        id
+        body
+        status
+        postedAt
+        postedTweetID
+      }
     }
   }
 `
@@ -821,6 +859,58 @@ export function withPostTweet<TProps, TChildProps = {}>(
     PostTweetProps<TChildProps>
   >(PostTweetDocument, {
     alias: "withPostTweet",
+    ...operationOptions,
+  })
+}
+export const EditTweetDocument = gql`
+  mutation EditTweet($input: EditTweetInput!) {
+    editTweet(input: $input) {
+      tweet {
+        id
+        body
+      }
+    }
+  }
+`
+export type EditTweetMutationFn = ReactApollo.MutationFn<
+  EditTweetMutation,
+  EditTweetMutationVariables
+>
+
+export const EditTweetComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<EditTweetMutation, EditTweetMutationVariables>,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: EditTweetMutationVariables }
+) => (
+  <ReactApollo.Mutation<EditTweetMutation, EditTweetMutationVariables>
+    mutation={EditTweetDocument}
+    {...props}
+  />
+)
+
+export type EditTweetProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<EditTweetMutation, EditTweetMutationVariables>
+> &
+  TChildProps
+export function withEditTweet<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    EditTweetMutation,
+    EditTweetMutationVariables,
+    EditTweetProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    EditTweetMutation,
+    EditTweetMutationVariables,
+    EditTweetProps<TChildProps>
+  >(EditTweetDocument, {
+    alias: "withEditTweet",
     ...operationOptions,
   })
 }

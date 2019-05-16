@@ -51,11 +51,23 @@ mutation UncancelTweet($id: ID!) {
   }
 }
 
-mutation PostTweet($id: ID!) {
-  postTweet(id: $id) {
-    id
-    status
-    postedAt
-    postedTweetID
+mutation PostTweet($input: PostTweetInput!) {
+  postTweet(input: $input) {
+    tweet {
+      id
+      body
+      status
+      postedAt
+      postedTweetID
+    }
+  }
+}
+
+mutation EditTweet($input: EditTweetInput!) {
+  editTweet(input: $input) {
+    tweet {
+      id
+      body
+    }
   }
 }

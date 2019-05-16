@@ -36,7 +36,8 @@ type Mutation {
 
   cancelTweet(id: ID!): Tweet!
   uncancelTweet(id: ID!): Tweet!
-  postTweet(id: ID!): Tweet!
+  postTweet(input: PostTweetInput!): PostTweetPayload!
+  editTweet(input: EditTweetInput!): EditTweetPayload!
 }
 
 type PageInfo {
@@ -156,4 +157,22 @@ type TweetConnection {
 type TweetEdge {
   cursor: Cursor!
   node: Tweet!
+}
+
+input PostTweetInput {
+  id: ID!
+  body: String
+}
+
+type PostTweetPayload {
+  tweet: Tweet!
+}
+
+input EditTweetInput {
+  id: ID!
+  body: String!
+}
+
+type EditTweetPayload {
+  tweet: Tweet!
 }

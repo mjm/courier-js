@@ -10,6 +10,7 @@ import {
   TweetStatus,
   UncancelTweetComponent,
   PostTweetComponent,
+  EditTweetComponent,
 } from "../lib/generated/graphql-components"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
@@ -230,49 +231,88 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
   const initialValues: FormValues = { body: tweet.body, action: "save" }
   return (
     <div>
-      <Formik
-        initialValues={initialValues}
-        isInitialValid
-        onSubmit={(values, actions) => {
-          console.log(values)
-          actions.setSubmitting(false)
-          onStopEditing()
-        }}
-      >
-        {({ isSubmitting, setFieldValue, submitForm }) => {
-          function submit(action: FormValues["action"]) {
-            setFieldValue("action", action)
-            // allow the previous line to rerender the component before doing this
-            setTimeout(() => submitForm(), 0)
-          }
+      <PostTweetComponent>
+        {postTweet => (
+          <EditTweetComponent>
+            {editTweet => (
+              <Formik
+                initialValues={initialValues}
+                initialStatus={{ error: null }}
+                isInitialValid
+                onSubmit={async ({ body, action }, actions) => {
+                  const input = { id: tweet.id, body: body }
+                  try {
+                    if (action === "save") {
+                      await editTweet({ variables: { input } })
+                    } else {
+                      await postTweet({ variables: { input } })
+                    }
+                    onStopEditing()
+                  } catch (err) {
+                    actions.setStatus({ error: err })
+                  } finally {
+                    actions.setSubmitting(false)
+                  }
+                }}
+              >
+                {({
+                  isSubmitting,
+                  setFieldValue,
+                  submitForm,
+                  status,
+                  values,
+                }) => {
+                  function submit(action: FormValues["action"]) {
+                    setFieldValue("action", action)
+                    // allow the previous line to rerender the component before doing this
+                    setTimeout(() => submitForm(), 0)
+                  }
 
-          return (
-            <Form>
-              <Field name="body" component="textarea" />
-              <div className="buttons">
-                <PillButton disabled={isSubmitting} onClick={onStopEditing}>
-                  <FontAwesomeIcon icon={faBan} />
-                  Discard Changes
-                </PillButton>
-                <PillButton
-                  disabled={isSubmitting}
-                  onClick={() => submit("save")}
-                >
-                  <FontAwesomeIcon icon={faCheck} />
-                  Save Draft
-                </PillButton>
-                <PillButton
-                  disabled={isSubmitting}
-                  onClick={() => submit("post")}
-                >
-                  <FontAwesomeIcon icon={faShare} />
-                  Post Now
-                </PillButton>
-              </div>
-            </Form>
-          )
-        }}
-      </Formik>
+                  function submitting(action: FormValues["action"]) {
+                    return isSubmitting && action === values.action
+                  }
+
+                  return (
+                    <Form>
+                      <ErrorBox error={status.error} />
+                      <Field name="body" component="textarea" />
+                      <div className="buttons">
+                        <PillButton
+                          disabled={isSubmitting}
+                          onClick={onStopEditing}
+                        >
+                          <FontAwesomeIcon icon={faBan} />
+                          Discard Changes
+                        </PillButton>
+                        <PillButton
+                          disabled={isSubmitting}
+                          onClick={() => submit("save")}
+                        >
+                          <FontAwesomeIcon
+                            icon={submitting("save") ? faSpinner : faCheck}
+                            spin={submitting("save")}
+                          />
+                          Save Draft
+                        </PillButton>
+                        <PillButton
+                          disabled={isSubmitting}
+                          onClick={() => submit("post")}
+                        >
+                          <FontAwesomeIcon
+                            icon={submitting("post") ? faSpinner : faShare}
+                            spin={submitting("post")}
+                          />
+                          Post Now
+                        </PillButton>
+                      </div>
+                    </Form>
+                  )
+                }}
+              </Formik>
+            )}
+          </EditTweetComponent>
+        )}
+      </PostTweetComponent>
       <style jsx>{`
         div :global(textarea) {
           width: 100%;
@@ -352,7 +392,7 @@ const PostButton = ({ id }: CancelButtonProps) => {
             setPosting(true)
             try {
               await postTweet({
-                variables: { id },
+                variables: { input: { id } },
               })
             } catch (e) {
               console.error(e)

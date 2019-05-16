@@ -133,5 +133,5 @@ export interface NewTweetInput {
 export interface UpdateTweetInput {
   id: TweetId
   body: string
-  mediaURLs: string[]
+  mediaURLs?: string[]
 }
