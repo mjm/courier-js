@@ -45,7 +45,6 @@ const Feeds = () => (
       .container {
         padding: 0 1rem 6rem 1rem;
       }
-
       .container > p {
         text-align: center;
       }
@@ -54,6 +53,8 @@ const Feeds = () => (
 )
 
 const FeedsList = () => {
+  const [actionError, setActionError] = useState<Error | undefined>()
+
   return (
     <div>
       <AllFeedsComponent>
@@ -71,37 +72,40 @@ const FeedsList = () => {
           }
           const nodes = data.allSubscribedFeeds.nodes
           return (
-            <ul>
-              {nodes.map(({ id, feed }) => (
-                <li key={id}>
-                  <h3>
-                    <a href={feed.homePageURL}>{feed.title}</a>
-                  </h3>
-                  <div>
-                    <a href={feed.homePageURL}>
-                      <FontAwesomeIcon icon={faHome} fixedWidth />
-                      {feed.homePageURL}
-                    </a>
-                  </div>
-                  <div>
-                    <a href={feed.url}>
-                      <FontAwesomeIcon icon={faRss} fixedWidth />
-                      {feed.url}
-                    </a>
-                  </div>
-                  {feed.refreshedAt && (
+            <>
+              <ErrorBox error={actionError} />
+              <ul>
+                {nodes.map(({ id, feed }) => (
+                  <li key={id}>
+                    <h3>
+                      <a href={feed.homePageURL}>{feed.title}</a>
+                    </h3>
                     <div>
-                      <FontAwesomeIcon icon={faHistory} fixedWidth />
-                      Checked <Moment fromNow>{feed.refreshedAt}</Moment>
+                      <a href={feed.homePageURL}>
+                        <FontAwesomeIcon icon={faHome} fixedWidth />
+                        {feed.homePageURL}
+                      </a>
                     </div>
-                  )}
-                  <div className="buttons">
-                    <RefreshButton feed={feed} />
-                    <DeleteButton id={id} />
-                  </div>
-                </li>
-              ))}
-            </ul>
+                    <div>
+                      <a href={feed.url}>
+                        <FontAwesomeIcon icon={faRss} fixedWidth />
+                        {feed.url}
+                      </a>
+                    </div>
+                    {feed.refreshedAt && (
+                      <div>
+                        <FontAwesomeIcon icon={faHistory} fixedWidth />
+                        Checked <Moment fromNow>{feed.refreshedAt}</Moment>
+                      </div>
+                    )}
+                    <div className="buttons">
+                      <RefreshButton feed={feed} setError={setActionError} />
+                      <DeleteButton id={id} setError={setActionError} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
           )
         }}
       </AllFeedsComponent>
@@ -148,9 +152,10 @@ interface RefreshButtonProps {
   feed: {
     id: string
   }
+  setError: (err: Error | undefined) => void
 }
 
-const RefreshButton = ({ feed }: RefreshButtonProps) => {
+const RefreshButton = ({ feed, setError }: RefreshButtonProps) => {
   const [refreshing, setRefreshing] = useState(false)
 
   return (
@@ -162,6 +167,9 @@ const RefreshButton = ({ feed }: RefreshButtonProps) => {
             setRefreshing(true)
             try {
               await refreshFeed({ variables: { id: feed.id } })
+              setError(undefined)
+            } catch (err) {
+              setError(err)
             } finally {
               setRefreshing(false)
             }
@@ -177,9 +185,10 @@ const RefreshButton = ({ feed }: RefreshButtonProps) => {
 
 interface DeleteButtonProps {
   id: string
+  setError: (err: Error | undefined) => void
 }
 
-const DeleteButton = ({ id }: DeleteButtonProps) => {
+const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
   return (
     <DeleteFeedComponent
       update={(cache, { data }) => {
@@ -191,14 +200,19 @@ const DeleteButton = ({ id }: DeleteButtonProps) => {
     >
       {deleteFeed => (
         <PillButton
-          onClick={() => {
-            deleteFeed({
-              variables: { id },
-              optimisticResponse: {
-                __typename: "Mutation",
-                deleteFeed: id,
-              },
-            })
+          onClick={async () => {
+            try {
+              await deleteFeed({
+                variables: { id },
+                optimisticResponse: {
+                  __typename: "Mutation",
+                  deleteFeed: id,
+                },
+              })
+              setError(undefined)
+            } catch (err) {
+              setError(err)
+            }
           }}
         >
           <FontAwesomeIcon icon={faTrashAlt} />
@@ -227,7 +241,7 @@ const AddFeed = () => (
       ) => {
         try {
           await addFeed({ variables: { feed } })
-          actions.resetForm(initialNewFeed)
+          actions.resetForm()
         } catch (error) {
           actions.setStatus({ error })
         } finally {
