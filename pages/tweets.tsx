@@ -20,12 +20,16 @@ import {
   faBan,
   faUndoAlt,
   faSpinner,
+  faEdit,
+  faCheck,
+  faShare,
 } from "@fortawesome/free-solid-svg-icons"
 import Loading from "../components/loading"
 import { PillButton } from "../components/button"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import Moment from "react-moment"
 import { ErrorBox } from "../components/error"
+import { Formik, Form, Field } from "formik"
 
 const Tweets = () => (
   <div className="container">
@@ -130,8 +134,43 @@ interface TweetCardProps {
 }
 
 const TweetCard = ({ tweet }: TweetCardProps) => {
+  const [editing, setEditing] = useState(false)
+
   return (
     <li className={`${tweet.status.toLowerCase()}`}>
+      {editing ? (
+        <EditTweetCard tweet={tweet} onStopEditing={() => setEditing(false)} />
+      ) : (
+        <ViewTweetCard tweet={tweet} onEdit={() => setEditing(true)} />
+      )}
+      <style jsx>{`
+        li {
+          background-color: white;
+          padding: ${spacing(4)};
+          box-shadow: ${shadow.md};
+          margin-bottom: ${spacing(4)};
+          border-top: 3px solid ${colors.primary[500]};
+        }
+        li.canceled {
+          background-color: ${colors.gray[200]};
+          border-top-color: ${colors.gray[400]};
+        }
+        li :global(.buttons) {
+          margin-top: ${spacing(3)};
+        }
+      `}</style>
+    </li>
+  )
+}
+
+interface ViewTweetCardProps {
+  tweet: AllTweetsFieldsFragment
+  onEdit: () => void
+}
+
+const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
+  return (
+    <div>
       <div className="body">{tweet.body}</div>
       {tweet.mediaURLs.map(url => (
         <figure key={url}>
@@ -143,6 +182,10 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
           <>
             <CancelButton id={tweet.id} />
             <PostButton id={tweet.id} />
+            <PillButton onClick={onEdit}>
+              <FontAwesomeIcon icon={faEdit} />
+              Edit Tweet
+            </PillButton>
           </>
         )}
         {tweet.status === TweetStatus.Canceled && (
@@ -163,28 +206,80 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
         )}
       </div>
       <style jsx>{`
-        li {
-          background-color: white;
-          padding: ${spacing(4)};
-          box-shadow: ${shadow.md};
-          margin-bottom: ${spacing(4)};
-          border-top: 3px solid ${colors.primary[500]};
-        }
-        li.canceled {
-          background-color: ${colors.gray[200]};
-          border-top-color: ${colors.gray[400]};
-        }
         .body {
           white-space: pre-wrap;
-        }
-        .buttons {
-          margin-top: ${spacing(3)};
         }
         a {
           color: ${colors.primary[700]};
         }
       `}</style>
-    </li>
+    </div>
+  )
+}
+
+interface EditTweetCardProps {
+  tweet: AllTweetsFieldsFragment
+  onStopEditing: () => void
+}
+
+type FormValues = Pick<AllTweetsFieldsFragment, "body"> & {
+  action: "save" | "post"
+}
+
+const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
+  const initialValues: FormValues = { body: tweet.body, action: "save" }
+  return (
+    <div>
+      <Formik
+        initialValues={initialValues}
+        isInitialValid
+        onSubmit={(values, actions) => {
+          console.log(values)
+          actions.setSubmitting(false)
+          onStopEditing()
+        }}
+      >
+        {({ isSubmitting, setFieldValue, submitForm }) => {
+          function submit(action: FormValues["action"]) {
+            setFieldValue("action", action)
+            // allow the previous line to rerender the component before doing this
+            setTimeout(() => submitForm(), 0)
+          }
+
+          return (
+            <Form>
+              <Field name="body" component="textarea" />
+              <div className="buttons">
+                <PillButton disabled={isSubmitting} onClick={onStopEditing}>
+                  <FontAwesomeIcon icon={faBan} />
+                  Discard Changes
+                </PillButton>
+                <PillButton
+                  disabled={isSubmitting}
+                  onClick={() => submit("save")}
+                >
+                  <FontAwesomeIcon icon={faCheck} />
+                  Save Draft
+                </PillButton>
+                <PillButton
+                  disabled={isSubmitting}
+                  onClick={() => submit("post")}
+                >
+                  <FontAwesomeIcon icon={faShare} />
+                  Post Now
+                </PillButton>
+              </div>
+            </Form>
+          )
+        }}
+      </Formik>
+      <style jsx>{`
+        div :global(textarea) {
+          width: 100%;
+          height: ${spacing(20)};
+        }
+      `}</style>
+    </div>
   )
 }
 

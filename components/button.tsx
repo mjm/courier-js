@@ -1,7 +1,8 @@
 import React from "react"
 import { colors, spacing } from "../utils/theme"
 
-export const PillButton = ({ children, ...props }: any) => {
+type Props = React.PropsWithoutRef<JSX.IntrinsicElements["button"]>
+export const PillButton = ({ children, ...props }: Props) => {
   return (
     <button type="button" {...props}>
       {children}
