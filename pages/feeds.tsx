@@ -28,7 +28,7 @@ import {
 import Moment from "react-moment"
 import Loading from "../components/loading"
 import { PillButton } from "../components/button"
-import { ErrorBox } from "../components/error"
+import { ErrorBox, FieldError } from "../components/error"
 
 const Feeds = () => (
   <div className="container">
@@ -224,7 +224,7 @@ const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
 }
 
 const newFeedSchema = yup.object().shape({
-  url: yup.string().url(),
+  url: yup.string().url("This must be a valid URL."),
 })
 const initialNewFeed: FeedInput = { url: "" }
 
@@ -259,8 +259,10 @@ const AddFeed = () => (
             render={({ isSubmitting, status: { error } }) => (
               <Form>
                 <ErrorBox error={error} />
-                <Field type="text" name="url" placeholder="https://" />
-                <ErrorMessage name="url" component="div" />
+                <div className="field">
+                  <Field type="text" name="url" placeholder="https://" />
+                  <ErrorMessage name="url" component={FieldError} />
+                </div>
                 <button type="submit" disabled={isSubmitting}>
                   <FontAwesomeIcon
                     icon={isSubmitting ? faSyncAlt : faPlusCircle}
@@ -277,10 +279,13 @@ const AddFeed = () => (
               flex-direction: column;
               align-items: center;
             }
-            div :global(input) {
-              font-size: 1.5rem;
+            .field {
               width: 50%;
               min-width: 300px;
+            }
+            div :global(input) {
+              font-size: 1.5rem;
+              width: 100%;
               padding: ${spacing(2)} ${spacing(4)};
               margin-bottom: ${spacing(3)};
               background-color: ${colors.gray[100]};
@@ -296,7 +301,7 @@ const AddFeed = () => (
               color: ${colors.gray[400]};
             }
             @media (max-width: 300px) {
-              div :global(input) {
+              .field {
                 min-width: 0;
                 width: 100%;
               }

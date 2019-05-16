@@ -76,3 +76,24 @@ export const ErrorBox = ({
     </div>
   )
 }
+
+interface FieldErrorProps {
+  children?: React.ReactNode
+}
+export const FieldError = ({ children }: FieldErrorProps) => {
+  return (
+    <div>
+      <FontAwesomeIcon icon={faExclamationCircle} />
+      {children}
+      <style jsx>{`
+        div {
+          color: ${colors.red[900]};
+          margin-bottom: ${spacing(3)};
+        }
+        div > :global(svg) {
+          margin-right: ${spacing(2)};
+        }
+      `}</style>
+    </div>
+  )
+}
