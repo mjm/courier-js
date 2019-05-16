@@ -8,6 +8,7 @@
   ],
   "routes": [
     { "src": "/graphql", "dest": "api/graphql.ts" },
+    { "src": "/ping", "dest": "api/ping.ts" },
     { "src": "/api/(.*)", "dest": "/api/$1.ts" }
   ],
   "env": {

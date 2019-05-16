@@ -1,12 +1,18 @@
 import micro from "../lib/micro"
 import { xmlrpc, XMLRPCRequestHandler } from "../lib/xmlrpc"
+import { getFeedsByHomePageURL, refreshFeed } from "../lib/data/feed"
 
 const handler: XMLRPCRequestHandler = async ({ methodName, params }) => {
   if (methodName === "weblogUpdates.ping") {
     const [title, homePageURL] = params
-    console.log(`[${title}](${homePageURL})`)
+    console.log(`Received ping for [${title}](${homePageURL})`)
 
-    // TODO actually refresh the feed
+    const feeds = await getFeedsByHomePageURL(homePageURL)
+    await Promise.all(
+      feeds.map(async feed => {
+        await refreshFeed(feed.id)
+      })
+    )
 
     return {
       flerror: false,

@@ -9,7 +9,7 @@ import {
   FeedSubscriptionId,
 } from "./types"
 import { locateFeed } from "feed-locator"
-import { scrapeFeed } from "scrape-feed"
+import { scrapeFeed, normalizeURL } from "scrape-feed"
 import { importPosts, getRecentPosts } from "./post"
 import { Pager } from "./pager"
 import keyBy from "lodash/keyBy"
@@ -79,6 +79,14 @@ export async function getFeedsById(ids: FeedId[]): Promise<(Feed | null)[]> {
   `)
   const byId = keyBy(rows.map(fromRow), "id")
   return ids.map(id => byId[id] || null)
+}
+
+export async function getFeedsByHomePageURL(url: string): Promise<Feed[]> {
+  const homePageURL = normalizeURL(url)
+  const rows = await db.any(sql<FeedRow>`
+    SELECT * FROM feeds WHERE home_page_url = ${homePageURL}
+  `)
+  return rows.map(fromRow)
 }
 
 export async function getSubscriptionsById(
