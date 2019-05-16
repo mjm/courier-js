@@ -28,7 +28,7 @@ import Moment from "react-moment"
 
 const Tweets = () => (
   <div className="container">
-    <Head title="Feeds to Watch" />
+    <Head title="Your Tweets" />
 
     <PageHeader>Your Tweets</PageHeader>
     <p>These are the tweets Courier has translated from your feeds.</p>
