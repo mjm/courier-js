@@ -36,6 +36,7 @@ type Mutation {
 
   cancelTweet(id: ID!): Tweet!
   uncancelTweet(id: ID!): Tweet!
+  postTweet(id: ID!): Tweet!
 }
 
 type PageInfo {

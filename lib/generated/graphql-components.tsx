@@ -50,6 +50,7 @@ export type Mutation = {
   deleteFeed: Scalars["ID"]
   cancelTweet: Tweet
   uncancelTweet: Tweet
+  postTweet: Tweet
 }
 
 export type MutationAddFeedArgs = {
@@ -69,6 +70,10 @@ export type MutationCancelTweetArgs = {
 }
 
 export type MutationUncancelTweetArgs = {
+  id: Scalars["ID"]
+}
+
+export type MutationPostTweetArgs = {
   id: Scalars["ID"]
 }
 
@@ -279,7 +284,7 @@ export type TweetConnectionFieldsFragment = {
 
 export type AllTweetsFieldsFragment = { __typename?: "Tweet" } & Pick<
   Tweet,
-  "id" | "body" | "mediaURLs" | "status"
+  "id" | "body" | "mediaURLs" | "status" | "postedAt" | "postedTweetID"
 > & {
     post: { __typename?: "Post" } & Pick<
       Post,
@@ -301,6 +306,17 @@ export type UncancelTweetMutationVariables = {
 
 export type UncancelTweetMutation = { __typename?: "Mutation" } & {
   uncancelTweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "status">
+}
+
+export type PostTweetMutationVariables = {
+  id: Scalars["ID"]
+}
+
+export type PostTweetMutation = { __typename?: "Mutation" } & {
+  postTweet: { __typename?: "Tweet" } & Pick<
+    Tweet,
+    "id" | "status" | "postedAt" | "postedTweetID"
+  >
 }
 
 import gql from "graphql-tag"
@@ -332,6 +348,8 @@ export const allTweetsFieldsFragmentDoc = gql`
     body
     mediaURLs
     status
+    postedAt
+    postedTweetID
   }
 `
 export const tweetConnectionFieldsFragmentDoc = gql`
@@ -751,6 +769,58 @@ export function withUncancelTweet<TProps, TChildProps = {}>(
     UncancelTweetProps<TChildProps>
   >(UncancelTweetDocument, {
     alias: "withUncancelTweet",
+    ...operationOptions,
+  })
+}
+export const PostTweetDocument = gql`
+  mutation PostTweet($id: ID!) {
+    postTweet(id: $id) {
+      id
+      status
+      postedAt
+      postedTweetID
+    }
+  }
+`
+export type PostTweetMutationFn = ReactApollo.MutationFn<
+  PostTweetMutation,
+  PostTweetMutationVariables
+>
+
+export const PostTweetComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<PostTweetMutation, PostTweetMutationVariables>,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: PostTweetMutationVariables }
+) => (
+  <ReactApollo.Mutation<PostTweetMutation, PostTweetMutationVariables>
+    mutation={PostTweetDocument}
+    {...props}
+  />
+)
+
+export type PostTweetProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<PostTweetMutation, PostTweetMutationVariables>
+> &
+  TChildProps
+export function withPostTweet<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    PostTweetMutation,
+    PostTweetMutationVariables,
+    PostTweetProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    PostTweetMutation,
+    PostTweetMutationVariables,
+    PostTweetProps<TChildProps>
+  >(PostTweetDocument, {
+    alias: "withPostTweet",
     ...operationOptions,
   })
 }

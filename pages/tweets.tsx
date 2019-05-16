@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import {
@@ -9,6 +9,7 @@ import {
   CancelTweetComponent,
   TweetStatus,
   UncancelTweetComponent,
+  PostTweetComponent,
 } from "../lib/generated/graphql-components"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
@@ -18,9 +19,12 @@ import {
   faAngleDoubleDown,
   faBan,
   faUndoAlt,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons"
 import Loading from "../components/loading"
 import { PillButton } from "../components/button"
+import { faTwitter } from "@fortawesome/free-brands-svg-icons"
+import Moment from "react-moment"
 
 const Tweets = () => (
   <div className="container">
@@ -134,10 +138,26 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
         </figure>
       ))}
       <div className="buttons">
-        {tweet.status === TweetStatus.Draft && <CancelButton id={tweet.id} />}
+        {tweet.status === TweetStatus.Draft && (
+          <>
+            <CancelButton id={tweet.id} />
+            <PostButton id={tweet.id} />
+          </>
+        )}
         {tweet.status === TweetStatus.Canceled && (
           <>
             Canceled. <UncancelButton id={tweet.id} />
+          </>
+        )}
+        {tweet.status === TweetStatus.Posted && (
+          <>
+            Posted to Twitter{" "}
+            <a
+              href={`https://twitter.com/user/status/${tweet.postedTweetID}`}
+              target="_blank"
+            >
+              <Moment fromNow>{tweet.postedAt}</Moment>
+            </a>
           </>
         )}
       </div>
@@ -158,6 +178,9 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
         }
         .buttons {
           margin-top: ${spacing(3)};
+        }
+        a {
+          color: ${colors.primary[700]};
         }
       `}</style>
     </li>
@@ -218,6 +241,37 @@ const UncancelButton = ({ id }: CancelButtonProps) => {
         </PillButton>
       )}
     </UncancelTweetComponent>
+  )
+}
+
+const PostButton = ({ id }: CancelButtonProps) => {
+  const [posting, setPosting] = useState(false)
+
+  return (
+    <PostTweetComponent>
+      {postTweet => (
+        <PillButton
+          disabled={posting}
+          onClick={async () => {
+            setPosting(true)
+            try {
+              await postTweet({
+                variables: { id },
+              })
+            } catch (e) {
+              console.error(e)
+              setPosting(false)
+            }
+          }}
+        >
+          <FontAwesomeIcon
+            icon={posting ? faSpinner : faTwitter}
+            spin={posting}
+          />
+          Post to Twitter
+        </PillButton>
+      )}
+    </PostTweetComponent>
   )
 }
 

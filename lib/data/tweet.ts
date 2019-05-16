@@ -17,6 +17,7 @@ import db, { sql } from "../db"
 import zip from "lodash/zip"
 import { ValueExpressionType } from "slonik"
 import { UserInputError } from "apollo-server-core"
+import { postToTwitter } from "../twitter"
 
 type AllTweetsOptions = PagingOptions & {
   filter?: "UPCOMING" | "PAST" | null
@@ -162,6 +163,36 @@ export async function uncancelTweet(
     throw new UserInputError(
       `A ${existingTweet.status} tweet cannot be uncanceled.`
     )
+  }
+
+  return fromRow(row)
+}
+
+export async function postTweet(userId: UserId, id: TweetId): Promise<Tweet> {
+  // this will ensure that we only do this for tweets that belong to the user
+  const existingTweet = await getTweet(userId, id)
+  if (existingTweet.status === "posted") {
+    throw new UserInputError("A posted tweet cannot be posted again.")
+  }
+
+  const postedTweetID = await postToTwitter({ userId, tweet: existingTweet })
+
+  const row = await db.maybeOne(sql<TweetRow>`
+    UPDATE tweets
+       SET status = 'posted',
+           posted_at = CURRENT_TIMESTAMP,
+           posted_tweet_id = ${postedTweetID}
+     WHERE id = ${existingTweet.id}
+       AND status <> 'posted'
+ RETURNING *
+  `)
+
+  if (!row) {
+    // another request squeezed in between our initial fetch and our update.
+    // this is probably fine: Twitter silently rejects duplicate posts that are
+    // close together.
+    // just refetch the tweet and return that as if we did it here.
+    return await getTweet(userId, id)
   }
 
   return fromRow(row)

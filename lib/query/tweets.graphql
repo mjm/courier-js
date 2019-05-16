@@ -33,6 +33,8 @@ fragment allTweetsFields on Tweet {
   body
   mediaURLs
   status
+  postedAt
+  postedTweetID
 }
 
 mutation CancelTweet($id: ID!) {
@@ -46,5 +48,14 @@ mutation UncancelTweet($id: ID!) {
   uncancelTweet(id: $id) {
     id
     status
+  }
+}
+
+mutation PostTweet($id: ID!) {
+  postTweet(id: $id) {
+    id
+    status
+    postedAt
+    postedTweetID
   }
 }

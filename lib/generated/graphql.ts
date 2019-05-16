@@ -53,6 +53,7 @@ export type Mutation = {
   deleteFeed: Scalars["ID"]
   cancelTweet: Tweet
   uncancelTweet: Tweet
+  postTweet: Tweet
 }
 
 export type MutationAddFeedArgs = {
@@ -72,6 +73,10 @@ export type MutationCancelTweetArgs = {
 }
 
 export type MutationUncancelTweetArgs = {
+  id: Scalars["ID"]
+}
+
+export type MutationPostTweetArgs = {
   id: Scalars["ID"]
 }
 
@@ -391,6 +396,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     MutationUncancelTweetArgs
+  >
+  postTweet?: Resolver<
+    ResolversTypes["Tweet"],
+    ParentType,
+    ContextType,
+    MutationPostTweetArgs
   >
 }
 
