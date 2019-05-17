@@ -296,7 +296,7 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                   return (
                     <Form>
                       <ErrorBox error={status.error} />
-                      <Field name="body" component="textarea" />
+                      <Field name="body" component="textarea" autoFocus />
                       <div className="buttons">
                         <PillButton
                           disabled={isSubmitting}
@@ -342,7 +342,13 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
       <style jsx>{`
         div :global(textarea) {
           width: 100%;
-          height: ${spacing(20)};
+          height: ${spacing(25)};
+          padding: ${spacing(2)};
+          color: ${colors.primary[900]};
+          background-color: ${colors.primary[100]};
+          border-radius: 0.5rem;
+          border: 2px solid ${colors.primary[500]};
+          outline: none;
         }
       `}</style>
     </div>
