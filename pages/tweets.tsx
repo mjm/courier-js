@@ -157,7 +157,7 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
           border-top-color: ${colors.gray[400]};
         }
         li :global(.buttons) {
-          margin-top: ${spacing(3)};
+          margin-top: ${spacing(4)};
         }
       `}</style>
     </li>
@@ -173,11 +173,15 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
   return (
     <div>
       <div className="body">{tweet.body}</div>
-      {tweet.mediaURLs.map(url => (
-        <figure key={url}>
-          <img src={url} style={{ width: "300px" }} />
-        </figure>
-      ))}
+      {tweet.mediaURLs.length ? (
+        <div className="media">
+          {tweet.mediaURLs.map(url => (
+            <figure key={url}>
+              <img src={url} />
+            </figure>
+          ))}
+        </div>
+      ) : null}
       <div className="buttons">
         {tweet.status === TweetStatus.Draft && (
           <>
@@ -212,6 +216,19 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
         }
         a {
           color: ${colors.primary[700]};
+        }
+        .media {
+          margin-top: ${spacing(3)};
+          display: flex;
+        }
+        figure {
+          margin: 0;
+          padding: 0 ${spacing(1)};
+          width: 25%;
+        }
+        img {
+          width: 100%;
+          border-radius: 1rem;
         }
       `}</style>
     </div>
