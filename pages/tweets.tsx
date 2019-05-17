@@ -215,6 +215,7 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
       <style jsx>{`
         .body {
           white-space: pre-wrap;
+          line-height: 1.5em;
         }
         a,
         .body :global(a),
@@ -353,6 +354,7 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
           background-color: ${colors.primary[100]};
           border-radius: 0.5rem;
           border: 2px solid ${colors.primary[500]};
+          line-height: 1.5em;
           outline: none;
         }
       `}</style>
