@@ -13,6 +13,30 @@ export type Scalars = {
   DateTime: Date
 }
 
+export type AddFeedInput = {
+  url: Scalars["String"]
+}
+
+export type AddFeedPayload = {
+  feed: SubscribedFeed
+}
+
+export type CancelTweetInput = {
+  id: Scalars["ID"]
+}
+
+export type CancelTweetPayload = {
+  tweet: Tweet
+}
+
+export type DeleteFeedInput = {
+  id: Scalars["ID"]
+}
+
+export type DeleteFeedPayload = {
+  id: Scalars["ID"]
+}
+
 export type EditTweetInput = {
   id: Scalars["ID"]
   body: Scalars["String"]
@@ -52,38 +76,34 @@ export type FeedEdge = {
   node: Feed
 }
 
-export type FeedInput = {
-  url: Scalars["String"]
-}
-
 export type Mutation = {
-  addFeed: SubscribedFeed
-  refreshFeed: Feed
-  deleteFeed: Scalars["ID"]
-  cancelTweet: Tweet
-  uncancelTweet: Tweet
+  addFeed: AddFeedPayload
+  refreshFeed: RefreshFeedPayload
+  deleteFeed: DeleteFeedPayload
+  cancelTweet: CancelTweetPayload
+  uncancelTweet: UncancelTweetPayload
   postTweet: PostTweetPayload
   editTweet: EditTweetPayload
 }
 
 export type MutationAddFeedArgs = {
-  feed: FeedInput
+  input: AddFeedInput
 }
 
 export type MutationRefreshFeedArgs = {
-  id: Scalars["ID"]
+  input: RefreshFeedInput
 }
 
 export type MutationDeleteFeedArgs = {
-  id: Scalars["ID"]
+  input: DeleteFeedInput
 }
 
 export type MutationCancelTweetArgs = {
-  id: Scalars["ID"]
+  input: CancelTweetInput
 }
 
 export type MutationUncancelTweetArgs = {
-  id: Scalars["ID"]
+  input: UncancelTweetInput
 }
 
 export type MutationPostTweetArgs = {
@@ -170,6 +190,14 @@ export type QueryFeedArgs = {
   id: Scalars["ID"]
 }
 
+export type RefreshFeedInput = {
+  id: Scalars["ID"]
+}
+
+export type RefreshFeedPayload = {
+  feed: Feed
+}
+
 export type SubscribedFeed = {
   id: Scalars["ID"]
   feed: Feed
@@ -220,6 +248,14 @@ export enum TweetStatus {
   Draft = "DRAFT",
   Canceled = "CANCELED",
   Posted = "POSTED",
+}
+
+export type UncancelTweetInput = {
+  id: Scalars["ID"]
+}
+
+export type UncancelTweetPayload = {
+  tweet: Tweet
 }
 
 export type User = {
@@ -332,7 +368,24 @@ export type ResolversTypes = {
   FeedConnection: Pager<types.Feed>
   FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
   Mutation: {}
-  FeedInput: FeedInput
+  AddFeedInput: AddFeedInput
+  AddFeedPayload: Omit<AddFeedPayload, "feed"> & {
+    feed: ResolversTypes["SubscribedFeed"]
+  }
+  RefreshFeedInput: RefreshFeedInput
+  RefreshFeedPayload: Omit<RefreshFeedPayload, "feed"> & {
+    feed: ResolversTypes["Feed"]
+  }
+  DeleteFeedInput: DeleteFeedInput
+  DeleteFeedPayload: DeleteFeedPayload
+  CancelTweetInput: CancelTweetInput
+  CancelTweetPayload: Omit<CancelTweetPayload, "tweet"> & {
+    tweet: ResolversTypes["Tweet"]
+  }
+  UncancelTweetInput: UncancelTweetInput
+  UncancelTweetPayload: Omit<UncancelTweetPayload, "tweet"> & {
+    tweet: ResolversTypes["Tweet"]
+  }
   PostTweetInput: PostTweetInput
   PostTweetPayload: Omit<PostTweetPayload, "tweet"> & {
     tweet: ResolversTypes["Tweet"]
@@ -343,6 +396,20 @@ export type ResolversTypes = {
   }
 }
 
+export type AddFeedPayloadResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["AddFeedPayload"]
+> = {
+  feed?: Resolver<ResolversTypes["SubscribedFeed"], ParentType, ContextType>
+}
+
+export type CancelTweetPayloadResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["CancelTweetPayload"]
+> = {
+  tweet?: Resolver<ResolversTypes["Tweet"], ParentType, ContextType>
+}
+
 export interface CursorScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["Cursor"], any> {
   name: "Cursor"
@@ -351,6 +418,13 @@ export interface CursorScalarConfig
 export interface DateTimeScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["DateTime"], any> {
   name: "DateTime"
+}
+
+export type DeleteFeedPayloadResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["DeleteFeedPayload"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>
 }
 
 export type EditTweetPayloadResolvers<
@@ -406,31 +480,31 @@ export type MutationResolvers<
   ParentType = ResolversTypes["Mutation"]
 > = {
   addFeed?: Resolver<
-    ResolversTypes["SubscribedFeed"],
+    ResolversTypes["AddFeedPayload"],
     ParentType,
     ContextType,
     MutationAddFeedArgs
   >
   refreshFeed?: Resolver<
-    ResolversTypes["Feed"],
+    ResolversTypes["RefreshFeedPayload"],
     ParentType,
     ContextType,
     MutationRefreshFeedArgs
   >
   deleteFeed?: Resolver<
-    ResolversTypes["ID"],
+    ResolversTypes["DeleteFeedPayload"],
     ParentType,
     ContextType,
     MutationDeleteFeedArgs
   >
   cancelTweet?: Resolver<
-    ResolversTypes["Tweet"],
+    ResolversTypes["CancelTweetPayload"],
     ParentType,
     ContextType,
     MutationCancelTweetArgs
   >
   uncancelTweet?: Resolver<
-    ResolversTypes["Tweet"],
+    ResolversTypes["UncancelTweetPayload"],
     ParentType,
     ContextType,
     MutationUncancelTweetArgs
@@ -544,6 +618,13 @@ export type QueryResolvers<
   >
 }
 
+export type RefreshFeedPayloadResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["RefreshFeedPayload"]
+> = {
+  feed?: Resolver<ResolversTypes["Feed"], ParentType, ContextType>
+}
+
 export type SubscribedFeedResolvers<
   ContextType = CourierContext,
   ParentType = ResolversTypes["SubscribedFeed"]
@@ -619,6 +700,13 @@ export type TweetEdgeResolvers<
   node?: Resolver<ResolversTypes["Tweet"], ParentType, ContextType>
 }
 
+export type UncancelTweetPayloadResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["UncancelTweetPayload"]
+> = {
+  tweet?: Resolver<ResolversTypes["Tweet"], ParentType, ContextType>
+}
+
 export type UserResolvers<
   ContextType = CourierContext,
   ParentType = ResolversTypes["User"]
@@ -629,8 +717,11 @@ export type UserResolvers<
 }
 
 export type Resolvers<ContextType = CourierContext> = {
+  AddFeedPayload?: AddFeedPayloadResolvers<ContextType>
+  CancelTweetPayload?: CancelTweetPayloadResolvers<ContextType>
   Cursor?: GraphQLScalarType
   DateTime?: GraphQLScalarType
+  DeleteFeedPayload?: DeleteFeedPayloadResolvers<ContextType>
   EditTweetPayload?: EditTweetPayloadResolvers<ContextType>
   Feed?: FeedResolvers<ContextType>
   FeedConnection?: FeedConnectionResolvers<ContextType>
@@ -642,12 +733,14 @@ export type Resolvers<ContextType = CourierContext> = {
   PostEdge?: PostEdgeResolvers<ContextType>
   PostTweetPayload?: PostTweetPayloadResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
+  RefreshFeedPayload?: RefreshFeedPayloadResolvers<ContextType>
   SubscribedFeed?: SubscribedFeedResolvers<ContextType>
   SubscribedFeedConnection?: SubscribedFeedConnectionResolvers<ContextType>
   SubscribedFeedEdge?: SubscribedFeedEdgeResolvers<ContextType>
   Tweet?: TweetResolvers<ContextType>
   TweetConnection?: TweetConnectionResolvers<ContextType>
   TweetEdge?: TweetEdgeResolvers<ContextType>
+  UncancelTweetPayload?: UncancelTweetPayloadResolvers<ContextType>
   User?: UserResolvers<ContextType>
 }
 

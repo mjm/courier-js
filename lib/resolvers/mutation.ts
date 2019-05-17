@@ -3,30 +3,30 @@ import { addFeed, refreshFeed, deleteFeed } from "../data/feed"
 import { cancelTweet, uncancelTweet, postTweet, editTweet } from "../data/tweet"
 
 export const Mutation: MutationResolvers = {
-  async addFeed(_, { feed }, { getUser }) {
+  async addFeed(_, { input }, { getUser }) {
     const { sub } = await getUser()
-    return await addFeed({ ...feed, userId: sub })
+    return { feed: await addFeed({ ...input, userId: sub }) }
   },
 
-  async refreshFeed(_, { id }, { getUser }) {
+  async refreshFeed(_, { input }, { getUser }) {
     await getUser()
-    return await refreshFeed(id)
+    return { feed: await refreshFeed(input.id) }
   },
 
-  async deleteFeed(_, { id }, { getUser }) {
+  async deleteFeed(_, { input }, { getUser }) {
     const { sub } = await getUser()
-    await deleteFeed(sub, id)
-    return id
+    await deleteFeed(sub, input.id)
+    return { id: input.id }
   },
 
-  async cancelTweet(_, { id }, { getUser }) {
+  async cancelTweet(_, { input }, { getUser }) {
     const { sub } = await getUser()
-    return await cancelTweet(sub, id)
+    return { tweet: await cancelTweet(sub, input.id) }
   },
 
-  async uncancelTweet(_, { id }, { getUser }) {
+  async uncancelTweet(_, { input }, { getUser }) {
     const { sub } = await getUser()
-    return await uncancelTweet(sub, id)
+    return { tweet: await uncancelTweet(sub, input.id) }
   },
 
   async postTweet(_, { input }, { getUser }) {

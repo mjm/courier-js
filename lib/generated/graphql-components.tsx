@@ -10,6 +10,30 @@ export type Scalars = {
   DateTime: any
 }
 
+export type AddFeedInput = {
+  url: Scalars["String"]
+}
+
+export type AddFeedPayload = {
+  feed: SubscribedFeed
+}
+
+export type CancelTweetInput = {
+  id: Scalars["ID"]
+}
+
+export type CancelTweetPayload = {
+  tweet: Tweet
+}
+
+export type DeleteFeedInput = {
+  id: Scalars["ID"]
+}
+
+export type DeleteFeedPayload = {
+  id: Scalars["ID"]
+}
+
 export type EditTweetInput = {
   id: Scalars["ID"]
   body: Scalars["String"]
@@ -49,38 +73,34 @@ export type FeedEdge = {
   node: Feed
 }
 
-export type FeedInput = {
-  url: Scalars["String"]
-}
-
 export type Mutation = {
-  addFeed: SubscribedFeed
-  refreshFeed: Feed
-  deleteFeed: Scalars["ID"]
-  cancelTweet: Tweet
-  uncancelTweet: Tweet
+  addFeed: AddFeedPayload
+  refreshFeed: RefreshFeedPayload
+  deleteFeed: DeleteFeedPayload
+  cancelTweet: CancelTweetPayload
+  uncancelTweet: UncancelTweetPayload
   postTweet: PostTweetPayload
   editTweet: EditTweetPayload
 }
 
 export type MutationAddFeedArgs = {
-  feed: FeedInput
+  input: AddFeedInput
 }
 
 export type MutationRefreshFeedArgs = {
-  id: Scalars["ID"]
+  input: RefreshFeedInput
 }
 
 export type MutationDeleteFeedArgs = {
-  id: Scalars["ID"]
+  input: DeleteFeedInput
 }
 
 export type MutationCancelTweetArgs = {
-  id: Scalars["ID"]
+  input: CancelTweetInput
 }
 
 export type MutationUncancelTweetArgs = {
-  id: Scalars["ID"]
+  input: UncancelTweetInput
 }
 
 export type MutationPostTweetArgs = {
@@ -167,6 +187,14 @@ export type QueryFeedArgs = {
   id: Scalars["ID"]
 }
 
+export type RefreshFeedInput = {
+  id: Scalars["ID"]
+}
+
+export type RefreshFeedPayload = {
+  feed: Feed
+}
+
 export type SubscribedFeed = {
   id: Scalars["ID"]
   feed: Feed
@@ -219,6 +247,14 @@ export enum TweetStatus {
   Posted = "POSTED",
 }
 
+export type UncancelTweetInput = {
+  id: Scalars["ID"]
+}
+
+export type UncancelTweetPayload = {
+  tweet: Tweet
+}
+
 export type User = {
   name: Scalars["String"]
   nickname: Scalars["String"]
@@ -250,34 +286,38 @@ export type AllFeedSubscriptionsFieldsFragment = {
   }
 
 export type AddFeedMutationVariables = {
-  feed: FeedInput
+  input: AddFeedInput
 }
 
 export type AddFeedMutation = { __typename?: "Mutation" } & {
-  addFeed: {
-    __typename?: "SubscribedFeed"
-  } & AllFeedSubscriptionsFieldsFragment
+  addFeed: { __typename?: "AddFeedPayload" } & {
+    feed: { __typename?: "SubscribedFeed" } & AllFeedSubscriptionsFieldsFragment
+  }
 }
 
 export type RefreshFeedMutationVariables = {
-  id: Scalars["ID"]
+  input: RefreshFeedInput
 }
 
 export type RefreshFeedMutation = { __typename?: "Mutation" } & {
-  refreshFeed: { __typename?: "Feed" } & Pick<
-    Feed,
-    "id" | "title" | "homePageURL" | "refreshedAt"
-  >
+  refreshFeed: { __typename?: "RefreshFeedPayload" } & {
+    feed: { __typename?: "Feed" } & Pick<
+      Feed,
+      "id" | "title" | "homePageURL" | "refreshedAt"
+    >
+  }
 }
 
 export type DeleteFeedMutationVariables = {
-  id: Scalars["ID"]
+  input: DeleteFeedInput
 }
 
-export type DeleteFeedMutation = { __typename?: "Mutation" } & Pick<
-  Mutation,
-  "deleteFeed"
->
+export type DeleteFeedMutation = { __typename?: "Mutation" } & {
+  deleteFeed: { __typename?: "DeleteFeedPayload" } & Pick<
+    DeleteFeedPayload,
+    "id"
+  >
+}
 
 export type UpcomingTweetsQueryVariables = {
   cursor?: Maybe<Scalars["Cursor"]>
@@ -316,19 +356,23 @@ export type AllTweetsFieldsFragment = { __typename?: "Tweet" } & Pick<
   }
 
 export type CancelTweetMutationVariables = {
-  id: Scalars["ID"]
+  input: CancelTweetInput
 }
 
 export type CancelTweetMutation = { __typename?: "Mutation" } & {
-  cancelTweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "status">
+  cancelTweet: { __typename?: "CancelTweetPayload" } & {
+    tweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "status">
+  }
 }
 
 export type UncancelTweetMutationVariables = {
-  id: Scalars["ID"]
+  input: UncancelTweetInput
 }
 
 export type UncancelTweetMutation = { __typename?: "Mutation" } & {
-  uncancelTweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "status">
+  uncancelTweet: { __typename?: "UncancelTweetPayload" } & {
+    tweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "status">
+  }
 }
 
 export type PostTweetMutationVariables = {
@@ -453,9 +497,11 @@ export function withAllFeeds<TProps, TChildProps = {}>(
   })
 }
 export const AddFeedDocument = gql`
-  mutation AddFeed($feed: FeedInput!) {
-    addFeed(feed: $feed) {
-      ...allFeedSubscriptionsFields
+  mutation AddFeed($input: AddFeedInput!) {
+    addFeed(input: $input) {
+      feed {
+        ...allFeedSubscriptionsFields
+      }
     }
   }
   ${allFeedSubscriptionsFieldsFragmentDoc}
@@ -503,12 +549,14 @@ export function withAddFeed<TProps, TChildProps = {}>(
   })
 }
 export const RefreshFeedDocument = gql`
-  mutation RefreshFeed($id: ID!) {
-    refreshFeed(id: $id) {
-      id
-      title
-      homePageURL
-      refreshedAt
+  mutation RefreshFeed($input: RefreshFeedInput!) {
+    refreshFeed(input: $input) {
+      feed {
+        id
+        title
+        homePageURL
+        refreshedAt
+      }
     }
   }
 `
@@ -558,8 +606,10 @@ export function withRefreshFeed<TProps, TChildProps = {}>(
   })
 }
 export const DeleteFeedDocument = gql`
-  mutation DeleteFeed($id: ID!) {
-    deleteFeed(id: $id)
+  mutation DeleteFeed($input: DeleteFeedInput!) {
+    deleteFeed(input: $input) {
+      id
+    }
   }
 `
 export type DeleteFeedMutationFn = ReactApollo.MutationFn<
@@ -702,10 +752,12 @@ export function withPastTweets<TProps, TChildProps = {}>(
   })
 }
 export const CancelTweetDocument = gql`
-  mutation CancelTweet($id: ID!) {
-    cancelTweet(id: $id) {
-      id
-      status
+  mutation CancelTweet($input: CancelTweetInput!) {
+    cancelTweet(input: $input) {
+      tweet {
+        id
+        status
+      }
     }
   }
 `
@@ -755,10 +807,12 @@ export function withCancelTweet<TProps, TChildProps = {}>(
   })
 }
 export const UncancelTweetDocument = gql`
-  mutation UncancelTweet($id: ID!) {
-    uncancelTweet(id: $id) {
-      id
-      status
+  mutation UncancelTweet($input: UncancelTweetInput!) {
+    uncancelTweet(input: $input) {
+      tweet {
+        id
+        status
+      }
     }
   }
 `

@@ -30,12 +30,12 @@ type Query {
 }
 
 type Mutation {
-  addFeed(feed: FeedInput!): SubscribedFeed!
-  refreshFeed(id: ID!): Feed!
-  deleteFeed(id: ID!): ID!
+  addFeed(input: AddFeedInput!): AddFeedPayload!
+  refreshFeed(input: RefreshFeedInput!): RefreshFeedPayload!
+  deleteFeed(input: DeleteFeedInput!): DeleteFeedPayload!
 
-  cancelTweet(id: ID!): Tweet!
-  uncancelTweet(id: ID!): Tweet!
+  cancelTweet(input: CancelTweetInput!): CancelTweetPayload!
+  uncancelTweet(input: UncancelTweetInput!): UncancelTweetPayload!
   postTweet(input: PostTweetInput!): PostTweetPayload!
   editTweet(input: EditTweetInput!): EditTweetPayload!
 }
@@ -77,8 +77,28 @@ type Feed {
   posts(first: Int, last: Int, before: Cursor, after: Cursor): PostConnection!
 }
 
-input FeedInput {
+input AddFeedInput {
   url: String!
+}
+
+type AddFeedPayload {
+  feed: SubscribedFeed!
+}
+
+input RefreshFeedInput {
+  id: ID!
+}
+
+type RefreshFeedPayload {
+  feed: Feed!
+}
+
+input DeleteFeedInput {
+  id: ID!
+}
+
+type DeleteFeedPayload {
+  id: ID!
 }
 
 type PostConnection {
@@ -157,6 +177,22 @@ type TweetConnection {
 type TweetEdge {
   cursor: Cursor!
   node: Tweet!
+}
+
+input CancelTweetInput {
+  id: ID!
+}
+
+type CancelTweetPayload {
+  tweet: Tweet!
+}
+
+input UncancelTweetInput {
+  id: ID!
+}
+
+type UncancelTweetPayload {
+  tweet: Tweet!
 }
 
 input PostTweetInput {

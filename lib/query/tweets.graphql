@@ -37,17 +37,21 @@ fragment allTweetsFields on Tweet {
   postedTweetID
 }
 
-mutation CancelTweet($id: ID!) {
-  cancelTweet(id: $id) {
-    id
-    status
+mutation CancelTweet($input: CancelTweetInput!) {
+  cancelTweet(input: $input) {
+    tweet {
+      id
+      status
+    }
   }
 }
 
-mutation UncancelTweet($id: ID!) {
-  uncancelTweet(id: $id) {
-    id
-    status
+mutation UncancelTweet($input: UncancelTweetInput!) {
+  uncancelTweet(input: $input) {
+    tweet {
+      id
+      status
+    }
   }
 }
 

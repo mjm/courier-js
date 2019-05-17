@@ -23,21 +23,27 @@ fragment allFeedSubscriptionsFields on SubscribedFeed {
   autopost
 }
 
-mutation AddFeed($feed: FeedInput!) {
-  addFeed(feed: $feed) {
-    ...allFeedSubscriptionsFields
+mutation AddFeed($input: AddFeedInput!) {
+  addFeed(input: $input) {
+    feed {
+      ...allFeedSubscriptionsFields
+    }
   }
 }
 
-mutation RefreshFeed($id: ID!) {
-  refreshFeed(id: $id) {
+mutation RefreshFeed($input: RefreshFeedInput!) {
+  refreshFeed(input: $input) {
+    feed {
+      id
+      title
+      homePageURL
+      refreshedAt
+    }
+  }
+}
+
+mutation DeleteFeed($input: DeleteFeedInput!) {
+  deleteFeed(input: $input) {
     id
-    title
-    homePageURL
-    refreshedAt
   }
-}
-
-mutation DeleteFeed($id: ID!) {
-  deleteFeed(id: $id)
 }

@@ -3,12 +3,12 @@ import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import {
   AllFeedsComponent,
-  FeedInput,
   AddFeedComponent,
   AllFeedsDocument,
   AllFeedsQuery,
   RefreshFeedComponent,
   DeleteFeedComponent,
+  AddFeedInput,
 } from "../lib/generated/graphql-components"
 import withData from "../hocs/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
@@ -166,7 +166,7 @@ const RefreshButton = ({ feed, setError }: RefreshButtonProps) => {
           onClick={async () => {
             setRefreshing(true)
             try {
-              await refreshFeed({ variables: { id: feed.id } })
+              await refreshFeed({ variables: { input: { id: feed.id } } })
               setError(undefined)
             } catch (err) {
               setError(err)
@@ -194,7 +194,7 @@ const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
       update={(cache, { data }) => {
         data &&
           updateCachedFeeds(cache, nodes =>
-            nodes.filter(f => f.id !== data.deleteFeed)
+            nodes.filter(f => f.id !== data.deleteFeed.id)
           )
       }}
     >
@@ -203,10 +203,13 @@ const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
           onClick={async () => {
             try {
               await deleteFeed({
-                variables: { id },
+                variables: { input: { id } },
                 optimisticResponse: {
                   __typename: "Mutation",
-                  deleteFeed: id,
+                  deleteFeed: {
+                    __typename: "DeleteFeedPayload",
+                    id,
+                  },
                 },
               })
               setError(undefined)
@@ -226,21 +229,21 @@ const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
 const newFeedSchema = yup.object().shape({
   url: yup.string().url("This must be a valid URL."),
 })
-const initialNewFeed: FeedInput = { url: "" }
+const initialNewFeed: AddFeedInput = { url: "" }
 
 const AddFeed = () => (
   <AddFeedComponent
     update={(cache, { data }) => {
-      data && updateCachedFeeds(cache, nodes => [...nodes, data.addFeed])
+      data && updateCachedFeeds(cache, nodes => [...nodes, data.addFeed.feed])
     }}
   >
     {addFeed => {
       const onSubmit = async (
-        feed: FeedInput,
-        actions: FormikActions<FeedInput>
+        input: AddFeedInput,
+        actions: FormikActions<AddFeedInput>
       ) => {
         try {
-          await addFeed({ variables: { feed } })
+          await addFeed({ variables: { input } })
           actions.resetForm()
         } catch (error) {
           actions.setStatus({ error })

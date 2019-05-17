@@ -333,13 +333,16 @@ const CancelButton = ({ id }: CancelButtonProps) => {
         <PillButton
           onClick={() => {
             cancelTweet({
-              variables: { id },
+              variables: { input: { id } },
               optimisticResponse: {
                 __typename: "Mutation",
                 cancelTweet: {
-                  __typename: "Tweet",
-                  id,
-                  status: TweetStatus.Canceled,
+                  __typename: "CancelTweetPayload",
+                  tweet: {
+                    __typename: "Tweet",
+                    id,
+                    status: TweetStatus.Canceled,
+                  },
                 },
               },
             })
@@ -360,13 +363,16 @@ const UncancelButton = ({ id }: CancelButtonProps) => {
         <PillButton
           onClick={() => {
             uncancelTweet({
-              variables: { id },
+              variables: { input: { id } },
               optimisticResponse: {
                 __typename: "Mutation",
                 uncancelTweet: {
-                  __typename: "Tweet",
-                  id,
-                  status: TweetStatus.Draft,
+                  __typename: "UncancelTweetPayload",
+                  tweet: {
+                    __typename: "Tweet",
+                    id,
+                    status: TweetStatus.Draft,
+                  },
                 },
               },
             })
