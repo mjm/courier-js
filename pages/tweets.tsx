@@ -61,6 +61,8 @@ interface TweetsListProps {
   title: string
 }
 const TweetsList = ({ query: QueryComponent, title }: TweetsListProps) => {
+  const [isLoadingMore, setLoadingMore] = useState(false)
+
   return (
     <div>
       <QueryComponent>
@@ -92,32 +94,39 @@ const TweetsList = ({ query: QueryComponent, title }: TweetsListProps) => {
             return null
           }
 
-          const loadMore = () => {
-            fetchMore({
-              variables: {
-                cursor: pageInfo.endCursor,
-              },
-              updateQuery(previousResult, { fetchMoreResult }) {
-                if (!fetchMoreResult) {
-                  return previousResult
-                }
-                const oldNodes = previousResult.allTweets.nodes
-                const {
-                  nodes: newNodes,
-                  pageInfo,
-                  totalCount,
-                } = fetchMoreResult.allTweets
-
-                return {
-                  allTweets: {
-                    __typename: "TweetConnection",
-                    nodes: [...oldNodes, ...newNodes],
+          const loadMore = async () => {
+            setLoadingMore(true)
+            try {
+              await fetchMore({
+                variables: {
+                  cursor: pageInfo.endCursor,
+                },
+                updateQuery(previousResult, { fetchMoreResult }) {
+                  if (!fetchMoreResult) {
+                    return previousResult
+                  }
+                  const oldNodes = previousResult.allTweets.nodes
+                  const {
+                    nodes: newNodes,
                     pageInfo,
                     totalCount,
-                  },
-                }
-              },
-            })
+                  } = fetchMoreResult.allTweets
+
+                  return {
+                    allTweets: {
+                      __typename: "TweetConnection",
+                      nodes: [...oldNodes, ...newNodes],
+                      pageInfo,
+                      totalCount,
+                    },
+                  }
+                },
+              })
+            } catch (err) {
+              console.error(err)
+            } finally {
+              setLoadingMore(false)
+            }
           }
 
           return (
@@ -132,7 +141,10 @@ const TweetsList = ({ query: QueryComponent, title }: TweetsListProps) => {
                 ))}
                 {pageInfo.hasPreviousPage && (
                   <li>
-                    <LoadMoreButton onClick={loadMore} />
+                    <LoadMoreButton
+                      isLoading={isLoadingMore}
+                      onClick={loadMore}
+                    />
                   </li>
                 )}
               </ul>
@@ -487,10 +499,19 @@ const PostButton = ({ id }: CancelButtonProps) => {
 
 type LoadMoreButtonProps = React.PropsWithoutRef<
   JSX.IntrinsicElements["button"]
->
-const LoadMoreButton = ({ children, ...props }: LoadMoreButtonProps) => (
+> & {
+  isLoading?: boolean
+}
+const LoadMoreButton = ({
+  children,
+  isLoading = false,
+  ...props
+}: LoadMoreButtonProps) => (
   <button type="button" {...props}>
-    <FontAwesomeIcon icon={faAngleDoubleDown} />
+    <FontAwesomeIcon
+      icon={isLoading ? faSpinner : faAngleDoubleDown}
+      spin={isLoading}
+    />
     {children || "Show More…"}
     <style jsx>{`
       button {
@@ -504,6 +525,7 @@ const LoadMoreButton = ({ children, ...props }: LoadMoreButtonProps) => (
         font-weight: 500;
         border-radius: 0.5rem;
         box-shadow: ${shadow.md};
+        outline: none;
       }
       button > :global(svg) {
         margin-right: ${spacing(2)};
