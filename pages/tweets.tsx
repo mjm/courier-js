@@ -182,11 +182,11 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
         {tweet.status === TweetStatus.Draft && (
           <>
             <CancelButton id={tweet.id} />
-            <PostButton id={tweet.id} />
-            <PillButton onClick={onEdit}>
+            <PillButton invert onClick={onEdit}>
               <FontAwesomeIcon icon={faEdit} />
               Edit Tweet
             </PillButton>
+            <PostButton id={tweet.id} />
           </>
         )}
         {tweet.status === TweetStatus.Canceled && (
@@ -279,6 +279,8 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                       <div className="buttons">
                         <PillButton
                           disabled={isSubmitting}
+                          color="red"
+                          invert
                           onClick={onStopEditing}
                         >
                           <FontAwesomeIcon icon={faBan} />
@@ -286,6 +288,7 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                         </PillButton>
                         <PillButton
                           disabled={isSubmitting}
+                          invert
                           onClick={() => submit("save")}
                         >
                           <FontAwesomeIcon
@@ -296,6 +299,8 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                         </PillButton>
                         <PillButton
                           disabled={isSubmitting}
+                          color="blue"
+                          invert
                           onClick={() => submit("post")}
                         >
                           <FontAwesomeIcon
@@ -331,6 +336,8 @@ const CancelButton = ({ id }: CancelButtonProps) => {
     <CancelTweetComponent>
       {cancelTweet => (
         <PillButton
+          color="red"
+          invert
           onClick={() => {
             cancelTweet({
               variables: { input: { id } },
@@ -394,6 +401,8 @@ const PostButton = ({ id }: CancelButtonProps) => {
       {postTweet => (
         <PillButton
           disabled={posting}
+          color="blue"
+          invert
           onClick={async () => {
             setPosting(true)
             try {
