@@ -32,9 +32,10 @@ import Moment from "react-moment"
 import { ErrorBox } from "../components/error"
 import { Formik, Form, Field } from "formik"
 import Linkify from "react-linkify"
+import Container from "../components/container"
 
 const Tweets = () => (
-  <div className="container">
+  <Container>
     <Head title="Your Tweets" />
 
     <PageHeader>Your Tweets</PageHeader>
@@ -44,10 +45,7 @@ const Tweets = () => (
     <h2>Past Tweets</h2>
     <TweetsList query={PastTweetsComponent} />
     <style jsx>{`
-      .container {
-        padding: 0 1rem 6rem 1rem;
-      }
-      .container > p {
+      p {
         text-align: center;
       }
       h2 {
@@ -56,7 +54,7 @@ const Tweets = () => (
         letter-spacing: -0.025em;
       }
     `}</style>
-  </div>
+  </Container>
 )
 
 export default withSecurePage(withData(Tweets))

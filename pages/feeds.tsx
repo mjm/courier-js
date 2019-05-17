@@ -29,9 +29,10 @@ import Moment from "react-moment"
 import Loading from "../components/loading"
 import { PillButton } from "../components/button"
 import { ErrorBox, FieldError } from "../components/error"
+import Container from "../components/container"
 
 const Feeds = () => (
-  <div className="container">
+  <Container>
     <Head title="Feeds to Watch" />
 
     <PageHeader>Feeds to Watch</PageHeader>
@@ -42,14 +43,11 @@ const Feeds = () => (
     <FeedsList />
     <AddFeed />
     <style jsx>{`
-      .container {
-        padding: 0 1rem 6rem 1rem;
-      }
-      .container > p {
+      p {
         text-align: center;
       }
     `}</style>
-  </div>
+  </Container>
 )
 
 const FeedsList = () => {
@@ -262,17 +260,19 @@ const AddFeed = () => (
             render={({ isSubmitting, status: { error } }) => (
               <Form>
                 <ErrorBox error={error} />
-                <div className="field">
-                  <Field type="text" name="url" placeholder="https://" />
-                  <ErrorMessage name="url" component={FieldError} />
+                <div className="container">
+                  <div className="field">
+                    <Field type="text" name="url" placeholder="https://" />
+                    <ErrorMessage name="url" component={FieldError} />
+                  </div>
+                  <button type="submit" disabled={isSubmitting}>
+                    <FontAwesomeIcon
+                      icon={isSubmitting ? faSyncAlt : faPlusCircle}
+                      spin={isSubmitting}
+                    />
+                    Add Feed
+                  </button>
                 </div>
-                <button type="submit" disabled={isSubmitting}>
-                  <FontAwesomeIcon
-                    icon={isSubmitting ? faSyncAlt : faPlusCircle}
-                    spin={isSubmitting}
-                  />
-                  Add Feed
-                </button>
               </Form>
             )}
           />
@@ -282,15 +282,19 @@ const AddFeed = () => (
               flex-direction: column;
               align-items: center;
             }
+            .container {
+              width: 100%;
+              display: flex;
+            }
             .field {
-              width: 50%;
-              min-width: 300px;
+              flex-grow: 1;
+              width: 100%;
+              padding-right: ${spacing(3)};
             }
             div :global(input) {
-              font-size: 1.5rem;
               width: 100%;
+              font-size: 1.5rem;
               padding: ${spacing(2)} ${spacing(4)};
-              margin-bottom: ${spacing(3)};
               background-color: ${colors.gray[100]};
               border: 0;
               border-bottom: 3px solid ${colors.primary[500]};
@@ -303,20 +307,15 @@ const AddFeed = () => (
             div :global(input)::placeholder {
               color: ${colors.gray[400]};
             }
-            @media (max-width: 300px) {
-              .field {
-                min-width: 0;
-                width: 100%;
-              }
-            }
             button {
+              flex-shrink: 0;
               font-size: 1.4rem;
               font-weight: 500;
               background-color: ${colors.primary[500]};
               border-color: transparent;
               border-radius: 0.5rem;
               color: white;
-              padding: ${spacing(2)} ${spacing(4)};
+              padding: 0 ${spacing(4)};
               box-shadow: ${shadow.sm};
             }
             button > :global(svg) {
