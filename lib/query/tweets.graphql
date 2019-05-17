@@ -20,6 +20,7 @@ fragment tweetConnectionFields on TweetConnection {
     hasPreviousPage
     endCursor
   }
+  totalCount
 }
 
 fragment allTweetsFields on Tweet {

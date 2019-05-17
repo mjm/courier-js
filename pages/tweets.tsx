@@ -39,20 +39,13 @@ const Tweets = () => (
 
     <PageHeader>Your Tweets</PageHeader>
     <p>These are the tweets Courier has translated from your feeds.</p>
-    <h2>Upcoming Tweets</h2>
-    <TweetsList query={UpcomingTweetsComponent} />
-    <h2>Past Tweets</h2>
-    <TweetsList query={PastTweetsComponent} />
+    <TweetsList title="Upcoming Tweet" query={UpcomingTweetsComponent} />
+    <TweetsList title="Past Tweet" query={PastTweetsComponent} />
     <style jsx>{`
       p {
         color: ${colors.primary[900]};
         text-align: center;
         margin-bottom: 2em;
-      }
-      h2 {
-        font-family: ${font.display};
-        color: ${colors.primary[900]};
-        letter-spacing: -0.025em;
       }
     `}</style>
   </Container>
@@ -64,21 +57,38 @@ interface TweetsListProps {
   // this type should match both upcoming and past.
   // we just had to pick one to use to grab the type
   query: typeof UpcomingTweetsComponent
+
+  title: string
 }
-const TweetsList = ({ query: QueryComponent }: TweetsListProps) => {
+const TweetsList = ({ query: QueryComponent, title }: TweetsListProps) => {
   return (
     <div>
       <QueryComponent>
         {({ data, error, loading, fetchMore }) => {
           if (loading) {
-            return <Loading />
+            return (
+              <>
+                <h2>{title}s</h2>
+                <Loading />
+              </>
+            )
           }
 
           if (error) {
-            return <ErrorBox error={error} />
+            return (
+              <>
+                <h2>{title}s</h2>
+                <ErrorBox error={error} />
+              </>
+            )
           }
 
           if (!data) {
+            return null
+          }
+
+          const { nodes, pageInfo, totalCount } = data.allTweets
+          if (!nodes.length) {
             return null
           }
 
@@ -92,31 +102,41 @@ const TweetsList = ({ query: QueryComponent }: TweetsListProps) => {
                   return previousResult
                 }
                 const oldNodes = previousResult.allTweets.nodes
-                const { nodes: newNodes, pageInfo } = fetchMoreResult.allTweets
+                const {
+                  nodes: newNodes,
+                  pageInfo,
+                  totalCount,
+                } = fetchMoreResult.allTweets
 
                 return {
                   allTweets: {
                     __typename: "TweetConnection",
                     nodes: [...oldNodes, ...newNodes],
                     pageInfo,
+                    totalCount,
                   },
                 }
               },
             })
           }
 
-          const { nodes, pageInfo } = data.allTweets
           return (
-            <ul>
-              {nodes.map(tweet => (
-                <TweetCard key={tweet.id} tweet={tweet} />
-              ))}
-              {pageInfo.hasPreviousPage && (
-                <li>
-                  <LoadMoreButton onClick={loadMore} />
-                </li>
-              )}
-            </ul>
+            <>
+              <h2>
+                {totalCount} {title}
+                {totalCount === 1 ? "" : "s"}
+              </h2>
+              <ul>
+                {nodes.map(tweet => (
+                  <TweetCard key={tweet.id} tweet={tweet} />
+                ))}
+                {pageInfo.hasPreviousPage && (
+                  <li>
+                    <LoadMoreButton onClick={loadMore} />
+                  </li>
+                )}
+              </ul>
+            </>
           )
         }}
       </QueryComponent>
@@ -124,6 +144,11 @@ const TweetsList = ({ query: QueryComponent }: TweetsListProps) => {
         ul {
           list-style: none;
           padding-left: 0;
+        }
+        h2 {
+          font-family: ${font.display};
+          color: ${colors.primary[800]};
+          letter-spacing: -0.025em;
         }
       `}</style>
     </div>
@@ -466,7 +491,7 @@ type LoadMoreButtonProps = React.PropsWithoutRef<
 const LoadMoreButton = ({ children, ...props }: LoadMoreButtonProps) => (
   <button type="button" {...props}>
     <FontAwesomeIcon icon={faAngleDoubleDown} />
-    {children || "Load More…"}
+    {children || "Show More…"}
     <style jsx>{`
       button {
         display: block;
@@ -481,7 +506,7 @@ const LoadMoreButton = ({ children, ...props }: LoadMoreButtonProps) => (
         box-shadow: ${shadow.md};
       }
       button > :global(svg) {
-        margin-right: ${spacing(1)};
+        margin-right: ${spacing(2)};
       }
     `}</style>
   </button>

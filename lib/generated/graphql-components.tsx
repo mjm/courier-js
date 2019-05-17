@@ -337,13 +337,13 @@ export type PastTweetsQuery = { __typename?: "Query" } & {
 
 export type TweetConnectionFieldsFragment = {
   __typename?: "TweetConnection"
-} & {
-  nodes: Array<{ __typename?: "Tweet" } & AllTweetsFieldsFragment>
-  pageInfo: { __typename?: "PageInfo" } & Pick<
-    PageInfo,
-    "hasPreviousPage" | "endCursor"
-  >
-}
+} & Pick<TweetConnection, "totalCount"> & {
+    nodes: Array<{ __typename?: "Tweet" } & AllTweetsFieldsFragment>
+    pageInfo: { __typename?: "PageInfo" } & Pick<
+      PageInfo,
+      "hasPreviousPage" | "endCursor"
+    >
+  }
 
 export type AllTweetsFieldsFragment = { __typename?: "Tweet" } & Pick<
   Tweet,
@@ -440,6 +440,7 @@ export const tweetConnectionFieldsFragmentDoc = gql`
       hasPreviousPage
       endCursor
     }
+    totalCount
   }
   ${allTweetsFieldsFragmentDoc}
 `
