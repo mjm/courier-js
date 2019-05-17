@@ -45,7 +45,9 @@ const Tweets = () => (
     <TweetsList query={PastTweetsComponent} />
     <style jsx>{`
       p {
+        color: ${colors.primary[900]};
         text-align: center;
+        margin-bottom: 2em;
       }
       h2 {
         font-family: ${font.display};

@@ -12,6 +12,7 @@ export const PageHeader = ({ children, ...props }: any) => {
           text-align: center;
           letter-spacing: -0.025em;
           color: ${colors.primary[900]};
+          margin-bottom: 0;
         }
       `}</style>
     </h1>

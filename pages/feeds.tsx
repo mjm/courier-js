@@ -44,7 +44,9 @@ const Feeds = () => (
     <AddFeed />
     <style jsx>{`
       p {
+        color: ${colors.primary[900]};
         text-align: center;
+        margin-bottom: 2em;
       }
     `}</style>
   </Container>
