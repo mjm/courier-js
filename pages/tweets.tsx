@@ -31,6 +31,7 @@ import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import Moment from "react-moment"
 import { ErrorBox } from "../components/error"
 import { Formik, Form, Field } from "formik"
+import Linkify from "react-linkify"
 
 const Tweets = () => (
   <div className="container">
@@ -172,7 +173,9 @@ interface ViewTweetCardProps {
 const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
   return (
     <div>
-      <div className="body">{tweet.body}</div>
+      <div className="body">
+        <Linkify>{tweet.body}</Linkify>
+      </div>
       {tweet.mediaURLs.length ? (
         <div className="media">
           {tweet.mediaURLs.map(url => (
@@ -214,7 +217,8 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
         .body {
           white-space: pre-wrap;
         }
-        a {
+        a,
+        .body :global(a) {
           color: ${colors.primary[700]};
         }
         .media {
