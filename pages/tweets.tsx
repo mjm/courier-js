@@ -153,6 +153,7 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
           border-top: 3px solid ${colors.primary[500]};
         }
         li.canceled {
+          color: ${colors.gray[700]};
           background-color: ${colors.gray[200]};
           border-top-color: ${colors.gray[400]};
         }
