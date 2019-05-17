@@ -195,20 +195,19 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
           </>
         )}
         {tweet.status === TweetStatus.Canceled && (
-          <>
-            Canceled. <UncancelButton id={tweet.id} />
-          </>
+          <span className="status">
+            canceled. <UncancelButton id={tweet.id} />
+          </span>
         )}
         {tweet.status === TweetStatus.Posted && (
-          <>
-            Posted to Twitter{" "}
+          <span className="status">
             <a
               href={`https://twitter.com/user/status/${tweet.postedTweetID}`}
               target="_blank"
             >
-              <Moment fromNow>{tweet.postedAt}</Moment>
+              tweeted <Moment fromNow>{tweet.postedAt}</Moment>
             </a>
-          </>
+          </span>
         )}
       </div>
       <style jsx>{`
@@ -216,7 +215,8 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
           white-space: pre-wrap;
         }
         a,
-        .body :global(a) {
+        .body :global(a),
+        .status :global(a) {
           color: ${colors.primary[700]};
         }
         .media {
@@ -231,6 +231,11 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
         img {
           width: 100%;
           border-radius: 1rem;
+        }
+        span.status {
+          font-size: 0.9rem;
+          font-style: italic;
+          color: ${colors.gray[600]};
         }
       `}</style>
     </div>
@@ -392,7 +397,8 @@ const UncancelButton = ({ id }: CancelButtonProps) => {
   return (
     <UncancelTweetComponent>
       {uncancelTweet => (
-        <PillButton
+        <a
+          href="javascript:void(0)"
           onClick={() => {
             uncancelTweet({
               variables: { input: { id } },
@@ -410,9 +416,8 @@ const UncancelButton = ({ id }: CancelButtonProps) => {
             })
           }}
         >
-          <FontAwesomeIcon icon={faUndoAlt} />
-          Undo
-        </PillButton>
+          undo?
+        </a>
       )}
     </UncancelTweetComponent>
   )
