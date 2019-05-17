@@ -19,7 +19,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faAngleDoubleDown,
   faBan,
-  faUndoAlt,
   faSpinner,
   faEdit,
   faCheck,
