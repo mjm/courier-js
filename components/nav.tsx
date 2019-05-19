@@ -119,7 +119,8 @@ const Nav = ({ user, isAuthenticating }: Props) => (
         margin-right: ${spacing(2)};
       }
       .username {
-        display: none;
+        text-indent: -9999px;
+        width: 0;
       }
 
       @media (min-width: 640px) {
@@ -128,6 +129,10 @@ const Nav = ({ user, isAuthenticating }: Props) => (
         }
         a {
           padding: ${spacing(3)} ${spacing(4)};
+        }
+        .username {
+          text-indent: 0;
+          width: auto;
         }
       }
     `}</style>
