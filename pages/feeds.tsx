@@ -9,6 +9,7 @@ import {
   RefreshFeedComponent,
   DeleteFeedComponent,
   AddFeedInput,
+  UpcomingTweetsDocument,
 } from "../lib/generated/graphql-components"
 import withData from "../hocs/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
@@ -159,7 +160,7 @@ const RefreshButton = ({ feed, setError }: RefreshButtonProps) => {
   const [refreshing, setRefreshing] = useState(false)
 
   return (
-    <RefreshFeedComponent>
+    <RefreshFeedComponent refetchQueries={[{ query: UpcomingTweetsDocument }]}>
       {refreshFeed => (
         <PillButton
           disabled={refreshing}
@@ -236,6 +237,7 @@ const AddFeed = () => (
     update={(cache, { data }) => {
       data && updateCachedFeeds(cache, nodes => [...nodes, data.addFeed.feed])
     }}
+    refetchQueries={[{ query: UpcomingTweetsDocument }]}
   >
     {addFeed => {
       const onSubmit = async (
