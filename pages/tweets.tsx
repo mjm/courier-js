@@ -195,7 +195,10 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
           border-top-color: ${colors.gray[400]};
         }
         li :global(.buttons) {
-          margin-top: ${spacing(4)};
+          margin-top: ${spacing(1)};
+        }
+        li :global(.buttons) > :global(*) {
+          margin-top: ${spacing(3)};
         }
       `}</style>
     </li>
@@ -262,11 +265,12 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
         .media {
           margin-top: ${spacing(3)};
           display: flex;
+          flex-wrap: wrap;
         }
         figure {
           margin: 0;
           padding: 0 ${spacing(1)};
-          width: 25%;
+          width: 50%;
         }
         img {
           width: 100%;
@@ -276,6 +280,12 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
           font-size: 0.9rem;
           font-style: italic;
           color: ${colors.gray[600]};
+        }
+
+        @media (min-width: 640px) {
+          figure {
+            width: 25%;
+          }
         }
       `}</style>
     </div>
