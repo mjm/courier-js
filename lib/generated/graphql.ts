@@ -160,8 +160,6 @@ export type Query = {
   currentUser?: Maybe<User>
   allSubscribedFeeds: SubscribedFeedConnection
   allTweets: TweetConnection
-  allFeeds: FeedConnection
-  feed?: Maybe<Feed>
 }
 
 export type QueryAllSubscribedFeedsArgs = {
@@ -177,17 +175,6 @@ export type QueryAllTweetsArgs = {
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
   after?: Maybe<Scalars["Cursor"]>
-}
-
-export type QueryAllFeedsArgs = {
-  first?: Maybe<Scalars["Int"]>
-  last?: Maybe<Scalars["Int"]>
-  before?: Maybe<Scalars["Cursor"]>
-  after?: Maybe<Scalars["Cursor"]>
-}
-
-export type QueryFeedArgs = {
-  id: Scalars["ID"]
 }
 
 export type RefreshFeedInput = {
@@ -365,8 +352,6 @@ export type ResolversTypes = {
   TweetEdge: Omit<TweetEdge, "node"> & { node: ResolversTypes["Tweet"] }
   Tweet: types.Tweet
   TweetStatus: TweetStatus
-  FeedConnection: Pager<types.Feed>
-  FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
   Mutation: {}
   AddFeedInput: AddFeedInput
   AddFeedPayload: Omit<AddFeedPayload, "feed"> & {
@@ -394,6 +379,8 @@ export type ResolversTypes = {
   EditTweetPayload: Omit<EditTweetPayload, "tweet"> & {
     tweet: ResolversTypes["Tweet"]
   }
+  FeedConnection: Pager<types.Feed>
+  FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
 }
 
 export type AddFeedPayloadResolvers<
@@ -603,18 +590,6 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     QueryAllTweetsArgs
-  >
-  allFeeds?: Resolver<
-    ResolversTypes["FeedConnection"],
-    ParentType,
-    ContextType,
-    QueryAllFeedsArgs
-  >
-  feed?: Resolver<
-    Maybe<ResolversTypes["Feed"]>,
-    ParentType,
-    ContextType,
-    QueryFeedArgs
   >
 }
 

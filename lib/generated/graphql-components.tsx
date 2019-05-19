@@ -157,8 +157,6 @@ export type Query = {
   currentUser?: Maybe<User>
   allSubscribedFeeds: SubscribedFeedConnection
   allTweets: TweetConnection
-  allFeeds: FeedConnection
-  feed?: Maybe<Feed>
 }
 
 export type QueryAllSubscribedFeedsArgs = {
@@ -174,17 +172,6 @@ export type QueryAllTweetsArgs = {
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
   after?: Maybe<Scalars["Cursor"]>
-}
-
-export type QueryAllFeedsArgs = {
-  first?: Maybe<Scalars["Int"]>
-  last?: Maybe<Scalars["Int"]>
-  before?: Maybe<Scalars["Cursor"]>
-  after?: Maybe<Scalars["Cursor"]>
-}
-
-export type QueryFeedArgs = {
-  id: Scalars["ID"]
 }
 
 export type RefreshFeedInput = {

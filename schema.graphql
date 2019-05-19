@@ -18,15 +18,6 @@ type Query {
     before: Cursor
     after: Cursor
   ): TweetConnection!
-
-  allFeeds(
-    first: Int
-    last: Int
-    before: Cursor
-    after: Cursor
-  ): FeedConnection!
-
-  feed(id: ID!): Feed
 }
 
 type Mutation {

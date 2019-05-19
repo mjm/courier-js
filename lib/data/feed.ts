@@ -15,21 +15,6 @@ import { Pager } from "./pager"
 import keyBy from "lodash/keyBy"
 import { importTweets } from "./tweet"
 
-export async function allFeeds(
-  options: PagingOptions = {}
-): Promise<Pager<Feed, FeedRow>> {
-  return new Pager({
-    query: sql`SELECT * FROM feeds`,
-    orderColumn: "url",
-    totalQuery: sql`SELECT COUNT(*) FROM feeds`,
-    variables: options,
-    makeEdge(row) {
-      return { node: fromRow(row), cursor: row.url }
-    },
-    getCursorValue: val => val,
-  })
-}
-
 export function allFeedsForUser(
   userId: UserId,
   options: PagingOptions = {}
