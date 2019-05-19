@@ -41,7 +41,8 @@ const Nav = ({ user, isAuthenticating }: Props) => (
       {user ? (
         <li>
           <a href="#">
-            <img src={user.picture} /> {user.name}
+            <img src={user.picture} />
+            <span className="username">{user.name}</span>
           </a>
         </li>
       ) : isAuthenticating ? null : (
@@ -79,7 +80,7 @@ const Nav = ({ user, isAuthenticating }: Props) => (
         line-height: 1.8rem;
       }
       nav > ul {
-        padding: 0 ${spacing(4)};
+        padding: 0 ${spacing(2)};
       }
       li {
         display: flex;
@@ -95,8 +96,9 @@ const Nav = ({ user, isAuthenticating }: Props) => (
         text-decoration: none;
         display: inline-flex;
         align-items: center;
-        padding: ${spacing(3)} ${spacing(4)};
+        padding: ${spacing(2)} ${spacing(3)};
         height: 100%;
+        flex-shrink: 0;
       }
       a.brand {
         font-size: 1.2rem;
@@ -115,6 +117,18 @@ const Nav = ({ user, isAuthenticating }: Props) => (
         height: 1.2rem;
         border-radius: 9999px;
         margin-right: ${spacing(2)};
+      }
+      .username {
+        display: none;
+      }
+
+      @media (min-width: 640px) {
+        nav > ul {
+          margin: 0 ${spacing(4)};
+        }
+        a {
+          padding: ${spacing(3)} ${spacing(4)};
+        }
       }
     `}</style>
   </nav>
