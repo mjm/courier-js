@@ -14,7 +14,7 @@ import { Pager } from "./pager"
 import moment from "moment"
 import { importTweets } from "./tweet"
 import { getFeedSubscriptions } from "./feed"
-import keyBy from "lodash/keyBy"
+import { getByIds } from "./util"
 
 export function allPostsForFeed(
   feedId: FeedId,
@@ -39,12 +39,11 @@ export function allPostsForFeed(
 }
 
 export async function getPostsById(ids: PostId[]): Promise<(Post | null)[]> {
-  const rows = await db.any(sql<PostRow>`
-    SELECT * FROM posts WHERE id = ANY(${sql.array(ids, "int4")})
-  `)
-  const byId = keyBy(rows.map(fromRow), "id")
-
-  return ids.map(id => byId[id] || null)
+  return await getByIds({
+    query: cond => sql`SELECT * FROM posts WHERE ${cond}`,
+    ids,
+    fromRow,
+  })
 }
 
 export async function getRecentPosts(feedId: FeedId): Promise<Post[]> {
