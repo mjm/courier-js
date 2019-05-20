@@ -61,6 +61,7 @@ mutation PostTweet($input: PostTweetInput!) {
     tweet {
       id
       body
+      mediaURLs
       status
       postedAt
       postedTweetID
@@ -73,6 +74,7 @@ mutation EditTweet($input: EditTweetInput!) {
     tweet {
       id
       body
+      mediaURLs
     }
   }
 }

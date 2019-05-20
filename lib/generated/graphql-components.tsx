@@ -37,6 +37,7 @@ export type DeleteFeedPayload = {
 export type EditTweetInput = {
   id: Scalars["ID"]
   body: Scalars["String"]
+  mediaURLs?: Maybe<Array<Scalars["String"]>>
 }
 
 export type EditTweetPayload = {
@@ -147,6 +148,7 @@ export type PostEdge = {
 export type PostTweetInput = {
   id: Scalars["ID"]
   body?: Maybe<Scalars["String"]>
+  mediaURLs?: Maybe<Array<Scalars["String"]>>
 }
 
 export type PostTweetPayload = {
@@ -370,7 +372,7 @@ export type PostTweetMutation = { __typename?: "Mutation" } & {
   postTweet: { __typename?: "PostTweetPayload" } & {
     tweet: { __typename?: "Tweet" } & Pick<
       Tweet,
-      "id" | "body" | "status" | "postedAt" | "postedTweetID"
+      "id" | "body" | "mediaURLs" | "status" | "postedAt" | "postedTweetID"
     >
   }
 }
@@ -381,7 +383,7 @@ export type EditTweetMutationVariables = {
 
 export type EditTweetMutation = { __typename?: "Mutation" } & {
   editTweet: { __typename?: "EditTweetPayload" } & {
-    tweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "body">
+    tweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "body" | "mediaURLs">
   }
 }
 
@@ -855,6 +857,7 @@ export const PostTweetDocument = gql`
       tweet {
         id
         body
+        mediaURLs
         status
         postedAt
         postedTweetID
@@ -910,6 +913,7 @@ export const EditTweetDocument = gql`
       tweet {
         id
         body
+        mediaURLs
       }
     }
   }

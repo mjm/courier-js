@@ -32,8 +32,13 @@ export const Mutation: MutationResolvers = {
   async postTweet(_, { input }, { getUser }) {
     const { sub } = await getUser()
 
-    if (input.body) {
-      await editTweet(sub, { id: input.id, body: input.body })
+    const { id, body, mediaURLs } = input
+    if (body) {
+      await editTweet(sub, {
+        id,
+        body,
+        mediaURLs: mediaURLs || undefined,
+      })
     }
 
     return { tweet: await postTweet(sub, input.id) }

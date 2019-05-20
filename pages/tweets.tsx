@@ -29,7 +29,7 @@ import { PillButton } from "../components/button"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import Moment from "react-moment"
 import { ErrorBox } from "../components/error"
-import { Formik, Form, Field } from "formik"
+import { Formik, Form, Field, FieldArray } from "formik"
 import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
 import Linkify from "linkifyjs/react"
@@ -327,12 +327,16 @@ interface EditTweetCardProps {
   onStopEditing: () => void
 }
 
-type FormValues = Pick<AllTweetsFieldsFragment, "body"> & {
+type FormValues = Pick<AllTweetsFieldsFragment, "body" | "mediaURLs"> & {
   action: "save" | "post"
 }
 
 const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
-  const initialValues: FormValues = { body: tweet.body, action: "save" }
+  const initialValues: FormValues = {
+    body: tweet.body,
+    mediaURLs: tweet.mediaURLs,
+    action: "save",
+  }
   return (
     <div>
       <PostTweetComponent>
@@ -343,8 +347,8 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                 initialValues={initialValues}
                 initialStatus={{ error: null }}
                 isInitialValid
-                onSubmit={async ({ body, action }, actions) => {
-                  const input = { id: tweet.id, body: body }
+                onSubmit={async ({ action, ...values }, actions) => {
+                  const input = { id: tweet.id, ...values }
                   try {
                     if (action === "save") {
                       await editTweet({ variables: { input } })
@@ -380,6 +384,32 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                     <Form>
                       <ErrorBox error={status.error} />
                       <Field name="body" component="textarea" autoFocus />
+                      <FieldArray name="mediaURLs">
+                        {({ insert, remove, push }) => (
+                          <>
+                            {values.mediaURLs.map((_url, index) => (
+                              <div key={index}>
+                                <Field name={`mediaURLs.${index}`} />
+                                <button
+                                  type="button"
+                                  onClick={() => remove(index)}
+                                >
+                                  remove
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => insert(index, "")}
+                                >
+                                  insert before
+                                </button>
+                              </div>
+                            ))}
+                            <button type="button" onClick={() => push("")}>
+                              add
+                            </button>
+                          </>
+                        )}
+                      </FieldArray>
                       <div className="buttons">
                         <PillButton
                           disabled={isSubmitting}

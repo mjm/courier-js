@@ -40,6 +40,7 @@ export type DeleteFeedPayload = {
 export type EditTweetInput = {
   id: Scalars["ID"]
   body: Scalars["String"]
+  mediaURLs?: Maybe<Array<Scalars["String"]>>
 }
 
 export type EditTweetPayload = {
@@ -150,6 +151,7 @@ export type PostEdge = {
 export type PostTweetInput = {
   id: Scalars["ID"]
   body?: Maybe<Scalars["String"]>
+  mediaURLs?: Maybe<Array<Scalars["String"]>>
 }
 
 export type PostTweetPayload = {

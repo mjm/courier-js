@@ -189,6 +189,7 @@ type UncancelTweetPayload {
 input PostTweetInput {
   id: ID!
   body: String
+  mediaURLs: [String!]
 }
 
 type PostTweetPayload {
@@ -198,6 +199,7 @@ type PostTweetPayload {
 input EditTweetInput {
   id: ID!
   body: String!
+  mediaURLs: [String!]
 }
 
 type EditTweetPayload {
