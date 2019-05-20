@@ -30,8 +30,12 @@ import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import Moment from "react-moment"
 import { ErrorBox } from "../components/error"
 import { Formik, Form, Field } from "formik"
-import Linkify from "react-linkify"
+import * as linkify from "linkifyjs"
+import mention from "linkifyjs/plugins/mention"
+import Linkify from "linkifyjs/react"
 import Container from "../components/container"
+
+mention(linkify)
 
 const Tweets = ({ user }: any) => (
   <Container>
@@ -229,7 +233,16 @@ const ViewTweetCard = ({ tweet, user, onEdit }: ViewTweetCardProps) => {
   return (
     <div>
       <div className="body">
-        <Linkify>{tweet.body}</Linkify>
+        <Linkify
+          options={{
+            formatHref: {
+              mention: val => `https://twitter.com${val}`,
+            },
+            target: "_blank",
+          }}
+        >
+          {tweet.body}
+        </Linkify>
       </div>
       {tweet.mediaURLs.length ? (
         <div className="media">
