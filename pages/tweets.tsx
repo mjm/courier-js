@@ -33,14 +33,18 @@ import { Formik, Form, Field } from "formik"
 import Linkify from "react-linkify"
 import Container from "../components/container"
 
-const Tweets = () => (
+const Tweets = ({ user }: any) => (
   <Container>
     <Head title="Your Tweets" />
 
     <PageHeader>Your Tweets</PageHeader>
     <p>These are the tweets Courier has translated from your feeds.</p>
-    <TweetsList title="Upcoming Tweet" query={UpcomingTweetsComponent} />
-    <TweetsList title="Past Tweet" query={PastTweetsComponent} />
+    <TweetsList
+      title="Upcoming Tweet"
+      query={UpcomingTweetsComponent}
+      user={user}
+    />
+    <TweetsList title="Past Tweet" query={PastTweetsComponent} user={user} />
     <style jsx>{`
       p {
         color: ${colors.primary[900]};
@@ -59,8 +63,13 @@ interface TweetsListProps {
   query: typeof UpcomingTweetsComponent
 
   title: string
+  user: any
 }
-const TweetsList = ({ query: QueryComponent, title }: TweetsListProps) => {
+const TweetsList = ({
+  query: QueryComponent,
+  title,
+  user,
+}: TweetsListProps) => {
   const [isLoadingMore, setLoadingMore] = useState(false)
 
   return (
@@ -137,7 +146,7 @@ const TweetsList = ({ query: QueryComponent, title }: TweetsListProps) => {
               </h2>
               <ul>
                 {nodes.map(tweet => (
-                  <TweetCard key={tweet.id} tweet={tweet} />
+                  <TweetCard key={tweet.id} tweet={tweet} user={user} />
                 ))}
                 {pageInfo.hasPreviousPage && (
                   <li>
@@ -169,9 +178,10 @@ const TweetsList = ({ query: QueryComponent, title }: TweetsListProps) => {
 
 interface TweetCardProps {
   tweet: AllTweetsFieldsFragment
+  user: any
 }
 
-const TweetCard = ({ tweet }: TweetCardProps) => {
+const TweetCard = ({ tweet, user }: TweetCardProps) => {
   const [editing, setEditing] = useState(false)
 
   return (
@@ -179,7 +189,11 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
       {editing ? (
         <EditTweetCard tweet={tweet} onStopEditing={() => setEditing(false)} />
       ) : (
-        <ViewTweetCard tweet={tweet} onEdit={() => setEditing(true)} />
+        <ViewTweetCard
+          tweet={tweet}
+          user={user}
+          onEdit={() => setEditing(true)}
+        />
       )}
       <style jsx>{`
         li {
@@ -207,10 +221,11 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
 
 interface ViewTweetCardProps {
   tweet: AllTweetsFieldsFragment
+  user: any
   onEdit: () => void
 }
 
-const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
+const ViewTweetCard = ({ tweet, user, onEdit }: ViewTweetCardProps) => {
   return (
     <div>
       <div className="body">
@@ -244,7 +259,9 @@ const ViewTweetCard = ({ tweet, onEdit }: ViewTweetCardProps) => {
         {tweet.status === TweetStatus.Posted && (
           <span className="status">
             <a
-              href={`https://twitter.com/user/status/${tweet.postedTweetID}`}
+              href={`https://twitter.com/${user.nickname}/status/${
+                tweet.postedTweetID
+              }`}
               target="_blank"
             >
               tweeted <Moment fromNow>{tweet.postedAt}</Moment>
