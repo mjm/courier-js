@@ -28,6 +28,10 @@ export const PillButton = ({
         button > :global(svg) {
           margin-right: ${spacing(1)};
         }
+        button:disabled {
+          background-color: ${colors.gray[200]} !important;
+          color: ${colors.gray[500]} !important;
+        }
       `}</style>
       <style jsx>{`
         button {

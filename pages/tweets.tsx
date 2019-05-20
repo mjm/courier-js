@@ -382,6 +382,10 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                     return isSubmitting && action === values.action
                   }
 
+                  function canAddMedia() {
+                    return values.mediaURLs.length < 4
+                  }
+
                   return (
                     <Form>
                       <ErrorBox error={status.error} />
@@ -395,7 +399,10 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                                   name={`mediaURLs.${index}`}
                                   placeholder="https://example.org/photo.jpg"
                                 />
-                                <PillButton onClick={() => insert(index, "")}>
+                                <PillButton
+                                  onClick={() => insert(index, "")}
+                                  disabled={!canAddMedia()}
+                                >
                                   <FontAwesomeIcon icon={faPlus} />
                                   Add Above
                                 </PillButton>
@@ -411,6 +418,7 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                             <PillButton
                               onClick={() => push("")}
                               className="add"
+                              disabled={!canAddMedia()}
                             >
                               <FontAwesomeIcon icon={faPlus} />
                               Add Media
