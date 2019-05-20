@@ -23,6 +23,8 @@ import {
   faEdit,
   faCheck,
   faShare,
+  faPlus,
+  faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons"
 import Loading from "../components/loading"
 import { PillButton } from "../components/button"
@@ -388,25 +390,31 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                         {({ insert, remove, push }) => (
                           <>
                             {values.mediaURLs.map((_url, index) => (
-                              <div key={index}>
-                                <Field name={`mediaURLs.${index}`} />
-                                <button
-                                  type="button"
+                              <div key={index} className="media-url">
+                                <Field
+                                  name={`mediaURLs.${index}`}
+                                  placeholder="https://example.org/photo.jpg"
+                                />
+                                <PillButton onClick={() => insert(index, "")}>
+                                  <FontAwesomeIcon icon={faPlus} />
+                                  Add Above
+                                </PillButton>
+                                <PillButton
                                   onClick={() => remove(index)}
+                                  color="red"
                                 >
-                                  remove
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => insert(index, "")}
-                                >
-                                  insert before
-                                </button>
+                                  <FontAwesomeIcon icon={faTrashAlt} />
+                                  Remove
+                                </PillButton>
                               </div>
                             ))}
-                            <button type="button" onClick={() => push("")}>
-                              add
-                            </button>
+                            <PillButton
+                              onClick={() => push("")}
+                              className="add"
+                            >
+                              <FontAwesomeIcon icon={faPlus} />
+                              Add Media
+                            </PillButton>
                           </>
                         )}
                       </FieldArray>
@@ -463,6 +471,27 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
           border: 2px solid ${colors.primary[500]};
           line-height: 1.5em;
           outline: none;
+        }
+        .media-url {
+          display: flex;
+          align-items: center;
+          padding: ${spacing(1)} 0;
+        }
+        .media-url > :global(input) {
+          flex-grow: 1;
+          margin-right: ${spacing(2)};
+          padding: ${spacing(2)};
+          color: ${colors.primary[900]};
+          background-color: ${colors.primary[100]};
+          border: 0;
+          border-bottom: 2px solid ${colors.primary[500]};
+          outline: none;
+        }
+        .media-url > :global(button) {
+          flex-shrink: 0;
+        }
+        div :global(.add) {
+          margin-top: ${spacing(1)};
         }
       `}</style>
     </div>
