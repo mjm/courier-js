@@ -81,22 +81,20 @@ const FeedsList = () => {
                     <h3>
                       <a href={feed.homePageURL}>{feed.title}</a>
                     </h3>
-                    <div>
-                      <a href={feed.homePageURL}>
-                        <FontAwesomeIcon icon={faHome} fixedWidth />
-                        {feed.homePageURL}
-                      </a>
-                    </div>
-                    <div>
-                      <a href={feed.url}>
-                        <FontAwesomeIcon icon={faRss} fixedWidth />
-                        {feed.url}
-                      </a>
-                    </div>
+                    <a href={feed.homePageURL}>
+                      <FontAwesomeIcon icon={faHome} fixedWidth />
+                      <span className="url">{feed.homePageURL}</span>
+                    </a>
+                    <a href={feed.url}>
+                      <FontAwesomeIcon icon={faRss} fixedWidth />
+                      <span className="url">{feed.url}</span>
+                    </a>
                     {feed.refreshedAt && (
                       <div>
                         <FontAwesomeIcon icon={faHistory} fixedWidth />
-                        Checked <Moment fromNow>{feed.refreshedAt}</Moment>
+                        <span>
+                          Checked <Moment fromNow>{feed.refreshedAt}</Moment>
+                        </span>
                       </div>
                     )}
                     <div className="buttons">
@@ -123,8 +121,15 @@ const FeedsList = () => {
           margin-bottom: ${spacing(4)};
           box-shadow: ${shadow.md};
         }
-        li div {
+        li > * {
           line-height: 1.375em;
+          display: flex;
+          align-items: center;
+        }
+        .url {
+          overflow-wrap: break-word;
+          word-wrap: break-word;
+          word-break: break-word;
         }
         h3 {
           font-family: ${font.display};
@@ -289,11 +294,26 @@ const AddFeed = () => (
             .container {
               width: 100%;
               display: flex;
+              flex-wrap: wrap;
+              justify-content: center;
             }
             .field {
               flex-grow: 1;
               width: 100%;
-              padding-right: ${spacing(3)};
+              margin-bottom: ${spacing(2)};
+            }
+            @media (min-width: 500px) {
+              .container {
+                flex-wrap: nowrap;
+              }
+              .field {
+                padding-right: ${spacing(3)};
+                margin-bottom: 0;
+              }
+              button {
+                padding-top: 0;
+                padding-bottom: 0;
+              }
             }
             div :global(input) {
               width: 100%;
@@ -319,7 +339,7 @@ const AddFeed = () => (
               border-color: transparent;
               border-radius: 0.5rem;
               color: white;
-              padding: 0 ${spacing(4)};
+              padding: ${spacing(2)} ${spacing(4)};
               box-shadow: ${shadow.sm};
             }
             button > :global(svg) {
