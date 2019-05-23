@@ -31,6 +31,7 @@ import Loading from "../components/loading"
 import { PillButton } from "../components/button"
 import { ErrorBox, FieldError } from "../components/error"
 import Container from "../components/container"
+import Link from "next/link"
 
 const Feeds = () => (
   <Container>
@@ -79,7 +80,9 @@ const FeedsList = () => {
                 {nodes.map(({ id, feed }) => (
                   <li key={id}>
                     <h3>
-                      <a href={feed.homePageURL}>{feed.title}</a>
+                      <Link href={`/feed?id=${id}`} as={`/feeds/${id}`}>
+                        <a>{feed.title}</a>
+                      </Link>
                     </h3>
                     <a href={feed.homePageURL}>
                       <FontAwesomeIcon icon={faHome} fixedWidth />

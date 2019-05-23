@@ -158,6 +158,7 @@ export type PostTweetPayload = {
 export type Query = {
   currentUser?: Maybe<User>
   allSubscribedFeeds: SubscribedFeedConnection
+  subscribedFeed?: Maybe<SubscribedFeed>
   allTweets: TweetConnection
 }
 
@@ -166,6 +167,10 @@ export type QueryAllSubscribedFeedsArgs = {
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
   after?: Maybe<Scalars["Cursor"]>
+}
+
+export type QuerySubscribedFeedArgs = {
+  id: Scalars["ID"]
 }
 
 export type QueryAllTweetsArgs = {
@@ -305,6 +310,24 @@ export type DeleteFeedMutation = { __typename?: "Mutation" } & {
   deleteFeed: { __typename?: "DeleteFeedPayload" } & Pick<
     DeleteFeedPayload,
     "id"
+  >
+}
+
+export type GetFeedDetailsQueryVariables = {
+  id: Scalars["ID"]
+}
+
+export type GetFeedDetailsQuery = { __typename?: "Query" } & {
+  subscribedFeed: Maybe<
+    { __typename?: "SubscribedFeed" } & {
+      feed: { __typename?: "Feed" } & {
+        posts: { __typename?: "PostConnection" } & {
+          nodes: Array<
+            { __typename?: "Post" } & Pick<Post, "id" | "title" | "htmlContent">
+          >
+        }
+      }
+    } & AllFeedSubscriptionsFieldsFragment
   >
 }
 
@@ -644,6 +667,61 @@ export function withDeleteFeed<TProps, TChildProps = {}>(
     DeleteFeedProps<TChildProps>
   >(DeleteFeedDocument, {
     alias: "withDeleteFeed",
+    ...operationOptions,
+  })
+}
+export const GetFeedDetailsDocument = gql`
+  query GetFeedDetails($id: ID!) {
+    subscribedFeed(id: $id) {
+      ...allFeedSubscriptionsFields
+      feed {
+        posts(last: 10) @connection(key: "posts") {
+          nodes {
+            id
+            title
+            htmlContent
+          }
+        }
+      }
+    }
+  }
+  ${allFeedSubscriptionsFieldsFragmentDoc}
+`
+
+export const GetFeedDetailsComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.QueryProps<GetFeedDetailsQuery, GetFeedDetailsQueryVariables>,
+      "query"
+    >,
+    "variables"
+  > & { variables: GetFeedDetailsQueryVariables }
+) => (
+  <ReactApollo.Query<GetFeedDetailsQuery, GetFeedDetailsQueryVariables>
+    query={GetFeedDetailsDocument}
+    {...props}
+  />
+)
+
+export type GetFeedDetailsProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<GetFeedDetailsQuery, GetFeedDetailsQueryVariables>
+> &
+  TChildProps
+export function withGetFeedDetails<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    GetFeedDetailsQuery,
+    GetFeedDetailsQueryVariables,
+    GetFeedDetailsProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    GetFeedDetailsQuery,
+    GetFeedDetailsQueryVariables,
+    GetFeedDetailsProps<TChildProps>
+  >(GetFeedDetailsDocument, {
+    alias: "withGetFeedDetails",
     ...operationOptions,
   })
 }

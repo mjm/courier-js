@@ -7,6 +7,7 @@
     { "src": "api/**/*.ts", "use": "@now/node" }
   ],
   "routes": [
+    { "src": "/feeds/(?<id>\\d+)", "dest": "/feed?id=$id" },
     { "src": "/graphql", "dest": "api/graphql.ts" },
     { "src": "/ping", "dest": "api/ping.ts" },
     { "src": "/api/(.*)", "dest": "/api/$1.ts" }

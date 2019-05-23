@@ -13,6 +13,11 @@ export const Query: QueryResolvers = {
     return await allFeedsForUser(sub, args)
   },
 
+  async subscribedFeed(_parent, { id }, { loaders, getUser }) {
+    await getUser()
+    return await loaders.subscribedFeeds.load(id)
+  },
+
   async allTweets(_parent, args, { getUser }) {
     const { sub } = await getUser()
     return await allTweets(sub, args)

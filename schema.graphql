@@ -11,6 +11,8 @@ type Query {
     after: Cursor
   ): SubscribedFeedConnection!
 
+  subscribedFeed(id: ID!): SubscribedFeed
+
   allTweets(
     filter: TweetFilter
     first: Int

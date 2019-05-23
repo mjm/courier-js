@@ -47,3 +47,18 @@ mutation DeleteFeed($input: DeleteFeedInput!) {
     id
   }
 }
+
+query GetFeedDetails($id: ID!) {
+  subscribedFeed(id: $id) {
+    ...allFeedSubscriptionsFields
+    feed {
+      posts(last: 10) @connection(key: "posts") {
+        nodes {
+          id
+          title
+          htmlContent
+        }
+      }
+    }
+  }
+}

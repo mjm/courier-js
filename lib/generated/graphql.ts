@@ -161,6 +161,7 @@ export type PostTweetPayload = {
 export type Query = {
   currentUser?: Maybe<User>
   allSubscribedFeeds: SubscribedFeedConnection
+  subscribedFeed?: Maybe<SubscribedFeed>
   allTweets: TweetConnection
 }
 
@@ -169,6 +170,10 @@ export type QueryAllSubscribedFeedsArgs = {
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
   after?: Maybe<Scalars["Cursor"]>
+}
+
+export type QuerySubscribedFeedArgs = {
+  id: Scalars["ID"]
 }
 
 export type QueryAllTweetsArgs = {
@@ -586,6 +591,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     QueryAllSubscribedFeedsArgs
+  >
+  subscribedFeed?: Resolver<
+    Maybe<ResolversTypes["SubscribedFeed"]>,
+    ParentType,
+    ContextType,
+    QuerySubscribedFeedArgs
   >
   allTweets?: Resolver<
     ResolversTypes["TweetConnection"],
