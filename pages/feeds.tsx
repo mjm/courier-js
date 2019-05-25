@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import Head from "../components/head"
-import { PageHeader } from "../components/header"
+import { PageHeader, PageDescription } from "../components/header"
 import {
   AllFeedsComponent,
   AddFeedComponent,
@@ -39,19 +39,12 @@ const Feeds = () => (
     <Head title="Feeds to Watch" />
 
     <PageHeader>Feeds to Watch</PageHeader>
-    <p>
+    <PageDescription>
       The feeds you add here will be checked for new posts that need to be
       tweeted.
-    </p>
+    </PageDescription>
     <FeedsList />
     <AddFeed />
-    <style jsx>{`
-      p {
-        color: ${colors.primary[900]};
-        text-align: center;
-        margin-bottom: 2em;
-      }
-    `}</style>
   </Container>
 )
 

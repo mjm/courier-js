@@ -1,6 +1,10 @@
 import React, { useState } from "react"
 import Head from "../components/head"
-import { PageHeader } from "../components/header"
+import {
+  PageHeader,
+  PageDescription,
+  SectionHeader,
+} from "../components/header"
 import {
   UpcomingTweetsComponent,
   PastTweetsComponent,
@@ -45,20 +49,15 @@ const Tweets = ({ user }: any) => (
     <Head title="Your Tweets" />
 
     <PageHeader>Your Tweets</PageHeader>
-    <p>These are the tweets Courier has translated from your feeds.</p>
+    <PageDescription>
+      These are the tweets Courier has translated from your feeds.
+    </PageDescription>
     <TweetsList
       title="Upcoming Tweet"
       query={UpcomingTweetsComponent}
       user={user}
     />
     <TweetsList title="Past Tweet" query={PastTweetsComponent} user={user} />
-    <style jsx>{`
-      p {
-        color: ${colors.primary[900]};
-        text-align: center;
-        margin-bottom: 2em;
-      }
-    `}</style>
   </Container>
 )
 
@@ -147,10 +146,10 @@ const TweetsList = ({
 
           return (
             <>
-              <h2>
+              <SectionHeader>
                 {totalCount} {title}
                 {totalCount === 1 ? "" : "s"}
-              </h2>
+              </SectionHeader>
               <ul>
                 {nodes.map(tweet => (
                   <TweetCard key={tweet.id} tweet={tweet} user={user} />
@@ -172,11 +171,6 @@ const TweetsList = ({
         ul {
           list-style: none;
           padding-left: 0;
-        }
-        h2 {
-          font-family: ${font.display};
-          color: ${colors.primary[800]};
-          letter-spacing: -0.025em;
         }
       `}</style>
     </div>
