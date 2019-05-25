@@ -9,7 +9,8 @@ import { GetFeedDetailsComponent } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Moment from "react-moment"
-import { shadow, spacing, colors } from "../utils/theme"
+import { spacing, colors } from "../utils/theme"
+import Box from "../components/box"
 
 interface Props {
   id: string
@@ -34,11 +35,11 @@ const Feed = ({ id }: Props) => {
           const feed = data.subscribedFeed
           if (feed) {
             return (
-              <>
+              <div>
                 <Head title={`${feed.feed.title} - Details`} />
 
-                <PageHeader>{feed.feed.title}</PageHeader>
-                <div className="form">
+                <PageHeader className="header">{feed.feed.title}</PageHeader>
+                <Box>
                   <div className="field">
                     <div className="label">Feed URL</div>
                     <div className="entry">
@@ -63,8 +64,8 @@ const Feed = ({ id }: Props) => {
                     <div className="label">Autopost</div>
                     <div className="entry">{feed.autopost ? "Yes" : "No"}</div>
                   </div>
-                </div>
-              </>
+                </Box>
+              </div>
             )
           } else {
             return <p>Can't find that feed.</p>
@@ -72,14 +73,8 @@ const Feed = ({ id }: Props) => {
         }}
       </GetFeedDetailsComponent>
       <style jsx>{`
-        .form {
-          margin-top: ${spacing(6)};
-          background-color: white;
-          box-shadow: ${shadow.md};
-          border-radius: 0.25rem;
-          padding: ${spacing(4)} ${spacing(4)};
-          display: flex;
-          flex-direction: column;
+        div :global(.header) {
+          margin-bottom: ${spacing(6)};
         }
         .field {
           display: flex;
@@ -94,7 +89,6 @@ const Feed = ({ id }: Props) => {
           color: ${colors.gray[900]};
         }
         a {
-          color: ${colors.primary[700]};
           text-decoration: none;
         }
       `}</style>

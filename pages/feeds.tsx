@@ -15,7 +15,7 @@ import withData from "../hocs/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
 import * as yup from "yup"
 import withSecurePage from "../hocs/securePage"
-import { colors, spacing, font, shadow } from "../utils/theme"
+import { colors, spacing, shadow } from "../utils/theme"
 import { DataProxy } from "apollo-cache"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
@@ -32,6 +32,7 @@ import { PillButton } from "../components/button"
 import { ErrorBox, FieldError } from "../components/error"
 import Container from "../components/container"
 import Link from "next/link"
+import Box, { BoxHeader, BoxButtons } from "../components/box"
 
 const Feeds = () => (
   <Container>
@@ -79,31 +80,33 @@ const FeedsList = () => {
               <ul>
                 {nodes.map(({ id, feed }) => (
                   <li key={id}>
-                    <h3>
-                      <Link href={`/feed?id=${id}`} as={`/feeds/${id}`}>
-                        <a>{feed.title}</a>
-                      </Link>
-                    </h3>
-                    <a href={feed.homePageURL}>
-                      <FontAwesomeIcon icon={faHome} fixedWidth />
-                      <span className="url">{feed.homePageURL}</span>
-                    </a>
-                    <a href={feed.url}>
-                      <FontAwesomeIcon icon={faRss} fixedWidth />
-                      <span className="url">{feed.url}</span>
-                    </a>
-                    {feed.refreshedAt && (
-                      <div>
-                        <FontAwesomeIcon icon={faHistory} fixedWidth />
-                        <span>
-                          Checked <Moment fromNow>{feed.refreshedAt}</Moment>
-                        </span>
-                      </div>
-                    )}
-                    <div className="buttons">
-                      <RefreshButton feed={feed} setError={setActionError} />
-                      <DeleteButton id={id} setError={setActionError} />
-                    </div>
+                    <Box>
+                      <BoxHeader>
+                        <Link href={`/feed?id=${id}`} as={`/feeds/${id}`}>
+                          <a>{feed.title}</a>
+                        </Link>
+                      </BoxHeader>
+                      <a className="row" href={feed.homePageURL}>
+                        <FontAwesomeIcon icon={faHome} fixedWidth />
+                        <span className="url">{feed.homePageURL}</span>
+                      </a>
+                      <a className="row" href={feed.url}>
+                        <FontAwesomeIcon icon={faRss} fixedWidth />
+                        <span className="url">{feed.url}</span>
+                      </a>
+                      {feed.refreshedAt && (
+                        <div className="row">
+                          <FontAwesomeIcon icon={faHistory} fixedWidth />
+                          <span>
+                            Checked <Moment fromNow>{feed.refreshedAt}</Moment>
+                          </span>
+                        </div>
+                      )}
+                      <BoxButtons>
+                        <RefreshButton feed={feed} setError={setActionError} />
+                        <DeleteButton id={id} setError={setActionError} />
+                      </BoxButtons>
+                    </Box>
                   </li>
                 ))}
               </ul>
@@ -117,15 +120,8 @@ const FeedsList = () => {
           margin-left: 0;
           padding-left: 0;
         }
-        li {
-          padding: ${spacing(3)} ${spacing(4)};
-          background-color: white;
-          border-top: 3px solid ${colors.primary[500]};
-          margin-bottom: ${spacing(4)};
-          box-shadow: ${shadow.md};
-        }
-        li > * {
-          line-height: 1.375em;
+        .row {
+          line-height: 1.5em;
           display: flex;
           align-items: center;
         }
@@ -134,23 +130,12 @@ const FeedsList = () => {
           word-wrap: break-word;
           word-break: break-word;
         }
-        h3 {
-          font-family: ${font.display};
-          font-size: 1.2rem;
-          font-weight: 500;
-          margin: 0;
-          margin-bottom: ${spacing(2)};
-        }
         * > :global(svg) {
           color: ${colors.primary[700]};
           margin-right: ${spacing(2)};
         }
         a {
-          color: ${colors.primary[800]};
           text-decoration: none;
-        }
-        .buttons {
-          margin-top: ${spacing(2)};
         }
       `}</style>
     </div>

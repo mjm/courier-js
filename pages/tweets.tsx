@@ -36,6 +36,7 @@ import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
 import Linkify from "linkifyjs/react"
 import Container from "../components/container"
+import Box, { BoxButtons } from "../components/box"
 
 mention(linkify)
 
@@ -190,37 +191,25 @@ interface TweetCardProps {
 const TweetCard = ({ tweet, user }: TweetCardProps) => {
   const [editing, setEditing] = useState(false)
 
+  const appearance =
+    tweet.status === TweetStatus.Canceled ? "canceled" : "normal"
+
   return (
-    <li className={`${tweet.status.toLowerCase()}`}>
-      {editing ? (
-        <EditTweetCard tweet={tweet} onStopEditing={() => setEditing(false)} />
-      ) : (
-        <ViewTweetCard
-          tweet={tweet}
-          user={user}
-          onEdit={() => setEditing(true)}
-        />
-      )}
-      <style jsx>{`
-        li {
-          background-color: white;
-          padding: ${spacing(4)};
-          box-shadow: ${shadow.md};
-          margin-bottom: ${spacing(4)};
-          border-top: 3px solid ${colors.primary[500]};
-        }
-        li.canceled {
-          color: ${colors.gray[700]};
-          background-color: ${colors.gray[200]};
-          border-top-color: ${colors.gray[400]};
-        }
-        li :global(.buttons) {
-          margin-top: ${spacing(1)};
-        }
-        li :global(.buttons) > :global(*) {
-          margin-top: ${spacing(3)};
-        }
-      `}</style>
+    <li>
+      <Box appearance={appearance}>
+        {editing ? (
+          <EditTweetCard
+            tweet={tweet}
+            onStopEditing={() => setEditing(false)}
+          />
+        ) : (
+          <ViewTweetCard
+            tweet={tweet}
+            user={user}
+            onEdit={() => setEditing(true)}
+          />
+        )}
+      </Box>
     </li>
   )
 }
@@ -255,7 +244,7 @@ const ViewTweetCard = ({ tweet, user, onEdit }: ViewTweetCardProps) => {
           ))}
         </div>
       ) : null}
-      <div className="buttons">
+      <BoxButtons>
         {tweet.status === TweetStatus.Draft && (
           <>
             <CancelButton id={tweet.id} />
@@ -267,12 +256,12 @@ const ViewTweetCard = ({ tweet, user, onEdit }: ViewTweetCardProps) => {
           </>
         )}
         {tweet.status === TweetStatus.Canceled && (
-          <span className="status">
+          <div className="status">
             canceled. <UncancelButton id={tweet.id} />
-          </span>
+          </div>
         )}
         {tweet.status === TweetStatus.Posted && (
-          <span className="status">
+          <div className="status">
             <a
               href={`https://twitter.com/${user.nickname}/status/${
                 tweet.postedTweetID
@@ -281,18 +270,13 @@ const ViewTweetCard = ({ tweet, user, onEdit }: ViewTweetCardProps) => {
             >
               tweeted <Moment fromNow>{tweet.postedAt}</Moment>
             </a>
-          </span>
+          </div>
         )}
-      </div>
+      </BoxButtons>
       <style jsx>{`
         .body {
           white-space: pre-wrap;
           line-height: 1.5em;
-        }
-        a,
-        .body :global(a),
-        .status :global(a) {
-          color: ${colors.primary[700]};
         }
         .media {
           margin-top: ${spacing(3)};
@@ -308,7 +292,7 @@ const ViewTweetCard = ({ tweet, user, onEdit }: ViewTweetCardProps) => {
           width: 100%;
           border-radius: 1rem;
         }
-        span.status {
+        .status {
           font-size: 0.9rem;
           font-style: italic;
           color: ${colors.gray[600]};
@@ -426,7 +410,7 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                           </>
                         )}
                       </FieldArray>
-                      <div className="buttons">
+                      <BoxButtons>
                         <PillButton
                           disabled={isSubmitting}
                           color="red"
@@ -459,7 +443,7 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                           />
                           Post Now
                         </PillButton>
-                      </div>
+                      </BoxButtons>
                     </Form>
                   )
                 }}
