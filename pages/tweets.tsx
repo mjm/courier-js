@@ -276,15 +276,15 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                                 <PillButton
                                   onClick={() => insert(index, "")}
                                   disabled={!canAddMedia()}
+                                  icon={faPlus}
                                 >
-                                  <FontAwesomeIcon icon={faPlus} />
                                   Add Above
                                 </PillButton>
                                 <PillButton
                                   onClick={() => remove(index)}
                                   color="red"
+                                  icon={faTrashAlt}
                                 >
-                                  <FontAwesomeIcon icon={faTrashAlt} />
                                   Remove
                                 </PillButton>
                               </div>
@@ -293,8 +293,8 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                               onClick={() => push("")}
                               className="add"
                               disabled={!canAddMedia()}
+                              icon={faPlus}
                             >
-                              <FontAwesomeIcon icon={faPlus} />
                               Add Media
                             </PillButton>
                           </>
@@ -303,34 +303,30 @@ const EditTweetCard = ({ tweet, onStopEditing }: EditTweetCardProps) => {
                       <BoxButtons>
                         <PillButton
                           disabled={isSubmitting}
+                          icon={faBan}
                           color="red"
                           invert
                           onClick={onStopEditing}
                         >
-                          <FontAwesomeIcon icon={faBan} />
                           Discard Changes
                         </PillButton>
                         <PillButton
                           disabled={isSubmitting}
+                          icon={faCheck}
+                          spin={submitting("save")}
                           invert
                           onClick={() => submit("save")}
                         >
-                          <FontAwesomeIcon
-                            icon={submitting("save") ? faSpinner : faCheck}
-                            spin={submitting("save")}
-                          />
                           Save Draft
                         </PillButton>
                         <PillButton
                           disabled={isSubmitting}
+                          icon={faShare}
+                          spin={submitting("post")}
                           color="blue"
                           invert
                           onClick={() => submit("post")}
                         >
-                          <FontAwesomeIcon
-                            icon={submitting("post") ? faSpinner : faShare}
-                            spin={submitting("post")}
-                          />
                           Post Now
                         </PillButton>
                       </BoxButtons>

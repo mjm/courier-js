@@ -1,18 +1,36 @@
 import React from "react"
 import { colors, spacing, shadow } from "../utils/theme"
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 
 type Props = React.PropsWithoutRef<JSX.IntrinsicElements["button"]> & {
   color?: "primary" | "red" | "blue"
   invert?: boolean
+
+  icon?: IconDefinition
+  spin?: boolean
+  useSameIconWhileSpinning?: boolean
 }
 export const PillButton = ({
   children,
+  disabled,
   color = "primary",
   invert = false,
+  icon,
+  spin = false,
+  useSameIconWhileSpinning = false,
   ...props
 }: Props) => {
   return (
-    <button type="button" {...props}>
+    <button type="button" disabled={disabled || spin} {...props}>
+      {icon && (
+        <FontAwesomeIcon
+          className="icon"
+          icon={spin && !useSameIconWhileSpinning ? faSpinner : icon}
+          spin={spin}
+        />
+      )}
       {children}
       <style jsx>{`
         button {
@@ -25,7 +43,7 @@ export const PillButton = ({
           margin-right: ${spacing(2)};
           box-shadow: ${shadow.sm};
         }
-        button > :global(svg) {
+        button :global(.icon) {
           margin-right: ${spacing(1)};
         }
         button:disabled {

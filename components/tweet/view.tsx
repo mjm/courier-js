@@ -9,8 +9,7 @@ import {
 } from "../../lib/generated/graphql-components"
 import Linkify from "linkifyjs/react"
 import { BoxButtons } from "../box"
-import { faEdit, faBan, faSpinner } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faEdit, faBan } from "@fortawesome/free-solid-svg-icons"
 import { PillButton } from "../button"
 import Moment from "react-moment"
 import { spacing, colors } from "../../utils/theme"
@@ -54,8 +53,7 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
         {tweet.status === TweetStatus.Draft && (
           <>
             <CancelButton id={tweet.id} />
-            <PillButton invert onClick={onEdit}>
-              <FontAwesomeIcon icon={faEdit} />
+            <PillButton icon={faEdit} invert onClick={onEdit}>
               Edit Tweet
             </PillButton>
             <PostButton id={tweet.id} />
@@ -124,6 +122,7 @@ const CancelButton = ({ id }: CancelButtonProps) => {
     <CancelTweetComponent>
       {cancelTweet => (
         <PillButton
+          icon={faBan}
           color="red"
           invert
           onClick={() => {
@@ -143,7 +142,6 @@ const CancelButton = ({ id }: CancelButtonProps) => {
             })
           }}
         >
-          <FontAwesomeIcon icon={faBan} />
           Don't Post
         </PillButton>
       )}
@@ -189,7 +187,8 @@ const PostButton = ({ id }: CancelButtonProps) => {
     <PostTweetComponent>
       {postTweet => (
         <PillButton
-          disabled={posting}
+          spin={posting}
+          icon={faTwitter}
           color="blue"
           invert
           onClick={async () => {
@@ -204,10 +203,6 @@ const PostButton = ({ id }: CancelButtonProps) => {
             }
           }}
         >
-          <FontAwesomeIcon
-            icon={posting ? faSpinner : faTwitter}
-            spin={posting}
-          />
           Post to Twitter
         </PillButton>
       )}

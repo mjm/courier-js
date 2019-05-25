@@ -149,7 +149,9 @@ const RefreshButton = ({ feed, setError }: RefreshButtonProps) => {
     <RefreshFeedComponent refetchQueries={[{ query: UpcomingTweetsDocument }]}>
       {refreshFeed => (
         <PillButton
-          disabled={refreshing}
+          spin={refreshing}
+          icon={faSyncAlt}
+          useSameIconWhileSpinning
           onClick={async () => {
             setRefreshing(true)
             try {
@@ -162,7 +164,6 @@ const RefreshButton = ({ feed, setError }: RefreshButtonProps) => {
             }
           }}
         >
-          <FontAwesomeIcon icon={faSyncAlt} spin={refreshing} />
           Refresh
         </PillButton>
       )}
@@ -187,6 +188,7 @@ const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
     >
       {deleteFeed => (
         <PillButton
+          icon={faTrashAlt}
           onClick={async () => {
             try {
               await deleteFeed({
@@ -205,7 +207,6 @@ const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
             }
           }}
         >
-          <FontAwesomeIcon icon={faTrashAlt} />
           Delete
         </PillButton>
       )}
