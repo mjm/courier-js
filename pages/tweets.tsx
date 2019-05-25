@@ -18,7 +18,7 @@ import {
 } from "../lib/generated/graphql-components"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
-import { spacing, shadow, colors, font } from "../utils/theme"
+import { spacing, shadow, colors } from "../utils/theme"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faAngleDoubleDown,
