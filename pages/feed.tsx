@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useRef } from "react"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
@@ -9,15 +9,27 @@ import {
   GetFeedDetailsComponent,
   RefreshFeedComponent,
   UpcomingTweetsDocument,
+  DeleteFeedComponent,
+  AllFeedsDocument,
 } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Moment from "react-moment"
 import { spacing, colors } from "../utils/theme"
 import Box, { BoxHeader, BoxButtons } from "../components/box"
-import { faTrashAlt, faSyncAlt } from "@fortawesome/free-solid-svg-icons"
+import {
+  faTrashAlt,
+  faSyncAlt,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons"
 import { Button } from "../components/button"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
+import {
+  AlertDialog,
+  AlertDialogLabel,
+  AlertDialogDescription,
+} from "@reach/alert-dialog"
+import Router from "next/router"
 
 interface Props {
   id: string
@@ -101,9 +113,7 @@ const Feed = ({ id }: Props) => {
                     feed's posts will not be affected.
                   </div>
                   <BoxButtons>
-                    <Button color="red" invert icon={faTrashAlt}>
-                      Remove Feed
-                    </Button>
+                    <RemoveButton id={feed.id} />
                   </BoxButtons>
                 </Box>
               </div>
@@ -172,6 +182,80 @@ const RefreshButton = ({ id, setError }: RefreshButtonProps) => {
         </Button>
       )}
     </RefreshFeedComponent>
+  )
+}
+
+interface RemoveButtonProps {
+  id: string
+}
+
+const RemoveButton = ({ id }: RemoveButtonProps) => {
+  const [showDialog, setShowDialog] = useState(false)
+  const buttonRef = useRef(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  function closeDialog() {
+    setShowDialog(false)
+  }
+
+  return (
+    <DeleteFeedComponent
+      refetchQueries={[{ query: AllFeedsDocument }]}
+      awaitRefetchQueries
+    >
+      {deleteFeed => (
+        <>
+          <Button
+            color="red"
+            invert
+            icon={faTrashAlt}
+            onClick={() => setShowDialog(true)}
+          >
+            Remove Feed
+          </Button>
+
+          {showDialog && (
+            <AlertDialog
+              leastDestructiveRef={buttonRef}
+              onDismiss={closeDialog}
+            >
+              <AlertDialogLabel>Are you sure?</AlertDialogLabel>
+
+              <AlertDialogDescription>
+                Are you sure you want to delete this feed from your account?
+              </AlertDialogDescription>
+
+              <div>
+                <Button
+                  color="red"
+                  icon={faTrashAlt}
+                  spin={isDeleting}
+                  onClick={async () => {
+                    setIsDeleting(true)
+                    try {
+                      await deleteFeed({
+                        variables: { input: { id } },
+                      })
+                      setShowDialog(false)
+                      Router.push("/feeds")
+                    } catch (err) {
+                      console.error(err)
+                    } finally {
+                      setIsDeleting(false)
+                    }
+                  }}
+                >
+                  Remove Feed
+                </Button>
+                <Button ref={buttonRef} icon={faTimes} onClick={closeDialog}>
+                  Don't Remove
+                </Button>
+              </div>
+            </AlertDialog>
+          )}
+        </>
+      )}
+    </DeleteFeedComponent>
   )
 }
 

@@ -67,6 +67,29 @@ const Nav = ({ user, isAuthenticating }: Props) => (
         font-family: ${font.body};
         background-color: #f9ffff;
       }
+      :global([data-reach-dialog-content]) {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        width: 500px;
+        max-width: 100%;
+
+        background-color: white;
+        box-shadow: ${shadow.lg};
+        padding: ${spacing(3)};
+      }
+      :global([data-reach-dialog-overlay]) {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        overflow: auto;
+
+        background: hsla(0, 0%, 0%, 0.2);
+      }
       nav {
         text-align: center;
         background-color: ${colors.primary[700]};
