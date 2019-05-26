@@ -28,7 +28,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import Moment from "react-moment"
 import Loading from "../components/loading"
-import { PillButton } from "../components/button"
+import { Button } from "../components/button"
 import { ErrorBox, FieldError } from "../components/error"
 import Container from "../components/container"
 import Link from "next/link"
@@ -148,7 +148,7 @@ const RefreshButton = ({ feed, setError }: RefreshButtonProps) => {
   return (
     <RefreshFeedComponent refetchQueries={[{ query: UpcomingTweetsDocument }]}>
       {refreshFeed => (
-        <PillButton
+        <Button
           spin={refreshing}
           icon={faSyncAlt}
           useSameIconWhileSpinning
@@ -165,7 +165,7 @@ const RefreshButton = ({ feed, setError }: RefreshButtonProps) => {
           }}
         >
           Refresh
-        </PillButton>
+        </Button>
       )}
     </RefreshFeedComponent>
   )
@@ -187,7 +187,7 @@ const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
       }}
     >
       {deleteFeed => (
-        <PillButton
+        <Button
           icon={faTrashAlt}
           onClick={async () => {
             try {
@@ -208,7 +208,7 @@ const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
           }}
         >
           Delete
-        </PillButton>
+        </Button>
       )}
     </DeleteFeedComponent>
   )
@@ -256,14 +256,14 @@ const AddFeed = () => (
                     <Field type="text" name="url" placeholder="https://" />
                     <ErrorMessage name="url" component={FieldError} />
                   </div>
-                  <PillButton
+                  <Button
                     size="large"
                     type="submit"
                     icon={faPlusCircle}
                     spin={isSubmitting}
                   >
                     Add Feed
-                  </PillButton>
+                  </Button>
                 </div>
               </Form>
             )}

@@ -10,7 +10,7 @@ import {
 import Linkify from "linkifyjs/react"
 import { BoxButtons } from "../box"
 import { faEdit, faBan } from "@fortawesome/free-solid-svg-icons"
-import { PillButton } from "../button"
+import { Button } from "../button"
 import Moment from "react-moment"
 import { spacing, colors } from "../../utils/theme"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
@@ -53,9 +53,9 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
         {tweet.status === TweetStatus.Draft && (
           <>
             <CancelButton id={tweet.id} />
-            <PillButton icon={faEdit} invert onClick={onEdit}>
+            <Button icon={faEdit} invert onClick={onEdit}>
               Edit Tweet
-            </PillButton>
+            </Button>
             <PostButton id={tweet.id} />
           </>
         )}
@@ -121,7 +121,7 @@ const CancelButton = ({ id }: CancelButtonProps) => {
   return (
     <CancelTweetComponent>
       {cancelTweet => (
-        <PillButton
+        <Button
           icon={faBan}
           color="red"
           invert
@@ -143,7 +143,7 @@ const CancelButton = ({ id }: CancelButtonProps) => {
           }}
         >
           Don't Post
-        </PillButton>
+        </Button>
       )}
     </CancelTweetComponent>
   )
@@ -186,7 +186,7 @@ const PostButton = ({ id }: CancelButtonProps) => {
   return (
     <PostTweetComponent>
       {postTweet => (
-        <PillButton
+        <Button
           spin={posting}
           icon={faTwitter}
           color="blue"
@@ -204,7 +204,7 @@ const PostButton = ({ id }: CancelButtonProps) => {
           }}
         >
           Post to Twitter
-        </PillButton>
+        </Button>
       )}
     </PostTweetComponent>
   )

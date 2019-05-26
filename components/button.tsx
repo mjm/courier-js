@@ -13,7 +13,7 @@ type Props = React.PropsWithoutRef<JSX.IntrinsicElements["button"]> & {
   spin?: boolean
   useSameIconWhileSpinning?: boolean
 }
-export const PillButton = ({
+export const Button = ({
   children,
   className = "",
   disabled,

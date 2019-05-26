@@ -20,7 +20,7 @@ import Container from "../components/container"
 import Box from "../components/box"
 import ViewTweet from "../components/tweet/view"
 import EditTweet from "../components/tweet/edit"
-import { PillButton } from "../components/button"
+import { Button } from "../components/button"
 
 const Tweets = ({ user }: any) => (
   <Container>
@@ -134,14 +134,14 @@ const TweetsList = ({
                 ))}
                 {pageInfo.hasPreviousPage && (
                   <li className="load-more">
-                    <PillButton
+                    <Button
                       size="medium"
                       icon={faAngleDoubleDown}
                       spin={isLoadingMore}
                       onClick={loadMore}
                     >
                       Show More…
-                    </PillButton>
+                    </Button>
                   </li>
                 )}
               </ul>

@@ -6,7 +6,7 @@ import {
 } from "../../lib/generated/graphql-components"
 import { Formik, Form, Field, FieldArray } from "formik"
 import { ErrorBox } from "../error"
-import { PillButton } from "../button"
+import { Button } from "../button"
 import {
   faPlus,
   faTrashAlt,
@@ -92,35 +92,35 @@ const EditTweet = ({ tweet, onStopEditing }: EditTweetProps) => {
                                   name={`mediaURLs.${index}`}
                                   placeholder="https://example.org/photo.jpg"
                                 />
-                                <PillButton
+                                <Button
                                   onClick={() => insert(index, "")}
                                   disabled={!canAddMedia()}
                                   icon={faPlus}
                                 >
                                   Add Above
-                                </PillButton>
-                                <PillButton
+                                </Button>
+                                <Button
                                   onClick={() => remove(index)}
                                   color="red"
                                   icon={faTrashAlt}
                                 >
                                   Remove
-                                </PillButton>
+                                </Button>
                               </div>
                             ))}
-                            <PillButton
+                            <Button
                               onClick={() => push("")}
                               className="add"
                               disabled={!canAddMedia()}
                               icon={faPlus}
                             >
                               Add Media
-                            </PillButton>
+                            </Button>
                           </>
                         )}
                       </FieldArray>
                       <BoxButtons>
-                        <PillButton
+                        <Button
                           disabled={isSubmitting}
                           icon={faBan}
                           color="red"
@@ -128,8 +128,8 @@ const EditTweet = ({ tweet, onStopEditing }: EditTweetProps) => {
                           onClick={onStopEditing}
                         >
                           Discard Changes
-                        </PillButton>
-                        <PillButton
+                        </Button>
+                        <Button
                           disabled={isSubmitting}
                           icon={faCheck}
                           spin={submitting("save")}
@@ -137,8 +137,8 @@ const EditTweet = ({ tweet, onStopEditing }: EditTweetProps) => {
                           onClick={() => submit("save")}
                         >
                           Save Draft
-                        </PillButton>
-                        <PillButton
+                        </Button>
+                        <Button
                           disabled={isSubmitting}
                           icon={faShare}
                           spin={submitting("post")}
@@ -147,7 +147,7 @@ const EditTweet = ({ tweet, onStopEditing }: EditTweetProps) => {
                           onClick={() => submit("post")}
                         >
                           Post Now
-                        </PillButton>
+                        </Button>
                       </BoxButtons>
                     </Form>
                   )
