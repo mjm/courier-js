@@ -254,6 +254,14 @@ export type User = {
   nickname: Scalars["String"]
   picture: Scalars["String"]
 }
+export type CurrentUserQueryVariables = {}
+
+export type CurrentUserQuery = { __typename?: "Query" } & {
+  currentUser: Maybe<
+    { __typename?: "User" } & Pick<User, "name" | "nickname" | "picture">
+  >
+}
+
 export type AllFeedsQueryVariables = {
   cursor?: Maybe<Scalars["Cursor"]>
 }
@@ -456,6 +464,53 @@ export const tweetConnectionFieldsFragmentDoc = gql`
   }
   ${allTweetsFieldsFragmentDoc}
 `
+export const CurrentUserDocument = gql`
+  query CurrentUser {
+    currentUser {
+      name
+      nickname
+      picture
+    }
+  }
+`
+
+export const CurrentUserComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.QueryProps<CurrentUserQuery, CurrentUserQueryVariables>,
+      "query"
+    >,
+    "variables"
+  > & { variables?: CurrentUserQueryVariables }
+) => (
+  <ReactApollo.Query<CurrentUserQuery, CurrentUserQueryVariables>
+    query={CurrentUserDocument}
+    {...props}
+  />
+)
+
+export type CurrentUserProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<CurrentUserQuery, CurrentUserQueryVariables>
+> &
+  TChildProps
+export function withCurrentUser<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    CurrentUserQuery,
+    CurrentUserQueryVariables,
+    CurrentUserProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    CurrentUserQuery,
+    CurrentUserQueryVariables,
+    CurrentUserProps<TChildProps>
+  >(CurrentUserDocument, {
+    alias: "withCurrentUser",
+    ...operationOptions,
+  })
+}
 export const AllFeedsDocument = gql`
   query AllFeeds($cursor: Cursor) {
     allSubscribedFeeds(first: 20, after: $cursor)

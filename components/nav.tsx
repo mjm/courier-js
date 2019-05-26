@@ -42,10 +42,12 @@ const Nav = ({ user, isAuthenticating }: Props) => (
       <li className="spacer" />
       {user ? (
         <li>
-          <a href="#">
-            <img src={user.picture} />
-            <span className="username">{user.name}</span>
-          </a>
+          <Link href="/account">
+            <a>
+              <img src={user.picture} />
+              <span className="username">{user.name}</span>
+            </a>
+          </Link>
         </li>
       ) : isAuthenticating ? null : (
         <li>
