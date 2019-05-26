@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import Head from "../components/head"
 import { PageHeader, PageDescription } from "../components/header"
 import {
@@ -6,8 +6,6 @@ import {
   AddFeedComponent,
   AllFeedsDocument,
   AllFeedsQuery,
-  RefreshFeedComponent,
-  DeleteFeedComponent,
   AddFeedInput,
   UpcomingTweetsDocument,
 } from "../lib/generated/graphql-components"
@@ -20,10 +18,7 @@ import { DataProxy } from "apollo-cache"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faHome,
-  faRss,
   faHistory,
-  faSyncAlt,
-  faTrashAlt,
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons"
 import Moment from "react-moment"
@@ -32,7 +27,7 @@ import { Button } from "../components/button"
 import { ErrorBox, FieldError } from "../components/error"
 import Container from "../components/container"
 import Link from "next/link"
-import Box, { BoxHeader, BoxButtons } from "../components/box"
+import Box, { BoxHeader } from "../components/box"
 
 const Feeds = () => (
   <Container>
@@ -49,8 +44,6 @@ const Feeds = () => (
 )
 
 const FeedsList = () => {
-  const [actionError, setActionError] = useState<Error | undefined>()
-
   return (
     <div>
       <AllFeedsComponent>
@@ -68,42 +61,31 @@ const FeedsList = () => {
           }
           const nodes = data.allSubscribedFeeds.nodes
           return (
-            <>
-              <ErrorBox error={actionError} />
-              <ul>
-                {nodes.map(({ id, feed }) => (
-                  <li key={id}>
-                    <Box>
-                      <BoxHeader>
-                        <Link href={`/feed?id=${id}`} as={`/feeds/${id}`}>
-                          <a>{feed.title}</a>
-                        </Link>
-                      </BoxHeader>
-                      <a className="row" href={feed.homePageURL}>
-                        <FontAwesomeIcon icon={faHome} fixedWidth />
-                        <span className="url">{feed.homePageURL}</span>
-                      </a>
-                      <a className="row" href={feed.url}>
-                        <FontAwesomeIcon icon={faRss} fixedWidth />
-                        <span className="url">{feed.url}</span>
-                      </a>
-                      {feed.refreshedAt && (
-                        <div className="row">
-                          <FontAwesomeIcon icon={faHistory} fixedWidth />
-                          <span>
-                            Checked <Moment fromNow>{feed.refreshedAt}</Moment>
-                          </span>
-                        </div>
-                      )}
-                      <BoxButtons>
-                        <RefreshButton feed={feed} setError={setActionError} />
-                        <DeleteButton id={id} setError={setActionError} />
-                      </BoxButtons>
-                    </Box>
-                  </li>
-                ))}
-              </ul>
-            </>
+            <ul>
+              {nodes.map(({ id, feed }) => (
+                <li key={id}>
+                  <Box>
+                    <BoxHeader>
+                      <Link href={`/feed?id=${id}`} as={`/feeds/${id}`}>
+                        <a>{feed.title}</a>
+                      </Link>
+                    </BoxHeader>
+                    <a className="row" href={feed.homePageURL}>
+                      <FontAwesomeIcon icon={faHome} fixedWidth />
+                      <span className="url">{feed.homePageURL}</span>
+                    </a>
+                    {feed.refreshedAt && (
+                      <div className="row">
+                        <FontAwesomeIcon icon={faHistory} fixedWidth />
+                        <span>
+                          Checked <Moment fromNow>{feed.refreshedAt}</Moment>
+                        </span>
+                      </div>
+                    )}
+                  </Box>
+                </li>
+              ))}
+            </ul>
           )
         }}
       </AllFeedsComponent>
@@ -132,87 +114,6 @@ const FeedsList = () => {
         }
       `}</style>
     </div>
-  )
-}
-
-interface RefreshButtonProps {
-  feed: {
-    id: string
-  }
-  setError: (err: Error | undefined) => void
-}
-
-const RefreshButton = ({ feed, setError }: RefreshButtonProps) => {
-  const [refreshing, setRefreshing] = useState(false)
-
-  return (
-    <RefreshFeedComponent refetchQueries={[{ query: UpcomingTweetsDocument }]}>
-      {refreshFeed => (
-        <Button
-          spin={refreshing}
-          icon={faSyncAlt}
-          useSameIconWhileSpinning
-          onClick={async () => {
-            setRefreshing(true)
-            try {
-              await refreshFeed({ variables: { input: { id: feed.id } } })
-              setError(undefined)
-            } catch (err) {
-              setError(err)
-            } finally {
-              setRefreshing(false)
-            }
-          }}
-        >
-          Refresh
-        </Button>
-      )}
-    </RefreshFeedComponent>
-  )
-}
-
-interface DeleteButtonProps {
-  id: string
-  setError: (err: Error | undefined) => void
-}
-
-const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
-  return (
-    <DeleteFeedComponent
-      update={(cache, { data }) => {
-        data &&
-          updateCachedFeeds(cache, nodes =>
-            nodes.filter(f => f.id !== data.deleteFeed.id)
-          )
-      }}
-    >
-      {deleteFeed => (
-        <Button
-          icon={faTrashAlt}
-          color="red"
-          invert
-          onClick={async () => {
-            try {
-              await deleteFeed({
-                variables: { input: { id } },
-                optimisticResponse: {
-                  __typename: "Mutation",
-                  deleteFeed: {
-                    __typename: "DeleteFeedPayload",
-                    id,
-                  },
-                },
-              })
-              setError(undefined)
-            } catch (err) {
-              setError(err)
-            }
-          }}
-        >
-          Delete
-        </Button>
-      )}
-    </DeleteFeedComponent>
   )
 }
 
