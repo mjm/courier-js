@@ -166,7 +166,6 @@ const EditTweet = ({ tweet, onStopEditing }: EditTweetProps) => {
           background-color: ${colors.primary[100]};
           border-radius: 0.5rem;
           border: 2px solid ${colors.primary[500]};
-          line-height: 1.5em;
           outline: none;
         }
         .media-url {

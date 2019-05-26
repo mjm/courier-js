@@ -17,6 +17,7 @@ const Box = ({ children, appearance = "normal", ...props }: BoxProps) => {
           box-shadow: ${shadow.md};
           border-bottom-left-radius: 0.25rem;
           border-bottom-right-radius: 0.25rem;
+          line-height: 1.5em;
         }
         section.canceled {
           color: ${colors.gray[700]};

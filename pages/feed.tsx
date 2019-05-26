@@ -1,22 +1,31 @@
-import React from "react"
+import React, { useState } from "react"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
 import { NextContext } from "next"
-import { GetFeedDetailsComponent } from "../lib/generated/graphql-components"
+import {
+  GetFeedDetailsComponent,
+  RefreshFeedComponent,
+  UpcomingTweetsDocument,
+} from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Moment from "react-moment"
 import { spacing, colors } from "../utils/theme"
-import Box from "../components/box"
+import Box, { BoxHeader, BoxButtons } from "../components/box"
+import { faTrashAlt, faSyncAlt } from "@fortawesome/free-solid-svg-icons"
+import { Button } from "../components/button"
+import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 
 interface Props {
   id: string
 }
 
 const Feed = ({ id }: Props) => {
+  const [actionError, setActionError] = useState<Error | undefined>()
+
   return (
     <Container>
       <GetFeedDetailsComponent variables={{ id }}>
@@ -36,9 +45,10 @@ const Feed = ({ id }: Props) => {
           if (feed) {
             return (
               <div>
-                <Head title={`${feed.feed.title} - Details`} />
+                <Head title={`${feed.feed.title} - Feed Details`} />
 
                 <PageHeader className="header">{feed.feed.title}</PageHeader>
+                <ErrorBox error={actionError} />
                 <Box>
                   <div className="field">
                     <div className="label">Feed URL</div>
@@ -60,10 +70,35 @@ const Feed = ({ id }: Props) => {
                       <Moment fromNow>{feed.feed.refreshedAt}</Moment>
                     </div>
                   </div>
-                  <div className="field">
-                    <div className="label">Autopost</div>
-                    <div className="entry">{feed.autopost ? "Yes" : "No"}</div>
+                  <BoxButtons>
+                    <RefreshButton
+                      id={feed.feed.id}
+                      setError={setActionError}
+                    />
+                  </BoxButtons>
+                </Box>
+                <Box>
+                  <BoxHeader>Autoposting</BoxHeader>
+                  <div>
+                    Courier is importing tweets from this feed, but they{" "}
+                    <strong>will not be posted automatically.</strong>
                   </div>
+                  <BoxButtons>
+                    <Button icon={faTwitter}>Turn On Autoposting</Button>
+                  </BoxButtons>
+                </Box>
+                <Box>
+                  <BoxHeader>Remove This Feed</BoxHeader>
+                  <div>
+                    If you remove this feed, Courier will stop seeing new posts
+                    from it. Tweets that have already been imported from this
+                    feed's posts will not be affected.
+                  </div>
+                  <BoxButtons>
+                    <Button color="red" invert icon={faTrashAlt}>
+                      Remove Feed
+                    </Button>
+                  </BoxButtons>
                 </Box>
               </div>
             )
@@ -78,7 +113,7 @@ const Feed = ({ id }: Props) => {
         }
         .field {
           display: flex;
-          padding: ${spacing(1)} 0;
+          line-height: 1.8em;
         }
         .label {
           width: 180px;
@@ -98,6 +133,40 @@ const Feed = ({ id }: Props) => {
 
 Feed.getInitialProps = ({ query }: NextContext<any>): Props => {
   return { id: query.id }
+}
+
+interface RefreshButtonProps {
+  id: string
+  setError: (err: Error | undefined) => void
+}
+
+const RefreshButton = ({ id, setError }: RefreshButtonProps) => {
+  const [refreshing, setRefreshing] = useState(false)
+
+  return (
+    <RefreshFeedComponent refetchQueries={[{ query: UpcomingTweetsDocument }]}>
+      {refreshFeed => (
+        <Button
+          spin={refreshing}
+          icon={faSyncAlt}
+          useSameIconWhileSpinning
+          onClick={async () => {
+            setRefreshing(true)
+            try {
+              await refreshFeed({ variables: { input: { id } } })
+              setError(undefined)
+            } catch (err) {
+              setError(err)
+            } finally {
+              setRefreshing(false)
+            }
+          }}
+        >
+          Refresh
+        </Button>
+      )}
+    </RefreshFeedComponent>
+  )
 }
 
 export default withSecurePage(withData(Feed))

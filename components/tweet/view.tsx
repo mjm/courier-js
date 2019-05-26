@@ -80,7 +80,6 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
       <style jsx>{`
         .body {
           white-space: pre-wrap;
-          line-height: 1.5em;
         }
         .media {
           margin-top: ${spacing(3)};
