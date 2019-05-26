@@ -5,6 +5,8 @@ import { faPaperPlane, faRss } from "@fortawesome/free-solid-svg-icons"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
+import "@reach/dialog/styles.css"
+
 interface Props {
   user: any
   isAuthenticating: boolean
@@ -68,27 +70,25 @@ const Nav = ({ user, isAuthenticating }: Props) => (
         background-color: #f9ffff;
       }
       :global([data-reach-dialog-content]) {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-
         width: 500px;
         max-width: 100%;
 
         background-color: white;
         box-shadow: ${shadow.lg};
-        padding: ${spacing(3)};
+        padding: ${spacing(4)};
+        border-top: 3px solid ${colors.primary[600]};
+        border-bottom-left-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
       }
-      :global([data-reach-dialog-overlay]) {
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        overflow: auto;
-
-        background: hsla(0, 0%, 0%, 0.2);
+      :global([data-reach-alert-dialog-label]) {
+        font-family: ${font.display};
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin-bottom: ${spacing(2)};
+        color: ${colors.primary[800]};
+      }
+      :global([data-reach-alert-dialog-description]) {
+        line-height: 1.5em;
       }
       nav {
         text-align: center;

@@ -12,9 +12,9 @@ const Box = ({ children, appearance = "normal", ...props }: BoxProps) => {
         section {
           padding: ${spacing(4)};
           background-color: white;
-          border-top: 3px solid ${colors.primary[500]};
           margin-bottom: ${spacing(4)};
           box-shadow: ${shadow.md};
+          border-top: 3px solid ${colors.primary[500]};
           border-bottom-left-radius: 0.25rem;
           border-bottom-right-radius: 0.25rem;
           line-height: 1.5em;

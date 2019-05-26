@@ -225,7 +225,7 @@ const RemoveButton = ({ id }: RemoveButtonProps) => {
                 Are you sure you want to delete this feed from your account?
               </AlertDialogDescription>
 
-              <div>
+              <BoxButtons>
                 <Button
                   color="red"
                   icon={faTrashAlt}
@@ -250,7 +250,7 @@ const RemoveButton = ({ id }: RemoveButtonProps) => {
                 <Button ref={buttonRef} icon={faTimes} onClick={closeDialog}>
                   Don't Remove
                 </Button>
-              </div>
+              </BoxButtons>
             </AlertDialog>
           )}
         </>
