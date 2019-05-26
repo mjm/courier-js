@@ -28,6 +28,7 @@ import { ErrorBox, FieldError } from "../components/error"
 import Container from "../components/container"
 import Link from "next/link"
 import Box, { BoxHeader } from "../components/box"
+import orderBy from "lodash/orderBy"
 
 const Feeds = () => (
   <Container>
@@ -230,7 +231,7 @@ function updateCachedFeeds(
   const { allSubscribedFeeds } = cache.readQuery<AllFeedsQuery>({
     query: AllFeedsDocument,
   })!
-  const newNodes = updateFn(allSubscribedFeeds.nodes)
+  const newNodes = orderBy(updateFn(allSubscribedFeeds.nodes), "feed.url")
   cache.writeQuery<AllFeedsQuery>({
     query: AllFeedsDocument,
     data: {
