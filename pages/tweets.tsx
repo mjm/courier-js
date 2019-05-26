@@ -64,7 +64,7 @@ const TweetsList = ({
           if (loading) {
             return (
               <>
-                <h2>{title}s</h2>
+                <SectionHeader>{title}s</SectionHeader>
                 <Loading />
               </>
             )
@@ -73,7 +73,7 @@ const TweetsList = ({
           if (error) {
             return (
               <>
-                <h2>{title}s</h2>
+                <SectionHeader>{title}s</SectionHeader>
                 <ErrorBox error={error} />
               </>
             )
