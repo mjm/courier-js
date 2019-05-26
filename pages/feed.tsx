@@ -84,7 +84,13 @@ const Feed = ({ id }: Props) => {
                     <strong>will not be posted automatically.</strong>
                   </div>
                   <BoxButtons>
-                    <Button icon={faTwitter}>Turn On Autoposting</Button>
+                    <Button
+                      icon={faTwitter}
+                      disabled
+                      title="Autoposting is not currently supported."
+                    >
+                      Turn On Autoposting
+                    </Button>
                   </BoxButtons>
                 </Box>
                 <Box>
