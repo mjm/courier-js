@@ -44,11 +44,21 @@ const Feed = ({ id }: Props) => {
       <GetFeedDetailsComponent variables={{ id }}>
         {({ data, error, loading }) => {
           if (loading) {
-            return <Loading />
+            return (
+              <>
+                <Head title="Feed Details" />
+                <Loading />
+              </>
+            )
           }
 
           if (error) {
-            return <ErrorBox error={error} />
+            return (
+              <>
+                <Head title="Feed Details" />
+                <ErrorBox error={error} />
+              </>
+            )
           }
 
           if (!data) {
