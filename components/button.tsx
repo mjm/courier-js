@@ -63,6 +63,7 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
           button:disabled {
             background-color: ${colors.gray[200]} !important;
             color: ${colors.gray[500]} !important;
+            cursor: not-allowed;
           }
 
           button.small {
