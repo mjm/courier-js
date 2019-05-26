@@ -15,7 +15,7 @@ import {
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Moment from "react-moment"
-import { spacing, colors } from "../utils/theme"
+import { spacing } from "../utils/theme"
 import Box, { BoxHeader, BoxButtons } from "../components/box"
 import {
   faTrashAlt,
@@ -30,6 +30,7 @@ import {
   AlertDialogDescription,
 } from "@reach/alert-dialog"
 import Router from "next/router"
+import { InfoField } from "../components/info"
 
 interface Props {
   id: string
@@ -62,26 +63,15 @@ const Feed = ({ id }: Props) => {
                 <PageHeader className="header">{feed.feed.title}</PageHeader>
                 <ErrorBox error={actionError} />
                 <Box>
-                  <div className="field">
-                    <div className="label">Feed URL</div>
-                    <div className="entry">
-                      <a href={feed.feed.url}>{feed.feed.url}</a>
-                    </div>
-                  </div>
-                  <div className="field">
-                    <div className="label">Home Page</div>
-                    <div className="entry">
-                      <a href={feed.feed.homePageURL}>
-                        {feed.feed.homePageURL}
-                      </a>
-                    </div>
-                  </div>
-                  <div className="field">
-                    <div className="label">Last Checked</div>
-                    <div className="entry">
-                      <Moment fromNow>{feed.feed.refreshedAt}</Moment>
-                    </div>
-                  </div>
+                  <InfoField label="Feed URL">
+                    <a href={feed.feed.url}>{feed.feed.url}</a>
+                  </InfoField>
+                  <InfoField label="Home Page">
+                    <a href={feed.feed.homePageURL}>{feed.feed.homePageURL}</a>
+                  </InfoField>
+                  <InfoField label="Last Checked">
+                    <Moment fromNow>{feed.feed.refreshedAt}</Moment>
+                  </InfoField>
                   <BoxButtons>
                     <RefreshButton
                       id={feed.feed.id}
@@ -126,18 +116,6 @@ const Feed = ({ id }: Props) => {
       <style jsx>{`
         div :global(.header) {
           margin-bottom: ${spacing(6)};
-        }
-        .field {
-          display: flex;
-          line-height: 1.8em;
-        }
-        .label {
-          width: 180px;
-          color: ${colors.primary[800]};
-          font-weight: 500;
-        }
-        .entry {
-          color: ${colors.gray[900]};
         }
         a {
           text-decoration: none;
