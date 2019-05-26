@@ -42,6 +42,7 @@ export const PillButton = ({
       {children}
       <style jsx>{`
         button {
+          flex-shrink: 0;
           border: 0;
           padding: ${spacing(1)} ${spacing(3)};
           line-height: 1.5em;
@@ -52,7 +53,7 @@ export const PillButton = ({
           outline: none;
         }
         button :global(.icon) {
-          margin-right: ${spacing(1)};
+          margin-right: ${spacing(2)};
         }
         button:disabled {
           background-color: ${colors.gray[200]} !important;
@@ -62,13 +63,18 @@ export const PillButton = ({
         button.small {
           font-size: 0.9rem;
         }
+        button.small :global(.icon) {
+          margin-right: ${spacing(1)};
+        }
         button.medium {
           padding: ${spacing(1)} ${spacing(3)};
           font-size: 1.2rem;
           box-shadow: ${shadow.md};
         }
-        button.medium :global(.icon) {
-          margin-right: ${spacing(2)};
+        button.large {
+          padding: ${spacing(2)} ${spacing(4)};
+          font-size: 1.4rem;
+          box-shadow: ${shadow.md};
         }
       `}</style>
       <style jsx>{`

@@ -256,13 +256,14 @@ const AddFeed = () => (
                     <Field type="text" name="url" placeholder="https://" />
                     <ErrorMessage name="url" component={FieldError} />
                   </div>
-                  <button type="submit" disabled={isSubmitting}>
-                    <FontAwesomeIcon
-                      icon={isSubmitting ? faSyncAlt : faPlusCircle}
-                      spin={isSubmitting}
-                    />
+                  <PillButton
+                    size="large"
+                    type="submit"
+                    icon={faPlusCircle}
+                    spin={isSubmitting}
+                  >
                     Add Feed
-                  </button>
+                  </PillButton>
                 </div>
               </Form>
             )}
@@ -287,14 +288,11 @@ const AddFeed = () => (
             @media (min-width: 500px) {
               .container {
                 flex-wrap: nowrap;
+                margin-right: -0.5rem;
               }
               .field {
                 padding-right: ${spacing(3)};
                 margin-bottom: 0;
-              }
-              button {
-                padding-top: 0;
-                padding-bottom: 0;
               }
             }
             div :global(input) {
@@ -312,20 +310,6 @@ const AddFeed = () => (
             }
             div :global(input)::placeholder {
               color: ${colors.gray[400]};
-            }
-            button {
-              flex-shrink: 0;
-              font-size: 1.4rem;
-              font-weight: 500;
-              background-color: ${colors.primary[500]};
-              border-color: transparent;
-              border-radius: 0.5rem;
-              color: white;
-              padding: ${spacing(2)} ${spacing(4)};
-              box-shadow: ${shadow.sm};
-            }
-            button > :global(svg) {
-              margin-right: ${spacing(2)};
             }
           `}</style>
         </div>
