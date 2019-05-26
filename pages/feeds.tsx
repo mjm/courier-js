@@ -189,6 +189,8 @@ const DeleteButton = ({ id, setError }: DeleteButtonProps) => {
       {deleteFeed => (
         <Button
           icon={faTrashAlt}
+          color="red"
+          invert
           onClick={async () => {
             try {
               await deleteFeed({
