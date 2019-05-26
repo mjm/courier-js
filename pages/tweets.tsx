@@ -13,15 +13,14 @@ import {
 } from "../lib/generated/graphql-components"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
-import { spacing, shadow, colors } from "../utils/theme"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faAngleDoubleDown, faSpinner } from "@fortawesome/free-solid-svg-icons"
+import { faAngleDoubleDown } from "@fortawesome/free-solid-svg-icons"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Container from "../components/container"
 import Box from "../components/box"
 import ViewTweet from "../components/tweet/view"
 import EditTweet from "../components/tweet/edit"
+import { PillButton } from "../components/button"
 
 const Tweets = ({ user }: any) => (
   <Container>
@@ -134,11 +133,15 @@ const TweetsList = ({
                   <TweetCard key={tweet.id} tweet={tweet} user={user} />
                 ))}
                 {pageInfo.hasPreviousPage && (
-                  <li>
-                    <LoadMoreButton
-                      isLoading={isLoadingMore}
+                  <li className="load-more">
+                    <PillButton
+                      size="medium"
+                      icon={faAngleDoubleDown}
+                      spin={isLoadingMore}
                       onClick={loadMore}
-                    />
+                    >
+                      Show More…
+                    </PillButton>
                   </li>
                 )}
               </ul>
@@ -150,6 +153,10 @@ const TweetsList = ({
         ul {
           list-style: none;
           padding-left: 0;
+        }
+        .load-more {
+          display: flex;
+          justify-content: center;
         }
       `}</style>
     </div>
@@ -183,40 +190,3 @@ const TweetCard = ({ tweet, user }: TweetCardProps) => {
     </li>
   )
 }
-
-type LoadMoreButtonProps = React.PropsWithoutRef<
-  JSX.IntrinsicElements["button"]
-> & {
-  isLoading?: boolean
-}
-const LoadMoreButton = ({
-  children,
-  isLoading = false,
-  ...props
-}: LoadMoreButtonProps) => (
-  <button type="button" {...props}>
-    <FontAwesomeIcon
-      icon={isLoading ? faSpinner : faAngleDoubleDown}
-      spin={isLoading}
-    />
-    {children || "Show More…"}
-    <style jsx>{`
-      button {
-        display: block;
-        margin: 0 auto;
-        padding: ${spacing(1)} ${spacing(3)};
-        border: 0;
-        background-color: ${colors.primary[500]};
-        color: white;
-        font-size: 1.2rem;
-        font-weight: 500;
-        border-radius: 0.5rem;
-        box-shadow: ${shadow.md};
-        outline: none;
-      }
-      button > :global(svg) {
-        margin-right: ${spacing(2)};
-      }
-    `}</style>
-  </button>
-)
