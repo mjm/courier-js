@@ -1,4 +1,5 @@
 import { CachingHeaders } from "scrape-feed"
+import * as table from "./dbTypes"
 
 export type PagingOptions =
   | {}
@@ -115,7 +116,7 @@ export interface Tweet {
   postedTweetID: string | null
 }
 
-export type TweetStatus = "draft" | "canceled" | "posted"
+export type TweetStatus = table.tweet_status
 
 export interface ImportTweetsInput {
   feedSubscriptionId: FeedSubscriptionId

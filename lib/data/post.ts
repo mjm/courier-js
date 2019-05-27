@@ -15,11 +15,12 @@ import moment from "moment"
 import { importTweets } from "./tweet"
 import { getFeedSubscriptions } from "./feed"
 import { getByIds } from "./util"
+import * as table from "./dbTypes"
 
 export function allPostsForFeed(
   feedId: FeedId,
   options: PagingOptions = {}
-): Pager<Post, PostRow> {
+): Pager<Post, table.posts> {
   return new Pager({
     query: sql`SELECT * FROM posts WHERE feed_id = ${feedId}`,
     orderColumn: "published_at",
@@ -47,7 +48,7 @@ export async function getPostsById(ids: PostId[]): Promise<(Post | null)[]> {
 }
 
 export async function getRecentPosts(feedId: FeedId): Promise<Post[]> {
-  const rows = await db.any(sql<PostRow>`
+  const rows = await db.any(sql<table.posts>`
     SELECT *
       FROM posts
      WHERE feed_id = ${feedId}
@@ -115,7 +116,7 @@ async function getPostByItemId(
   feedId: FeedId,
   itemId: string
 ): Promise<Post | null> {
-  const row = await db.maybeOne<PostRow>(sql`
+  const row = await db.maybeOne<table.posts>(sql`
     SELECT * FROM posts
      WHERE feed_id = ${feedId}
        AND item_id = ${itemId}
@@ -124,7 +125,7 @@ async function getPostByItemId(
   return row && fromRow(row)
 }
 
-type CreatePostResult = Pick<PostRow, "id" | "created_at" | "updated_at">
+type CreatePostResult = Pick<table.posts, "id" | "created_at" | "updated_at">
 
 export async function createPost(input: NewPostInput): Promise<Post> {
   const { id, created_at, updated_at } = await db.one<CreatePostResult>(sql`
@@ -152,7 +153,7 @@ export async function createPost(input: NewPostInput): Promise<Post> {
 
   const post = {
     ...input,
-    id,
+    id: id.toString(),
     createdAt: created_at,
     updatedAt: updated_at,
   }
@@ -162,7 +163,7 @@ export async function createPost(input: NewPostInput): Promise<Post> {
 }
 
 type UpdatePostResult = Pick<
-  PostRow,
+  table.posts,
   "feed_id" | "item_id" | "created_at" | "updated_at"
 >
 
@@ -183,7 +184,7 @@ async function updatePost(input: UpdatePostInput): Promise<Post> {
 
   const post = {
     ...input,
-    feedId: row.feed_id,
+    feedId: row.feed_id.toString(),
     itemId: row.item_id,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -228,24 +229,10 @@ function isSameDate(d1: Date | null, d2: Date | null): boolean {
   return d1.getTime() === d2.getTime()
 }
 
-export interface PostRow {
-  id: string
-  feed_id: string
-  item_id: string
-  url: string
-  title: string
-  text_content: string
-  html_content: string
-  published_at: Date | null
-  modified_at: Date | null
-  created_at: Date
-  updated_at: Date
-}
-
-export function fromRow(row: PostRow): Post {
+export function fromRow(row: table.posts): Post {
   return {
-    id: row.id,
-    feedId: row.feed_id,
+    id: row.id.toString(),
+    feedId: row.feed_id.toString(),
     itemId: row.item_id,
     url: row.url,
     title: row.title,

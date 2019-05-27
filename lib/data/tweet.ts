@@ -2,7 +2,6 @@ import {
   UserId,
   PagingOptions,
   Tweet,
-  TweetStatus,
   ImportTweetsInput,
   FeedSubscriptionId,
   PostId,
@@ -18,6 +17,9 @@ import zip from "lodash/zip"
 import { ValueExpressionType, NamedAssignmentType } from "slonik"
 import { UserInputError } from "apollo-server-core"
 import { postToTwitter } from "../twitter"
+import * as table from "./dbTypes"
+
+type TweetRow = table.tweets & Pick<table.posts, "published_at">
 
 type AllTweetsOptions = PagingOptions & {
   filter?: "UPCOMING" | "PAST" | null
@@ -278,23 +280,6 @@ async function updateTweet(input: UpdateTweetInput): Promise<Tweet | null> {
   return row && fromRow(row)
 }
 
-interface TweetRow {
-  id: string
-  post_id: string
-  feed_subscription_id: string
-  body: string
-  media_urls: string[]
-  status: TweetStatus
-  posted_at: Date | null
-  posted_tweet_id: string
-  position: number
-  created_at: Date
-  updated_at: Date
-
-  // pulled from posts for use as a cursor
-  published_at: Date | null
-}
-
 function fromRow({
   id,
   post_id,
@@ -306,9 +291,9 @@ function fromRow({
   posted_tweet_id,
 }: TweetRow): Tweet {
   return {
-    id,
-    feedSubscriptionId: feed_subscription_id,
-    postId: post_id,
+    id: id.toString(),
+    feedSubscriptionId: feed_subscription_id.toString(),
+    postId: post_id.toString(),
     body,
     mediaURLs: media_urls,
     status,

@@ -14,6 +14,9 @@ import { importPosts, getRecentPosts } from "./post"
 import { Pager } from "./pager"
 import { importTweets } from "./tweet"
 import { getByIds } from "./util"
+import * as table from "./dbTypes"
+
+type FeedSubscriptionRow = table.feed_subscriptions & Pick<table.feeds, "url">
 
 export function allFeedsForUser(
   userId: UserId,
@@ -44,7 +47,7 @@ export function allFeedsForUser(
 
 export async function getFeed(id: FeedId): Promise<Feed> {
   try {
-    const result = await db.one<FeedRow>(sql`
+    const result = await db.one<table.feeds>(sql`
       SELECT * FROM feeds WHERE id = ${id}
     `)
     return fromRow(result)
@@ -68,7 +71,7 @@ export async function getFeedsById(ids: FeedId[]): Promise<(Feed | null)[]> {
 
 export async function getFeedsByHomePageURL(url: string): Promise<Feed[]> {
   const homePageURL = normalizeURL(url)
-  const rows = await db.any(sql<FeedRow>`
+  const rows = await db.any(sql<table.feeds>`
     SELECT * FROM feeds WHERE home_page_url = ${homePageURL}
   `)
   return rows.map(fromRow)
@@ -148,7 +151,7 @@ export async function refreshFeed(
   }
 
   const { title, homePageURL, cachingHeaders } = feedContents
-  const refreshedAt = await db.oneFirst<Pick<FeedRow, "refreshed_at">>(sql`
+  const refreshedAt = await db.oneFirst<Pick<table.feeds, "refreshed_at">>(sql`
     UPDATE feeds
        SET title = ${title},
            home_page_url = ${homePageURL},
@@ -200,7 +203,7 @@ export async function deleteFeed(
 }
 
 async function getFeedByURL(url: string): Promise<Feed | null> {
-  const row = await db.maybeOne<FeedRow>(sql`
+  const row = await db.maybeOne<table.feeds>(sql`
     SELECT * FROM feeds WHERE url = ${url}
   `)
 
@@ -208,13 +211,13 @@ async function getFeedByURL(url: string): Promise<Feed | null> {
 }
 
 async function createFeed(url: string): Promise<Feed> {
-  const id = await db.oneFirst<Pick<FeedRow, "id">>(sql`
+  const id = await db.oneFirst<Pick<table.feeds, "id">>(sql`
     INSERT INTO feeds (url)
     VALUES (${url})
     RETURNING id
   `)
 
-  return await refreshFeed(id)
+  return await refreshFeed(id.toString())
 }
 
 async function importRecentPosts(feed: SubscribedFeed): Promise<void> {
@@ -231,17 +234,6 @@ async function importRecentPosts(feed: SubscribedFeed): Promise<void> {
   )
 }
 
-interface FeedRow {
-  id: string
-  url: string
-  title: string
-  home_page_url: string
-  caching_headers: any
-  refreshed_at: Date | null
-  created_at: Date
-  updated_at: Date
-}
-
 function fromRow({
   id,
   url,
@@ -251,9 +243,9 @@ function fromRow({
   refreshed_at,
   created_at,
   updated_at,
-}: FeedRow): Feed {
+}: table.feeds): Feed {
   return {
-    id,
+    id: id.toString(),
     url,
     title,
     homePageURL: home_page_url,
@@ -264,17 +256,6 @@ function fromRow({
   }
 }
 
-interface FeedSubscriptionRow {
-  id: string
-  feed_id: string
-  autopost: boolean
-  created_at: Date
-  updated_at: Date
-
-  // pulled in from the feed to use as a cursor
-  url: string
-}
-
 function fromSubscriptionRow({
   id,
   feed_id,
@@ -283,8 +264,8 @@ function fromSubscriptionRow({
   updated_at,
 }: FeedSubscriptionRow): SubscribedFeed {
   return {
-    id,
-    feedId: feed_id,
+    id: id.toString(),
+    feedId: feed_id.toString(),
     autopost,
     createdAt: created_at,
     updatedAt: updated_at,
