@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import styled from "styled-components"
 import Head from "../components/head"
 import {
   PageHeader,
@@ -40,6 +41,17 @@ const Tweets = ({ user }: any) => (
 )
 
 export default withSecurePage(withData(Tweets))
+
+const UnstyledList = styled.ul`
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+`
+
+const LoadMoreItem = styled.li`
+  display: flex;
+  justify-content: center;
+`
 
 interface TweetsListProps {
   // this type should match both upcoming and past.
@@ -128,12 +140,12 @@ const TweetsList = ({
                 {totalCount} {title}
                 {totalCount === 1 ? "" : "s"}
               </SectionHeader>
-              <ul>
+              <UnstyledList>
                 {nodes.map(tweet => (
                   <TweetCard key={tweet.id} tweet={tweet} user={user} />
                 ))}
                 {pageInfo.hasPreviousPage && (
-                  <li className="load-more">
+                  <LoadMoreItem>
                     <Button
                       size="medium"
                       icon={faAngleDoubleDown}
@@ -142,23 +154,13 @@ const TweetsList = ({
                     >
                       Show More…
                     </Button>
-                  </li>
+                  </LoadMoreItem>
                 )}
-              </ul>
+              </UnstyledList>
             </>
           )
         }}
       </QueryComponent>
-      <style jsx>{`
-        ul {
-          list-style: none;
-          padding-left: 0;
-        }
-        .load-more {
-          display: flex;
-          justify-content: center;
-        }
-      `}</style>
     </div>
   )
 }

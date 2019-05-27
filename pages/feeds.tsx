@@ -1,4 +1,5 @@
 import React from "react"
+import styled, { css } from "styled-components"
 import Head from "../components/head"
 import { PageHeader, PageDescription } from "../components/header"
 import {
@@ -44,6 +45,40 @@ const Feeds = () => (
   </Container>
 )
 
+const StyledFeedsList = styled.ul`
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+
+  a {
+    text-decoration: none;
+  }
+`
+
+const infoStyles = css`
+  line-height: 1.5em;
+  display: flex;
+  align-items: center;
+`
+
+const InfoRow = styled.div`
+  ${infoStyles}
+`
+const InfoLink = styled.a`
+  ${infoStyles}
+`
+
+const InfoIcon = styled(FontAwesomeIcon)`
+  color: ${colors.primary[700]};
+  margin-right: ${spacing(2)};
+`
+
+const URL = styled.span`
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+`
+
 const FeedsList = () => {
   return (
     <div>
@@ -62,7 +97,7 @@ const FeedsList = () => {
           }
           const nodes = data.allSubscribedFeeds.nodes
           return (
-            <ul>
+            <StyledFeedsList>
               {nodes.map(({ id, feed }) => (
                 <li key={id}>
                   <Box>
@@ -71,52 +106,70 @@ const FeedsList = () => {
                         <a>{feed.title}</a>
                       </Link>
                     </BoxHeader>
-                    <a className="row" href={feed.homePageURL}>
-                      <FontAwesomeIcon icon={faHome} fixedWidth />
-                      <span className="url">{feed.homePageURL}</span>
-                    </a>
+                    <InfoLink href={feed.homePageURL}>
+                      <InfoIcon icon={faHome} fixedWidth />
+                      <URL>{feed.homePageURL}</URL>
+                    </InfoLink>
                     {feed.refreshedAt && (
-                      <div className="row">
-                        <FontAwesomeIcon icon={faHistory} fixedWidth />
+                      <InfoRow>
+                        <InfoIcon icon={faHistory} fixedWidth />
                         <span>
                           Checked <Moment fromNow>{feed.refreshedAt}</Moment>
                         </span>
-                      </div>
+                      </InfoRow>
                     )}
                   </Box>
                 </li>
               ))}
-            </ul>
+            </StyledFeedsList>
           )
         }}
       </AllFeedsComponent>
-      <style jsx>{`
-        ul {
-          list-style: none;
-          margin-left: 0;
-          padding-left: 0;
-        }
-        .row {
-          line-height: 1.5em;
-          display: flex;
-          align-items: center;
-        }
-        .url {
-          overflow-wrap: break-word;
-          word-wrap: break-word;
-          word-break: break-word;
-        }
-        * > :global(svg) {
-          color: ${colors.primary[700]};
-          margin-right: ${spacing(2)};
-        }
-        a {
-          text-decoration: none;
-        }
-      `}</style>
     </div>
   )
 }
+
+const FormContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  @media (min-width: 500px) {
+    flex-wrap: nowrap;
+    margin-right: -0.5rem;
+  }
+`
+
+const FormField = styled.div`
+  flex-grow: 1;
+  width: 100%;
+  margin-bottom: ${spacing(2)};
+
+  @media (min-width: 500px) {
+    padding-right: ${spacing(3)};
+    margin-bottom: 0;
+  }
+`
+
+const URLField = styled(Field)`
+  width: 100%;
+  font-size: 1.5rem;
+  padding: ${spacing(2)} ${spacing(4)};
+  background-color: ${colors.gray[100]};
+  border: 0;
+  border-bottom: 3px solid ${colors.primary[500]};
+  color: ${colors.primary[700]};
+  box-shadow: ${shadow.sm};
+
+  :focus {
+    outline: none;
+  }
+
+  ::placeholder {
+    color: ${colors.gray[400]};
+  }
+`
 
 const newFeedSchema = yup.object().shape({
   url: yup.string().url("This must be a valid URL."),
@@ -146,77 +199,31 @@ const AddFeed = () => (
       }
 
       return (
-        <div>
-          <Formik
-            initialValues={initialNewFeed}
-            initialStatus={{ error: null }}
-            validationSchema={newFeedSchema}
-            onSubmit={onSubmit}
-            render={({ isSubmitting, status: { error } }) => (
-              <Form>
-                <ErrorBox error={error} />
-                <div className="container">
-                  <div className="field">
-                    <Field type="text" name="url" placeholder="https://" />
-                    <ErrorMessage name="url" component={FieldError} />
-                  </div>
-                  <Button
-                    size="large"
-                    type="submit"
-                    icon={faPlusCircle}
-                    spin={isSubmitting}
-                  >
-                    Add Feed
-                  </Button>
-                </div>
-              </Form>
-            )}
-          />
-          <style jsx>{`
-            div > :global(form) {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            }
-            .container {
-              width: 100%;
-              display: flex;
-              flex-wrap: wrap;
-              justify-content: center;
-            }
-            .field {
-              flex-grow: 1;
-              width: 100%;
-              margin-bottom: ${spacing(2)};
-            }
-            @media (min-width: 500px) {
-              .container {
-                flex-wrap: nowrap;
-                margin-right: -0.5rem;
-              }
-              .field {
-                padding-right: ${spacing(3)};
-                margin-bottom: 0;
-              }
-            }
-            div :global(input) {
-              width: 100%;
-              font-size: 1.5rem;
-              padding: ${spacing(2)} ${spacing(4)};
-              background-color: ${colors.gray[100]};
-              border: 0;
-              border-bottom: 3px solid ${colors.primary[500]};
-              color: ${colors.primary[700]};
-              box-shadow: ${shadow.sm};
-            }
-            div :global(input):focus {
-              outline: none;
-            }
-            div :global(input)::placeholder {
-              color: ${colors.gray[400]};
-            }
-          `}</style>
-        </div>
+        <Formik
+          initialValues={initialNewFeed}
+          initialStatus={{ error: null }}
+          validationSchema={newFeedSchema}
+          onSubmit={onSubmit}
+          render={({ isSubmitting, status: { error } }) => (
+            <Form>
+              <ErrorBox error={error} />
+              <FormContainer>
+                <FormField>
+                  <URLField type="text" name="url" placeholder="https://" />
+                  <ErrorMessage name="url" component={FieldError} />
+                </FormField>
+                <Button
+                  size="large"
+                  type="submit"
+                  icon={faPlusCircle}
+                  spin={isSubmitting}
+                >
+                  Add Feed
+                </Button>
+              </FormContainer>
+            </Form>
+          )}
+        />
       )
     }}
   </AddFeedComponent>

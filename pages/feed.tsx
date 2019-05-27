@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react"
+import styled from "styled-components"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
@@ -32,6 +33,16 @@ import {
 import Router from "next/router"
 import { InfoField } from "../components/info"
 
+const FeedContainer = styled(Container)`
+  a {
+    text-decoration: none;
+  }
+`
+
+const FeedPageHeader = styled(PageHeader)`
+  margin-bottom: ${spacing(6)};
+`
+
 interface Props {
   id: string
 }
@@ -40,7 +51,7 @@ const Feed = ({ id }: Props) => {
   const [actionError, setActionError] = useState<Error | undefined>()
 
   return (
-    <Container>
+    <FeedContainer>
       <GetFeedDetailsComponent variables={{ id }}>
         {({ data, error, loading }) => {
           if (loading) {
@@ -70,7 +81,7 @@ const Feed = ({ id }: Props) => {
               <div>
                 <Head title={`${feed.feed.title} - Feed Details`} />
 
-                <PageHeader className="header">{feed.feed.title}</PageHeader>
+                <FeedPageHeader>{feed.feed.title}</FeedPageHeader>
                 <ErrorBox error={actionError} />
                 <Box>
                   <InfoField label="Feed URL">
@@ -123,15 +134,7 @@ const Feed = ({ id }: Props) => {
           }
         }}
       </GetFeedDetailsComponent>
-      <style jsx>{`
-        div :global(.header) {
-          margin-bottom: ${spacing(6)};
-        }
-        a {
-          text-decoration: none;
-        }
-      `}</style>
-    </Container>
+    </FeedContainer>
   )
 }
 
