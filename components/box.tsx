@@ -21,7 +21,7 @@ const Box = styled.section<BoxProps>`
     ${({ appearance }) =>
       appearance === "canceled" ? colors.gray[400] : colors.primary[500]};
 
-  & a {
+  a {
     color: ${colors.primary[700]};
   }
 `
@@ -36,7 +36,7 @@ export const BoxHeader = styled.h3`
   margin-bottom: ${spacing(2)};
   color: ${colors.primary[800]};
 
-  & a {
+  a {
     color: ${colors.primary[800]};
     text-decoration: none;
   }

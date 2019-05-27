@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import styled from "styled-components"
 import {
   AllTweetsFieldsFragment,
   TweetStatus,
@@ -19,6 +20,37 @@ import mention from "linkifyjs/plugins/mention"
 
 mention(linkify)
 
+const TweetBody = styled(Linkify).attrs({ tagName: "div" })`
+  white-space: pre-wrap;
+`
+
+const MediaItems = styled.div`
+  margin-top: ${spacing(3)};
+  display: flex;
+  flex-wrap: wrap;
+`
+
+const MediaItem = styled.figure`
+  margin: 0;
+  padding: 0 ${spacing(1)};
+  width: 50%;
+
+  @media (min-width: 640px) {
+    width: 25%;
+  }
+`
+
+const MediaImage = styled.img`
+  width: 100%;
+  border-radius: 1rem;
+`
+
+const StatusText = styled.div`
+  font-size: 0.9rem;
+  font-style: italic;
+  color: ${colors.gray[600]};
+`
+
 interface ViewTweetProps {
   tweet: AllTweetsFieldsFragment
   user: any
@@ -28,26 +60,24 @@ interface ViewTweetProps {
 const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
   return (
     <div>
-      <div className="body">
-        <Linkify
-          options={{
-            formatHref: {
-              mention: val => `https://twitter.com${val}`,
-            },
-            target: "_blank",
-          }}
-        >
-          {tweet.body}
-        </Linkify>
-      </div>
+      <TweetBody
+        options={{
+          formatHref: {
+            mention: val => `https://twitter.com${val}`,
+          },
+          target: "_blank",
+        }}
+      >
+        {tweet.body}
+      </TweetBody>
       {tweet.mediaURLs.length ? (
-        <div className="media">
+        <MediaItems>
           {tweet.mediaURLs.map(url => (
-            <figure key={url}>
-              <img src={url} />
-            </figure>
+            <MediaItem key={url}>
+              <MediaImage src={url} />
+            </MediaItem>
           ))}
-        </div>
+        </MediaItems>
       ) : null}
       <BoxButtons>
         {tweet.status === TweetStatus.Draft && (
@@ -60,12 +90,12 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
           </>
         )}
         {tweet.status === TweetStatus.Canceled && (
-          <div className="status">
+          <StatusText>
             canceled. <UncancelButton id={tweet.id} />
-          </div>
+          </StatusText>
         )}
         {tweet.status === TweetStatus.Posted && (
-          <div className="status">
+          <StatusText>
             <a
               href={`https://twitter.com/${user.nickname}/status/${
                 tweet.postedTweetID
@@ -74,39 +104,9 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
             >
               tweeted <Moment fromNow>{tweet.postedAt}</Moment>
             </a>
-          </div>
+          </StatusText>
         )}
       </BoxButtons>
-      <style jsx>{`
-        .body {
-          white-space: pre-wrap;
-        }
-        .media {
-          margin-top: ${spacing(3)};
-          display: flex;
-          flex-wrap: wrap;
-        }
-        figure {
-          margin: 0;
-          padding: 0 ${spacing(1)};
-          width: 50%;
-        }
-        img {
-          width: 100%;
-          border-radius: 1rem;
-        }
-        .status {
-          font-size: 0.9rem;
-          font-style: italic;
-          color: ${colors.gray[600]};
-        }
-
-        @media (min-width: 640px) {
-          figure {
-            width: 25%;
-          }
-        }
-      `}</style>
     </div>
   )
 }

@@ -8,15 +8,11 @@ const Container = styled.main`
   padding: 0 ${spacing(5)} ${spacing(30)} ${spacing(5)};
 
   @media (min-width: 640px) {
-    & {
-      max-width: 640px;
-    }
+    max-width: 640px;
   }
 
   @media (min-width: 768px) {
-    & {
-      max-width: 768px;
-    }
+    max-width: 768px;
   }
 `
 
