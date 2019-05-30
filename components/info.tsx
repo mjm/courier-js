@@ -1,6 +1,6 @@
 import React from "react"
 import styled from "styled-components"
-import { colors } from "../utils/theme"
+import { colors, spacing } from "../utils/theme"
 
 const InfoLabel = styled.div`
   width: 180px;
@@ -26,3 +26,20 @@ export const InfoField = ({ label, children, ...props }: InfoFieldProps) => (
     <InfoValue>{children}</InfoValue>
   </StyledField>
 )
+
+export const InfoTable = styled.table`
+  table-layout: fixed;
+  width: 100%;
+  margin-top: ${spacing(2)};
+  white-space: nowrap;
+  margin-left: -${spacing(1)};
+  margin-right: -${spacing(1)};
+
+  td {
+    line-height: 2em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 ${spacing(1)};
+  }
+`

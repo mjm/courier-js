@@ -31,7 +31,7 @@ import {
   AlertDialogDescription,
 } from "@reach/alert-dialog"
 import Router from "next/router"
-import { InfoField } from "../components/info"
+import { InfoField, InfoTable } from "../components/info"
 
 const FeedContainer = styled(Container)`
   a {
@@ -41,6 +41,10 @@ const FeedContainer = styled(Container)`
 
 const FeedPageHeader = styled(PageHeader)`
   margin-bottom: ${spacing(6)};
+`
+
+const PublishedColumn = styled.col`
+  width: 150px;
 `
 
 interface Props {
@@ -90,9 +94,32 @@ const Feed = ({ id }: Props) => {
                   <InfoField label="Home Page">
                     <a href={feed.feed.homePageURL}>{feed.feed.homePageURL}</a>
                   </InfoField>
+                </Box>
+                <Box>
+                  <BoxHeader>Recent Posts</BoxHeader>
                   <InfoField label="Last Checked">
                     <Moment fromNow>{feed.feed.refreshedAt}</Moment>
                   </InfoField>
+                  <InfoTable>
+                    <colgroup>
+                      <col />
+                      <PublishedColumn />
+                    </colgroup>
+                    <tbody>
+                      {feed.feed.posts.nodes.map(post => (
+                        <tr key={post.id}>
+                          <td>
+                            <a href={post.url} target="_blank">
+                              {post.title || post.htmlContent}
+                            </a>
+                          </td>
+                          <td>
+                            <Moment fromNow>{post.publishedAt}</Moment>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </InfoTable>
                   <BoxButtons>
                     <RefreshButton
                       id={feed.feed.id}

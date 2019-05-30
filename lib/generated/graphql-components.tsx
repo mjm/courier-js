@@ -331,7 +331,10 @@ export type GetFeedDetailsQuery = { __typename?: "Query" } & {
       feed: { __typename?: "Feed" } & {
         posts: { __typename?: "PostConnection" } & {
           nodes: Array<
-            { __typename?: "Post" } & Pick<Post, "id" | "title" | "htmlContent">
+            { __typename?: "Post" } & Pick<
+              Post,
+              "id" | "url" | "title" | "htmlContent" | "publishedAt"
+            >
           >
         }
       }
@@ -730,11 +733,13 @@ export const GetFeedDetailsDocument = gql`
     subscribedFeed(id: $id) {
       ...allFeedSubscriptionsFields
       feed {
-        posts(last: 10) @connection(key: "posts") {
+        posts(last: 5) @connection(key: "posts") {
           nodes {
             id
+            url
             title
             htmlContent
+            publishedAt
           }
         }
       }
