@@ -1,5 +1,6 @@
 import Document, { NextDocumentContext } from "next/document"
 import { ServerStyleSheet } from "styled-components"
+import { utilities, markdown } from "@primer/components/css"
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: NextDocumentContext) {
@@ -18,6 +19,10 @@ export default class MyDocument extends Document {
         styles: (
           <>
             {initialProps.styles}
+            <style>
+              {utilities}
+              {markdown}
+            </style>
             {sheet.getStyleElement()}
           </>
         ),

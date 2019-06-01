@@ -6,9 +6,9 @@ import { config } from "@fortawesome/fontawesome-svg-core"
 
 config.autoAddCss = false
 
-import "normalizecss/normalize.css"
-import "typeface-rubik"
-import "typeface-ibm-plex-sans"
+// import "normalizecss/normalize.css"
+// import "typeface-rubik"
+// import "typeface-ibm-plex-sans"
 import "@fortawesome/fontawesome-svg-core/styles.css"
 
 class MyApp extends App {

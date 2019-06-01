@@ -1,4 +1,5 @@
 import React from "react"
+import { BaseStyles } from "@primer/components"
 import { getUser, isAuthenticated } from "../utils/auth0"
 import Nav from "../components/nav"
 
@@ -28,13 +29,13 @@ export default (Page: any) =>
 
     render() {
       return (
-        <>
+        <BaseStyles>
           <Nav
             user={this.props.user}
             isAuthenticating={this.props.isAuthenticating}
           />
           <Page {...this.props} />
-        </>
+        </BaseStyles>
       )
     }
   }
