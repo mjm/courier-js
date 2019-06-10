@@ -5,12 +5,12 @@ import withData from "../hocs/apollo"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
-import Box from "../components/box"
 import { InfoField } from "../components/info"
 import { CurrentUserComponent } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import { spacing } from "../utils/theme"
+import Card from "../components/card"
 
 const AccountPageHeader = styled(PageHeader)`
   margin-bottom: ${spacing(6)};
@@ -38,10 +38,10 @@ const Account = () => {
             }
             const user = data.currentUser
             return (
-              <Box>
+              <Card>
                 <InfoField label="Name">{user.name}</InfoField>
                 <InfoField label="Twitter Username">{user.nickname}</InfoField>
-              </Box>
+              </Card>
             )
           }}
         </CurrentUserComponent>

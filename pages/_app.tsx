@@ -3,6 +3,7 @@ import App, { Container } from "next/app"
 import Router from "next/router"
 import { renewSession, isAuthenticated } from "../utils/auth0"
 import { config } from "@fortawesome/fontawesome-svg-core"
+import * as theme from "../utils/theme"
 
 config.autoAddCss = false
 
@@ -10,6 +11,7 @@ import "normalizecss/normalize.css"
 import "typeface-rubik"
 import "typeface-ibm-plex-sans"
 import "@fortawesome/fontawesome-svg-core/styles.css"
+import { ThemeProvider } from "styled-components"
 
 class MyApp extends App {
   state = {
@@ -44,10 +46,12 @@ class MyApp extends App {
 
     return (
       <Container>
-        <Component
-          {...pageProps}
-          isAuthenticating={this.state.isAuthenticating}
-        />
+        <ThemeProvider theme={theme}>
+          <Component
+            {...pageProps}
+            isAuthenticating={this.state.isAuthenticating}
+          />
+        </ThemeProvider>
       </Container>
     )
   }

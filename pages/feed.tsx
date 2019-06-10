@@ -17,7 +17,7 @@ import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Moment from "react-moment"
 import { spacing } from "../utils/theme"
-import Box, { BoxHeader, BoxButtons } from "../components/box"
+import { BoxHeader, BoxButtons } from "../components/box"
 import {
   faTrashAlt,
   faSyncAlt,
@@ -32,6 +32,7 @@ import {
 } from "@reach/alert-dialog"
 import Router from "next/router"
 import { InfoField, InfoTable } from "../components/info"
+import Card from "../components/card"
 
 const FeedContainer = styled(Container)`
   a {
@@ -87,15 +88,15 @@ const Feed = ({ id }: Props) => {
 
                 <FeedPageHeader>{feed.feed.title}</FeedPageHeader>
                 <ErrorBox error={actionError} />
-                <Box>
+                <Card>
                   <InfoField label="Feed URL">
                     <a href={feed.feed.url}>{feed.feed.url}</a>
                   </InfoField>
                   <InfoField label="Home Page">
                     <a href={feed.feed.homePageURL}>{feed.feed.homePageURL}</a>
                   </InfoField>
-                </Box>
-                <Box>
+                </Card>
+                <Card>
                   <BoxHeader>Recent Posts</BoxHeader>
                   <InfoField label="Last Checked">
                     <Moment fromNow>{feed.feed.refreshedAt}</Moment>
@@ -126,8 +127,8 @@ const Feed = ({ id }: Props) => {
                       setError={setActionError}
                     />
                   </BoxButtons>
-                </Box>
-                <Box>
+                </Card>
+                <Card>
                   <BoxHeader>Autoposting</BoxHeader>
                   <div>
                     Courier is importing tweets from this feed, but they{" "}
@@ -142,8 +143,8 @@ const Feed = ({ id }: Props) => {
                       Turn On Autoposting
                     </Button>
                   </BoxButtons>
-                </Box>
-                <Box>
+                </Card>
+                <Card>
                   <BoxHeader>Remove This Feed</BoxHeader>
                   <div>
                     If you remove this feed, Courier will stop seeing new posts
@@ -153,7 +154,7 @@ const Feed = ({ id }: Props) => {
                   <BoxButtons>
                     <RemoveButton id={feed.id} />
                   </BoxButtons>
-                </Box>
+                </Card>
               </div>
             )
           } else {

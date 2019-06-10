@@ -16,11 +16,11 @@ import * as yup from "yup"
 import withSecurePage from "../hocs/securePage"
 import { colors, spacing, shadow } from "../utils/theme"
 import { DataProxy } from "apollo-cache"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faHome,
   faHistory,
   faPlusCircle,
+  IconDefinition,
 } from "@fortawesome/free-solid-svg-icons"
 import Moment from "react-moment"
 import Loading from "../components/loading"
@@ -28,8 +28,11 @@ import { Button } from "../components/button"
 import { ErrorBox, FieldError } from "../components/error"
 import Container from "../components/container"
 import Link from "next/link"
-import Box, { BoxHeader } from "../components/box"
+import { BoxHeader } from "../components/box"
 import orderBy from "lodash/orderBy"
+import Card from "../components/card"
+import Group from "../components/group"
+import Icon from "../components/icon"
 
 const Feeds = () => (
   <Container>
@@ -45,11 +48,7 @@ const Feeds = () => (
   </Container>
 )
 
-const StyledFeedsList = styled.ul`
-  list-style: none;
-  margin-left: 0;
-  padding-left: 0;
-
+const StyledCard = styled(Card)`
   a {
     text-decoration: none;
   }
@@ -68,16 +67,16 @@ const InfoLink = styled.a`
   ${infoStyles}
 `
 
-const InfoIcon = styled(FontAwesomeIcon)`
-  color: ${colors.primary[700]};
-  margin-right: ${spacing(2)};
-`
-
 const URL = styled.span`
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-word;
 `
+
+type InfoIconProps = { icon: IconDefinition }
+const InfoIcon = ({ icon }: InfoIconProps) => (
+  <Icon icon={icon} fixedWidth mr={2} color="primary.700" />
+)
 
 const FeedsList = () => {
   return (
@@ -97,31 +96,29 @@ const FeedsList = () => {
           }
           const nodes = data.allSubscribedFeeds.nodes
           return (
-            <StyledFeedsList>
+            <Group direction="column" spacing={3} mb={3}>
               {nodes.map(({ id, feed }) => (
-                <li key={id}>
-                  <Box>
-                    <BoxHeader>
-                      <Link href={`/feed?id=${id}`} as={`/feeds/${id}`}>
-                        <a>{feed.title}</a>
-                      </Link>
-                    </BoxHeader>
-                    <InfoLink href={feed.homePageURL}>
-                      <InfoIcon icon={faHome} fixedWidth />
-                      <URL>{feed.homePageURL}</URL>
-                    </InfoLink>
-                    {feed.refreshedAt && (
-                      <InfoRow>
-                        <InfoIcon icon={faHistory} fixedWidth />
-                        <span>
-                          Checked <Moment fromNow>{feed.refreshedAt}</Moment>
-                        </span>
-                      </InfoRow>
-                    )}
-                  </Box>
-                </li>
+                <StyledCard key={id}>
+                  <BoxHeader>
+                    <Link href={`/feed?id=${id}`} as={`/feeds/${id}`}>
+                      <a>{feed.title}</a>
+                    </Link>
+                  </BoxHeader>
+                  <InfoLink href={feed.homePageURL}>
+                    <InfoIcon icon={faHome} />
+                    <URL>{feed.homePageURL}</URL>
+                  </InfoLink>
+                  {feed.refreshedAt && (
+                    <InfoRow>
+                      <InfoIcon icon={faHistory} />
+                      <span>
+                        Checked <Moment fromNow>{feed.refreshedAt}</Moment>
+                      </span>
+                    </InfoRow>
+                  )}
+                </StyledCard>
               ))}
-            </StyledFeedsList>
+            </Group>
           )
         }}
       </AllFeedsComponent>

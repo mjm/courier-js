@@ -18,10 +18,11 @@ import { faAngleDoubleDown } from "@fortawesome/free-solid-svg-icons"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Container from "../components/container"
-import Box from "../components/box"
 import ViewTweet from "../components/tweet/view"
 import EditTweet from "../components/tweet/edit"
 import { Button } from "../components/button"
+import Card from "../components/card"
+import Group from "../components/group"
 
 const Tweets = ({ user }: any) => (
   <Container>
@@ -42,13 +43,7 @@ const Tweets = ({ user }: any) => (
 
 export default withSecurePage(withData(Tweets))
 
-const UnstyledList = styled.ul`
-  list-style: none;
-  margin-left: 0;
-  padding-left: 0;
-`
-
-const LoadMoreItem = styled.li`
+const LoadMoreItem = styled.div`
   display: flex;
   justify-content: center;
 `
@@ -140,7 +135,7 @@ const TweetsList = ({
                 {totalCount} {title}
                 {totalCount === 1 ? "" : "s"}
               </SectionHeader>
-              <UnstyledList>
+              <Group direction="column" spacing={3}>
                 {nodes.map(tweet => (
                   <TweetCard key={tweet.id} tweet={tweet} user={user} />
                 ))}
@@ -156,7 +151,7 @@ const TweetsList = ({
                     </Button>
                   </LoadMoreItem>
                 )}
-              </UnstyledList>
+              </Group>
             </>
           )
         }}
@@ -177,18 +172,12 @@ const TweetCard = ({ tweet, user }: TweetCardProps) => {
     tweet.status === TweetStatus.Canceled ? "canceled" : "normal"
 
   return (
-    <li>
-      <Box appearance={appearance}>
-        {editing ? (
-          <EditTweet tweet={tweet} onStopEditing={() => setEditing(false)} />
-        ) : (
-          <ViewTweet
-            tweet={tweet}
-            user={user}
-            onEdit={() => setEditing(true)}
-          />
-        )}
-      </Box>
-    </li>
+    <Card appearance={appearance}>
+      {editing ? (
+        <EditTweet tweet={tweet} onStopEditing={() => setEditing(false)} />
+      ) : (
+        <ViewTweet tweet={tweet} user={user} onEdit={() => setEditing(true)} />
+      )}
+    </Card>
   )
 }
