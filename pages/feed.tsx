@@ -17,7 +17,7 @@ import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Moment from "react-moment"
 import { spacing } from "../utils/theme"
-import { BoxHeader, BoxButtons } from "../components/box"
+import { BoxHeader } from "../components/box"
 import {
   faTrashAlt,
   faSyncAlt,
