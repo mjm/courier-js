@@ -1,5 +1,6 @@
 import React, { forwardRef } from "react"
 import styled, { css } from "styled-components"
+import { space, SpaceProps, flexbox, FlexboxProps } from "styled-system"
 import { colors, spacing, shadow } from "../utils/theme"
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -14,15 +15,15 @@ type StyledButtonProps = React.PropsWithoutRef<
   size: "small" | "medium" | "large"
   color: "primary" | "red" | "blue"
   invert: boolean
-}
+} & SpaceProps &
+  FlexboxProps
 const StyledButton = styled.button<StyledButtonProps>`
-  flex-shrink: 0;
+  ${space}
+  ${flexbox}
   border: 0;
-  padding: ${spacing(1)} ${spacing(3)};
   line-height: 1.5em;
   font-weight: 500;
   border-radius: 0.6rem;
-  margin-right: ${spacing(2)};
   box-shadow: ${shadow.sm};
   outline: none;
 
@@ -47,6 +48,13 @@ const StyledButton = styled.button<StyledButtonProps>`
     }
   `}
 `
+
+StyledButton.defaultProps = {
+  px: 2,
+  py: 1,
+  flexShrink: 0,
+  alignSelf: "flex-start",
+}
 
 const sizeStyles = {
   small: css`
@@ -75,7 +83,7 @@ type Props = React.PropsWithoutRef<JSX.IntrinsicElements["button"]> & {
   icon?: IconDefinition
   spin?: boolean
   useSameIconWhileSpinning?: boolean
-}
+} & SpaceProps
 export const Button = forwardRef<HTMLButtonElement, Props>(
   (
     {

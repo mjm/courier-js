@@ -15,8 +15,8 @@ import {
   faCheck,
   faShare,
 } from "@fortawesome/free-solid-svg-icons"
-import { BoxButtons } from "../box"
 import { spacing, colors } from "../../utils/theme"
+import Group from "../group"
 
 const TweetTextArea = styled(Field).attrs({ component: "textarea" })`
   width: 100%;
@@ -117,73 +117,75 @@ const EditTweet = ({ tweet, onStopEditing }: EditTweetProps) => {
 
                 return (
                   <Form>
-                    <ErrorBox error={status.error} />
-                    <TweetTextArea name="body" autoFocus />
-                    <FieldArray name="mediaURLs">
-                      {({ insert, remove, push }) => (
-                        <>
-                          {values.mediaURLs.map((_url, index) => (
-                            <MediaURLField key={index}>
-                              <Field
-                                name={`mediaURLs.${index}`}
-                                placeholder="https://example.org/photo.jpg"
-                              />
-                              <Button
-                                onClick={() => insert(index, "")}
-                                disabled={!canAddMedia()}
-                                icon={faPlus}
-                              >
-                                Add Above
-                              </Button>
-                              <Button
-                                onClick={() => remove(index)}
-                                color="red"
-                                icon={faTrashAlt}
-                              >
-                                Remove
-                              </Button>
-                            </MediaURLField>
-                          ))}
-                          <AddMediaButton
-                            onClick={() => push("")}
-                            disabled={!canAddMedia()}
-                            icon={faPlus}
-                          >
-                            Add Media
-                          </AddMediaButton>
-                        </>
-                      )}
-                    </FieldArray>
-                    <BoxButtons>
-                      <Button
-                        disabled={isSubmitting}
-                        icon={faBan}
-                        color="red"
-                        invert
-                        onClick={onStopEditing}
-                      >
-                        Discard Changes
-                      </Button>
-                      <Button
-                        disabled={isSubmitting}
-                        icon={faCheck}
-                        spin={submitting("save")}
-                        invert
-                        onClick={() => submit("save")}
-                      >
-                        Save Draft
-                      </Button>
-                      <Button
-                        disabled={isSubmitting}
-                        icon={faShare}
-                        spin={submitting("post")}
-                        color="blue"
-                        invert
-                        onClick={() => submit("post")}
-                      >
-                        Post Now
-                      </Button>
-                    </BoxButtons>
+                    <Group direction="column" spacing={2}>
+                      <ErrorBox error={status.error} />
+                      <TweetTextArea name="body" autoFocus />
+                      <FieldArray name="mediaURLs">
+                        {({ insert, remove, push }) => (
+                          <>
+                            {values.mediaURLs.map((_url, index) => (
+                              <MediaURLField key={index}>
+                                <Field
+                                  name={`mediaURLs.${index}`}
+                                  placeholder="https://example.org/photo.jpg"
+                                />
+                                <Button
+                                  onClick={() => insert(index, "")}
+                                  disabled={!canAddMedia()}
+                                  icon={faPlus}
+                                >
+                                  Add Above
+                                </Button>
+                                <Button
+                                  onClick={() => remove(index)}
+                                  color="red"
+                                  icon={faTrashAlt}
+                                >
+                                  Remove
+                                </Button>
+                              </MediaURLField>
+                            ))}
+                            <AddMediaButton
+                              onClick={() => push("")}
+                              disabled={!canAddMedia()}
+                              icon={faPlus}
+                            >
+                              Add Media
+                            </AddMediaButton>
+                          </>
+                        )}
+                      </FieldArray>
+                      <Group direction="row" spacing={2} wrap>
+                        <Button
+                          disabled={isSubmitting}
+                          icon={faBan}
+                          color="red"
+                          invert
+                          onClick={onStopEditing}
+                        >
+                          Discard Changes
+                        </Button>
+                        <Button
+                          disabled={isSubmitting}
+                          icon={faCheck}
+                          spin={submitting("save")}
+                          invert
+                          onClick={() => submit("save")}
+                        >
+                          Save Draft
+                        </Button>
+                        <Button
+                          disabled={isSubmitting}
+                          icon={faShare}
+                          spin={submitting("post")}
+                          color="blue"
+                          invert
+                          onClick={() => submit("post")}
+                        >
+                          Post Now
+                        </Button>
+                      </Group>
+                    </Group>
                   </Form>
                 )
               }}

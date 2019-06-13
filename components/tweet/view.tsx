@@ -9,7 +9,6 @@ import {
   PostTweetComponent,
 } from "../../lib/generated/graphql-components"
 import Linkify from "linkifyjs/react"
-import { BoxButtons } from "../box"
 import { faEdit, faBan } from "@fortawesome/free-solid-svg-icons"
 import { Button } from "../button"
 import Moment from "react-moment"
@@ -17,6 +16,7 @@ import { spacing, colors } from "../../utils/theme"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
+import Group from "../group"
 
 mention(linkify)
 
@@ -59,7 +59,7 @@ interface ViewTweetProps {
 
 const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
   return (
-    <div>
+    <Group direction="column" spacing={3}>
       <TweetBody
         options={{
           formatHref: {
@@ -79,7 +79,7 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
           ))}
         </MediaItems>
       ) : null}
-      <BoxButtons>
+      <Group direction="row" spacing={2} wrap>
         {tweet.status === TweetStatus.Draft && (
           <>
             <CancelButton id={tweet.id} />
@@ -106,8 +106,8 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
             </a>
           </StatusText>
         )}
-      </BoxButtons>
-    </div>
+      </Group>
+    </Group>
   )
 }
 

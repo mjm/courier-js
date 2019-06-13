@@ -38,10 +38,3 @@ export const BoxHeader = styled.h3`
     text-decoration: none;
   }
 `
-export const BoxButtons = styled.div`
-  margin-top: ${spacing(1)};
-
-  & > * {
-    margin-top: ${spacing(3)};
-  }
-`
