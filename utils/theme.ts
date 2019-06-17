@@ -31,6 +31,12 @@ export const letterSpacings = {
   normal: "0",
 }
 
+export const lineHeights = {
+  normal: "1.5",
+  relaxed: "1.625",
+  loose: "2",
+}
+
 export const colors = {
   // teal
   primary: {

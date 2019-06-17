@@ -1,30 +1,20 @@
 import React from "react"
 import styled from "styled-components"
-import { colors, spacing } from "../utils/theme"
-
-const InfoLabel = styled.div`
-  width: 180px;
-  color: ${colors.primary[800]};
-  font-weight: 500;
-`
-
-const InfoValue = styled.div`
-  color: ${colors.gray[900]};
-`
-
-const StyledField = styled.div`
-  display: flex;
-  line-height: 1.8em;
-`
+import { spacing } from "../utils/theme"
+import { Flex, Text } from "rebass"
 
 type InfoFieldProps = React.PropsWithoutRef<JSX.IntrinsicElements["div"]> & {
   label: string
 }
 export const InfoField = ({ label, children, ...props }: InfoFieldProps) => (
-  <StyledField {...props}>
-    <InfoLabel>{label}</InfoLabel>
-    <InfoValue>{children}</InfoValue>
-  </StyledField>
+  <Text lineHeight="relaxed">
+    <Flex {...props}>
+      <Text width={180} color="primary.800" fontWeight={500}>
+        {label}
+      </Text>
+      <Text color="gray.900">{children}</Text>
+    </Flex>
+  </Text>
 )
 
 export const InfoTable = styled.table`

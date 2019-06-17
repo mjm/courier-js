@@ -46,3 +46,8 @@ export const CardHeader = styled(Heading).attrs<HeadingProps>({
     text-decoration: none;
   }
 `
+
+CardHeader.defaultProps = {
+  as: "h3",
+  m: 0,
+}

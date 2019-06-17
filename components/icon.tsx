@@ -3,12 +3,16 @@ import {
   FontAwesomeIcon,
   Props as FontAwesomeIconProps,
 } from "@fortawesome/react-fontawesome"
-import { space, SpaceProps, color, ColorProps } from "styled-system"
+import {
+  space,
+  SpaceProps,
+  color,
+  ColorProps,
+  fontSize,
+  FontSizeProps,
+} from "styled-system"
 
-type IconProps = FontAwesomeIconProps & SpaceProps & ColorProps
-const Icon = styled(FontAwesomeIcon)<IconProps>`
-  ${space}
-  ${color}
-`
+type IconProps = FontAwesomeIconProps & SpaceProps & ColorProps & FontSizeProps
+const Icon = styled(FontAwesomeIcon)<IconProps>(space, color, fontSize)
 
 export default Icon

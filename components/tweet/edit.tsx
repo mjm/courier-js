@@ -50,10 +50,6 @@ const MediaURLField = styled.div`
   }
 `
 
-const AddMediaButton = styled(Button)`
-  margin-top: ${spacing(1)};
-`
-
 interface EditTweetProps {
   tweet: AllTweetsFieldsFragment
   onStopEditing: () => void
@@ -145,13 +141,13 @@ const EditTweet = ({ tweet, onStopEditing }: EditTweetProps) => {
                                 </Button>
                               </MediaURLField>
                             ))}
-                            <AddMediaButton
+                            <Button
                               onClick={() => push("")}
                               disabled={!canAddMedia()}
                               icon={faPlus}
                             >
                               Add Media
-                            </AddMediaButton>
+                            </Button>
                           </>
                         )}
                       </FieldArray>

@@ -12,37 +12,17 @@ import Linkify from "linkifyjs/react"
 import { faEdit, faBan } from "@fortawesome/free-solid-svg-icons"
 import { Button } from "../button"
 import Moment from "react-moment"
-import { spacing, colors } from "../../utils/theme"
+import { colors } from "../../utils/theme"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
 import Group from "../group"
+import { Image, Box, Flex } from "rebass"
 
 mention(linkify)
 
 const TweetBody = styled(Linkify).attrs({ tagName: "div" })`
   white-space: pre-wrap;
-`
-
-const MediaItems = styled.div`
-  margin-top: ${spacing(3)};
-  display: flex;
-  flex-wrap: wrap;
-`
-
-const MediaItem = styled.figure`
-  margin: 0;
-  padding: 0 ${spacing(1)};
-  width: 50%;
-
-  @media (min-width: 640px) {
-    width: 25%;
-  }
-`
-
-const MediaImage = styled.img`
-  width: 100%;
-  border-radius: 1rem;
 `
 
 const StatusText = styled.div`
@@ -71,13 +51,20 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
         {tweet.body}
       </TweetBody>
       {tweet.mediaURLs.length ? (
-        <MediaItems>
+        <Flex mt={2} flexWrap="wrap">
           {tweet.mediaURLs.map(url => (
-            <MediaItem key={url}>
-              <MediaImage src={url} />
-            </MediaItem>
+            <Box
+              key={url}
+              as="figure"
+              width={[1 / 2, 1 / 4]}
+              m={0}
+              py={0}
+              px={1}
+            >
+              <Image width={1} borderRadius="1rem" src={url} />
+            </Box>
           ))}
-        </MediaItems>
+        </Flex>
       ) : null}
       <Group direction="row" spacing={2} wrap>
         {tweet.status === TweetStatus.Draft && (
