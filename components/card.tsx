@@ -1,10 +1,13 @@
 import styled from "styled-components"
-import Box, { BoxProps } from "./box"
+import { boxShadow, BoxShadowProps } from "styled-system"
+import { Box, BoxProps, Heading, HeadingProps } from "rebass"
 
-type CardProps = BoxProps & {
-  appearance?: "normal" | "canceled"
-}
+type CardProps = BoxProps &
+  BoxShadowProps & {
+    appearance?: "normal" | "canceled"
+  }
 const Card = styled(Box)<CardProps>`
+  ${boxShadow}
   border-bottom-left-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
   line-height: 1.5em;
@@ -32,3 +35,14 @@ Card.defaultProps = {
 }
 
 export default Card
+
+export const CardHeader = styled(Heading).attrs<HeadingProps>({
+  fontWeight: "medium",
+  mb: 2,
+  color: "primary.800",
+})`
+  a {
+    color: ${({ theme }) => theme.colors.primary[800]};
+    text-decoration: none;
+  }
+`

@@ -1,9 +1,35 @@
+export const breakpoints = ["640px", "768px", "1024px", "1280px"]
+
 export const font = {
   display: "Rubik, Helvetica, sans-serif",
   body: '"IBM Plex Sans", Helvetica, sans-serif',
 }
 
 export const fonts = font
+
+export const fontSizes = [
+  ".75rem",
+  ".875rem",
+  "1rem",
+  "1.125rem",
+  "1.25rem",
+  "1.5rem",
+  "1.875rem",
+  "2.25rem",
+  "3rem",
+  "4rem",
+]
+
+export const fontWeights = {
+  normal: "400",
+  medium: "500",
+  bold: "700",
+}
+
+export const letterSpacings = {
+  tight: "-0.025em",
+  normal: "0",
+}
 
 export const colors = {
   // teal
@@ -102,3 +128,7 @@ export function spacing(multiplier: number): string {
 }
 
 export const space = ["0"].concat([1, 2, 4, 8, 16, 32, 64, 128].map(spacing))
+
+export const Heading = {
+  fontFamily: fonts.display,
+}

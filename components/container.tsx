@@ -1,19 +1,20 @@
 import styled from "styled-components"
-import { spacing } from "../utils/theme"
+import { BoxProps, Box } from "rebass"
+import { maxWidth, MaxWidthProps } from "styled-system"
 
-const Container = styled.main`
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 ${spacing(5)} ${spacing(30)} ${spacing(5)};
+const MaxWidthBox = styled(Box)<BoxProps & MaxWidthProps>(maxWidth)
+type MaxWidthBoxProps = React.ComponentProps<typeof MaxWidthBox>
 
-  @media (min-width: 640px) {
-    max-width: 640px;
-  }
-
-  @media (min-width: 768px) {
-    max-width: 768px;
-  }
-`
+const Container = (props: MaxWidthBoxProps) => (
+  <MaxWidthBox
+    width={1}
+    maxWidth={[null, 640, 768]}
+    mx="auto"
+    pt={0}
+    px={3}
+    pb={6}
+    {...props}
+  />
+)
 
 export default Container

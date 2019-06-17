@@ -28,9 +28,8 @@ import { Button } from "../components/button"
 import { ErrorBox, FieldError } from "../components/error"
 import Container from "../components/container"
 import Link from "next/link"
-import { BoxHeader } from "../components/box"
 import orderBy from "lodash/orderBy"
-import Card from "../components/card"
+import Card, { CardHeader } from "../components/card"
 import Group from "../components/group"
 import Icon from "../components/icon"
 
@@ -99,11 +98,11 @@ const FeedsList = () => {
             <Group direction="column" spacing={3} mb={3}>
               {nodes.map(({ id, feed }) => (
                 <StyledCard key={id}>
-                  <BoxHeader>
+                  <CardHeader>
                     <Link href={`/feed?id=${id}`} as={`/feeds/${id}`}>
                       <a>{feed.title}</a>
                     </Link>
-                  </BoxHeader>
+                  </CardHeader>
                   <InfoLink href={feed.homePageURL}>
                     <InfoIcon icon={faHome} />
                     <URL>{feed.homePageURL}</URL>

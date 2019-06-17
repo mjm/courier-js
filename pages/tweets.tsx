@@ -32,6 +32,12 @@ const Tweets = ({ user }: any) => (
     <PageDescription>
       These are the tweets Courier has translated from your feeds.
     </PageDescription>
+    <ErrorBox
+      errors={[
+        new Error("This is an error test."),
+        new Error("This is a second error."),
+      ]}
+    />
     <TweetsList
       title="Upcoming Tweet"
       query={UpcomingTweetsComponent}

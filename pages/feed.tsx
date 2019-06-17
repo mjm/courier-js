@@ -17,7 +17,6 @@ import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Moment from "react-moment"
 import { spacing } from "../utils/theme"
-import { BoxHeader } from "../components/box"
 import {
   faTrashAlt,
   faSyncAlt,
@@ -32,7 +31,7 @@ import {
 } from "@reach/alert-dialog"
 import Router from "next/router"
 import { InfoField, InfoTable } from "../components/info"
-import Card from "../components/card"
+import Card, { CardHeader } from "../components/card"
 import Group from "../components/group"
 
 const FeedContainer = styled(Container)`
@@ -101,7 +100,7 @@ const Feed = ({ id }: Props) => {
                     </InfoField>
                   </Card>
                   <Card>
-                    <BoxHeader>Recent Posts</BoxHeader>
+                    <CardHeader>Recent Posts</CardHeader>
                     <InfoField label="Last Checked">
                       <Moment fromNow>{feed.feed.refreshedAt}</Moment>
                     </InfoField>
@@ -131,7 +130,7 @@ const Feed = ({ id }: Props) => {
                     />
                   </Card>
                   <Card>
-                    <BoxHeader>Autoposting</BoxHeader>
+                    <CardHeader>Autoposting</CardHeader>
                     <div>
                       Courier is importing tweets from this feed, but they{" "}
                       <strong>will not be posted automatically.</strong>
@@ -146,7 +145,7 @@ const Feed = ({ id }: Props) => {
                     </Button>
                   </Card>
                   <Card>
-                    <BoxHeader>Remove This Feed</BoxHeader>
+                    <CardHeader>Remove This Feed</CardHeader>
                     <div>
                       If you remove this feed, Courier will stop seeing new
                       posts from it. Tweets that have already been imported from

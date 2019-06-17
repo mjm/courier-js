@@ -1,46 +1,22 @@
 import React from "react"
 import styled from "styled-components"
-import { colors, spacing, shadow } from "../utils/theme"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons"
 import { isApolloError } from "apollo-client"
+import { Card, CardProps, Flex, Box, Text } from "rebass"
+import Icon from "./icon"
 
-const ErrorIcon = styled(FontAwesomeIcon)`
-  margin-right: ${spacing(2)};
-`
+const ErrorList = styled.ul(({ theme }) => ({
+  marginTop: theme.space[2],
+  marginBottom: theme.space[1],
+  marginLeft: theme.space[2],
+  paddingLeft: theme.space[3],
+}))
 
-const StyledErrorBox = styled.div`
-  background-color: ${colors.red[100]};
-  border-top: 4px solid ${colors.red[500]};
-  color: ${colors.red[900]};
-  padding: ${spacing(3)};
-  display: flex;
-  box-shadow: ${shadow.md};
-  margin-bottom: ${spacing(4)};
-  width: 100%;
-
-  ${ErrorIcon} {
-    margin-top: 2px;
-    color: ${colors.red[500]};
-  }
-  p {
-    margin-top: 0;
-    margin-bottom: 0.8em;
-  }
-  ul {
-    padding-left: ${spacing(6)};
-    margin-top: 0;
-    margin-bottom: 0.5em;
-  }
-`
-
-interface ErrorBoxProps {
-  className?: string
-  children?: React.ReactNode
+interface ErrorBoxProps extends CardProps {
   error?: Error
   errors?: Error[]
 }
-export const ErrorBox = ({ children, error, errors }: ErrorBoxProps) => {
+export const ErrorBox = ({ error, errors, ...props }: ErrorBoxProps) => {
   errors = errors || []
 
   if (error) {
@@ -51,44 +27,49 @@ export const ErrorBox = ({ children, error, errors }: ErrorBoxProps) => {
     }
   }
 
-  if (!errors.length && !children) {
+  if (!errors.length) {
     return null
   }
 
   return (
-    <StyledErrorBox role="alert">
-      <ErrorIcon icon={faExclamationCircle} />
-      {children && <div>{children}</div>}
-      {errors &&
-        (errors.length > 1 ? (
+    <Card
+      role="alert"
+      bg="red.100"
+      color="red.900"
+      p={3}
+      width={1}
+      borderTop="3px solid"
+      borderColor="red.500"
+      boxShadow="md"
+      {...props}
+    >
+      <Flex>
+        <Icon mr={2} mt="2px" color="red.500" icon={faExclamationCircle} />
+        {errors.length > 1 ? (
           <div>
-            <p>There were some issues adding the feed:</p>
-            <ul>
+            <Text>There were some issues adding the feed:</Text>
+            <ErrorList>
               {errors.map((err: Error, i: number) => (
                 <li key={i}>{err.message}</li>
               ))}
-            </ul>
+            </ErrorList>
           </div>
         ) : (
           <div>{errors[0].message}</div>
-        ))}
-    </StyledErrorBox>
+        )}
+      </Flex>
+    </Card>
   )
 }
-
-const StyledFieldError = styled.div`
-  color: ${colors.red[900]};
-  margin-bottom: ${spacing(3)};
-`
 
 interface FieldErrorProps {
   children?: React.ReactNode
 }
 export const FieldError = ({ children }: FieldErrorProps) => {
   return (
-    <StyledFieldError>
-      <ErrorIcon icon={faExclamationCircle} />
+    <Box color="red.900" mb={3}>
+      <Icon mr={2} mt="2px" color="red.500" icon={faExclamationCircle} />
       {children}
-    </StyledFieldError>
+    </Box>
   )
 }

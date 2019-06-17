@@ -1,6 +1,6 @@
 import React, { forwardRef } from "react"
 import styled, { css } from "styled-components"
-import { space, SpaceProps, flexbox, FlexboxProps } from "styled-system"
+import { space, SpaceProps, alignSelf, AlignSelfProps } from "styled-system"
 import { colors, spacing, shadow } from "../utils/theme"
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -16,10 +16,11 @@ type StyledButtonProps = React.PropsWithoutRef<
   color: "primary" | "red" | "blue"
   invert: boolean
 } & SpaceProps &
-  FlexboxProps
+  AlignSelfProps
 const StyledButton = styled.button<StyledButtonProps>`
   ${space}
-  ${flexbox}
+  ${alignSelf}
+  flex-shrink: 0;
   border: 0;
   line-height: 1.5em;
   font-weight: 500;
@@ -52,7 +53,6 @@ const StyledButton = styled.button<StyledButtonProps>`
 StyledButton.defaultProps = {
   px: 2,
   py: 1,
-  flexShrink: 0,
   alignSelf: "flex-start",
 }
 
