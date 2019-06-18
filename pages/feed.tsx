@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react"
-import styled from "@emotion/styled"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
@@ -16,7 +15,6 @@ import {
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Moment from "react-moment"
-import { spacing } from "../utils/theme"
 import {
   faTrashAlt,
   faSyncAlt,
@@ -34,20 +32,6 @@ import { InfoField, InfoTable } from "../components/info"
 import Card, { CardHeader } from "../components/card"
 import Group from "../components/group"
 
-const FeedContainer = styled(Container)`
-  a {
-    text-decoration: none;
-  }
-`
-
-const FeedPageHeader = styled(PageHeader)`
-  margin-bottom: ${spacing(6)};
-`
-
-const PublishedColumn = styled.col`
-  width: 150px;
-`
-
 interface Props {
   id: string
 }
@@ -56,7 +40,11 @@ const Feed = ({ id }: Props) => {
   const [actionError, setActionError] = useState<Error | undefined>()
 
   return (
-    <FeedContainer>
+    <Container
+      css={{
+        a: { textDecoration: "none" },
+      }}
+    >
       <GetFeedDetailsComponent variables={{ id }}>
         {({ data, error, loading }) => {
           if (loading) {
@@ -86,7 +74,7 @@ const Feed = ({ id }: Props) => {
               <>
                 <Head title={`${feed.feed.title} - Feed Details`} />
 
-                <FeedPageHeader>{feed.feed.title}</FeedPageHeader>
+                <PageHeader mb={4}>{feed.feed.title}</PageHeader>
                 <Group direction="column" spacing={3}>
                   <ErrorBox error={actionError} />
                   <Card>
@@ -107,7 +95,7 @@ const Feed = ({ id }: Props) => {
                     <InfoTable>
                       <colgroup>
                         <col />
-                        <PublishedColumn />
+                        <col css={{ width: "150px" }} />
                       </colgroup>
                       <tbody>
                         {feed.feed.posts.nodes.map(post => (
@@ -161,7 +149,7 @@ const Feed = ({ id }: Props) => {
           }
         }}
       </GetFeedDetailsComponent>
-    </FeedContainer>
+    </Container>
   )
 }
 

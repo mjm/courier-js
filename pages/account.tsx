@@ -1,5 +1,4 @@
 import React from "react"
-import styled from "@emotion/styled"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
 import Container from "../components/container"
@@ -9,12 +8,7 @@ import { InfoField } from "../components/info"
 import { CurrentUserComponent } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
-import { spacing } from "../utils/theme"
 import Card from "../components/card"
-
-const AccountPageHeader = styled(PageHeader)`
-  margin-bottom: ${spacing(6)};
-`
 
 const Account = () => {
   return (
@@ -22,7 +16,7 @@ const Account = () => {
       <Container>
         <Head title="Your Account" />
 
-        <AccountPageHeader>Your Account</AccountPageHeader>
+        <PageHeader mb={4}>Your Account</PageHeader>
         <CurrentUserComponent>
           {({ data, error, loading }) => {
             if (loading) {
