@@ -1,7 +1,7 @@
 import React from "react"
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import { spacing } from "../utils/theme"
-import { Flex, Text } from "rebass"
+import { Flex, Text } from "@rebass/emotion"
 
 type InfoFieldProps = React.PropsWithoutRef<JSX.IntrinsicElements["div"]> & {
   label: string

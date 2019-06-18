@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import {
   AllTweetsFieldsFragment,
   TweetStatus,
@@ -17,13 +17,16 @@ import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
 import Group from "../group"
-import { Image, Box, Flex } from "rebass"
+import { Image, Box, Flex } from "@rebass/emotion"
 
 mention(linkify)
 
-const TweetBody = styled(Linkify).attrs({ tagName: "div" })`
+const TweetBody = styled(Linkify)`
   white-space: pre-wrap;
 `
+TweetBody.defaultProps = {
+  tagName: "div",
+}
 
 const StatusText = styled.div`
   font-size: 0.9rem;

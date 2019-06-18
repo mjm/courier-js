@@ -1,8 +1,8 @@
 import React from "react"
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons"
 import { isApolloError } from "apollo-client"
-import { Card, CardProps, Flex, Box, Text } from "rebass"
+import { Card, CardProps, Flex, Box, Text } from "@rebass/emotion"
 import Icon from "./icon"
 
 const ErrorList = styled.ul(({ theme }) => ({

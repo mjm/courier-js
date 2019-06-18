@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react"
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"

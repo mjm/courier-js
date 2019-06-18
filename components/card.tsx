@@ -1,6 +1,6 @@
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import { boxShadow, BoxShadowProps } from "styled-system"
-import { Box, BoxProps, Heading, HeadingProps } from "rebass"
+import { Box, BoxProps, Heading, HeadingProps } from "@rebass/emotion"
 
 type CardProps = BoxProps &
   BoxShadowProps & {
@@ -36,11 +36,7 @@ Card.defaultProps = {
 
 export default Card
 
-export const CardHeader = styled(Heading).attrs<HeadingProps>({
-  fontWeight: "medium",
-  mb: 2,
-  color: "primary.800",
-})`
+export const CardHeader = styled(Heading)<HeadingProps>`
   a {
     color: ${({ theme }) => theme.colors.primary[800]};
     text-decoration: none;
@@ -49,5 +45,8 @@ export const CardHeader = styled(Heading).attrs<HeadingProps>({
 
 CardHeader.defaultProps = {
   as: "h3",
+  fontWeight: 500,
   m: 0,
+  mb: 2,
+  color: "primary.800",
 }

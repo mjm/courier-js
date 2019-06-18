@@ -1,11 +1,10 @@
-import styled from "styled-components"
-import { BoxProps, Box } from "rebass"
+import styled from "@emotion/styled"
+import { BoxProps, Box } from "@rebass/emotion"
 import { maxWidth, MaxWidthProps } from "styled-system"
 
 const MaxWidthBox = styled(Box)<BoxProps & MaxWidthProps>(maxWidth)
-type MaxWidthBoxProps = React.ComponentProps<typeof MaxWidthBox>
 
-const Container = (props: MaxWidthBoxProps) => (
+const Container = (props: BoxProps & MaxWidthProps) => (
   <MaxWidthBox
     width={1}
     maxWidth={[null, 640, 768]}

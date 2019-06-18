@@ -4,6 +4,7 @@ import Router from "next/router"
 import { renewSession, isAuthenticated } from "../utils/auth0"
 import { config } from "@fortawesome/fontawesome-svg-core"
 import * as theme from "../utils/theme"
+import { ThemeProvider } from "emotion-theming"
 
 config.autoAddCss = false
 
@@ -11,7 +12,6 @@ import "normalizecss/normalize.css"
 import "typeface-rubik"
 import "typeface-ibm-plex-sans"
 import "@fortawesome/fontawesome-svg-core/styles.css"
-import { ThemeProvider } from "styled-components"
 
 class MyApp extends App {
   state = {

@@ -1,16 +1,16 @@
 import React from "react"
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import withDefaultPage from "./defaultPage"
 import Link from "next/link"
 import Loading from "../components/loading"
 import { PageHeader } from "../components/header"
 import Head from "../components/head"
 import { spacing, colors, shadow, font } from "../utils/theme"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faSignInAlt,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons"
+import Icon from "../components/icon"
 
 const Container = styled.div`
   margin: 20vh auto;
@@ -48,15 +48,6 @@ const LoginLink = styled.a`
   }
 `
 
-const Icon = styled(FontAwesomeIcon)`
-  margin-right: ${spacing(2)};
-`
-
-const HeaderIcon = styled(Icon)`
-  color: ${colors.primary[700]};
-  font-size: 2.5rem;
-`
-
 interface Props {
   isAuthenticated: boolean
   isAuthenticating: boolean
@@ -83,7 +74,12 @@ const securePage = (Page: any) =>
             <Container>
               <Head title="Log In to Courier" />
               <PageHeader>
-                <HeaderIcon icon={faExclamationTriangle} />
+                <Icon
+                  mr={2}
+                  color="primary.700"
+                  fontSize={7}
+                  icon={faExclamationTriangle}
+                />
                 Uh Oh!
               </PageHeader>
               <p>You need to be logged in to see this page.</p>

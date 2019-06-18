@@ -1,5 +1,6 @@
 import React from "react"
-import styled, { createGlobalStyle } from "styled-components"
+import styled from "@emotion/styled"
+import { Global, css } from "@emotion/core"
 import Link from "next/link"
 import { font, colors, spacing, shadow } from "../utils/theme"
 import { faPaperPlane, faRss } from "@fortawesome/free-solid-svg-icons"
@@ -8,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import "@reach/dialog/styles.css"
 
-const BodyStyles = createGlobalStyle`
+const bodyStyles = css`
   html {
     box-sizing: border-box;
   }
@@ -23,7 +24,7 @@ const BodyStyles = createGlobalStyle`
   }
 `
 
-const DialogStyles = createGlobalStyle`
+const dialogStyles = css`
   [data-reach-dialog-content] {
     width: 500px;
     max-width: 100%;
@@ -133,8 +134,8 @@ interface Props {
 
 const Nav = ({ user, isAuthenticating }: Props) => (
   <StyledNav>
-    <BodyStyles />
-    <DialogStyles />
+    <Global styles={bodyStyles} />
+    <Global styles={dialogStyles} />
     <NavList>
       <NavItem>
         <Link prefetch href="/" passHref>

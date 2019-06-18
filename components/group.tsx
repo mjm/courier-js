@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import { space, SpaceProps } from "styled-system"
 
 type GroupProps = React.PropsWithoutRef<JSX.IntrinsicElements["div"]> & {

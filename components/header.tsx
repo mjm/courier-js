@@ -1,4 +1,4 @@
-import { Heading, HeadingProps, Text, TextProps } from "rebass"
+import { Heading, HeadingProps, Text, TextProps } from "@rebass/emotion"
 
 export const PageHeader = (props: HeadingProps) => (
   <Heading

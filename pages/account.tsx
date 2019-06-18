@@ -1,5 +1,5 @@
 import React from "react"
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
 import Container from "../components/container"

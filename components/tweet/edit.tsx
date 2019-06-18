@@ -1,5 +1,5 @@
 import React from "react"
-import styled from "styled-components"
+import styled from "@emotion/styled"
 import {
   AllTweetsFieldsFragment,
   PostTweetComponent,
@@ -18,7 +18,7 @@ import {
 import { spacing, colors } from "../../utils/theme"
 import Group from "../group"
 
-const TweetTextArea = styled(Field).attrs({ component: "textarea" })`
+const TweetTextArea = styled(Field)`
   width: 100%;
   height: ${spacing(25)};
   padding: ${spacing(2)};
@@ -28,6 +28,10 @@ const TweetTextArea = styled(Field).attrs({ component: "textarea" })`
   border: 2px solid ${colors.primary[500]};
   outline: none;
 `
+
+TweetTextArea.defaultProps = {
+  component: "textarea",
+}
 
 const MediaURLField = styled.div`
   display: flex;
