@@ -12,6 +12,7 @@
     "migrate": "node-pg-migrate && npm run gen:schema"
   },
   "dependencies": {
+    "@emotion/babel-preset-css-prop": "^10.0.9",
     "@emotion/core": "^10.0.10",
     "@emotion/styled": "^10.0.12",
     "@fortawesome/fontawesome-svg-core": "^1.2.18",
