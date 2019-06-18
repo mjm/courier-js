@@ -172,7 +172,7 @@ const TweetCard = ({ tweet, user }: TweetCardProps) => {
     tweet.status === TweetStatus.Canceled ? "canceled" : "normal"
 
   return (
-    <Card appearance={appearance}>
+    <Card variant={appearance}>
       {editing ? (
         <EditTweet tweet={tweet} onStopEditing={() => setEditing(false)} />
       ) : (

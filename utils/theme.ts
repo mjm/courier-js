@@ -138,3 +138,15 @@ export const space = ["0"].concat([1, 2, 4, 8, 16, 32, 64, 128].map(spacing))
 export const Heading = {
   fontFamily: fonts.display,
 }
+
+export const cards = {
+  normal: {
+    backgroundColor: "white",
+    borderTop: `3px solid ${colors.primary[500]}`,
+  },
+  canceled: {
+    color: colors.gray[700],
+    backgroundColor: colors.gray[200],
+    borderTop: `3px solid ${colors.gray[400]}`,
+  },
+}

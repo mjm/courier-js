@@ -12,7 +12,6 @@ import Linkify from "linkifyjs/react"
 import { faEdit, faBan } from "@fortawesome/free-solid-svg-icons"
 import { Button } from "../button"
 import Moment from "react-moment"
-import { colors } from "../../utils/theme"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
@@ -21,18 +20,11 @@ import { Image, Box, Flex } from "@rebass/emotion"
 
 mention(linkify)
 
-const TweetBody = styled(Linkify)`
-  white-space: pre-wrap;
-`
-TweetBody.defaultProps = {
-  tagName: "div",
-}
-
-const StatusText = styled.div`
-  font-size: 0.9rem;
-  font-style: italic;
-  color: ${colors.gray[600]};
-`
+const StatusText = styled.div(({ theme }) => ({
+  fontSize: theme.fontSizes[1],
+  fontStyle: "italic",
+  color: theme.colors.gray[600],
+}))
 
 interface ViewTweetProps {
   tweet: AllTweetsFieldsFragment
@@ -43,16 +35,18 @@ interface ViewTweetProps {
 const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
   return (
     <Group direction="column" spacing={3}>
-      <TweetBody
+      <Linkify
+        tagName="div"
         options={{
           formatHref: {
             mention: val => `https://twitter.com${val}`,
           },
           target: "_blank",
         }}
+        css={{ whiteSpace: "pre-wrap" }}
       >
         {tweet.body}
-      </TweetBody>
+      </Linkify>
       {tweet.mediaURLs.length ? (
         <Flex mt={2} flexWrap="wrap">
           {tweet.mediaURLs.map(url => (

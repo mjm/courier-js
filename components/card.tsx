@@ -1,35 +1,25 @@
 import styled from "@emotion/styled"
-import { boxShadow, BoxShadowProps } from "styled-system"
-import { Box, BoxProps, Heading, HeadingProps } from "@rebass/emotion"
+import {
+  Card as RCard,
+  CardProps,
+  Heading,
+  HeadingProps,
+} from "@rebass/emotion"
 
-type CardProps = BoxProps &
-  BoxShadowProps & {
-    appearance?: "normal" | "canceled"
-  }
-const Card = styled(Box)<CardProps>`
-  ${boxShadow}
-  border-bottom-left-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
-  line-height: 1.5em;
-
-  ${({ appearance, theme }) =>
-    appearance === "canceled"
-      ? `
-  color: ${theme.colors.gray[700]};
-  background-color: ${theme.colors.gray[200]};
-  border-top: 3px solid ${theme.colors.gray[400]};
-  `
-      : `
-  background-color: white;
-  border-top: 3px solid ${theme.colors.primary[500]};
-  `}
-
-  a {
-    color: ${({ theme }) => theme.colors.primary[700]};
-  }
-`
+type Props = CardProps & {
+  appearance?: "normal" | "canceled"
+}
+const Card = styled(RCard)<Props>(({ theme }) => ({
+  borderBottomLeftRadius: theme.space[1],
+  borderBottomRightRadius: theme.space[1],
+  lineHeight: theme.lineHeights.normal,
+  a: {
+    color: theme.colors.primary[700],
+  },
+}))
 
 Card.defaultProps = {
+  variant: "normal",
   p: 3,
   boxShadow: "md",
 }
