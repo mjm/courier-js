@@ -1,6 +1,5 @@
 import React from "react"
 import styled from "@emotion/styled"
-import { css } from "@emotion/core"
 import Head from "../components/head"
 import { PageHeader, PageDescription } from "../components/header"
 import {
@@ -48,24 +47,12 @@ const Feeds = () => (
   </Container>
 )
 
-const StyledCard = styled(Card)`
-  a {
-    text-decoration: none;
-  }
-`
-
-const infoStyles = css`
-  line-height: 1.5em;
-  display: flex;
-  align-items: center;
-`
-
-const InfoRow = styled.div`
-  ${infoStyles}
-`
-const InfoLink = styled.a`
-  ${infoStyles}
-`
+const InfoRow = styled.div(({ theme }: any) => ({
+  lineHeight: theme.lineHeights.normal,
+  display: "flex",
+  alignItems: "center",
+}))
+const InfoLink = InfoRow.withComponent("a")
 
 const URL = styled.span`
   overflow-wrap: break-word;
@@ -98,7 +85,7 @@ const FeedsList = () => {
           return (
             <Group direction="column" spacing={3} mb={3}>
               {nodes.map(({ id, feed }) => (
-                <StyledCard key={id}>
+                <Card key={id} css={{ a: { textDecoration: "none" } }}>
                   <CardHeader>
                     <Link href={`/feed?id=${id}`} as={`/feeds/${id}`}>
                       <a>{feed.title}</a>
@@ -116,7 +103,7 @@ const FeedsList = () => {
                       </span>
                     </InfoRow>
                   )}
-                </StyledCard>
+                </Card>
               ))}
             </Group>
           )

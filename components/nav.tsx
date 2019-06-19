@@ -1,121 +1,76 @@
 import React from "react"
 import styled from "@emotion/styled"
-import { Global, css } from "@emotion/core"
+import { Global, InterpolationWithTheme } from "@emotion/core"
 import Link from "next/link"
-import { font, colors, spacing, shadow } from "../utils/theme"
-import { faPaperPlane, faRss } from "@fortawesome/free-solid-svg-icons"
+import {
+  faPaperPlane,
+  faRss,
+  IconDefinition,
+} from "@fortawesome/free-solid-svg-icons"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { Card, Image, Flex } from "@rebass/emotion"
+import Icon from "./icon"
 
 import "@reach/dialog/styles.css"
 
-const bodyStyles = css`
-  html {
-    box-sizing: border-box;
-  }
-  *,
-  *:before,
-  *:after {
-    box-sizing: inherit;
-  }
-  body {
-    font-family: ${font.body};
-    background-color: #f9ffff;
-  }
-`
+const bodyStyles: InterpolationWithTheme<any> = theme => ({
+  html: {
+    boxSizing: "border-box",
+  },
+  "*, *:before, *:after": {
+    boxSizing: "inherit",
+  },
+  body: {
+    fontFamily: theme.fonts.body,
+    backgroundColor: "#f9ffff",
+  },
+})
 
-const dialogStyles = css`
-  [data-reach-dialog-content] {
-    width: 500px;
-    max-width: 100%;
+const dialogStyles: InterpolationWithTheme<any> = theme => ({
+  "[data-reach-dialog-content]": {
+    width: "500px",
+    maxWidth: "100%",
+    backgroundColor: "white",
+    boxShadow: theme.shadow.lg,
+    padding: theme.space[3],
+    borderTop: `3px solid ${theme.colors.primary[600]}`,
+    borderBottomLeftRadius: "0.25rem",
+    borderBottomRightRadius: "0.25rem",
+  },
+  "[data-reach-alert-dialog-label]": {
+    fontFamily: theme.font.display,
+    fontSize: "1.2rem",
+    fontWeight: 500,
+    marginBottom: theme.space[2],
+    color: theme.colors.primary[800],
+  },
+  "[data-reach-alert-dialog-description]": {
+    lineHeight: theme.lineHeights.normal,
+  },
+})
 
-    background-color: white;
-    box-shadow: ${shadow.lg};
-    padding: ${spacing(4)};
-    border-top: 3px solid ${colors.primary[600]};
-    border-bottom-left-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
-  }
-  [data-reach-alert-dialog-label] {
-    font-family: ${font.display};
-    font-size: 1.2rem;
-    font-weight: 500;
-    margin-bottom: ${spacing(2)};
-    color: ${colors.primary[800]};
-  }
-  [data-reach-alert-dialog-description] {
-    line-height: 1.5em;
-  }
-`
+const NavLink = styled.a(({ theme }) => ({
+  color: "white",
+  fontWeight: 500,
+  textDecoration: "none",
+  display: "inline-flex",
+  alignItems: "center",
+  padding: `${theme.space[2]} ${theme.space[3]}`,
+  height: "100%",
+  flexShrink: 0,
+  ":hover": {
+    backgroundColor: theme.colors.primary[600],
+  },
+  "@media (min-width: 640px)": {
+    padding: theme.space[3],
+  },
+}))
 
-const StyledNav = styled.nav`
-  text-align: center;
-  background-color: ${colors.primary[700]};
-  box-shadow: ${shadow.sm};
-`
-
-const NavList = styled.ul`
-  margin: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  line-height: 1.8rem;
-
-  ${StyledNav} > & {
-    padding: 0 ${spacing(2)};
-  }
-
-  @media (min-width: 640px) {
-    ${StyledNav} > & {
-      margin: 0 ${spacing(4)};
-    }
-  }
-`
-
-const NavItem = styled.li`
-  display: flex;
-  align-items: stretch;
-  height: 100%;
-`
-const SpacerItem = styled(NavItem)`
-  flex-grow: 1;
-`
-
-const NavLink = styled.a`
-  color: white;
-  font-weight: 500;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  padding: ${spacing(2)} ${spacing(3)};
-  height: 100%;
-  flex-shrink: 0;
-
-  :hover {
-    background-color: ${colors.primary[600]};
-  }
-
-  @media (min-width: 640px) {
-    padding: ${spacing(3)} ${spacing(4)};
-  }
-`
-const BrandLink = styled(NavLink)`
-  font-size: 1.2rem;
-  font-weight: 700;
-  font-family: ${font.display};
-`
-
-const NavIcon = styled(FontAwesomeIcon)`
-  margin-right: ${spacing(2)};
-  color: ${colors.primary[100]};
-`
-
-const Avatar = styled.img`
-  width: 1.2rem;
-  height: 1.2rem;
-  border-radius: 9999px;
-  margin-right: ${spacing(2)};
-`
+const BrandLink = styled(NavLink)(({ theme }) => ({
+  fontSize: theme.fontSizes[4],
+  fontWeight: 700,
+  fontFamily: theme.font.display,
+}))
 
 const Username = styled.span`
   text-indent: -9999px;
@@ -133,53 +88,63 @@ interface Props {
 }
 
 const Nav = ({ user, isAuthenticating }: Props) => (
-  <StyledNav>
+  <Card as="nav" bg="primary.700" boxShadow="sm">
     <Global styles={bodyStyles} />
     <Global styles={dialogStyles} />
-    <NavList>
-      <NavItem>
-        <Link prefetch href="/" passHref>
-          <BrandLink>
-            <NavIcon icon={faPaperPlane} />
-            Courier
-          </BrandLink>
-        </Link>
+    <Flex
+      as="ul"
+      alignItems="center"
+      my={0}
+      mx={[0, 3]}
+      px={2}
+      css={{ listStyle: "none", lineHeight: "1.6em" }}
+    >
+      <NavItem brand href="/" icon={faPaperPlane}>
+        Courier
       </NavItem>
-      <NavItem>
-        <Link prefetch href="/tweets" passHref>
-          <NavLink>
-            <NavIcon icon={faTwitter} />
-            Tweets
-          </NavLink>
-        </Link>
+      <NavItem href="/tweets" icon={faTwitter}>
+        Tweets
       </NavItem>
-      <NavItem>
-        <Link prefetch href="/feeds" passHref>
-          <NavLink>
-            <NavIcon icon={faRss} />
-            Feeds
-          </NavLink>
-        </Link>
+      <NavItem href="/feeds" icon={faRss}>
+        Feeds
       </NavItem>
-      <SpacerItem />
+      <li css={{ flexGrow: 1 }} />
       {user ? (
-        <NavItem>
-          <Link href="/account" passHref>
-            <NavLink>
-              <Avatar src={user.picture} />
-              <Username>{user.name}</Username>
-            </NavLink>
-          </Link>
+        <NavItem href="/account">
+          <Image
+            src={user.picture}
+            width={20}
+            height={20}
+            mr={2}
+            borderRadius="9999px"
+          />
+          <Username>{user.name}</Username>
         </NavItem>
       ) : isAuthenticating ? null : (
-        <NavItem>
-          <Link href="/login" passHref>
-            <NavLink>Login</NavLink>
-          </Link>
-        </NavItem>
+        <NavItem href="/login">Login</NavItem>
       )}
-    </NavList>
-  </StyledNav>
+    </Flex>
+  </Card>
 )
 
 export default Nav
+
+interface NavItemProps {
+  href: string
+  icon?: IconDefinition
+  children: React.ReactNode
+  brand?: boolean
+}
+const NavItem = ({ href, icon, children, brand = false }: NavItemProps) => {
+  const LinkType = brand ? BrandLink : NavLink
+  return (
+    <li>
+      <Link href={href} passHref>
+        <LinkType>
+          {icon && <Icon mr={2} color="primary.100" icon={icon} />}
+          {children}
+        </LinkType>
+      </Link>
+    </li>
+  )
+}

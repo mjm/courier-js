@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import styled from "@emotion/styled"
 import Head from "../components/head"
 import {
   PageHeader,
@@ -23,6 +22,7 @@ import EditTweet from "../components/tweet/edit"
 import { Button } from "../components/button"
 import Card from "../components/card"
 import Group from "../components/group"
+import { Flex } from "@rebass/emotion"
 
 const Tweets = ({ user }: any) => (
   <Container>
@@ -42,11 +42,6 @@ const Tweets = ({ user }: any) => (
 )
 
 export default withSecurePage(withData(Tweets))
-
-const LoadMoreItem = styled.div`
-  display: flex;
-  justify-content: center;
-`
 
 interface TweetsListProps {
   // this type should match both upcoming and past.
@@ -140,7 +135,7 @@ const TweetsList = ({
                   <TweetCard key={tweet.id} tweet={tweet} user={user} />
                 ))}
                 {pageInfo.hasPreviousPage && (
-                  <LoadMoreItem>
+                  <Flex justifyContent="center">
                     <Button
                       size="medium"
                       icon={faAngleDoubleDown}
@@ -149,7 +144,7 @@ const TweetsList = ({
                     >
                       Show More…
                     </Button>
-                  </LoadMoreItem>
+                  </Flex>
                 )}
               </Group>
             </>
