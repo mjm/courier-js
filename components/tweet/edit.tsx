@@ -1,5 +1,4 @@
 import React from "react"
-import styled from "@emotion/styled"
 import {
   AllTweetsFieldsFragment,
   PostTweetComponent,
@@ -15,44 +14,15 @@ import {
   faCheck,
   faShare,
 } from "@fortawesome/free-solid-svg-icons"
-import { spacing, colors } from "../../utils/theme"
 import Group from "../group"
+import { Flex } from "@rebass/emotion"
 
-const TweetTextArea = styled(Field)`
-  width: 100%;
-  height: ${spacing(25)};
-  padding: ${spacing(2)};
-  color: ${colors.primary[900]};
-  background-color: ${colors.primary[100]};
-  border-radius: 0.5rem;
-  border: 2px solid ${colors.primary[500]};
-  outline: none;
-`
-
-TweetTextArea.defaultProps = {
-  component: "textarea",
-}
-
-const MediaURLField = styled.div`
-  display: flex;
-  align-items: center;
-  padding: ${spacing(1)} 0;
-
-  & > input {
-    flex-grow: 1;
-    margin-right: ${spacing(2)};
-    padding: ${spacing(2)};
-    color: ${colors.primary[900]};
-    background-color: ${colors.primary[100]};
-    border: 0;
-    border-bottom: 2px solid ${colors.primary[500]};
-    outline: none;
-  }
-
-  & > button {
-    flex-shrink: 0;
-  }
-`
+const inputStyles = (theme: any) => ({
+  padding: theme.space[2],
+  color: theme.colors.primary[900],
+  backgroundColor: theme.colors.primary[100],
+  outline: "none",
+})
 
 interface EditTweetProps {
   tweet: AllTweetsFieldsFragment
@@ -119,15 +89,39 @@ const EditTweet = ({ tweet, onStopEditing }: EditTweetProps) => {
                   <Form>
                     <Group direction="column" spacing={2}>
                       <ErrorBox error={status.error} />
-                      <TweetTextArea name="body" autoFocus />
+                      <Field
+                        component="textarea"
+                        name="body"
+                        autoFocus
+                        css={(theme: any) => [
+                          {
+                            width: "100%",
+                            height: theme.space[6],
+                            border: `2px solid ${theme.colors.primary[500]}`,
+                            borderRadius: "0.5rem",
+                          },
+                          inputStyles(theme),
+                        ]}
+                      />
                       <FieldArray name="mediaURLs">
                         {({ insert, remove, push }) => (
                           <>
                             {values.mediaURLs.map((_url, index) => (
-                              <MediaURLField key={index}>
+                              <Flex key={index} alignItems="center" py={1}>
                                 <Field
                                   name={`mediaURLs.${index}`}
                                   placeholder="https://example.org/photo.jpg"
+                                  css={(theme: any) => [
+                                    {
+                                      flexGrow: 1,
+                                      marginRight: theme.space[2],
+                                      border: 0,
+                                      borderBottom: `2px solid ${
+                                        theme.colors.primary[500]
+                                      }`,
+                                    },
+                                    inputStyles(theme),
+                                  ]}
                                 />
                                 <Button
                                   onClick={() => insert(index, "")}
@@ -143,7 +137,7 @@ const EditTweet = ({ tweet, onStopEditing }: EditTweetProps) => {
                                 >
                                   Remove
                                 </Button>
-                              </MediaURLField>
+                              </Flex>
                             ))}
                             <Button
                               onClick={() => push("")}
