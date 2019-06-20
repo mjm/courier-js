@@ -1,6 +1,9 @@
 {
   "name": "courier",
   "license": "MIT",
+  "engines": {
+    "node": ">=10"
+  },
   "scripts": {
     "dev": "concurrently \"npm:dev-*\"",
     "dev-now": "now dev",

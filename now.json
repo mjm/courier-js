@@ -4,7 +4,7 @@
   "alias": "courier.now.sh",
   "builds": [
     { "src": "next.config.js", "use": "@now/next@canary" },
-    { "src": "api/**/*.ts", "use": "@now/node" }
+    { "src": "api/**/*.ts", "use": "@now/node@canary" }
   ],
   "routes": [
     { "src": "/feeds/(?<id>\\d+)", "dest": "/feed?id=$id" },
