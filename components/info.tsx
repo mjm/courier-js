@@ -1,6 +1,5 @@
 import React from "react"
 import styled from "@emotion/styled"
-import { spacing } from "../utils/theme"
 import { Flex, Text } from "@rebass/emotion"
 
 type InfoFieldProps = React.PropsWithoutRef<JSX.IntrinsicElements["div"]> & {
@@ -17,19 +16,17 @@ export const InfoField = ({ label, children, ...props }: InfoFieldProps) => (
   </Text>
 )
 
-export const InfoTable = styled.table`
-  table-layout: fixed;
-  width: 100%;
-  margin-top: ${spacing(2)};
-  white-space: nowrap;
-  margin-left: -${spacing(1)};
-  margin-right: -${spacing(1)};
-
-  td {
-    line-height: 2em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 ${spacing(1)};
-  }
-`
+export const InfoTable = styled.table(({ theme }: any) => ({
+  tableLayout: "fixed",
+  width: "100%",
+  marginTop: theme.space[2],
+  whiteSpace: "nowrap",
+  marginLeft: `-${theme.space[1]}`,
+  marginRight: `-${theme.space[1]}`,
+  td: {
+    lineHeight: theme.lineHeights.loose,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    padding: `0 ${theme.space[1]}`,
+  },
+}))
