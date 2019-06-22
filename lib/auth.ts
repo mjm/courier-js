@@ -1,4 +1,4 @@
-import jwksClient from "jwks-rsa"
+import jwksClient from "@mmoriarity/jwks-rsa"
 import * as jwt from "jsonwebtoken"
 import { AuthenticationError } from "apollo-server-core"
 import { IncomingHttpHeaders } from "http"
@@ -56,6 +56,7 @@ const getKey: jwt.GetPublicKeyOrSecret = (header, cb) => {
     if (err) {
       cb(err)
     } else {
+      // @ts-ignore
       const signingKey = key.publicKey || key.rsaPublicKey
       cb(null, signingKey)
     }
