@@ -3,7 +3,7 @@ import * as jwt from "jsonwebtoken"
 import { AuthenticationError } from "apollo-server-core"
 import { IncomingHttpHeaders } from "http"
 import { UserInfo, UserId } from "./data/types"
-import { AuthenticationClient, ManagementClient } from "auth0"
+import { AuthenticationClient, ManagementClient } from "@mmoriarity/auth0"
 
 export function getToken(headers: IncomingHttpHeaders): string | null {
   const authz = headers.authorization
