@@ -112,6 +112,7 @@ export interface Tweet {
   body: string
   mediaURLs: string[]
   status: TweetStatus
+  postAfter: Date | null
   postedAt: Date | null
   postedTweetID: string | null
 }

@@ -74,6 +74,7 @@ export namespace tweetsFields {
     export type position = number;
     export type created_at = Date;
     export type updated_at = Date;
+    export type post_after = Date | null;
 
 }
 
@@ -89,6 +90,7 @@ export interface tweets {
     position: tweetsFields.position;
     created_at: tweetsFields.created_at;
     updated_at: tweetsFields.updated_at;
+    post_after: tweetsFields.post_after;
 
 }
 

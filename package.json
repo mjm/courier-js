@@ -9,7 +9,7 @@
     "start": "next start",
     "gen": "graphql-codegen --config codegen.yml",
     "gen:schema": "schemats generate -c $DATABASE_URL --noHeader -o lib/data/dbTypes.ts",
-    "migrate": "node-pg-migrate && npm run gen:schema"
+    "migrate": "node-pg-migrate up && npm run gen:schema"
   },
   "dependencies": {
     "@emotion/babel-preset-css-prop": "^10.0.9",
