@@ -324,6 +324,19 @@ export type RefreshFeedMutation = { __typename?: "Mutation" } & {
   }
 }
 
+export type SetFeedOptionsMutationVariables = {
+  input: SetFeedOptionsInput
+}
+
+export type SetFeedOptionsMutation = { __typename?: "Mutation" } & {
+  setFeedOptions: { __typename?: "SetFeedOptionsPayload" } & {
+    feed: { __typename?: "SubscribedFeed" } & Pick<
+      SubscribedFeed,
+      "id" | "autopost"
+    >
+  }
+}
+
 export type DeleteFeedMutationVariables = {
   input: DeleteFeedInput
 }
@@ -687,6 +700,64 @@ export function withRefreshFeed<TProps, TChildProps = {}>(
     RefreshFeedProps<TChildProps>
   >(RefreshFeedDocument, {
     alias: "withRefreshFeed",
+    ...operationOptions,
+  })
+}
+export const SetFeedOptionsDocument = gql`
+  mutation SetFeedOptions($input: SetFeedOptionsInput!) {
+    setFeedOptions(input: $input) {
+      feed {
+        id
+        autopost
+      }
+    }
+  }
+`
+export type SetFeedOptionsMutationFn = ReactApollo.MutationFn<
+  SetFeedOptionsMutation,
+  SetFeedOptionsMutationVariables
+>
+
+export const SetFeedOptionsComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<
+        SetFeedOptionsMutation,
+        SetFeedOptionsMutationVariables
+      >,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: SetFeedOptionsMutationVariables }
+) => (
+  <ReactApollo.Mutation<SetFeedOptionsMutation, SetFeedOptionsMutationVariables>
+    mutation={SetFeedOptionsDocument}
+    {...props}
+  />
+)
+
+export type SetFeedOptionsProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<
+    SetFeedOptionsMutation,
+    SetFeedOptionsMutationVariables
+  >
+> &
+  TChildProps
+export function withSetFeedOptions<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    SetFeedOptionsMutation,
+    SetFeedOptionsMutationVariables,
+    SetFeedOptionsProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    SetFeedOptionsMutation,
+    SetFeedOptionsMutationVariables,
+    SetFeedOptionsProps<TChildProps>
+  >(SetFeedOptionsDocument, {
+    alias: "withSetFeedOptions",
     ...operationOptions,
   })
 }

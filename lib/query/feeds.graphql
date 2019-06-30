@@ -42,6 +42,15 @@ mutation RefreshFeed($input: RefreshFeedInput!) {
   }
 }
 
+mutation SetFeedOptions($input: SetFeedOptionsInput!) {
+  setFeedOptions(input: $input) {
+    feed {
+      id
+      autopost
+    }
+  }
+}
+
 mutation DeleteFeed($input: DeleteFeedInput!) {
   deleteFeed(input: $input) {
     id

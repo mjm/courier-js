@@ -11,6 +11,8 @@ import {
   UpcomingTweetsDocument,
   DeleteFeedComponent,
   AllFeedsDocument,
+  AllFeedSubscriptionsFieldsFragment,
+  SetFeedOptionsComponent,
 } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
@@ -119,18 +121,20 @@ const Feed = ({ id }: Props) => {
                   </Card>
                   <Card>
                     <CardHeader>Autoposting</CardHeader>
-                    <div>
-                      Courier is importing tweets from this feed, but they{" "}
-                      <strong>will not be posted automatically.</strong>
-                    </div>
-                    <Button
-                      mt={3}
-                      icon={faTwitter}
-                      disabled
-                      title="Autoposting is not currently supported."
-                    >
-                      Turn On Autoposting
-                    </Button>
+                    {feed.autopost ? (
+                      <div>
+                        Courier is importing tweets from this feed and{" "}
+                        <strong>
+                          will post them to Twitter automatically.
+                        </strong>
+                      </div>
+                    ) : (
+                      <div>
+                        Courier is importing tweets from this feed, but they{" "}
+                        <strong>will not be posted automatically.</strong>
+                      </div>
+                    )}
+                    <AutopostButton feed={feed} />
                   </Card>
                   <Card>
                     <CardHeader>Remove This Feed</CardHeader>
@@ -189,6 +193,38 @@ const RefreshButton = ({ id, setError }: RefreshButtonProps) => {
         </Button>
       )}
     </RefreshFeedComponent>
+  )
+}
+
+interface AutopostButtonProps {
+  feed: AllFeedSubscriptionsFieldsFragment
+}
+
+const AutopostButton = ({ feed }: AutopostButtonProps) => {
+  const [isUpdating, setUpdating] = useState(false)
+
+  return (
+    <SetFeedOptionsComponent>
+      {setOptions => (
+        <Button
+          mt={3}
+          spin={isUpdating}
+          icon={faTwitter}
+          onClick={async () => {
+            setUpdating(true)
+            try {
+              await setOptions({
+                variables: { input: { id: feed.id, autopost: !feed.autopost } },
+              })
+            } finally {
+              setUpdating(false)
+            }
+          }}
+        >
+          Turn {feed.autopost ? "Off" : "On"} Autoposting
+        </Button>
+      )}
+    </SetFeedOptionsComponent>
   )
 }
 
