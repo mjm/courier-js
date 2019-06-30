@@ -155,6 +155,7 @@ type Tweet {
   body: String!
   mediaURLs: [String!]!
   status: TweetStatus!
+  postAfter: DateTime
   postedAt: DateTime
   postedTweetID: String
 }

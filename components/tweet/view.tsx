@@ -63,7 +63,7 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
           ))}
         </Flex>
       ) : null}
-      <Group direction="row" spacing={2} wrap>
+      <Group direction="row" spacing={2} wrap alignItems="center">
         {tweet.status === TweetStatus.Draft && (
           <>
             <CancelButton id={tweet.id} />
@@ -71,6 +71,23 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
               Edit Tweet
             </Button>
             <PostButton id={tweet.id} />
+            {tweet.postAfter && (
+              <StatusText css={{ display: "inline-block" }}>
+                will post{" "}
+                <Moment
+                  fromNow
+                  filter={str => {
+                    if (str.includes("ago")) {
+                      return "soon"
+                    } else {
+                      return str
+                    }
+                  }}
+                >
+                  {tweet.postAfter}
+                </Moment>
+              </StatusText>
+            )}
           </>
         )}
         {tweet.status === TweetStatus.Canceled && (

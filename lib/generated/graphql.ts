@@ -231,6 +231,7 @@ export type Tweet = {
   body: Scalars["String"]
   mediaURLs: Array<Scalars["String"]>
   status: TweetStatus
+  postAfter?: Maybe<Scalars["DateTime"]>
   postedAt?: Maybe<Scalars["DateTime"]>
   postedTweetID?: Maybe<Scalars["String"]>
 }
@@ -689,6 +690,11 @@ export type TweetResolvers<
   body?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   mediaURLs?: Resolver<Array<ResolversTypes["String"]>, ParentType, ContextType>
   status?: Resolver<ResolversTypes["TweetStatus"], ParentType, ContextType>
+  postAfter?: Resolver<
+    Maybe<ResolversTypes["DateTime"]>,
+    ParentType,
+    ContextType
+  >
   postedAt?: Resolver<
     Maybe<ResolversTypes["DateTime"]>,
     ParentType,

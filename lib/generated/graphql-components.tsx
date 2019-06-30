@@ -228,6 +228,7 @@ export type Tweet = {
   body: Scalars["String"]
   mediaURLs: Array<Scalars["String"]>
   status: TweetStatus
+  postAfter?: Maybe<Scalars["DateTime"]>
   postedAt?: Maybe<Scalars["DateTime"]>
   postedTweetID?: Maybe<Scalars["String"]>
 }
@@ -397,7 +398,13 @@ export type TweetConnectionFieldsFragment = {
 
 export type AllTweetsFieldsFragment = { __typename?: "Tweet" } & Pick<
   Tweet,
-  "id" | "body" | "mediaURLs" | "status" | "postedAt" | "postedTweetID"
+  | "id"
+  | "body"
+  | "mediaURLs"
+  | "status"
+  | "postAfter"
+  | "postedAt"
+  | "postedTweetID"
 > & {
     post: { __typename?: "Post" } & Pick<
       Post,
@@ -477,6 +484,7 @@ export const allTweetsFieldsFragmentDoc = gql`
     body
     mediaURLs
     status
+    postAfter
     postedAt
     postedTweetID
   }
