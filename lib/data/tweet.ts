@@ -18,6 +18,7 @@ import { ValueExpressionType, NamedAssignmentType } from "slonik"
 import { UserInputError } from "apollo-server-core"
 import { postToTwitter } from "../twitter"
 import * as table from "./dbTypes"
+import { getFeedSubscription } from "./feed"
 
 type TweetRow = table.tweets & Pick<table.posts, "published_at">
 
@@ -273,19 +274,27 @@ async function getTweet(userId: UserId, id: TweetId): Promise<Tweet> {
 }
 
 async function createTweet(input: NewTweetInput): Promise<Tweet> {
+  const feedSubscription = await getFeedSubscription(input.feedSubscriptionId)
+
+  const postAfter = feedSubscription.autopost
+    ? sql.raw("CURRENT TIMESTAMP + interval '5 minutes'")
+    : null
+
   const row = await db.one(sql<table.tweets>`
     INSERT INTO tweets (
       feed_subscription_id,
       post_id,
       body,
       media_urls,
-      position
+      position,
+      post_after
     ) VALUES (
       ${input.feedSubscriptionId},
       ${input.postId},
       ${input.body},
       ${sql.array(input.mediaURLs, "text")},
-      ${input.position}
+      ${input.position},
+      ${postAfter}
     )
     RETURNING *
   `)

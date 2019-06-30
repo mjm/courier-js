@@ -104,6 +104,18 @@ export async function getFeedSubscriptions(
   return rows.map(fromSubscriptionRow)
 }
 
+export async function getFeedSubscription(
+  id: FeedSubscriptionId
+): Promise<SubscribedFeed> {
+  const row = await db.one(sql<FeedSubscriptionRow>`
+    SELECT *
+      FROM feed_subscriptions
+     WHERE id = ${id}
+  `)
+
+  return fromSubscriptionRow(row)
+}
+
 /**
  * Adds a feed to a user's list of subscribed feeds.
  *
