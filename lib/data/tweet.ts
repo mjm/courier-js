@@ -277,7 +277,7 @@ async function createTweet(input: NewTweetInput): Promise<Tweet> {
   const feedSubscription = await getFeedSubscription(input.feedSubscriptionId)
 
   const postAfter = feedSubscription.autopost
-    ? sql.raw("CURRENT TIMESTAMP + interval '5 minutes'")
+    ? sql.raw("CURRENT_TIMESTAMP + interval '5 minutes'")
     : null
 
   const row = await db.one(sql<table.tweets>`
