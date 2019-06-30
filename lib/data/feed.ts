@@ -7,6 +7,7 @@ import {
   UserId,
   SubscribedFeed,
   FeedSubscriptionId,
+  UpdateFeedOptionsInput,
 } from "./types"
 import { locateFeed } from "feed-locator"
 import { scrapeFeed, normalizeURL } from "scrape-feed"
@@ -15,6 +16,7 @@ import { Pager } from "./pager"
 import { importTweets } from "./tweet"
 import { getByIds } from "./util"
 import * as table from "./dbTypes"
+import { NamedAssignmentType } from "slonik"
 
 type FeedSubscriptionRow = table.feed_subscriptions & Pick<table.feeds, "url">
 
@@ -188,6 +190,31 @@ export async function refreshFeed(
     cachingHeaders,
     refreshedAt,
   }
+}
+
+export async function updateFeedOptions(
+  userId: UserId,
+  input: UpdateFeedOptionsInput
+): Promise<SubscribedFeed> {
+  const options: NamedAssignmentType = {}
+  if (input.autopost !== undefined && input.autopost !== null) {
+    options.autopost = input.autopost
+  }
+
+  if (Object.keys(options).length === 0) {
+    throw new Error("no options provided to change")
+  }
+
+  const row = await db.one(sql<FeedSubscriptionRow>`
+    UPDATE feed_subscriptions
+       SET ${sql.assignmentList(options)},
+           updated_at = CURRENT_TIMESTAMP
+     WHERE id = ${input.id}
+       AND user_id = ${userId}
+ RETURNING *
+  `)
+
+  return fromSubscriptionRow(row)
 }
 
 /**

@@ -60,6 +60,11 @@ export interface FeedInput {
   url: string
 }
 
+export interface UpdateFeedOptionsInput {
+  id: FeedSubscriptionId
+  autopost?: boolean | null
+}
+
 export type PostId = string
 
 export interface Post {

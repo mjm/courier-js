@@ -77,6 +77,7 @@ export type FeedEdge = {
 export type Mutation = {
   addFeed: AddFeedPayload
   refreshFeed: RefreshFeedPayload
+  setFeedOptions: SetFeedOptionsPayload
   deleteFeed: DeleteFeedPayload
   cancelTweet: CancelTweetPayload
   uncancelTweet: UncancelTweetPayload
@@ -90,6 +91,10 @@ export type MutationAddFeedArgs = {
 
 export type MutationRefreshFeedArgs = {
   input: RefreshFeedInput
+}
+
+export type MutationSetFeedOptionsArgs = {
+  input: SetFeedOptionsInput
 }
 
 export type MutationDeleteFeedArgs = {
@@ -187,6 +192,15 @@ export type RefreshFeedInput = {
 
 export type RefreshFeedPayload = {
   feed: Feed
+}
+
+export type SetFeedOptionsInput = {
+  id: Scalars["ID"]
+  autopost?: Maybe<Scalars["Boolean"]>
+}
+
+export type SetFeedOptionsPayload = {
+  feed: SubscribedFeed
 }
 
 export type SubscribedFeed = {

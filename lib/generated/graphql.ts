@@ -80,6 +80,7 @@ export type FeedEdge = {
 export type Mutation = {
   addFeed: AddFeedPayload
   refreshFeed: RefreshFeedPayload
+  setFeedOptions: SetFeedOptionsPayload
   deleteFeed: DeleteFeedPayload
   cancelTweet: CancelTweetPayload
   uncancelTweet: UncancelTweetPayload
@@ -93,6 +94,10 @@ export type MutationAddFeedArgs = {
 
 export type MutationRefreshFeedArgs = {
   input: RefreshFeedInput
+}
+
+export type MutationSetFeedOptionsArgs = {
+  input: SetFeedOptionsInput
 }
 
 export type MutationDeleteFeedArgs = {
@@ -190,6 +195,15 @@ export type RefreshFeedInput = {
 
 export type RefreshFeedPayload = {
   feed: Feed
+}
+
+export type SetFeedOptionsInput = {
+  id: Scalars["ID"]
+  autopost?: Maybe<Scalars["Boolean"]>
+}
+
+export type SetFeedOptionsPayload = {
+  feed: SubscribedFeed
 }
 
 export type SubscribedFeed = {
@@ -368,6 +382,10 @@ export type ResolversTypes = {
   RefreshFeedPayload: Omit<RefreshFeedPayload, "feed"> & {
     feed: ResolversTypes["Feed"]
   }
+  SetFeedOptionsInput: SetFeedOptionsInput
+  SetFeedOptionsPayload: Omit<SetFeedOptionsPayload, "feed"> & {
+    feed: ResolversTypes["SubscribedFeed"]
+  }
   DeleteFeedInput: DeleteFeedInput
   DeleteFeedPayload: DeleteFeedPayload
   CancelTweetInput: CancelTweetInput
@@ -484,6 +502,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     MutationRefreshFeedArgs
+  >
+  setFeedOptions?: Resolver<
+    ResolversTypes["SetFeedOptionsPayload"],
+    ParentType,
+    ContextType,
+    MutationSetFeedOptionsArgs
   >
   deleteFeed?: Resolver<
     ResolversTypes["DeleteFeedPayload"],
@@ -613,6 +637,13 @@ export type RefreshFeedPayloadResolvers<
   feed?: Resolver<ResolversTypes["Feed"], ParentType, ContextType>
 }
 
+export type SetFeedOptionsPayloadResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["SetFeedOptionsPayload"]
+> = {
+  feed?: Resolver<ResolversTypes["SubscribedFeed"], ParentType, ContextType>
+}
+
 export type SubscribedFeedResolvers<
   ContextType = CourierContext,
   ParentType = ResolversTypes["SubscribedFeed"]
@@ -722,6 +753,7 @@ export type Resolvers<ContextType = CourierContext> = {
   PostTweetPayload?: PostTweetPayloadResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
   RefreshFeedPayload?: RefreshFeedPayloadResolvers<ContextType>
+  SetFeedOptionsPayload?: SetFeedOptionsPayloadResolvers<ContextType>
   SubscribedFeed?: SubscribedFeedResolvers<ContextType>
   SubscribedFeedConnection?: SubscribedFeedConnectionResolvers<ContextType>
   SubscribedFeedEdge?: SubscribedFeedEdgeResolvers<ContextType>
