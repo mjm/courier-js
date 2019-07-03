@@ -1,13 +1,14 @@
 import { ContextFunction } from "apollo-server-core"
 import { getToken, verify } from "./auth"
 import { UserToken, UserId } from "./data/types"
-import { createLoaders } from "./loaders"
 import FeedRepository, { FeedLoader } from "./repositories/feed_repository"
 import db from "./db"
 import FeedSubscriptionRepository, {
   SubscribedFeedLoader,
 } from "./repositories/feed_subscription_repository"
 import FeedService from "./services/feed_service"
+import PostRepository, { PostLoader } from "./repositories/post_repository"
+import PostService from "./services/post_service"
 
 export interface CourierContext {
   token: string | null
@@ -15,8 +16,10 @@ export interface CourierContext {
   loaders: {
     feeds: FeedLoader
     subscribedFeeds: SubscribedFeedLoader
+    posts: PostLoader
   }
   feeds: FeedService
+  posts: PostService
 }
 
 const context: ContextFunction<any, CourierContext> = async ({ req }) => {
@@ -34,9 +37,11 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
 
   const feedRepo = new FeedRepository(db)
   const feedSubscriptionRepo = new FeedSubscriptionRepository(db)
+  const postRepo = new PostRepository(db)
 
   const feedLoader = feedRepo.createLoader()
   const subscribedFeedLoader = feedSubscriptionRepo.createLoader(userId)
+  const postLoader = postRepo.createLoader()
 
   const feeds = new FeedService(
     userId,
@@ -46,6 +51,8 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
     subscribedFeedLoader
   )
 
+  const posts = new PostService(postRepo)
+
   return {
     token,
     async getUser() {
@@ -54,9 +61,10 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
     loaders: {
       feeds: feedLoader,
       subscribedFeeds: subscribedFeedLoader,
-      ...createLoaders(),
+      posts: postLoader,
     },
     feeds,
+    posts,
   }
 }
 

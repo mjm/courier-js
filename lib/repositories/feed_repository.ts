@@ -1,9 +1,9 @@
 import { sql, DatabasePoolType } from "../db"
-import { FeedId, Feed } from "../data/types"
 import * as table from "../data/dbTypes"
 import { getByIds } from "../data/util"
-import { normalizeURL } from "scrape-feed"
 import DataLoader from "dataloader"
+import { FeedId, Feed } from "../data/types"
+import { normalizeURL } from "scrape-feed"
 
 export type FeedLoader = DataLoader<FeedId, Feed | null>
 

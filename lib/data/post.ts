@@ -5,47 +5,12 @@ import {
   FeedId,
   PostImportResult,
   UpdatePostInput,
-  PagingOptions,
-  PostId,
 } from "./types"
 import { ScrapedEntry } from "scrape-feed"
 import countBy from "lodash/countBy"
-import { Pager } from "./pager"
-import moment from "moment"
 import { importTweets } from "./tweet"
 import { getFeedSubscriptions } from "./feed"
-import { getByIds } from "./util"
 import * as table from "./dbTypes"
-
-export function allPostsForFeed(
-  feedId: FeedId,
-  options: PagingOptions = {}
-): Pager<Post, table.posts> {
-  return new Pager({
-    query: sql`SELECT * FROM posts WHERE feed_id = ${feedId}`,
-    orderColumn: "published_at",
-    totalQuery: sql`SELECT COUNT(*) FROM posts WHERE feed_id = ${feedId}`,
-    variables: options,
-    makeEdge(row) {
-      return {
-        node: fromRow(row),
-        // TODO oh no what if the published_at is NULL
-        cursor: row.published_at ? moment.utc(row.published_at).format() : "",
-      }
-    },
-    getCursorValue(cursor) {
-      return cursor || null
-    },
-  })
-}
-
-export async function getPostsById(ids: PostId[]): Promise<(Post | null)[]> {
-  return await getByIds({
-    query: cond => sql`SELECT * FROM posts WHERE ${cond}`,
-    ids,
-    fromRow,
-  })
-}
 
 export async function getRecentPosts(feedId: FeedId): Promise<Post[]> {
   const rows = await db.any(sql<table.posts>`

@@ -93,7 +93,6 @@ export interface NewPostInput {
 }
 
 export interface UpdatePostInput {
-  id: PostId
   url: string
   title: string
   textContent: string

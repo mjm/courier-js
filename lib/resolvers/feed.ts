@@ -1,9 +1,8 @@
 import { FeedResolvers, SubscribedFeedResolvers } from "../generated/graphql"
-import { allPostsForFeed } from "../data/post"
 
 export const Feed: FeedResolvers = {
-  posts(feed, args) {
-    return allPostsForFeed(feed.id, args)
+  posts(feed, args, { posts }) {
+    return posts.pagedByFeed(feed.id, args)
   },
 }
 
