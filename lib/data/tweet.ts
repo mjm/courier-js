@@ -1,6 +1,5 @@
 import {
   UserId,
-  PagingOptions,
   Tweet,
   ImportTweetsInput,
   FeedSubscriptionId,
@@ -9,69 +8,13 @@ import {
   UpdateTweetInput,
   TweetId,
 } from "./types"
-import { Pager } from "./pager"
-import moment from "moment"
 import { translate } from "html-to-tweets"
 import db, { sql } from "../db"
 import zip from "lodash/zip"
-import { ValueExpressionType, NamedAssignmentType } from "slonik"
-import { UserInputError } from "apollo-server-core"
+import { NamedAssignmentType } from "slonik"
 import { postToTwitter } from "../twitter"
 import * as table from "./dbTypes"
 import { getFeedSubscription } from "./feed"
-
-type TweetRow = table.tweets & Pick<table.posts, "published_at">
-
-type AllTweetsOptions = PagingOptions & {
-  filter?: "UPCOMING" | "PAST" | null
-}
-
-export function allTweets(
-  userId: UserId,
-  { filter, ...variables }: AllTweetsOptions = {}
-): Pager<Tweet, TweetRow> {
-  let filterCondition: ValueExpressionType = sql.raw("")
-  if (filter) {
-    const expr = sql.comparisonPredicate(
-      sql.identifier(["tweets", "status"]),
-      filter === "UPCOMING" ? "=" : "<>",
-      "draft"
-    )
-    filterCondition = sql`AND ${expr}`
-  }
-
-  return new Pager({
-    query: sql`
-      SELECT tweets.*,
-             posts.published_at
-        FROM tweets
-        JOIN posts
-          ON tweets.post_id = posts.id
-        JOIN feed_subscriptions
-          ON tweets.feed_subscription_id = feed_subscriptions.id
-       WHERE feed_subscriptions.user_id = ${userId}
-         ${filterCondition}`,
-    orderColumn: "published_at",
-    totalQuery: sql`
-      SELECT COUNT(*)
-        FROM tweets
-        JOIN feed_subscriptions
-          ON tweets.feed_subscription_id = feed_subscriptions.id
-       WHERE feed_subscriptions.user_id = ${userId}
-         ${filterCondition}`,
-    variables,
-    makeEdge(row) {
-      return {
-        // TODO what about NULL published_at
-        cursor: row.published_at ? moment.utc(row.published_at).format() : "",
-        node: fromRow(row),
-      }
-    },
-    getCursorValue(cursor) {
-      return cursor || null
-    },
-  })
-}
 
 export async function getTweetsToPost() {
   const rows = await db.any(sql<table.tweets>`
@@ -139,61 +82,6 @@ export async function importTweets({
   return results
 }
 
-export async function cancelTweet(userId: UserId, id: TweetId): Promise<Tweet> {
-  // this will ensure that we only do this for tweets that belong to the user
-  const existingTweet = await getTweet(userId, id)
-
-  const row = await db.maybeOne(sql<table.tweets>`
-    UPDATE tweets
-       SET status = 'canceled',
-           updated_at = CURRENT_TIMESTAMP
-     WHERE id = ${existingTweet.id}
-       AND status <> 'posted'
- RETURNING *
-  `)
-
-  if (!row) {
-    throw new UserInputError("An already posted tweet cannot be canceled.")
-  }
-
-  return fromRow(row)
-}
-
-export async function uncancelTweet(
-  userId: UserId,
-  id: TweetId
-): Promise<Tweet> {
-  // this will ensure that we only do this for tweets that belong to the user
-  const existingTweet = await getTweet(userId, id)
-
-  const row = await db.maybeOne(sql<table.tweets>`
-    UPDATE tweets
-       SET status = 'draft',
-           updated_at = CURRENT_TIMESTAMP
-     WHERE id = ${existingTweet.id}
-       AND status = 'canceled'
- RETURNING *
-  `)
-
-  if (!row) {
-    throw new UserInputError(
-      `A ${existingTweet.status} tweet cannot be uncanceled.`
-    )
-  }
-
-  return fromRow(row)
-}
-
-export async function postTweet(userId: UserId, id: TweetId): Promise<Tweet> {
-  // this will ensure that we only do this for tweets that belong to the user
-  const existingTweet = await getTweet(userId, id)
-  if (existingTweet.status === "posted") {
-    throw new UserInputError("A posted tweet cannot be posted again.")
-  }
-
-  return await doPostTweet(userId, existingTweet)
-}
-
 export async function postQueuedTweet(tweet: Tweet): Promise<void> {
   // look up the user ID since we won't know it ahead of time
   const userId = await db.oneFirst(sql<
@@ -232,18 +120,6 @@ async function doPostTweet(userId: UserId, tweet: Tweet): Promise<Tweet> {
   }
 
   return fromRow(row)
-}
-
-export async function editTweet(
-  userId: UserId,
-  input: UpdateTweetInput
-): Promise<Tweet> {
-  const existingTweet = await getTweet(userId, input.id)
-  if (existingTweet.status !== "draft") {
-    throw new UserInputError("Only a draft tweet can be edited.")
-  }
-
-  return (await updateTweet(input)) || existingTweet
 }
 
 async function getTweetsForPost(

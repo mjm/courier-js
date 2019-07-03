@@ -9,6 +9,8 @@ import FeedSubscriptionRepository, {
 import FeedService from "./services/feed_service"
 import PostRepository, { PostLoader } from "./repositories/post_repository"
 import PostService from "./services/post_service"
+import TweetRepository from "./repositories/tweet_repository"
+import TweetService from "./services/tweet_service"
 
 export interface CourierContext {
   token: string | null
@@ -20,6 +22,7 @@ export interface CourierContext {
   }
   feeds: FeedService
   posts: PostService
+  tweets: TweetService
 }
 
 const context: ContextFunction<any, CourierContext> = async ({ req }) => {
@@ -38,10 +41,12 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
   const feedRepo = new FeedRepository(db)
   const feedSubscriptionRepo = new FeedSubscriptionRepository(db)
   const postRepo = new PostRepository(db)
+  const tweetRepo = new TweetRepository(db)
 
   const feedLoader = feedRepo.createLoader()
   const subscribedFeedLoader = feedSubscriptionRepo.createLoader(userId)
   const postLoader = postRepo.createLoader()
+  const tweetLoader = tweetRepo.createLoader(userId)
 
   const feeds = new FeedService(
     userId,
@@ -52,6 +57,8 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
   )
 
   const posts = new PostService(postRepo)
+
+  const tweets = new TweetService(userId, tweetRepo, tweetLoader)
 
   return {
     token,
@@ -65,6 +72,7 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
     },
     feeds,
     posts,
+    tweets,
   }
 }
 

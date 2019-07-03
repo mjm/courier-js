@@ -59,12 +59,12 @@ class FeedSubscriptionRepository {
           SELECT *
             FROM feed_subscriptions
            WHERE user_id = ${userId}
-             AND ${cond}
+             AND ${cond("feed_subscriptions")}
         `
             : sql`
           SELECT *
             FROM feed_subscriptions
-           WHERE ${cond}
+           WHERE ${cond("feed_subscriptions")}
         `,
         ids,
         fromRow: FeedSubscriptionRepository.fromRow,

@@ -134,10 +134,10 @@ export interface NewTweetInput {
   body: string
   mediaURLs: string[]
   position: number
+  autopost: boolean
 }
 
 export interface UpdateTweetInput {
-  id: TweetId
   body: string
   mediaURLs?: string[] | null
 }

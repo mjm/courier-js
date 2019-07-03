@@ -44,7 +44,7 @@ class PostRepository {
     return new DataLoader(async ids => {
       return await getByIds({
         db: this.db,
-        query: cond => sql`SELECT * FROM posts WHERE ${cond}`,
+        query: cond => sql`SELECT * FROM posts WHERE ${cond("posts")}`,
         ids,
         fromRow: PostRepository.fromRow,
       })

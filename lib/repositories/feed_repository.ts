@@ -14,7 +14,7 @@ class FeedRepository {
     return new DataLoader(async ids => {
       return await getByIds({
         db: this.db,
-        query: cond => sql`SELECT * FROM feeds WHERE ${cond}`,
+        query: cond => sql`SELECT * FROM feeds WHERE ${cond("feeds")}`,
         ids,
         fromRow: FeedRepository.fromRow,
       })

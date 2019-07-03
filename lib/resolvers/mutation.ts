@@ -1,5 +1,4 @@
 import { MutationResolvers } from "../generated/graphql"
-import { cancelTweet, uncancelTweet, postTweet, editTweet } from "../data/tweet"
 
 export const Mutation: MutationResolvers = {
   async addFeed(_, { input }, { feeds }) {
@@ -21,33 +20,25 @@ export const Mutation: MutationResolvers = {
     return { id: input.id }
   },
 
-  async cancelTweet(_, { input }, { getUser }) {
-    const { sub } = await getUser()
-    return { tweet: await cancelTweet(sub, input.id) }
+  async cancelTweet(_, { input }, { tweets }) {
+    return { tweet: await tweets.cancel(input.id) }
   },
 
-  async uncancelTweet(_, { input }, { getUser }) {
-    const { sub } = await getUser()
-    return { tweet: await uncancelTweet(sub, input.id) }
+  async uncancelTweet(_, { input }, { tweets }) {
+    return { tweet: await tweets.uncancel(input.id) }
   },
 
-  async postTweet(_, { input }, { getUser }) {
-    const { sub } = await getUser()
-
+  async postTweet(_, { input }, { tweets }) {
     const { id, body, mediaURLs } = input
     if (body) {
-      await editTweet(sub, {
-        id,
-        body,
-        mediaURLs: mediaURLs || undefined,
-      })
+      await tweets.update(id, { body, mediaURLs: mediaURLs || undefined })
     }
 
-    return { tweet: await postTweet(sub, input.id) }
+    return { tweet: await tweets.post(input.id) }
   },
 
-  async editTweet(_, { input }, { getUser }) {
-    const { sub } = await getUser()
-    return { tweet: await editTweet(sub, input) }
+  async editTweet(_, { input }, { tweets }) {
+    const { id, ...changes } = input
+    return { tweet: await tweets.update(id, changes) }
   },
 }
