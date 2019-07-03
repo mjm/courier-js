@@ -1,12 +1,8 @@
-import { feedLoader, subscribedFeedLoader } from "./feed"
 import { postLoader } from "./post"
-import { UserId } from "../data/types"
 
-export function createLoaders(userId: UserId | null) {
+export function createLoaders() {
   return {
-    feeds: feedLoader(),
     posts: postLoader(),
-    subscribedFeeds: subscribedFeedLoader(userId),
   }
 }
 

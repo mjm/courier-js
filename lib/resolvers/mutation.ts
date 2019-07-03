@@ -1,31 +1,23 @@
 import { MutationResolvers } from "../generated/graphql"
-import {
-  addFeed,
-  refreshFeed,
-  deleteFeed,
-  updateFeedOptions,
-} from "../data/feed"
 import { cancelTweet, uncancelTweet, postTweet, editTweet } from "../data/tweet"
 
 export const Mutation: MutationResolvers = {
-  async addFeed(_, { input }, { getUser }) {
-    const { sub } = await getUser()
-    return { feed: await addFeed({ ...input, userId: sub }) }
+  async addFeed(_, { input }, { feeds }) {
+    return { feed: await feeds.subscribe(input.url) }
   },
 
-  async refreshFeed(_, { input }, { getUser }) {
+  async refreshFeed(_, { input }, { getUser, feeds }) {
     await getUser()
-    return { feed: await refreshFeed(input.id) }
+    return { feed: await feeds.refresh(input.id) }
   },
 
-  async setFeedOptions(_, { input }, { getUser }) {
-    const { sub } = await getUser()
-    return { feed: await updateFeedOptions(sub, input) }
+  async setFeedOptions(_, { input }, { feeds }) {
+    const { id, ...options } = input
+    return { feed: await feeds.updateOptions(id, options) }
   },
 
-  async deleteFeed(_, { input }, { getUser }) {
-    const { sub } = await getUser()
-    await deleteFeed(sub, input.id)
+  async deleteFeed(_, { input }, { feeds }) {
+    await feeds.unsubscribe(input.id)
     return { id: input.id }
   },
 

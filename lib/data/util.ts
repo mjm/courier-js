@@ -1,11 +1,13 @@
-import db, {
+import defaultDB, {
   SqlTokenType,
   TaggedTemplateLiteralInvocationType,
   sql,
 } from "../db"
 import keyBy from "lodash/keyBy"
+import { DatabasePoolType } from "slonik"
 
 interface GetByIdOptions<ResultType, RowType, IdType = string> {
+  db?: DatabasePoolType
   query: (
     condition: SqlTokenType
   ) => TaggedTemplateLiteralInvocationType<RowType>
@@ -14,6 +16,7 @@ interface GetByIdOptions<ResultType, RowType, IdType = string> {
 }
 
 export async function getByIds<ResultType, RowType>({
+  db = defaultDB,
   query,
   ids,
   fromRow,

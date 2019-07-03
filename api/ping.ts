@@ -1,18 +1,29 @@
 import micro from "../lib/micro"
 import { xmlrpc, XMLRPCRequestHandler } from "../lib/xmlrpc"
-import { getFeedsByHomePageURL, refreshFeed } from "../lib/data/feed"
+import db from "../lib/db"
+import FeedRepository from "../lib/repositories/feed_repository"
+import FeedSubscriptionRepository from "../lib/repositories/feed_subscription_repository"
+import FeedService from "../lib/services/feed_service"
+
+const feedRepo = new FeedRepository(db)
+const feedSubscriptionRepo = new FeedSubscriptionRepository(db)
+const feedLoader = feedRepo.createLoader()
+const subscribedFeedLoader = feedSubscriptionRepo.createLoader()
+
+const feedService = new FeedService(
+  null,
+  feedRepo,
+  feedSubscriptionRepo,
+  feedLoader,
+  subscribedFeedLoader
+)
 
 const handler: XMLRPCRequestHandler = async ({ methodName, params }) => {
   if (methodName === "weblogUpdates.ping") {
     const [title, homePageURL] = params
     console.log(`Received ping for [${title}](${homePageURL})`)
 
-    const feeds = await getFeedsByHomePageURL(homePageURL)
-    await Promise.all(
-      feeds.map(async feed => {
-        await refreshFeed(feed.id)
-      })
-    )
+    await feedService.refreshAllByHomePageURL(homePageURL)
 
     return {
       flerror: false,
