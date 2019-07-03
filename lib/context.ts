@@ -11,6 +11,7 @@ import PostRepository, { PostLoader } from "./repositories/post_repository"
 import PostService from "./services/post_service"
 import TweetRepository from "./repositories/tweet_repository"
 import TweetService from "./services/tweet_service"
+import ImportService from "./services/import_service"
 
 export interface CourierContext {
   token: string | null
@@ -48,12 +49,22 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
   const postLoader = postRepo.createLoader()
   const tweetLoader = tweetRepo.createLoader(userId)
 
+  const importService = new ImportService(
+    feedSubscriptionRepo,
+    postRepo,
+    tweetRepo,
+    subscribedFeedLoader,
+    postLoader,
+    tweetLoader
+  )
+
   const feeds = new FeedService(
     userId,
     feedRepo,
     feedSubscriptionRepo,
     feedLoader,
-    subscribedFeedLoader
+    subscribedFeedLoader,
+    importService
   )
 
   const posts = new PostService(postRepo)

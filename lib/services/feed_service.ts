@@ -14,6 +14,7 @@ import { Pager } from "../data/pager"
 import { AuthenticationError } from "apollo-server-core"
 import { scrapeFeed } from "scrape-feed"
 import { locateFeed } from "feed-locator"
+import ImportService from "./import_service"
 
 class FeedService {
   constructor(
@@ -21,7 +22,8 @@ class FeedService {
     private feeds: FeedRepository,
     private feedSubscriptions: FeedSubscriptionRepository,
     private feedLoader: FeedLoader,
-    private subscribedFeedLoader: SubscribedFeedLoader
+    private subscribedFeedLoader: SubscribedFeedLoader,
+    private importService: ImportService
   ) {}
 
   paged(options: PagingOptions = {}): Pager<SubscribedFeed, any> {
@@ -59,14 +61,14 @@ class FeedService {
 
     this.feedLoader.clear(id).prime(id, updatedFeed)
 
-    // TODO figure out where this logic goes
-    //const { created, updated, unchanged } = await importPosts(
-    //  id,
-    //  feedContents.entries
-    //)
-    //console.log(
-    //  `Imported posts. Created: ${created}. Updated: ${updated}. Unchanged: ${unchanged}`
-    //)
+    const {
+      created,
+      updated,
+      unchanged,
+    } = await this.importService.importPosts(id, feedContents.entries)
+    console.log(
+      `Imported posts. Created: ${created}. Updated: ${updated}. Unchanged: ${unchanged}`
+    )
 
     return updatedFeed
   }
@@ -91,8 +93,10 @@ class FeedService {
 
     this.subscribedFeedLoader.prime(subscribedFeed.id, subscribedFeed)
 
-    // TODO figure out where this logic lives
-    //await importRecentPosts(subscribedFeed)
+    // create tweets for recent posts in the feed.
+    // the posts should already exist, but since tweets are per-subscription, we need
+    // to create those when we subscribe
+    await this.importService.importRecentPosts(subscribedFeed.id)
 
     return subscribedFeed
   }

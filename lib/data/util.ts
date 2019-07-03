@@ -27,3 +27,14 @@ export async function getByIds<ResultType, RowType>({
   const byId = keyBy(rows.map(fromRow), "id")
   return ids.map(id => byId[id] || null)
 }
+
+export function isSameDate(d1: Date | null, d2: Date | null): boolean {
+  if (!d1) {
+    return !d2
+  }
+  if (!d2) {
+    return false
+  }
+
+  return d1.getTime() === d2.getTime()
+}
