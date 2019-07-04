@@ -15,6 +15,8 @@ class UserService {
   private authClient: AuthenticationClient
   private managementClient: ManagementClient
 
+  private verifyPromise: Promise<UserToken>
+
   constructor(
     private token: string | null,
     authDomain: string,
@@ -44,25 +46,24 @@ class UserService {
       clientSecret: backendClientSecret,
       scope: "read:users read:user_idp_tokens",
     })
+
+    // Hang on to the promise of doing this verification once
+    this.verifyPromise = this.doVerify()
   }
 
   async verify(): Promise<UserToken> {
-    const token = this.token
-    if (!token) {
-      throw new AuthenticationError(
-        "No token was provided in Authorization header"
-      )
-    }
+    return await this.verifyPromise
+  }
 
-    return new Promise((resolve, reject) => {
-      jwt.verify(token, this.getKey, this.jwtOptions, (err, decoded) => {
-        if (err) {
-          reject(new AuthenticationError(err.message))
-        } else {
-          resolve(decoded as UserToken)
-        }
-      })
-    })
+  async getUserId(): Promise<string | null> {
+    try {
+      const { sub } = await this.verify()
+      return sub
+    } catch (e) {
+      // let this fail silently here
+      // if resolvers need there to be a valid user, they will bubble the error
+      return null
+    }
   }
 
   async getUserInfo(): Promise<UserInfo> {
@@ -89,6 +90,25 @@ class UserService {
       // @ts-ignore
       access_token_secret: twitterIdentity.access_token_secret,
     }
+  }
+
+  private async doVerify(): Promise<UserToken> {
+    const token = this.token
+    if (!token) {
+      throw new AuthenticationError(
+        "No token was provided in Authorization header"
+      )
+    }
+
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, this.getKey, this.jwtOptions, (err, decoded) => {
+        if (err) {
+          reject(new AuthenticationError(err.message))
+        } else {
+          resolve(decoded as UserToken)
+        }
+      })
+    })
   }
 
   private getKey: jwt.GetPublicKeyOrSecret = (header, cb) => {

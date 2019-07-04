@@ -1,5 +1,4 @@
 import { ContextFunction } from "apollo-server-core"
-import { UserToken, UserId } from "./data/types"
 import FeedRepository, { FeedLoader } from "./repositories/feed_repository"
 import db from "./db"
 import FeedSubscriptionRepository, {
@@ -17,7 +16,6 @@ import TwitterService from "./services/twitter_service"
 
 export interface CourierContext {
   token: string | null
-  getUser: () => Promise<UserToken>
   loaders: {
     feeds: FeedLoader
     subscribedFeeds: SubscribedFeedLoader
@@ -45,16 +43,8 @@ export async function createContext(
     requireEnv("BACKEND_CLIENT_ID"),
     requireEnv("BACKEND_CLIENT_SECRET")
   )
-  const verifyPromise = userService.verify()
 
-  let userId: UserId | null = null
-  try {
-    const { sub } = await verifyPromise
-    userId = sub
-  } catch (e) {
-    // let this fail silently here
-    // if resolvers need there to be a valid user, they will bubble the error
-  }
+  const userId = await userService.getUserId()
 
   const feedRepo = new FeedRepository(db)
   const feedSubscriptionRepo = new FeedSubscriptionRepository(db)
@@ -102,9 +92,6 @@ export async function createContext(
 
   return {
     token,
-    async getUser() {
-      return verifyPromise
-    },
     loaders: {
       feeds: feedLoader,
       subscribedFeeds: subscribedFeedLoader,

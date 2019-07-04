@@ -5,8 +5,8 @@ export const Mutation: MutationResolvers = {
     return { feed: await feeds.subscribe(input.url) }
   },
 
-  async refreshFeed(_, { input }, { getUser, feeds }) {
-    await getUser()
+  async refreshFeed(_, { input }, { user, feeds }) {
+    await user.verify()
     return { feed: await feeds.refresh(input.id) }
   },
 

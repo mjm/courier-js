@@ -9,8 +9,8 @@ export const Query: QueryResolvers = {
     return await feeds.paged(args)
   },
 
-  async subscribedFeed(_parent, { id }, { loaders, getUser }) {
-    await getUser()
+  async subscribedFeed(_parent, { id }, { loaders, user }) {
+    await user.verify()
     return await loaders.subscribedFeeds.load(id)
   },
 
