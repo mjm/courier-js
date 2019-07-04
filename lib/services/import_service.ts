@@ -17,15 +17,18 @@ import FeedSubscriptionRepository, {
 } from "../repositories/feed_subscription_repository"
 import { translate } from "html-to-tweets"
 import TweetRepository, { TweetLoader } from "../repositories/tweet_repository"
+import { inject, injectable } from "inversify"
 
+@injectable()
 class ImportService {
   constructor(
     private feedSubscriptions: FeedSubscriptionRepository,
     private posts: PostRepository,
     private tweets: TweetRepository,
+    @inject("SubscribedFeedLoader")
     private subscribedFeedLoader: SubscribedFeedLoader,
-    private postLoader: PostLoader,
-    private tweetLoader: TweetLoader
+    @inject("PostLoader") private postLoader: PostLoader,
+    @inject("TweetLoader") private tweetLoader: TweetLoader
   ) {}
 
   async importPosts(

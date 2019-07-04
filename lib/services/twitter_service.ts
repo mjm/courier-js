@@ -2,16 +2,15 @@ import { UserId, Tweet } from "../data/types"
 import UserService, { TwitterCredentials } from "./user_service"
 import Twitter from "twitter"
 import fetch from "node-fetch"
+import Environment from "../env"
+import { injectable } from "inversify"
 
 /** A reference to a particular media item in the Twitter API. */
 type MediaId = string
 
+@injectable()
 class TwitterService {
-  constructor(
-    private consumerKey: string,
-    private consumerSecret: string,
-    private userService: UserService
-  ) {}
+  constructor(private env: Environment, private userService: UserService) {}
 
   async tweet(userId: UserId, tweet: Tweet): Promise<string> {
     const token = await this.userService.getTwitterCredentials(userId)
@@ -31,8 +30,8 @@ class TwitterService {
 
   private createClient(token: TwitterCredentials): Twitter {
     return new Twitter({
-      consumer_key: this.consumerKey,
-      consumer_secret: this.consumerSecret,
+      consumer_key: this.env.twitterConsumerKey,
+      consumer_secret: this.env.twitterConsumerSecret,
       access_token_key: token.access_token,
       access_token_secret: token.access_token_secret,
     })

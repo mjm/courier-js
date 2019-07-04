@@ -10,6 +10,7 @@ import {
 } from "../data/types"
 import { Pager } from "../data/pager"
 import DataLoader from "dataloader"
+import { injectable, inject } from "inversify"
 
 type FeedSubscriptionRow = table.feed_subscriptions & Pick<table.feeds, "url">
 type NullPartial<T> = { [P in keyof T]?: T[P] | null }
@@ -19,8 +20,9 @@ export type SubscribedFeedLoader = DataLoader<
   SubscribedFeed | null
 >
 
+@injectable()
 class FeedSubscriptionRepository {
-  constructor(private db: DatabasePoolType) {}
+  constructor(@inject("db") private db: DatabasePoolType) {}
 
   paged(
     userId: UserId,
@@ -50,8 +52,9 @@ class FeedSubscriptionRepository {
     })
   }
 
-  createLoader(userId: UserId | null): SubscribedFeedLoader {
+  createLoader(getUserId: () => Promise<UserId | null>): SubscribedFeedLoader {
     return new DataLoader(async ids => {
+      const userId = await getUserId()
       return await getByIds({
         db: this.db,
         query: cond =>

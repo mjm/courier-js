@@ -12,11 +12,13 @@ import {
 } from "../data/types"
 import { Pager } from "../data/pager"
 import moment from "moment"
+import { injectable, inject } from "inversify"
 
 export type PostLoader = DataLoader<PostId, Post | null>
 
+@injectable()
 class PostRepository {
-  constructor(private db: DatabasePoolType) {}
+  constructor(@inject("db") private db: DatabasePoolType) {}
 
   pagedByFeed(
     feedId: FeedId,

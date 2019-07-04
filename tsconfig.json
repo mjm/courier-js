@@ -4,6 +4,8 @@
     "paths": { "*": ["types/*"] },
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "jsx": "preserve",
     "lib": ["dom", "es2017"],
     "module": "esnext",
@@ -17,6 +19,6 @@
     "sourceMap": true,
     "strict": true,
     "target": "esnext",
-    "types": ["node", "@emotion/core"]
+    "types": ["node", "@emotion/core", "reflect-metadata"]
   }
 }

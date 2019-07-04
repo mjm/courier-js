@@ -1,3 +1,4 @@
+import "reflect-metadata"
 import FeedRepository, { FeedLoader } from "./repositories/feed_repository"
 import defaultDb, { DatabasePoolType } from "./db"
 import FeedSubscriptionRepository, {
@@ -8,12 +9,39 @@ import PostRepository, { PostLoader } from "./repositories/post_repository"
 import PostService from "./services/post_service"
 import TweetRepository, { TweetLoader } from "./repositories/tweet_repository"
 import TweetService from "./services/tweet_service"
-import ImportService from "./services/import_service"
 import { IncomingHttpHeaders, IncomingMessage } from "http"
 import UserService from "./services/user_service"
-import TwitterService from "./services/twitter_service"
-import { UserId } from "./data/types"
+import { Container, injectable, inject } from "inversify"
 
+const container = new Container({
+  autoBindInjectable: true,
+  defaultScope: "Request",
+})
+container.bind<string | null>("token").toConstantValue(null)
+container.bind<DatabasePoolType>("db").toConstantValue(defaultDb)
+
+container.bind<FeedLoader>("FeedLoader").toDynamicValue(context => {
+  const feeds = context.container.get(FeedRepository)
+  return feeds.createLoader()
+})
+container
+  .bind<SubscribedFeedLoader>("SubscribedFeedLoader")
+  .toDynamicValue(context => {
+    const feedSubscriptions = context.container.get(FeedSubscriptionRepository)
+    const user = context.container.get(UserService)
+    return feedSubscriptions.createLoader(() => user.getUserId())
+  })
+container.bind<PostLoader>("PostLoader").toDynamicValue(context => {
+  const posts = context.container.get(PostRepository)
+  return posts.createLoader()
+})
+container.bind<TweetLoader>("TweetLoader").toDynamicValue(context => {
+  const tweets = context.container.get(TweetRepository)
+  const user = context.container.get(UserService)
+  return tweets.createLoader(() => user.getUserId())
+})
+
+@injectable()
 export class CourierContext {
   loaders: {
     feeds: FeedLoader
@@ -28,79 +56,37 @@ export class CourierContext {
   tweets: TweetService
 
   static async createForRequest(req: IncomingMessage): Promise<CourierContext> {
-    const userService = this.createUserService(getToken(req.headers))
-    const userId = await userService.getUserId()
-    return new CourierContext(userService, userId)
+    const child = container.createChild()
+    child.bind<string | null>("token").toConstantValue(getToken(req.headers))
+
+    return child.get(CourierContext)
   }
 
   static create(): CourierContext {
-    const userService = this.createUserService(null)
-    return new CourierContext(userService, null)
+    return container.get(CourierContext)
   }
 
-  private constructor(
+  constructor(
     user: UserService,
-    userId: UserId | null,
-    db: DatabasePoolType = defaultDb
+    feeds: FeedService,
+    posts: PostService,
+    tweets: TweetService,
+    @inject("FeedLoader") feedLoader: FeedLoader,
+    @inject("SubscribedFeedLoader") subscribedFeedLoader: SubscribedFeedLoader,
+    @inject("PostLoader") postLoader: PostLoader,
+    @inject("TweetLoader") tweetLoader: TweetLoader
   ) {
     this.user = user
-
-    const feedRepo = new FeedRepository(db)
-    const feedSubscriptionRepo = new FeedSubscriptionRepository(db)
-    const postRepo = new PostRepository(db)
-    const tweetRepo = new TweetRepository(db)
+    this.feeds = feeds
+    this.posts = posts
+    this.tweets = tweets
 
     this.loaders = {
-      feeds: feedRepo.createLoader(),
-      subscribedFeeds: feedSubscriptionRepo.createLoader(userId),
-      posts: postRepo.createLoader(),
-      tweets: tweetRepo.createLoader(userId),
+      feeds: feedLoader,
+      subscribedFeeds: subscribedFeedLoader,
+      posts: postLoader,
+      tweets: tweetLoader,
     }
-
-    const importService = new ImportService(
-      feedSubscriptionRepo,
-      postRepo,
-      tweetRepo,
-      this.loaders.subscribedFeeds,
-      this.loaders.posts,
-      this.loaders.tweets
-    )
-
-    const twitter = new TwitterService(
-      requireEnv("TWITTER_CONSUMER_KEY"),
-      requireEnv("TWITTER_CONSUMER_SECRET"),
-      this.user
-    )
-
-    this.feeds = new FeedService(
-      feedRepo,
-      feedSubscriptionRepo,
-      this.loaders.feeds,
-      this.loaders.subscribedFeeds,
-      this.user,
-      importService
-    )
-
-    this.posts = new PostService(postRepo)
-
-    this.tweets = new TweetService(
-      tweetRepo,
-      this.loaders.tweets,
-      this.loaders.subscribedFeeds,
-      this.user,
-      twitter
-    )
-  }
-
-  private static createUserService(token: string | null): UserService {
-    return new UserService(
-      token,
-      requireEnv("AUTH_DOMAIN"),
-      requireEnv("API_IDENTIFIER"),
-      requireEnv("CLIENT_ID"),
-      requireEnv("BACKEND_CLIENT_ID"),
-      requireEnv("BACKEND_CLIENT_SECRET")
-    )
   }
 }
 
@@ -115,13 +101,4 @@ function getToken(headers: IncomingHttpHeaders): string | null {
   }
 
   return authz.substring(7)
-}
-
-function requireEnv(key: string): string {
-  const value = process.env[key]
-  if (!value) {
-    throw new Error(`No ${key} set in environment`)
-  }
-
-  return value
 }

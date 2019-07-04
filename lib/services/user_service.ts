@@ -3,12 +3,15 @@ import * as jwt from "jsonwebtoken"
 import { AuthenticationClient, ManagementClient } from "auth0"
 import { AuthenticationError } from "apollo-server-core"
 import { UserInfo, UserId, UserToken } from "../data/types"
+import Environment from "../env"
+import { injectable, inject } from "inversify"
 
 export interface TwitterCredentials {
   access_token: string
   access_token_secret: string
 }
 
+@injectable()
 class UserService {
   private jwtOptions: jwt.VerifyOptions
   private jwksClient: jwksClient.JwksClient
@@ -17,33 +20,26 @@ class UserService {
 
   private verifyPromise: Promise<UserToken>
 
-  constructor(
-    private token: string | null,
-    authDomain: string,
-    apiIdentifier: string,
-    clientId: string,
-    backendClientId: string,
-    backendClientSecret: string
-  ) {
+  constructor(@inject("token") private token: string | null, env: Environment) {
     this.jwtOptions = {
-      audience: apiIdentifier,
-      issuer: `https://${authDomain}/`,
+      audience: env.apiIdentifier,
+      issuer: `https://${env.authDomain}/`,
       algorithms: ["RS256"],
     }
 
     this.jwksClient = jwksClient({
-      jwksUri: `https://${authDomain}/.well-known/jwks.json`,
+      jwksUri: `https://${env.authDomain}/.well-known/jwks.json`,
     })
 
     this.authClient = new AuthenticationClient({
-      clientId,
-      domain: authDomain,
+      clientId: env.clientId,
+      domain: env.authDomain,
     })
 
     this.managementClient = new ManagementClient({
-      domain: authDomain,
-      clientId: backendClientId,
-      clientSecret: backendClientSecret,
+      domain: env.authDomain,
+      clientId: env.backendClientId,
+      clientSecret: env.backendClientSecret,
       scope: "read:users read:user_idp_tokens",
     })
 

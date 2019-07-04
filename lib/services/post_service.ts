@@ -1,7 +1,9 @@
 import PostRepository from "../repositories/post_repository"
 import { FeedId, PagingOptions, Post } from "../data/types"
 import { Pager } from "../data/pager"
+import { injectable } from "inversify"
 
+@injectable()
 class PostService {
   constructor(private posts: PostRepository) {}
 

@@ -14,12 +14,15 @@ import { scrapeFeed, normalizeURL } from "scrape-feed"
 import { locateFeed } from "feed-locator"
 import ImportService from "./import_service"
 import UserService from "./user_service"
+import { injectable, inject } from "inversify"
 
+@injectable()
 class FeedService {
   constructor(
     private feeds: FeedRepository,
     private feedSubscriptions: FeedSubscriptionRepository,
-    private feedLoader: FeedLoader,
+    @inject("FeedLoader") private feedLoader: FeedLoader,
+    @inject("SubscribedFeedLoader")
     private subscribedFeedLoader: SubscribedFeedLoader,
     private user: UserService,
     private importService: ImportService

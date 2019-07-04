@@ -3,11 +3,13 @@ import * as table from "../data/dbTypes"
 import { getByIds } from "../data/util"
 import DataLoader from "dataloader"
 import { FeedId, Feed } from "../data/types"
+import { injectable, inject } from "inversify"
 
 export type FeedLoader = DataLoader<FeedId, Feed | null>
 
+@injectable()
 class FeedRepository {
-  constructor(private db: DatabasePoolType) {}
+  constructor(@inject("db") private db: DatabasePoolType) {}
 
   createLoader(): FeedLoader {
     return new DataLoader(async ids => {

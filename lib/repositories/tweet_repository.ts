@@ -19,6 +19,7 @@ import {
 } from "../data/types"
 import { Pager } from "../data/pager"
 import moment from "moment"
+import { injectable, inject } from "inversify"
 
 type TweetRow = table.tweets & Pick<table.posts, "published_at">
 export type TweetPagingOptions = PagingOptions & {
@@ -27,8 +28,9 @@ export type TweetPagingOptions = PagingOptions & {
 
 export type TweetLoader = DataLoader<TweetId, Tweet | null>
 
+@injectable()
 class TweetRepository {
-  constructor(private db: DatabasePoolType) {}
+  constructor(@inject("db") private db: DatabasePoolType) {}
 
   paged(
     userId: UserId,
@@ -78,8 +80,9 @@ class TweetRepository {
     })
   }
 
-  createLoader(userId: UserId | null): TweetLoader {
+  createLoader(getUserId: () => Promise<UserId | null>): TweetLoader {
     return new DataLoader(async ids => {
+      const userId = await getUserId()
       return await getByIds({
         db: this.db,
         query: cond =>
