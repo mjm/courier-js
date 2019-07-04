@@ -1,12 +1,10 @@
 import micro from "../lib/micro"
 import { xmlrpc, XMLRPCRequestHandler } from "../lib/xmlrpc"
-import { createContext } from "../lib/context"
+import { CourierContext } from "../lib/context"
 
-const context = createContext()
+const { feeds } = CourierContext.create()
 
 const handler: XMLRPCRequestHandler = async ({ methodName, params }) => {
-  const { feeds } = await context
-
   if (methodName === "weblogUpdates.ping") {
     const [title, homePageURL] = params
     console.log(`Received ping for [${title}](${homePageURL})`)

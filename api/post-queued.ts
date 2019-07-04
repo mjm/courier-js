@@ -1,10 +1,9 @@
 import micro, { RequestHandler, send } from "../lib/micro"
-import { createContext } from "../lib/context"
+import { CourierContext } from "../lib/context"
 
-const context = createContext()
+const { tweets } = CourierContext.create()
 
 const handler: RequestHandler = async (_req, res) => {
-  const { tweets } = await context
   const results = await tweets.postQueued()
 
   console.log(results)

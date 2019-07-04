@@ -3,7 +3,7 @@ import micro from "../lib/micro"
 import { readFileSync } from "fs"
 import * as path from "path"
 import resolvers from "../lib/resolvers"
-import context from "../lib/context"
+import { CourierContext } from "../lib/context"
 
 const typeDefs = gql`
   ${readFileSync(path.join(__dirname, "../schema.graphql")).toString("utf8")}
@@ -11,7 +11,10 @@ const typeDefs = gql`
 
 const schema = makeExecutableSchema({ typeDefs, resolvers: resolvers as any })
 
-const server = new ApolloServer({ schema, context })
+const server = new ApolloServer({
+  schema,
+  context: async ({ req }) => CourierContext.createForRequest(req),
+})
 const handler = server.createHandler()
 
 export default micro(handler)
