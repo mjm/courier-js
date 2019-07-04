@@ -45,6 +45,7 @@ class TweetRepository {
     }
 
     return new Pager({
+      db: this.db,
       query: sql`
         SELECT tweets.*,
                posts.published_at

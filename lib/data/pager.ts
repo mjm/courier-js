@@ -1,6 +1,7 @@
-import db, {
+import {
   SqlSqlTokenType,
   sql,
+  DatabasePoolType,
   RawSqlTokenType,
   PrimitiveValueExpressionType,
   ValueExpressionType,
@@ -15,6 +16,7 @@ interface CountResult {
 }
 
 export interface PagerOptions<ResultType, RowType = any> {
+  db: DatabasePoolType
   query: SqlSqlTokenType<RowType>
   orderColumn: string
   totalQuery: SqlSqlTokenType<CountResult>
@@ -24,6 +26,7 @@ export interface PagerOptions<ResultType, RowType = any> {
 }
 
 export class Pager<ResultType, RowType = any> {
+  private db: DatabasePoolType
   private query: SqlSqlTokenType<RowType>
   private orderColumn: string
   private totalQuery: SqlSqlTokenType<CountResult>
@@ -35,6 +38,7 @@ export class Pager<ResultType, RowType = any> {
   private results: Promise<PagerEdge<ResultType>[]>
 
   constructor({
+    db,
     query,
     orderColumn,
     totalQuery,
@@ -59,6 +63,7 @@ export class Pager<ResultType, RowType = any> {
       this.direction = "ASC"
     }
 
+    this.db = db
     this.query = query
     this.orderColumn = orderColumn
     this.totalQuery = totalQuery
@@ -69,7 +74,7 @@ export class Pager<ResultType, RowType = any> {
   }
 
   async totalCount(): Promise<number> {
-    return await db.oneFirst(this.totalQuery)
+    return await this.db.oneFirst(this.totalQuery)
   }
 
   async pageInfo(): Promise<PageInfo> {
@@ -110,7 +115,7 @@ export class Pager<ResultType, RowType = any> {
 
   private async fetchResults(): Promise<PagerEdge<ResultType>[]> {
     const query = this.buildQuery()
-    const rows = await db.any(query)
+    const rows = await this.db.any(query)
 
     return rows.map(this.makeEdge)
   }

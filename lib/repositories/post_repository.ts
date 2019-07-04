@@ -23,6 +23,7 @@ class PostRepository {
     options: PagingOptions = {}
   ): Pager<Post, table.posts> {
     return new Pager({
+      db: this.db,
       query: sql`SELECT * FROM posts WHERE feed_id = ${feedId}`,
       orderColumn: "published_at",
       totalQuery: sql`SELECT COUNT(*) FROM posts WHERE feed_id = ${feedId}`,

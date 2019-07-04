@@ -27,6 +27,7 @@ class FeedSubscriptionRepository {
     options: PagingOptions = {}
   ): Pager<SubscribedFeed, FeedSubscriptionRow> {
     return new Pager({
+      db: this.db,
       query: sql`
         SELECT feed_subscriptions.*,
                feeds.url
