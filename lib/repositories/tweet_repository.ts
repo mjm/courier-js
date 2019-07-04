@@ -85,7 +85,7 @@ class TweetRepository {
         query: cond =>
           userId
             ? sql`
-          SELECT *
+          SELECT tweets.*
             FROM tweets
             JOIN feed_subscriptions
               ON tweets.feed_subscription_id = feed_subscriptions.id
