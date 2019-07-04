@@ -3,7 +3,6 @@ import FeedSubscriptionRepository, {
   SubscribedFeedLoader,
 } from "../repositories/feed_subscription_repository"
 import {
-  UserId,
   SubscribedFeed,
   PagingOptions,
   FeedId,
@@ -11,23 +10,28 @@ import {
   FeedSubscriptionId,
 } from "../data/types"
 import { Pager } from "../data/pager"
-import { AuthenticationError } from "apollo-server-core"
 import { scrapeFeed, normalizeURL } from "scrape-feed"
 import { locateFeed } from "feed-locator"
 import ImportService from "./import_service"
+import UserService from "./user_service"
 
 class FeedService {
   constructor(
-    private userId: UserId | null,
     private feeds: FeedRepository,
     private feedSubscriptions: FeedSubscriptionRepository,
     private feedLoader: FeedLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
+    private user: UserService,
     private importService: ImportService
   ) {}
 
-  paged(options: PagingOptions = {}): Pager<SubscribedFeed, any> {
-    return this.feedSubscriptions.paged(this.assertUserId(), options)
+  async paged(
+    options: PagingOptions = {}
+  ): Promise<Pager<SubscribedFeed, any>> {
+    return this.feedSubscriptions.paged(
+      await this.user.requireUserId(),
+      options
+    )
   }
 
   async refreshAllByHomePageURL(url: string) {
@@ -87,7 +91,7 @@ class FeedService {
     this.feedLoader.prime(feed.id, feed)
 
     const subscribedFeed = await this.feedSubscriptions.create(
-      this.assertUserId(),
+      await this.user.requireUserId(),
       feed.id
     )
 
@@ -102,7 +106,7 @@ class FeedService {
   }
 
   async unsubscribe(id: FeedSubscriptionId): Promise<void> {
-    await this.feedSubscriptions.delete(this.assertUserId(), id)
+    await this.feedSubscriptions.delete(await this.user.requireUserId(), id)
   }
 
   async updateOptions(
@@ -112,7 +116,7 @@ class FeedService {
     }
   ): Promise<SubscribedFeed> {
     const feed = await this.feedSubscriptions.update(
-      this.assertUserId(),
+      await this.user.requireUserId(),
       id,
       options
     )
@@ -120,16 +124,6 @@ class FeedService {
     this.subscribedFeedLoader.clear(feed.id).prime(feed.id, feed)
 
     return feed
-  }
-
-  private assertUserId(): UserId {
-    if (!this.userId) {
-      throw new AuthenticationError(
-        "a user must be logged in to perform this action"
-      )
-    }
-
-    return this.userId
   }
 }
 

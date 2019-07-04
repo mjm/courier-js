@@ -73,21 +73,21 @@ export class CourierContext {
     )
 
     this.feeds = new FeedService(
-      userId,
       feedRepo,
       feedSubscriptionRepo,
       this.loaders.feeds,
       this.loaders.subscribedFeeds,
+      this.user,
       importService
     )
 
     this.posts = new PostService(postRepo)
 
     this.tweets = new TweetService(
-      userId,
       tweetRepo,
       this.loaders.tweets,
       this.loaders.subscribedFeeds,
+      this.user,
       twitter
     )
   }

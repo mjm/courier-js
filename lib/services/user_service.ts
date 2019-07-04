@@ -60,7 +60,7 @@ class UserService {
     return await this.verifyPromise
   }
 
-  async getUserId(): Promise<string | null> {
+  async getUserId(): Promise<UserId | null> {
     try {
       const { sub } = await this.verify()
       return sub
@@ -69,6 +69,11 @@ class UserService {
       // if resolvers need there to be a valid user, they will bubble the error
       return null
     }
+  }
+
+  async requireUserId(): Promise<UserId> {
+    const { sub } = await this.verify()
+    return sub
   }
 
   async getUserInfo(): Promise<UserInfo> {

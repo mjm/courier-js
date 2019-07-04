@@ -3,10 +3,11 @@ import TweetRepository, {
   TweetLoader,
 } from "../repositories/tweet_repository"
 import { UserId, Tweet, TweetId, UpdateTweetInput } from "../data/types"
-import { AuthenticationError, UserInputError } from "apollo-server-core"
+import { UserInputError } from "apollo-server-core"
 import { Pager } from "../data/pager"
 import { SubscribedFeedLoader } from "../repositories/feed_subscription_repository"
 import TwitterService from "./twitter_service"
+import UserService from "./user_service"
 
 export interface PostQueuedResult {
   succeeded: number
@@ -15,15 +16,15 @@ export interface PostQueuedResult {
 
 class TweetService {
   constructor(
-    private userId: UserId | null,
     private tweets: TweetRepository,
     private tweetLoader: TweetLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
+    private user: UserService,
     private twitter: TwitterService
   ) {}
 
-  paged(options: TweetPagingOptions = {}): Pager<Tweet, any> {
-    return this.tweets.paged(this.assertUserId(), options)
+  async paged(options: TweetPagingOptions = {}): Promise<Pager<Tweet, any>> {
+    return this.tweets.paged(await this.user.requireUserId(), options)
   }
 
   async cancel(id: TweetId): Promise<Tweet> {
@@ -83,7 +84,7 @@ class TweetService {
       throw new UserInputError("Only a draft tweet can be posted.")
     }
 
-    return await this.doPost(this.assertUserId(), tweet)
+    return await this.doPost(await this.user.requireUserId(), tweet)
   }
 
   async postQueued(): Promise<PostQueuedResult> {
@@ -121,16 +122,6 @@ class TweetService {
 
     this.tweetLoader.clear(updatedTweet.id).prime(updatedTweet.id, updatedTweet)
     return updatedTweet
-  }
-
-  private assertUserId(): UserId {
-    if (!this.userId) {
-      throw new AuthenticationError(
-        "a user must be logged in to perform this action"
-      )
-    }
-
-    return this.userId
   }
 }
 
