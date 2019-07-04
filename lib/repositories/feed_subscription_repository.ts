@@ -146,7 +146,7 @@ export class SubscribedFeedLoader extends Loader<
          WHERE user_id = ${userId}
            AND ${cond("feed_subscriptions")}
       `
-    } catch {
+    } catch (_e) {
       return sql`
         SELECT *
           FROM feed_subscriptions

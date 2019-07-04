@@ -241,7 +241,7 @@ export class TweetLoader extends Loader<Tweet, table.tweets> {
          WHERE feed_subscriptions.user_id = ${userId}
            AND ${cond("tweets")}
       `
-    } catch {
+    } catch (_e) {
       return sql`
         SELECT *
           FROM tweets
