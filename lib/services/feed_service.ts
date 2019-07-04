@@ -54,23 +54,21 @@ class FeedService {
       return feed
     }
 
-    const { title, homePageURL, cachingHeaders } = feedContents
+    const { title, homePageURL, cachingHeaders, entries } = feedContents
+
+    // Import the posts from the feed first
+    const result = await this.importService.importPosts(id, entries)
+    console.log(result)
+
+    // Only after importing posts should we update feed details. Otherwise, the
+    // caching headers will stop us from getting any missed posts again until the
+    // feed is updated again.
     const updatedFeed = await this.feeds.update(id, {
       title,
       homePageURL,
       cachingHeaders,
     })
-
     this.feedLoader.clear(id).prime(id, updatedFeed)
-
-    const {
-      created,
-      updated,
-      unchanged,
-    } = await this.importService.importPosts(id, feedContents.entries)
-    console.log(
-      `Imported posts. Created: ${created}. Updated: ${updated}. Unchanged: ${unchanged}`
-    )
 
     return updatedFeed
   }
