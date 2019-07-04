@@ -49,6 +49,11 @@ class UserService {
 
     // Hang on to the promise of doing this verification once
     this.verifyPromise = this.doVerify()
+
+    // Catch the error here. Other uses of verify may do something with it,
+    // but if we don't catch it here, it'll be treated as an unhandled rejection
+    // and make everyone sad.
+    this.verifyPromise.catch(() => null)
   }
 
   async verify(): Promise<UserToken> {
