@@ -12,7 +12,7 @@ import {
 } from "../data/types"
 import { Pager } from "../data/pager"
 import { AuthenticationError } from "apollo-server-core"
-import { scrapeFeed } from "scrape-feed"
+import { scrapeFeed, normalizeURL } from "scrape-feed"
 import { locateFeed } from "feed-locator"
 import ImportService from "./import_service"
 
@@ -31,7 +31,9 @@ class FeedService {
   }
 
   async refreshAllByHomePageURL(url: string) {
-    const feeds = await this.feeds.findAllByHomePageURL(url)
+    const homePageURL = normalizeURL(url)
+
+    const feeds = await this.feeds.findAllByHomePageURL(homePageURL)
     await Promise.all(
       feeds.map(async feed => {
         await this.refresh(feed.id)

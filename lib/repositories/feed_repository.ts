@@ -3,7 +3,6 @@ import * as table from "../data/dbTypes"
 import { getByIds } from "../data/util"
 import DataLoader from "dataloader"
 import { FeedId, Feed } from "../data/types"
-import { normalizeURL } from "scrape-feed"
 
 export type FeedLoader = DataLoader<FeedId, Feed | null>
 
@@ -22,10 +21,8 @@ class FeedRepository {
   }
 
   async findAllByHomePageURL(url: string): Promise<Feed[]> {
-    const homePageURL = normalizeURL(url)
-
     const rows = await this.db.any(sql<table.feeds>`
-      SELECT * FROM feeds WHERE home_page_url = ${homePageURL}
+      SELECT * FROM feeds WHERE home_page_url = ${url}
     `)
 
     return rows.map(FeedRepository.fromRow)
