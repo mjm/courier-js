@@ -231,8 +231,8 @@ export class TweetLoader extends Loader<Tweet, table.tweets> {
   }
 
   query: LoaderQueryFn<table.tweets> = async cond => {
-    const userId = await this.getUserId()
-    if (userId) {
+    try {
+      const userId = await this.getUserId()
       return sql`
         SELECT tweets.*
           FROM tweets
@@ -241,7 +241,7 @@ export class TweetLoader extends Loader<Tweet, table.tweets> {
          WHERE feed_subscriptions.user_id = ${userId}
            AND ${cond("tweets")}
       `
-    } else {
+    } catch {
       return sql`
         SELECT *
           FROM tweets

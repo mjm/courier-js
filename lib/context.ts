@@ -19,7 +19,7 @@ container.bind<string | null>("token").toConstantValue(null)
 container.bind<DatabasePoolType>("db").toConstantValue(defaultDb)
 container.bind<UserIdProvider>("userId").toProvider(context => {
   const user = context.container.get(UserService)
-  return () => user.getUserId()
+  return () => user.requireUserId()
 })
 
 @injectable()

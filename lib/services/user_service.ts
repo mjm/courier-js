@@ -6,7 +6,7 @@ import { UserInfo, UserId, UserToken } from "../data/types"
 import Environment from "../env"
 import { injectable, inject } from "inversify"
 
-export type UserIdProvider = () => Promise<UserId | null>
+export type UserIdProvider = () => Promise<UserId>
 
 export interface TwitterCredentials {
   access_token: string

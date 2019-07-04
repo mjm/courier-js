@@ -13,7 +13,7 @@ import { Pager } from "../data/pager"
 import { scrapeFeed, normalizeURL } from "scrape-feed"
 import { locateFeed } from "feed-locator"
 import ImportService from "./import_service"
-import UserService from "./user_service"
+import { UserIdProvider } from "./user_service"
 import { injectable } from "inversify"
 
 @injectable()
@@ -23,17 +23,14 @@ class FeedService {
     private feedSubscriptions: FeedSubscriptionRepository,
     private feedLoader: FeedLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
-    private user: UserService,
+    private getUserId: UserIdProvider,
     private importService: ImportService
   ) {}
 
   async paged(
     options: PagingOptions = {}
   ): Promise<Pager<SubscribedFeed, any>> {
-    return this.feedSubscriptions.paged(
-      await this.user.requireUserId(),
-      options
-    )
+    return this.feedSubscriptions.paged(await this.getUserId(), options)
   }
 
   async refreshAllByHomePageURL(url: string) {
@@ -93,7 +90,7 @@ class FeedService {
     this.feedLoader.prime(feed.id, feed)
 
     const subscribedFeed = await this.feedSubscriptions.create(
-      await this.user.requireUserId(),
+      await this.getUserId(),
       feed.id
     )
 
@@ -108,7 +105,7 @@ class FeedService {
   }
 
   async unsubscribe(id: FeedSubscriptionId): Promise<void> {
-    await this.feedSubscriptions.delete(await this.user.requireUserId(), id)
+    await this.feedSubscriptions.delete(await this.getUserId(), id)
   }
 
   async updateOptions(
@@ -118,7 +115,7 @@ class FeedService {
     }
   ): Promise<SubscribedFeed> {
     const feed = await this.feedSubscriptions.update(
-      await this.user.requireUserId(),
+      await this.getUserId(),
       id,
       options
     )

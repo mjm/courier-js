@@ -138,15 +138,15 @@ export class SubscribedFeedLoader extends Loader<
   }
 
   query: LoaderQueryFn<table.feed_subscriptions> = async cond => {
-    const userId = await this.getUserId()
-    if (userId) {
+    try {
+      const userId = await this.getUserId()
       return sql`
         SELECT *
           FROM feed_subscriptions
          WHERE user_id = ${userId}
            AND ${cond("feed_subscriptions")}
       `
-    } else {
+    } catch {
       return sql`
         SELECT *
           FROM feed_subscriptions

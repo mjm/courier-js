@@ -7,7 +7,7 @@ import { UserInputError } from "apollo-server-core"
 import { Pager } from "../data/pager"
 import { SubscribedFeedLoader } from "../repositories/feed_subscription_repository"
 import TwitterService from "./twitter_service"
-import UserService from "./user_service"
+import { UserIdProvider } from "./user_service"
 import { injectable } from "inversify"
 
 export interface PostQueuedResult {
@@ -21,12 +21,12 @@ class TweetService {
     private tweets: TweetRepository,
     private tweetLoader: TweetLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
-    private user: UserService,
+    private getUserId: UserIdProvider,
     private twitter: TwitterService
   ) {}
 
   async paged(options: TweetPagingOptions = {}): Promise<Pager<Tweet, any>> {
-    return this.tweets.paged(await this.user.requireUserId(), options)
+    return this.tweets.paged(await this.getUserId(), options)
   }
 
   async cancel(id: TweetId): Promise<Tweet> {
@@ -86,7 +86,7 @@ class TweetService {
       throw new UserInputError("Only a draft tweet can be posted.")
     }
 
-    return await this.doPost(await this.user.requireUserId(), tweet)
+    return await this.doPost(await this.getUserId(), tweet)
   }
 
   async postQueued(): Promise<PostQueuedResult> {
