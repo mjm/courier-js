@@ -13,6 +13,7 @@ import TweetService from "./services/tweet_service"
 import ImportService from "./services/import_service"
 import { IncomingHttpHeaders } from "http"
 import UserService from "./services/user_service"
+import TwitterService from "./services/twitter_service"
 
 export interface CourierContext {
   token: string | null
@@ -28,8 +29,14 @@ export interface CourierContext {
   tweets: TweetService
 }
 
-const context: ContextFunction<any, CourierContext> = async ({ req }) => {
-  const token = getToken(req.headers)
+const context: ContextFunction<any, CourierContext> = async ({ req }) =>
+  createContext(getToken(req.headers))
+
+export default context
+
+export async function createContext(
+  token: string | null = null
+): Promise<CourierContext> {
   const userService = new UserService(
     token,
     requireEnv("AUTH_DOMAIN"),
@@ -68,6 +75,12 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
     tweetLoader
   )
 
+  const twitter = new TwitterService(
+    requireEnv("TWITTER_CONSUMER_KEY"),
+    requireEnv("TWITTER_CONSUMER_SECRET"),
+    userService
+  )
+
   const feeds = new FeedService(
     userId,
     feedRepo,
@@ -83,7 +96,8 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
     userId,
     tweetRepo,
     tweetLoader,
-    subscribedFeedLoader
+    subscribedFeedLoader,
+    twitter
   )
 
   return {
@@ -102,8 +116,6 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
     tweets,
   }
 }
-
-export default context
 
 function getToken(headers: IncomingHttpHeaders): string | null {
   const authz = headers.authorization

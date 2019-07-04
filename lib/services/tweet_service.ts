@@ -5,8 +5,8 @@ import TweetRepository, {
 import { UserId, Tweet, TweetId, UpdateTweetInput } from "../data/types"
 import { AuthenticationError, UserInputError } from "apollo-server-core"
 import { Pager } from "../data/pager"
-import { postToTwitter } from "../twitter"
 import { SubscribedFeedLoader } from "../repositories/feed_subscription_repository"
+import TwitterService from "./twitter_service"
 
 export interface PostQueuedResult {
   succeeded: number
@@ -18,7 +18,8 @@ class TweetService {
     private userId: UserId | null,
     private tweets: TweetRepository,
     private tweetLoader: TweetLoader,
-    private subscribedFeedLoader: SubscribedFeedLoader
+    private subscribedFeedLoader: SubscribedFeedLoader,
+    private twitter: TwitterService
   ) {}
 
   paged(options: TweetPagingOptions = {}): Pager<Tweet, any> {
@@ -107,7 +108,7 @@ class TweetService {
   }
 
   private async doPost(userId: UserId, tweet: Tweet): Promise<Tweet> {
-    const postedTweetId = await postToTwitter({ userId, tweet })
+    const postedTweetId = await this.twitter.tweet(userId, tweet)
 
     const updatedTweet = await this.tweets.post(tweet.id, postedTweetId)
     if (!updatedTweet) {
