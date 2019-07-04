@@ -6,12 +6,19 @@ import { UserId, Tweet, TweetId, UpdateTweetInput } from "../data/types"
 import { AuthenticationError, UserInputError } from "apollo-server-core"
 import { Pager } from "../data/pager"
 import { postToTwitter } from "../twitter"
+import { SubscribedFeedLoader } from "../repositories/feed_subscription_repository"
+
+export interface PostQueuedResult {
+  succeeded: number
+  failed: number
+}
 
 class TweetService {
   constructor(
     private userId: UserId | null,
     private tweets: TweetRepository,
-    private tweetLoader: TweetLoader
+    private tweetLoader: TweetLoader,
+    private subscribedFeedLoader: SubscribedFeedLoader
   ) {}
 
   paged(options: TweetPagingOptions = {}): Pager<Tweet, any> {
@@ -75,21 +82,43 @@ class TweetService {
       throw new UserInputError("Only a draft tweet can be posted.")
     }
 
-    const postedTweetId = await postToTwitter({
-      userId: this.assertUserId(),
-      tweet,
-    })
+    return await this.doPost(this.assertUserId(), tweet)
+  }
 
-    const updatedTweet = await this.tweets.post(id, postedTweetId)
+  async postQueued(): Promise<PostQueuedResult> {
+    const tweets = await this.tweets.findAllPostable()
+
+    const results = { succeeded: 0, failed: 0 }
+    for (const tweet of tweets) {
+      try {
+        const feed = (await this.subscribedFeedLoader.load(
+          tweet.feedSubscriptionId
+        ))!
+        await this.doPost(feed.userId, tweet)
+        results.succeeded++
+      } catch (e) {
+        // log the error but don't fail the request, or we'll fail other tweets
+        console.error("Error posting queued tweet:", e)
+        results.failed++
+      }
+    }
+
+    return results
+  }
+
+  private async doPost(userId: UserId, tweet: Tweet): Promise<Tweet> {
+    const postedTweetId = await postToTwitter({ userId, tweet })
+
+    const updatedTweet = await this.tweets.post(tweet.id, postedTweetId)
     if (!updatedTweet) {
       // another request squeezed in between our initial fetch and our update.
       // this is probably fine: Twitter silently rejects duplicate posts that are
       // close together.
       // just refetch the tweet and return that as if we did it here.
-      return (await this.tweetLoader.clear(id).load(id))!
+      return (await this.tweetLoader.clear(tweet.id).load(tweet.id))!
     }
 
-    this.tweetLoader.clear(id).prime(id, updatedTweet)
+    this.tweetLoader.clear(updatedTweet.id).prime(updatedTweet.id, updatedTweet)
     return updatedTweet
   }
 

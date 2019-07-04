@@ -117,6 +117,19 @@ class TweetRepository {
     return rows.map(TweetRepository.fromRow)
   }
 
+  async findAllPostable(): Promise<Tweet[]> {
+    const rows = await this.db.any(sql<table.tweets>`
+      SELECT *
+        FROM tweets
+       WHERE post_after IS NOT NULL
+         AND post_after < CURRENT_TIMESTAMP
+         AND status = 'draft'
+    ORDER BY post_after ASC
+    `)
+
+    return rows.map(TweetRepository.fromRow)
+  }
+
   async create(input: NewTweetInput): Promise<Tweet> {
     const postAfter = input.autopost
       ? sql.raw("CURRENT_TIMESTAMP + interval '5 minutes'")

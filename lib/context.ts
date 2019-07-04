@@ -69,7 +69,12 @@ const context: ContextFunction<any, CourierContext> = async ({ req }) => {
 
   const posts = new PostService(postRepo)
 
-  const tweets = new TweetService(userId, tweetRepo, tweetLoader)
+  const tweets = new TweetService(
+    userId,
+    tweetRepo,
+    tweetLoader,
+    subscribedFeedLoader
+  )
 
   return {
     token,

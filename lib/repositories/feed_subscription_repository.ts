@@ -49,7 +49,7 @@ class FeedSubscriptionRepository {
     })
   }
 
-  createLoader(userId: UserId | null = null): SubscribedFeedLoader {
+  createLoader(userId: UserId | null): SubscribedFeedLoader {
     return new DataLoader(async ids => {
       return await getByIds({
         db: this.db,
@@ -132,6 +132,7 @@ class FeedSubscriptionRepository {
   static fromRow({
     id,
     feed_id,
+    user_id,
     autopost,
     created_at,
     updated_at,
@@ -139,6 +140,7 @@ class FeedSubscriptionRepository {
     return {
       id: id.toString(),
       feedId: feed_id.toString(),
+      userId: user_id.toString(),
       autopost,
       createdAt: created_at,
       updatedAt: updated_at,
