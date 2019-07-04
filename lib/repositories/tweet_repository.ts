@@ -19,7 +19,7 @@ import { Pager } from "../data/pager"
 import moment from "moment"
 import { injectable, inject } from "inversify"
 import Loader, { LoaderQueryFn } from "../data/loader"
-import UserService from "../services/user_service"
+import { UserIdProvider } from "../services/user_service"
 
 type TweetRow = table.tweets & Pick<table.posts, "published_at">
 export type TweetPagingOptions = PagingOptions & {
@@ -223,12 +223,15 @@ export default TweetRepository
 
 @injectable()
 export class TweetLoader extends Loader<Tweet, table.tweets> {
-  constructor(@inject("db") db: DatabasePoolType, private user: UserService) {
+  constructor(
+    @inject("db") db: DatabasePoolType,
+    @inject("userId") private getUserId: UserIdProvider
+  ) {
     super(db)
   }
 
   query: LoaderQueryFn<table.tweets> = async cond => {
-    const userId = await this.user.getUserId()
+    const userId = await this.getUserId()
     if (userId) {
       return sql`
         SELECT tweets.*

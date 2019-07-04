@@ -10,7 +10,7 @@ import {
 import { Pager } from "../data/pager"
 import { injectable, inject } from "inversify"
 import Loader, { LoaderQueryFn } from "../data/loader"
-import UserService from "../services/user_service"
+import { UserIdProvider } from "../services/user_service"
 
 type FeedSubscriptionRow = table.feed_subscriptions & Pick<table.feeds, "url">
 type NullPartial<T> = { [P in keyof T]?: T[P] | null }
@@ -130,12 +130,15 @@ export class SubscribedFeedLoader extends Loader<
   SubscribedFeed,
   table.feed_subscriptions
 > {
-  constructor(@inject("db") db: DatabasePoolType, private user: UserService) {
+  constructor(
+    @inject("db") db: DatabasePoolType,
+    @inject("userId") private getUserId: UserIdProvider
+  ) {
     super(db)
   }
 
   query: LoaderQueryFn<table.feed_subscriptions> = async cond => {
-    const userId = await this.user.getUserId()
+    const userId = await this.getUserId()
     if (userId) {
       return sql`
         SELECT *

@@ -8,7 +8,7 @@ import PostService from "./services/post_service"
 import { TweetLoader } from "./repositories/tweet_repository"
 import TweetService from "./services/tweet_service"
 import { IncomingHttpHeaders, IncomingMessage } from "http"
-import UserService from "./services/user_service"
+import UserService, { UserIdProvider } from "./services/user_service"
 import { Container, injectable } from "inversify"
 
 const container = new Container({
@@ -17,6 +17,10 @@ const container = new Container({
 })
 container.bind<string | null>("token").toConstantValue(null)
 container.bind<DatabasePoolType>("db").toConstantValue(defaultDb)
+container.bind<UserIdProvider>("userId").toProvider(context => {
+  const user = context.container.get(UserService)
+  return () => user.getUserId()
+})
 
 @injectable()
 export class CourierContext {
