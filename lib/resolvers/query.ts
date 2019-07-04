@@ -1,9 +1,8 @@
 import { QueryResolvers } from "../generated/graphql"
-import { getUserInfo } from "../auth"
 
 export const Query: QueryResolvers = {
-  async currentUser(_parent, _args, { token }) {
-    return await getUserInfo(token)
+  async currentUser(_parent, _args, { user }) {
+    return await user.getUserInfo()
   },
 
   async allSubscribedFeeds(_parent, args, { feeds }) {
