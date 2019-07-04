@@ -10,14 +10,15 @@ import TweetService from "./services/tweet_service"
 import { IncomingHttpHeaders, IncomingMessage } from "http"
 import UserService, { UserIdProvider } from "./services/user_service"
 import { Container, injectable } from "inversify"
+import * as keys from "./key"
 
 const container = new Container({
   autoBindInjectable: true,
   defaultScope: "Request",
 })
-container.bind<string | null>("token").toConstantValue(null)
-container.bind<DatabasePoolType>("db").toConstantValue(defaultDb)
-container.bind<UserIdProvider>("userId").toProvider(context => {
+container.bind<string | null>(keys.Token).toConstantValue(null)
+container.bind<DatabasePoolType>(keys.DB).toConstantValue(defaultDb)
+container.bind<UserIdProvider>(keys.UserId).toProvider(context => {
   const user = context.container.get(UserService)
   return () => user.requireUserId()
 })
@@ -38,7 +39,7 @@ export class CourierContext {
 
   static async createForRequest(req: IncomingMessage): Promise<CourierContext> {
     const child = container.createChild()
-    child.bind<string | null>("token").toConstantValue(getToken(req.headers))
+    child.bind<string | null>(keys.Token).toConstantValue(getToken(req.headers))
 
     return child.get(CourierContext)
   }

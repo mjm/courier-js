@@ -3,10 +3,11 @@ import * as table from "../data/dbTypes"
 import { FeedId, Feed } from "../data/types"
 import { injectable, inject } from "inversify"
 import Loader, { LoaderQueryFn } from "../data/loader"
+import { DB } from "../key"
 
 @injectable()
 class FeedRepository {
-  constructor(@inject("db") private db: DatabasePoolType) {}
+  constructor(@inject(DB) private db: DatabasePoolType) {}
 
   async findAllByHomePageURL(url: string): Promise<Feed[]> {
     const rows = await this.db.any(sql<table.feeds>`
@@ -81,7 +82,7 @@ class FeedRepository {
 
 @injectable()
 export class FeedLoader extends Loader<Feed, table.feeds> {
-  constructor(@inject("db") db: DatabasePoolType) {
+  constructor(@inject(DB) db: DatabasePoolType) {
     super(db)
   }
 

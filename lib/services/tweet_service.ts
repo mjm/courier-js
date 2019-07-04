@@ -9,6 +9,7 @@ import { SubscribedFeedLoader } from "../repositories/feed_subscription_reposito
 import TwitterService from "./twitter_service"
 import { UserIdProvider } from "./user_service"
 import { injectable, inject } from "inversify"
+import * as keys from "../key"
 
 export interface PostQueuedResult {
   succeeded: number
@@ -21,7 +22,7 @@ class TweetService {
     private tweets: TweetRepository,
     private tweetLoader: TweetLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
-    @inject("userId") private getUserId: UserIdProvider,
+    @inject(keys.UserId) private getUserId: UserIdProvider,
     private twitter: TwitterService
   ) {}
 

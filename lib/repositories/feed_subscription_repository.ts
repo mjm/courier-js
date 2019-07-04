@@ -11,13 +11,14 @@ import { Pager } from "../data/pager"
 import { injectable, inject } from "inversify"
 import Loader, { LoaderQueryFn } from "../data/loader"
 import { UserIdProvider } from "../services/user_service"
+import * as keys from "../key"
 
 type FeedSubscriptionRow = table.feed_subscriptions & Pick<table.feeds, "url">
 type NullPartial<T> = { [P in keyof T]?: T[P] | null }
 
 @injectable()
 class FeedSubscriptionRepository {
-  constructor(@inject("db") private db: DatabasePoolType) {}
+  constructor(@inject(keys.DB) private db: DatabasePoolType) {}
 
   paged(
     userId: UserId,
@@ -131,8 +132,8 @@ export class SubscribedFeedLoader extends Loader<
   table.feed_subscriptions
 > {
   constructor(
-    @inject("db") db: DatabasePoolType,
-    @inject("userId") private getUserId: UserIdProvider
+    @inject(keys.DB) db: DatabasePoolType,
+    @inject(keys.UserId) private getUserId: UserIdProvider
   ) {
     super(db)
   }

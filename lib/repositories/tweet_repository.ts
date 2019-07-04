@@ -20,6 +20,7 @@ import moment from "moment"
 import { injectable, inject } from "inversify"
 import Loader, { LoaderQueryFn } from "../data/loader"
 import { UserIdProvider } from "../services/user_service"
+import * as keys from "../key"
 
 type TweetRow = table.tweets & Pick<table.posts, "published_at">
 export type TweetPagingOptions = PagingOptions & {
@@ -28,7 +29,7 @@ export type TweetPagingOptions = PagingOptions & {
 
 @injectable()
 class TweetRepository {
-  constructor(@inject("db") private db: DatabasePoolType) {}
+  constructor(@inject(keys.DB) private db: DatabasePoolType) {}
 
   paged(
     userId: UserId,
@@ -224,8 +225,8 @@ export default TweetRepository
 @injectable()
 export class TweetLoader extends Loader<Tweet, table.tweets> {
   constructor(
-    @inject("db") db: DatabasePoolType,
-    @inject("userId") private getUserId: UserIdProvider
+    @inject(keys.DB) db: DatabasePoolType,
+    @inject(keys.UserId) private getUserId: UserIdProvider
   ) {
     super(db)
   }

@@ -5,6 +5,7 @@ import { AuthenticationError } from "apollo-server-core"
 import { UserInfo, UserId, UserToken } from "../data/types"
 import Environment from "../env"
 import { injectable, inject } from "inversify"
+import { Token } from "../key"
 
 export type UserIdProvider = () => Promise<UserId>
 
@@ -22,7 +23,7 @@ class UserService {
 
   private verifyPromise: Promise<UserToken>
 
-  constructor(@inject("token") private token: string | null, env: Environment) {
+  constructor(@inject(Token) private token: string | null, env: Environment) {
     this.jwtOptions = {
       audience: env.apiIdentifier,
       issuer: `https://${env.authDomain}/`,
