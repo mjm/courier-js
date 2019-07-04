@@ -17,7 +17,7 @@ import FeedSubscriptionRepository, {
 } from "../repositories/feed_subscription_repository"
 import { translate } from "html-to-tweets"
 import TweetRepository, { TweetLoader } from "../repositories/tweet_repository"
-import { inject, injectable } from "inversify"
+import { injectable } from "inversify"
 
 @injectable()
 class ImportService {
@@ -25,10 +25,9 @@ class ImportService {
     private feedSubscriptions: FeedSubscriptionRepository,
     private posts: PostRepository,
     private tweets: TweetRepository,
-    @inject("SubscribedFeedLoader")
     private subscribedFeedLoader: SubscribedFeedLoader,
-    @inject("PostLoader") private postLoader: PostLoader,
-    @inject("TweetLoader") private tweetLoader: TweetLoader
+    private postLoader: PostLoader,
+    private tweetLoader: TweetLoader
   ) {}
 
   async importPosts(
@@ -101,7 +100,7 @@ class ImportService {
 
   private async updatePost(id: PostId, input: UpdatePostInput): Promise<void> {
     const post = await this.posts.update(id, input)
-    this.postLoader.clear(id).prime(id, post)
+    this.postLoader.replace(id, post)
 
     await this.createTweets(post)
   }
@@ -173,9 +172,7 @@ class ImportService {
         })
 
         if (updatedTweet) {
-          this.tweetLoader
-            .clear(updatedTweet.id)
-            .prime(updatedTweet.id, updatedTweet)
+          this.tweetLoader.replace(updatedTweet.id, updatedTweet)
         }
       }
     }

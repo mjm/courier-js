@@ -5,8 +5,6 @@ import {
   ValueExpressionType,
 } from "../db"
 import * as table from "../data/dbTypes"
-import { getByIds } from "../data/util"
-import DataLoader from "dataloader"
 import {
   UserId,
   PagingOptions,
@@ -20,13 +18,13 @@ import {
 import { Pager } from "../data/pager"
 import moment from "moment"
 import { injectable, inject } from "inversify"
+import Loader, { LoaderQueryFn } from "../data/loader"
+import UserService from "../services/user_service"
 
 type TweetRow = table.tweets & Pick<table.posts, "published_at">
 export type TweetPagingOptions = PagingOptions & {
   filter?: "UPCOMING" | "PAST" | null
 }
-
-export type TweetLoader = DataLoader<TweetId, Tweet | null>
 
 @injectable()
 class TweetRepository {
@@ -77,32 +75,6 @@ class TweetRepository {
       getCursorValue(cursor) {
         return cursor || null
       },
-    })
-  }
-
-  createLoader(getUserId: () => Promise<UserId | null>): TweetLoader {
-    return new DataLoader(async ids => {
-      const userId = await getUserId()
-      return await getByIds({
-        db: this.db,
-        query: cond =>
-          userId
-            ? sql`
-          SELECT tweets.*
-            FROM tweets
-            JOIN feed_subscriptions
-              ON tweets.feed_subscription_id = feed_subscriptions.id
-           WHERE feed_subscriptions.user_id = ${userId}
-             AND ${cond("tweets")}
-        `
-            : sql`
-          SELECT *
-            FROM tweets
-           WHERE ${cond("tweets")}
-        `,
-        ids,
-        fromRow: TweetRepository.fromRow,
-      })
     })
   }
 
@@ -248,3 +220,31 @@ class TweetRepository {
 }
 
 export default TweetRepository
+
+@injectable()
+export class TweetLoader extends Loader<Tweet, table.tweets> {
+  constructor(@inject("db") db: DatabasePoolType, private user: UserService) {
+    super(db)
+  }
+
+  query: LoaderQueryFn<table.tweets> = async cond => {
+    const userId = await this.user.getUserId()
+    if (userId) {
+      return sql`
+        SELECT tweets.*
+          FROM tweets
+          JOIN feed_subscriptions
+            ON tweets.feed_subscription_id = feed_subscriptions.id
+         WHERE feed_subscriptions.user_id = ${userId}
+           AND ${cond("tweets")}
+      `
+    } else {
+      return sql`
+        SELECT *
+          FROM tweets
+         WHERE ${cond("tweets")}
+      `
+    }
+  }
+  fromRow = TweetRepository.fromRow
+}

@@ -1,26 +1,12 @@
 import { sql, DatabasePoolType } from "../db"
 import * as table from "../data/dbTypes"
-import { getByIds } from "../data/util"
-import DataLoader from "dataloader"
 import { FeedId, Feed } from "../data/types"
 import { injectable, inject } from "inversify"
-
-export type FeedLoader = DataLoader<FeedId, Feed | null>
+import Loader, { LoaderQueryFn } from "../data/loader"
 
 @injectable()
 class FeedRepository {
   constructor(@inject("db") private db: DatabasePoolType) {}
-
-  createLoader(): FeedLoader {
-    return new DataLoader(async ids => {
-      return await getByIds({
-        db: this.db,
-        query: cond => sql`SELECT * FROM feeds WHERE ${cond("feeds")}`,
-        ids,
-        fromRow: FeedRepository.fromRow,
-      })
-    })
-  }
 
   async findAllByHomePageURL(url: string): Promise<Feed[]> {
     const rows = await this.db.any(sql<table.feeds>`
@@ -91,6 +77,17 @@ class FeedRepository {
       updatedAt: updated_at,
     }
   }
+}
+
+@injectable()
+export class FeedLoader extends Loader<Feed, table.feeds> {
+  constructor(@inject("db") db: DatabasePoolType) {
+    super(db)
+  }
+
+  query: LoaderQueryFn<table.feeds> = async cond =>
+    sql`SELECT * FROM feeds WHERE ${cond("feeds")}`
+  fromRow = FeedRepository.fromRow
 }
 
 export default FeedRepository

@@ -1,7 +1,5 @@
 import { sql, DatabasePoolType } from "../db"
 import * as table from "../data/dbTypes"
-import { getByIds } from "../data/util"
-import DataLoader from "dataloader"
 import {
   FeedId,
   PagingOptions,
@@ -13,8 +11,7 @@ import {
 import { Pager } from "../data/pager"
 import moment from "moment"
 import { injectable, inject } from "inversify"
-
-export type PostLoader = DataLoader<PostId, Post | null>
+import Loader, { LoaderQueryFn } from "../data/loader"
 
 @injectable()
 class PostRepository {
@@ -40,17 +37,6 @@ class PostRepository {
       getCursorValue(cursor) {
         return cursor || null
       },
-    })
-  }
-
-  createLoader(): PostLoader {
-    return new DataLoader(async ids => {
-      return await getByIds({
-        db: this.db,
-        query: cond => sql`SELECT * FROM posts WHERE ${cond("posts")}`,
-        ids,
-        fromRow: PostRepository.fromRow,
-      })
     })
   }
 
@@ -129,3 +115,14 @@ class PostRepository {
 }
 
 export default PostRepository
+
+@injectable()
+export class PostLoader extends Loader<Post, table.posts> {
+  constructor(@inject("db") db: DatabasePoolType) {
+    super(db)
+  }
+
+  query: LoaderQueryFn<table.posts> = async cond =>
+    sql`SELECT * FROM posts WHERE ${cond("posts")}`
+  fromRow = PostRepository.fromRow
+}

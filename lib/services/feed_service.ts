@@ -14,15 +14,14 @@ import { scrapeFeed, normalizeURL } from "scrape-feed"
 import { locateFeed } from "feed-locator"
 import ImportService from "./import_service"
 import UserService from "./user_service"
-import { injectable, inject } from "inversify"
+import { injectable } from "inversify"
 
 @injectable()
 class FeedService {
   constructor(
     private feeds: FeedRepository,
     private feedSubscriptions: FeedSubscriptionRepository,
-    @inject("FeedLoader") private feedLoader: FeedLoader,
-    @inject("SubscribedFeedLoader")
+    private feedLoader: FeedLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
     private user: UserService,
     private importService: ImportService
@@ -75,7 +74,7 @@ class FeedService {
       homePageURL,
       cachingHeaders,
     })
-    this.feedLoader.clear(id).prime(id, updatedFeed)
+    this.feedLoader.replace(id, updatedFeed)
 
     return updatedFeed
   }
@@ -124,7 +123,7 @@ class FeedService {
       options
     )
 
-    this.subscribedFeedLoader.clear(feed.id).prime(feed.id, feed)
+    this.subscribedFeedLoader.replace(feed.id, feed)
 
     return feed
   }

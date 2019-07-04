@@ -1,6 +1,5 @@
 import { sql, DatabasePoolType, NamedAssignmentType } from "../db"
 import * as table from "../data/dbTypes"
-import { getByIds } from "../data/util"
 import {
   PagingOptions,
   SubscribedFeed,
@@ -9,16 +8,12 @@ import {
   FeedId,
 } from "../data/types"
 import { Pager } from "../data/pager"
-import DataLoader from "dataloader"
 import { injectable, inject } from "inversify"
+import Loader, { LoaderQueryFn } from "../data/loader"
+import UserService from "../services/user_service"
 
 type FeedSubscriptionRow = table.feed_subscriptions & Pick<table.feeds, "url">
 type NullPartial<T> = { [P in keyof T]?: T[P] | null }
-
-export type SubscribedFeedLoader = DataLoader<
-  FeedSubscriptionId,
-  SubscribedFeed | null
->
 
 @injectable()
 class FeedSubscriptionRepository {
@@ -49,30 +44,6 @@ class FeedSubscriptionRepository {
         }
       },
       getCursorValue: val => val,
-    })
-  }
-
-  createLoader(getUserId: () => Promise<UserId | null>): SubscribedFeedLoader {
-    return new DataLoader(async ids => {
-      const userId = await getUserId()
-      return await getByIds({
-        db: this.db,
-        query: cond =>
-          userId
-            ? sql`
-          SELECT *
-            FROM feed_subscriptions
-           WHERE user_id = ${userId}
-             AND ${cond("feed_subscriptions")}
-        `
-            : sql`
-          SELECT *
-            FROM feed_subscriptions
-           WHERE ${cond("feed_subscriptions")}
-        `,
-        ids,
-        fromRow: FeedSubscriptionRepository.fromRow,
-      })
     })
   }
 
@@ -153,3 +124,32 @@ class FeedSubscriptionRepository {
 }
 
 export default FeedSubscriptionRepository
+
+@injectable()
+export class SubscribedFeedLoader extends Loader<
+  SubscribedFeed,
+  table.feed_subscriptions
+> {
+  constructor(@inject("db") db: DatabasePoolType, private user: UserService) {
+    super(db)
+  }
+
+  query: LoaderQueryFn<table.feed_subscriptions> = async cond => {
+    const userId = await this.user.getUserId()
+    if (userId) {
+      return sql`
+        SELECT *
+          FROM feed_subscriptions
+         WHERE user_id = ${userId}
+           AND ${cond("feed_subscriptions")}
+      `
+    } else {
+      return sql`
+        SELECT *
+          FROM feed_subscriptions
+         WHERE ${cond("feed_subscriptions")}
+      `
+    }
+  }
+  fromRow = FeedSubscriptionRepository.fromRow
+}

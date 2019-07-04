@@ -1,17 +1,15 @@
 import "reflect-metadata"
-import FeedRepository, { FeedLoader } from "./repositories/feed_repository"
+import { FeedLoader } from "./repositories/feed_repository"
 import defaultDb, { DatabasePoolType } from "./db"
-import FeedSubscriptionRepository, {
-  SubscribedFeedLoader,
-} from "./repositories/feed_subscription_repository"
+import { SubscribedFeedLoader } from "./repositories/feed_subscription_repository"
 import FeedService from "./services/feed_service"
-import PostRepository, { PostLoader } from "./repositories/post_repository"
+import { PostLoader } from "./repositories/post_repository"
 import PostService from "./services/post_service"
-import TweetRepository, { TweetLoader } from "./repositories/tweet_repository"
+import { TweetLoader } from "./repositories/tweet_repository"
 import TweetService from "./services/tweet_service"
 import { IncomingHttpHeaders, IncomingMessage } from "http"
 import UserService from "./services/user_service"
-import { Container, injectable, inject } from "inversify"
+import { Container, injectable } from "inversify"
 
 const container = new Container({
   autoBindInjectable: true,
@@ -19,27 +17,6 @@ const container = new Container({
 })
 container.bind<string | null>("token").toConstantValue(null)
 container.bind<DatabasePoolType>("db").toConstantValue(defaultDb)
-
-container.bind<FeedLoader>("FeedLoader").toDynamicValue(context => {
-  const feeds = context.container.get(FeedRepository)
-  return feeds.createLoader()
-})
-container
-  .bind<SubscribedFeedLoader>("SubscribedFeedLoader")
-  .toDynamicValue(context => {
-    const feedSubscriptions = context.container.get(FeedSubscriptionRepository)
-    const user = context.container.get(UserService)
-    return feedSubscriptions.createLoader(() => user.getUserId())
-  })
-container.bind<PostLoader>("PostLoader").toDynamicValue(context => {
-  const posts = context.container.get(PostRepository)
-  return posts.createLoader()
-})
-container.bind<TweetLoader>("TweetLoader").toDynamicValue(context => {
-  const tweets = context.container.get(TweetRepository)
-  const user = context.container.get(UserService)
-  return tweets.createLoader(() => user.getUserId())
-})
 
 @injectable()
 export class CourierContext {
@@ -71,10 +48,10 @@ export class CourierContext {
     feeds: FeedService,
     posts: PostService,
     tweets: TweetService,
-    @inject("FeedLoader") feedLoader: FeedLoader,
-    @inject("SubscribedFeedLoader") subscribedFeedLoader: SubscribedFeedLoader,
-    @inject("PostLoader") postLoader: PostLoader,
-    @inject("TweetLoader") tweetLoader: TweetLoader
+    feedLoader: FeedLoader,
+    subscribedFeedLoader: SubscribedFeedLoader,
+    postLoader: PostLoader,
+    tweetLoader: TweetLoader
   ) {
     this.user = user
     this.feeds = feeds

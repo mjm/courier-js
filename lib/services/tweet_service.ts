@@ -8,7 +8,7 @@ import { Pager } from "../data/pager"
 import { SubscribedFeedLoader } from "../repositories/feed_subscription_repository"
 import TwitterService from "./twitter_service"
 import UserService from "./user_service"
-import { injectable, inject } from "inversify"
+import { injectable } from "inversify"
 
 export interface PostQueuedResult {
   succeeded: number
@@ -19,8 +19,7 @@ export interface PostQueuedResult {
 class TweetService {
   constructor(
     private tweets: TweetRepository,
-    @inject("TweetLoader") private tweetLoader: TweetLoader,
-    @inject("SubscribedFeedLoader")
+    private tweetLoader: TweetLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
     private user: UserService,
     private twitter: TwitterService
@@ -41,7 +40,7 @@ class TweetService {
       throw new UserInputError("An already posted tweet cannot be canceled.")
     }
 
-    this.tweetLoader.clear(id).prime(id, updatedTweet)
+    this.tweetLoader.replace(id, updatedTweet)
     return updatedTweet
   }
 
@@ -56,7 +55,7 @@ class TweetService {
       throw new UserInputError(`A ${tweet.status} tweet cannot be uncanceled.`)
     }
 
-    this.tweetLoader.clear(id).prime(id, updatedTweet)
+    this.tweetLoader.replace(id, updatedTweet)
     return updatedTweet
   }
 
@@ -74,7 +73,7 @@ class TweetService {
       throw new UserInputError(`A ${tweet.status} tweet cannot be edited.`)
     }
 
-    this.tweetLoader.clear(id).prime(id, updatedTweet)
+    this.tweetLoader.replace(id, updatedTweet)
     return updatedTweet
   }
 
@@ -120,10 +119,10 @@ class TweetService {
       // this is probably fine: Twitter silently rejects duplicate posts that are
       // close together.
       // just refetch the tweet and return that as if we did it here.
-      return (await this.tweetLoader.clear(tweet.id).load(tweet.id))!
+      return (await this.tweetLoader.reload(tweet.id))!
     }
 
-    this.tweetLoader.clear(updatedTweet.id).prime(updatedTweet.id, updatedTweet)
+    this.tweetLoader.replace(updatedTweet.id, updatedTweet)
     return updatedTweet
   }
 }
