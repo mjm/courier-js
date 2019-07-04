@@ -14,7 +14,7 @@ import { scrapeFeed, normalizeURL } from "scrape-feed"
 import { locateFeed } from "feed-locator"
 import ImportService from "./import_service"
 import { UserIdProvider } from "./user_service"
-import { injectable } from "inversify"
+import { injectable, inject } from "inversify"
 
 @injectable()
 class FeedService {
@@ -23,7 +23,7 @@ class FeedService {
     private feedSubscriptions: FeedSubscriptionRepository,
     private feedLoader: FeedLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
-    private getUserId: UserIdProvider,
+    @inject("userId") private getUserId: UserIdProvider,
     private importService: ImportService
   ) {}
 

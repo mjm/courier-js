@@ -8,7 +8,7 @@ import { Pager } from "../data/pager"
 import { SubscribedFeedLoader } from "../repositories/feed_subscription_repository"
 import TwitterService from "./twitter_service"
 import { UserIdProvider } from "./user_service"
-import { injectable } from "inversify"
+import { injectable, inject } from "inversify"
 
 export interface PostQueuedResult {
   succeeded: number
@@ -21,7 +21,7 @@ class TweetService {
     private tweets: TweetRepository,
     private tweetLoader: TweetLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
-    private getUserId: UserIdProvider,
+    @inject("userId") private getUserId: UserIdProvider,
     private twitter: TwitterService
   ) {}
 
