@@ -9,6 +9,10 @@ import { CurrentUserComponent } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
 import Card from "../components/card"
+import Group from "../components/group"
+import { Button } from "../components/button"
+import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons"
+import { logout } from "../utils/auth0"
 
 const Account = () => {
   return (
@@ -32,17 +36,27 @@ const Account = () => {
             }
             const user = data.currentUser
             return (
-              <Card>
-                <InfoField label="Name">{user.name}</InfoField>
-                <InfoField label="Twitter Username">
-                  <a
-                    href={`https://twitter.com/${user.nickname}`}
-                    target="_blank"
-                  >
-                    @{user.nickname}
-                  </a>
-                </InfoField>
-              </Card>
+              <Group direction="column" spacing={3}>
+                <Card>
+                  <InfoField label="Name">{user.name}</InfoField>
+                  <InfoField label="Twitter Username">
+                    <a
+                      href={`https://twitter.com/${user.nickname}`}
+                      target="_blank"
+                    >
+                      @{user.nickname}
+                    </a>
+                  </InfoField>
+                </Card>
+                <Button
+                  color="red"
+                  size="medium"
+                  icon={faSignOutAlt}
+                  onClick={() => logout()}
+                >
+                  Sign Out
+                </Button>
+              </Group>
             )
           }}
         </CurrentUserComponent>

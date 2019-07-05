@@ -1,7 +1,6 @@
 import auth0, { Auth0DecodedHash } from "auth0-js"
 import Cookie from "js-cookie"
 import jwtDecode from "jwt-decode"
-import Router from "next/router"
 
 const client = new auth0.WebAuth({
   clientID: process.env.CLIENT_ID || "",
@@ -103,8 +102,6 @@ export function logout() {
 
   clearTimeout(tokenRenewalTimeout)
   client.logout({ returnTo: window.location.origin })
-
-  Router.push("/")
 }
 
 function getCookie(req: any, key: string): string | undefined {
