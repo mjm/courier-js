@@ -15,7 +15,7 @@ export default (Page: any) =>
       const user = getUser(req)
       let pageProps: any = {}
       if (Page.getInitialProps) {
-        pageProps = await Page.getInitialProps(ctx)
+        pageProps = await Page.getInitialProps({ ...ctx, user })
       }
 
       return {

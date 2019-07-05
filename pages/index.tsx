@@ -2,6 +2,7 @@ import React from "react"
 import Link from "next/link"
 import Head from "../components/head"
 import withDefaultPage from "../hocs/defaultPage"
+import Router from "next/router"
 
 const Home = ({ user }: any) => {
   return (
@@ -46,6 +47,19 @@ const Home = ({ user }: any) => {
       </div>
     </div>
   )
+}
+
+Home.getInitialProps = ({ res, user }: any) => {
+  if (!user) {
+    return {}
+  }
+
+  if (res) {
+    res.writeHead(302, { Location: "/tweets" })
+    res.end()
+  } else {
+    Router.push("/tweets")
+  }
 }
 
 export default withDefaultPage(Home)
