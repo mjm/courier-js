@@ -14,6 +14,8 @@ const schema = makeExecutableSchema({ typeDefs, resolvers: resolvers as any })
 const server = new ApolloServer({
   schema,
   context: async ({ req }) => CourierContext.createForRequest(req),
+  introspection: true,
+  playground: true,
 })
 const handler = server.createHandler()
 
