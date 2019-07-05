@@ -6,6 +6,7 @@ import {
   faPaperPlane,
   faRss,
   IconDefinition,
+  faSignInAlt,
 } from "@fortawesome/free-solid-svg-icons"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Card, Image, Flex } from "@rebass/emotion"
@@ -121,7 +122,9 @@ const Nav = ({ user, isAuthenticating }: Props) => (
           <Username>{user.name}</Username>
         </NavItem>
       ) : isAuthenticating ? null : (
-        <NavItem href="/login">Login</NavItem>
+        <NavItem href="/login" icon={faSignInAlt}>
+          Login
+        </NavItem>
       )}
     </Flex>
   </Card>
