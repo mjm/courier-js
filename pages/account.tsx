@@ -34,7 +34,14 @@ const Account = () => {
             return (
               <Card>
                 <InfoField label="Name">{user.name}</InfoField>
-                <InfoField label="Twitter Username">{user.nickname}</InfoField>
+                <InfoField label="Twitter Username">
+                  <a
+                    href={`https://twitter.com/${user.nickname}`}
+                    target="_blank"
+                  >
+                    @{user.nickname}
+                  </a>
+                </InfoField>
               </Card>
             )
           }}
