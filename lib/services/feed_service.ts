@@ -16,6 +16,7 @@ import ImportService from "./import_service"
 import { UserIdProvider } from "./user_service"
 import { injectable, inject } from "inversify"
 import * as keys from "../key"
+import EventService from "./event_service"
 
 @injectable()
 class FeedService {
@@ -25,7 +26,8 @@ class FeedService {
     private feedLoader: FeedLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
     @inject(keys.UserId) private getUserId: UserIdProvider,
-    private importService: ImportService
+    private importService: ImportService,
+    private events: EventService
   ) {}
 
   async paged(
@@ -74,6 +76,8 @@ class FeedService {
     })
     this.feedLoader.replace(id, updatedFeed)
 
+    await this.events.record("feed_refresh", { feedId: id })
+
     return updatedFeed
   }
 
@@ -97,6 +101,8 @@ class FeedService {
 
     this.subscribedFeedLoader.prime(subscribedFeed.id, subscribedFeed)
 
+    this.events.record("feed_subscribe", { feedId: feed.id })
+
     // create tweets for recent posts in the feed.
     // the posts should already exist, but since tweets are per-subscription, we need
     // to create those when we subscribe
@@ -107,6 +113,7 @@ class FeedService {
 
   async unsubscribe(id: FeedSubscriptionId): Promise<void> {
     await this.feedSubscriptions.delete(await this.getUserId(), id)
+    await this.events.record("feed_unsubscribe", { feedId: id })
   }
 
   async updateOptions(
@@ -122,6 +129,13 @@ class FeedService {
     )
 
     this.subscribedFeedLoader.replace(feed.id, feed)
+
+    if (options.autopost !== undefined && options.autopost !== null) {
+      await this.events.record("feed_set_autopost", {
+        feedId: feed.id,
+        value: options.autopost,
+      })
+    }
 
     return feed
   }

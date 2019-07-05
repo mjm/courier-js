@@ -24,6 +24,24 @@ export interface feed_subscriptions {
 
 }
 
+export namespace eventsFields {
+    export type id = number;
+    export type user_id = string | null;
+    export type event_type = string;
+    export type parameters = Object;
+    export type created_at = Date;
+
+}
+
+export interface events {
+    id: eventsFields.id;
+    user_id: eventsFields.user_id;
+    event_type: eventsFields.event_type;
+    parameters: eventsFields.parameters;
+    created_at: eventsFields.created_at;
+
+}
+
 export namespace pgmigrationsFields {
     export type id = number;
     export type name = string;

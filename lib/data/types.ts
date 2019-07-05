@@ -142,3 +142,24 @@ export interface UpdateTweetInput {
   body: string
   mediaURLs?: string[] | null
 }
+
+export type EventId = string
+
+export type EventType =
+  | "feed_refresh"
+  | "feed_set_autopost"
+  | "feed_subscribe"
+  | "feed_unsubscribe"
+
+export interface Event {
+  id: EventId
+  userId: UserId | null
+  eventType: EventType
+  parameters: Object
+  createdAt: Date
+}
+
+export interface NewEventInput {
+  eventType: EventType
+  parameters: Object
+}
