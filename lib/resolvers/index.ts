@@ -2,6 +2,7 @@ import * as query from "./query"
 import * as mutation from "./mutation"
 import * as paging from "./paging"
 import * as date from "./date"
+import * as event from "./event"
 import * as feed from "./feed"
 import * as post from "./post"
 import * as tweet from "./tweet"
@@ -12,6 +13,7 @@ const resolvers: Resolvers = {
   ...mutation,
   ...paging,
   ...date,
+  ...event,
   ...feed,
   ...post,
   ...tweet,

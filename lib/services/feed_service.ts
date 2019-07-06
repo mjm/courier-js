@@ -101,7 +101,10 @@ class FeedService {
 
     this.subscribedFeedLoader.prime(subscribedFeed.id, subscribedFeed)
 
-    this.events.record("feed_subscribe", { feedId: feed.id })
+    this.events.record("feed_subscribe", {
+      feedId: feed.id,
+      feedSubscriptionId: subscribedFeed.id,
+    })
 
     // create tweets for recent posts in the feed.
     // the posts should already exist, but since tweets are per-subscription, we need
@@ -113,7 +116,7 @@ class FeedService {
 
   async unsubscribe(id: FeedSubscriptionId): Promise<void> {
     await this.feedSubscriptions.delete(await this.getUserId(), id)
-    await this.events.record("feed_unsubscribe", { feedId: id })
+    await this.events.record("feed_unsubscribe", { feedSubscriptionId: id })
   }
 
   async updateOptions(
@@ -132,7 +135,7 @@ class FeedService {
 
     if (options.autopost !== undefined && options.autopost !== null) {
       await this.events.record("feed_set_autopost", {
-        feedId: feed.id,
+        feedSubscriptionId: feed.id,
         value: options.autopost,
       })
     }

@@ -2,11 +2,33 @@ import { sql, DatabasePoolType } from "../db"
 import { injectable, inject } from "inversify"
 import { DB } from "../key"
 import * as table from "../data/dbTypes"
-import { Event, UserId, NewEventInput } from "../data/types"
+import { Event, UserId, NewEventInput, PagingOptions } from "../data/types"
+import { Pager } from "../data/pager"
 
 @injectable()
 class EventRepository {
   constructor(@inject(DB) private db: DatabasePoolType) {}
+
+  paged(userId: UserId, options: PagingOptions): Pager<Event, table.events> {
+    return new Pager<Event, table.events>({
+      db: this.db,
+      query: sql`
+        SELECT *
+          FROM events
+         WHERE user_id = ${userId}
+      `,
+      totalQuery: sql`SELECT COUNT(*) FROM events WHERE user_id = ${userId}`,
+      variables: options,
+      orderColumn: "created_at",
+      makeEdge(row) {
+        return {
+          cursor: row.created_at.toISOString(),
+          node: EventRepository.fromRow(row),
+        }
+      },
+      getCursorValue: val => val,
+    })
+  }
 
   async create(userId: UserId | null, input: NewEventInput): Promise<Event> {
     const row = await this.db.one(sql<table.events>`

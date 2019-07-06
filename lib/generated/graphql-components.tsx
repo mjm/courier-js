@@ -44,6 +44,32 @@ export type EditTweetPayload = {
   tweet: Tweet
 }
 
+export type Event = {
+  id: Scalars["ID"]
+  eventType: EventType
+  createdAt: Scalars["DateTime"]
+  feed?: Maybe<Feed>
+}
+
+export type EventConnection = {
+  edges: Array<EventEdge>
+  nodes: Array<Event>
+  pageInfo: PageInfo
+  totalCount: Scalars["Int"]
+}
+
+export type EventEdge = {
+  cursor: Scalars["Cursor"]
+  node: Event
+}
+
+export enum EventType {
+  FeedRefresh = "FEED_REFRESH",
+  FeedSetAutopost = "FEED_SET_AUTOPOST",
+  FeedSubscribe = "FEED_SUBSCRIBE",
+  FeedUnsubscribe = "FEED_UNSUBSCRIBE",
+}
+
 export type Feed = {
   id: Scalars["ID"]
   url: Scalars["String"]
@@ -165,6 +191,7 @@ export type Query = {
   allSubscribedFeeds: SubscribedFeedConnection
   subscribedFeed?: Maybe<SubscribedFeed>
   allTweets: TweetConnection
+  allEvents: EventConnection
 }
 
 export type QueryAllSubscribedFeedsArgs = {
@@ -180,6 +207,13 @@ export type QuerySubscribedFeedArgs = {
 
 export type QueryAllTweetsArgs = {
   filter?: Maybe<TweetFilter>
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
+}
+
+export type QueryAllEventsArgs = {
   first?: Maybe<Scalars["Int"]>
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>

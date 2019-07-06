@@ -20,6 +20,13 @@ type Query {
     before: Cursor
     after: Cursor
   ): TweetConnection!
+
+  allEvents(
+    first: Int
+    last: Int
+    before: Cursor
+    after: Cursor
+  ): EventConnection!
 }
 
 type Mutation {
@@ -217,4 +224,31 @@ input EditTweetInput {
 
 type EditTweetPayload {
   tweet: Tweet!
+}
+
+type EventConnection {
+  edges: [EventEdge!]!
+  nodes: [Event!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type EventEdge {
+  cursor: Cursor!
+  node: Event!
+}
+
+type Event {
+  id: ID!
+  eventType: EventType!
+  createdAt: DateTime!
+
+  feed: Feed
+}
+
+enum EventType {
+  FEED_REFRESH
+  FEED_SET_AUTOPOST
+  FEED_SUBSCRIBE
+  FEED_UNSUBSCRIBE
 }

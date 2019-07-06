@@ -11,6 +11,7 @@ import { IncomingHttpHeaders, IncomingMessage } from "http"
 import UserService, { UserIdProvider } from "./services/user_service"
 import { Container, injectable } from "inversify"
 import * as keys from "./key"
+import EventService from "./services/event_service"
 
 const container = new Container({
   autoBindInjectable: true,
@@ -36,6 +37,7 @@ export class CourierContext {
   feeds: FeedService
   posts: PostService
   tweets: TweetService
+  events: EventService
 
   static async createForRequest(req: IncomingMessage): Promise<CourierContext> {
     const child = container.createChild()
@@ -53,6 +55,7 @@ export class CourierContext {
     feeds: FeedService,
     posts: PostService,
     tweets: TweetService,
+    events: EventService,
     feedLoader: FeedLoader,
     subscribedFeedLoader: SubscribedFeedLoader,
     postLoader: PostLoader,
@@ -62,6 +65,7 @@ export class CourierContext {
     this.feeds = feeds
     this.posts = posts
     this.tweets = tweets
+    this.events = events
 
     this.loaders = {
       feeds: feedLoader,

@@ -1,5 +1,6 @@
 import * as types from "../data/types"
 import { Pager } from "../data/pager"
+export type EnumMap<T extends string, U> = { [K in T]: U }
 
 export type Maybe<T> = T | null
 /** All built-in and custom scalars, mapped to their actual values */
@@ -45,6 +46,32 @@ export type EditTweetInput = {
 
 export type EditTweetPayload = {
   tweet: Tweet
+}
+
+export type Event = {
+  id: Scalars["ID"]
+  eventType: EventType
+  createdAt: Scalars["DateTime"]
+  feed?: Maybe<Feed>
+}
+
+export type EventConnection = {
+  edges: Array<EventEdge>
+  nodes: Array<Event>
+  pageInfo: PageInfo
+  totalCount: Scalars["Int"]
+}
+
+export type EventEdge = {
+  cursor: Scalars["Cursor"]
+  node: Event
+}
+
+export enum EventType {
+  FeedRefresh = "FEED_REFRESH",
+  FeedSetAutopost = "FEED_SET_AUTOPOST",
+  FeedSubscribe = "FEED_SUBSCRIBE",
+  FeedUnsubscribe = "FEED_UNSUBSCRIBE",
 }
 
 export type Feed = {
@@ -168,6 +195,7 @@ export type Query = {
   allSubscribedFeeds: SubscribedFeedConnection
   subscribedFeed?: Maybe<SubscribedFeed>
   allTweets: TweetConnection
+  allEvents: EventConnection
 }
 
 export type QueryAllSubscribedFeedsArgs = {
@@ -183,6 +211,13 @@ export type QuerySubscribedFeedArgs = {
 
 export type QueryAllTweetsArgs = {
   filter?: Maybe<TweetFilter>
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
+}
+
+export type QueryAllEventsArgs = {
   first?: Maybe<Scalars["Int"]>
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
@@ -374,6 +409,10 @@ export type ResolversTypes = {
   TweetEdge: Omit<TweetEdge, "node"> & { node: ResolversTypes["Tweet"] }
   Tweet: types.Tweet
   TweetStatus: TweetStatus
+  EventConnection: Pager<types.Event>
+  EventEdge: Omit<EventEdge, "node"> & { node: ResolversTypes["Event"] }
+  Event: types.Event
+  EventType: EventType
   Mutation: {}
   AddFeedInput: AddFeedInput
   AddFeedPayload: Omit<AddFeedPayload, "feed"> & {
@@ -445,6 +484,34 @@ export type EditTweetPayloadResolvers<
   ParentType = ResolversTypes["EditTweetPayload"]
 > = {
   tweet?: Resolver<ResolversTypes["Tweet"], ParentType, ContextType>
+}
+
+export type EventResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["Event"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>
+  eventType?: Resolver<ResolversTypes["EventType"], ParentType, ContextType>
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>
+  feed?: Resolver<Maybe<ResolversTypes["Feed"]>, ParentType, ContextType>
+}
+
+export type EventConnectionResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["EventConnection"]
+> = {
+  edges?: Resolver<Array<ResolversTypes["EventEdge"]>, ParentType, ContextType>
+  nodes?: Resolver<Array<ResolversTypes["Event"]>, ParentType, ContextType>
+  pageInfo?: Resolver<ResolversTypes["PageInfo"], ParentType, ContextType>
+  totalCount?: Resolver<ResolversTypes["Int"], ParentType, ContextType>
+}
+
+export type EventEdgeResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["EventEdge"]
+> = {
+  cursor?: Resolver<ResolversTypes["Cursor"], ParentType, ContextType>
+  node?: Resolver<ResolversTypes["Event"], ParentType, ContextType>
 }
 
 export type FeedResolvers<
@@ -629,6 +696,12 @@ export type QueryResolvers<
     ContextType,
     QueryAllTweetsArgs
   >
+  allEvents?: Resolver<
+    ResolversTypes["EventConnection"],
+    ParentType,
+    ContextType,
+    QueryAllEventsArgs
+  >
 }
 
 export type RefreshFeedPayloadResolvers<
@@ -748,6 +821,9 @@ export type Resolvers<ContextType = CourierContext> = {
   DateTime?: GraphQLScalarType
   DeleteFeedPayload?: DeleteFeedPayloadResolvers<ContextType>
   EditTweetPayload?: EditTweetPayloadResolvers<ContextType>
+  Event?: EventResolvers<ContextType>
+  EventConnection?: EventConnectionResolvers<ContextType>
+  EventEdge?: EventEdgeResolvers<ContextType>
   Feed?: FeedResolvers<ContextType>
   FeedConnection?: FeedConnectionResolvers<ContextType>
   FeedEdge?: FeedEdgeResolvers<ContextType>

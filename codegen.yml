@@ -6,6 +6,7 @@ generates:
     plugins:
       - add: 'import * as types from "../data/types"'
       - add: 'import { Pager } from "../data/pager"'
+      - add: "export type EnumMap<T extends string, U> = { [K in T]: U }"
       - "typescript"
       - "typescript-resolvers"
     config:
@@ -14,6 +15,8 @@ generates:
         Cursor: string
         DateTime: Date
       mappers:
+        Event: types.Event
+        EventConnection: Pager<types.Event>
         Feed: types.Feed
         FeedConnection: Pager<types.Feed>
         Post: types.Post

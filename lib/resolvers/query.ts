@@ -17,4 +17,8 @@ export const Query: QueryResolvers = {
   async allTweets(_parent, args, { tweets }) {
     return await tweets.paged(args)
   },
+
+  async allEvents(_parent, args, { events }) {
+    return await events.paged(args)
+  },
 }

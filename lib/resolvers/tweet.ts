@@ -1,6 +1,11 @@
-import { TweetResolvers } from "../generated/graphql"
+import {
+  EnumMap,
+  TweetResolvers,
+  TweetStatus as TweetStatusGQL,
+} from "../generated/graphql"
+import { TweetStatus as TweetStatusRepo } from "../data/types"
 
-export const TweetStatus = {
+export const TweetStatus: EnumMap<TweetStatusGQL, TweetStatusRepo> = {
   DRAFT: "draft",
   CANCELED: "canceled",
   POSTED: "posted",
