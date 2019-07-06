@@ -4,15 +4,21 @@ import withData from "../hocs/apollo"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
-import { InfoField } from "../components/info"
-import { CurrentUserComponent } from "../lib/generated/graphql-components"
+import { InfoField, InfoTable } from "../components/info"
+import {
+  CurrentUserComponent,
+  RecentEventsComponent,
+  EventFieldsFragment,
+  EventType,
+} from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
-import Card from "../components/card"
+import Card, { CardHeader } from "../components/card"
 import Group from "../components/group"
 import { Button } from "../components/button"
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons"
 import { logout } from "../utils/auth0"
+import Moment from "react-moment"
 
 const Account = () => {
   return (
@@ -48,6 +54,7 @@ const Account = () => {
                     </a>
                   </InfoField>
                 </Card>
+                <RecentEvents />
                 <Button
                   color="red"
                   size="medium"
@@ -66,3 +73,64 @@ const Account = () => {
 }
 
 export default withSecurePage(withData(Account))
+
+const RecentEvents = () => {
+  return (
+    <Card>
+      <CardHeader>Recent Activity</CardHeader>
+      <RecentEventsComponent fetchPolicy="cache-and-network">
+        {({ data, loading, error }) => {
+          if (loading) {
+            return <Loading />
+          }
+
+          if (error) {
+            return <ErrorBox error={error} />
+          }
+
+          if (!data) {
+            return null
+          }
+          const events = data.allEvents.nodes
+          return (
+            <InfoTable>
+              <colgroup>
+                <col />
+                <col css={{ width: "150px" }} />
+              </colgroup>
+              <tbody>
+                {events.map(event => (
+                  <tr key={event.id}>
+                    <td>
+                      <EventDescription event={event} />
+                    </td>
+                    <td>
+                      <Moment fromNow>{event.createdAt}</Moment>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </InfoTable>
+          )
+        }}
+      </RecentEventsComponent>
+    </Card>
+  )
+}
+
+interface EventDescriptionProps {
+  event: EventFieldsFragment
+}
+const EventDescription = ({ event }: EventDescriptionProps) => {
+  const feedTitle = event.feed && event.feed.title
+  switch (event.eventType) {
+    case EventType.FeedSetAutopost:
+      return <>You changed autoposting for "{feedTitle}"</>
+    case EventType.FeedRefresh:
+      return <>You refreshed "{feedTitle}"</>
+    case EventType.FeedSubscribe:
+      return <>You subscribed to "{feedTitle}"</>
+    case EventType.FeedUnsubscribe:
+      return <>You unsubscribed from "{feedTitle}"</>
+  }
+}

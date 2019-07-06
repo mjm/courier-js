@@ -311,6 +311,25 @@ export type CurrentUserQuery = { __typename?: "Query" } & {
   >
 }
 
+export type RecentEventsQueryVariables = {
+  cursor?: Maybe<Scalars["Cursor"]>
+}
+
+export type RecentEventsQuery = { __typename?: "Query" } & {
+  allEvents: { __typename?: "EventConnection" } & {
+    nodes: Array<{ __typename?: "Event" } & EventFieldsFragment>
+    pageInfo: { __typename?: "PageInfo" } & Pick<
+      PageInfo,
+      "endCursor" | "hasPreviousPage"
+    >
+  }
+}
+
+export type EventFieldsFragment = { __typename?: "Event" } & Pick<
+  Event,
+  "id" | "eventType" | "createdAt"
+> & { feed: Maybe<{ __typename?: "Feed" } & Pick<Feed, "id" | "title">> }
+
 export type AllFeedsQueryVariables = {
   cursor?: Maybe<Scalars["Cursor"]>
 }
@@ -493,6 +512,17 @@ import gql from "graphql-tag"
 import * as React from "react"
 import * as ReactApollo from "react-apollo"
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+export const eventFieldsFragmentDoc = gql`
+  fragment eventFields on Event {
+    id
+    eventType
+    createdAt
+    feed {
+      id
+      title
+    }
+  }
+`
 export const allFeedSubscriptionsFieldsFragmentDoc = gql`
   fragment allFeedSubscriptionsFields on SubscribedFeed {
     id
@@ -580,6 +610,58 @@ export function withCurrentUser<TProps, TChildProps = {}>(
     CurrentUserProps<TChildProps>
   >(CurrentUserDocument, {
     alias: "withCurrentUser",
+    ...operationOptions,
+  })
+}
+export const RecentEventsDocument = gql`
+  query RecentEvents($cursor: Cursor) {
+    allEvents(last: 15, before: $cursor) @connection(key: "events") {
+      nodes {
+        ...eventFields
+      }
+      pageInfo {
+        endCursor
+        hasPreviousPage
+      }
+    }
+  }
+  ${eventFieldsFragmentDoc}
+`
+
+export const RecentEventsComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.QueryProps<RecentEventsQuery, RecentEventsQueryVariables>,
+      "query"
+    >,
+    "variables"
+  > & { variables?: RecentEventsQueryVariables }
+) => (
+  <ReactApollo.Query<RecentEventsQuery, RecentEventsQueryVariables>
+    query={RecentEventsDocument}
+    {...props}
+  />
+)
+
+export type RecentEventsProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<RecentEventsQuery, RecentEventsQueryVariables>
+> &
+  TChildProps
+export function withRecentEvents<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    RecentEventsQuery,
+    RecentEventsQueryVariables,
+    RecentEventsProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    RecentEventsQuery,
+    RecentEventsQueryVariables,
+    RecentEventsProps<TChildProps>
+  >(RecentEventsDocument, {
+    alias: "withRecentEvents",
     ...operationOptions,
   })
 }

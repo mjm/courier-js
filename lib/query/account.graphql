@@ -5,3 +5,25 @@ query CurrentUser {
     picture
   }
 }
+
+query RecentEvents($cursor: Cursor) {
+  allEvents(last: 15, before: $cursor) @connection(key: "events") {
+    nodes {
+      ...eventFields
+    }
+    pageInfo {
+      endCursor
+      hasPreviousPage
+    }
+  }
+}
+
+fragment eventFields on Event {
+  id
+  eventType
+  createdAt
+  feed {
+    id
+    title
+  }
+}
