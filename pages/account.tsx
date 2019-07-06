@@ -137,5 +137,11 @@ const EventDescription = ({ event }: EventDescriptionProps) => {
       return <>You subscribed to "{feedTitle}"</>
     case EventType.FeedUnsubscribe:
       return <>You unsubscribed from "{feedTitle}"</>
+    case EventType.TweetCancel:
+      return <>You canceled a draft tweet.</>
+    case EventType.TweetUncancel:
+      return <>You turned a canceled tweet back into a draft.</>
+    case EventType.TweetEdit:
+      return <>You edited a draft tweet.</>
   }
 }

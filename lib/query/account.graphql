@@ -26,5 +26,9 @@ fragment eventFields on Event {
     id
     title
   }
+  tweet {
+    id
+    body
+  }
   boolValue
 }

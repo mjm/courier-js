@@ -150,6 +150,9 @@ export type EventType =
   | "feed_set_autopost"
   | "feed_subscribe"
   | "feed_unsubscribe"
+  | "tweet_cancel"
+  | "tweet_uncancel"
+  | "tweet_edit"
 
 export interface Event {
   id: EventId

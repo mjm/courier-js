@@ -53,6 +53,7 @@ export type Event = {
   eventType: EventType
   createdAt: Scalars["DateTime"]
   feed?: Maybe<Feed>
+  tweet?: Maybe<Tweet>
   boolValue?: Maybe<Scalars["Boolean"]>
 }
 
@@ -73,6 +74,9 @@ export enum EventType {
   FeedSetAutopost = "FEED_SET_AUTOPOST",
   FeedSubscribe = "FEED_SUBSCRIBE",
   FeedUnsubscribe = "FEED_UNSUBSCRIBE",
+  TweetCancel = "TWEET_CANCEL",
+  TweetUncancel = "TWEET_UNCANCEL",
+  TweetEdit = "TWEET_EDIT",
 }
 
 export type Feed = {
@@ -495,6 +499,7 @@ export type EventResolvers<
   eventType?: Resolver<ResolversTypes["EventType"], ParentType, ContextType>
   createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>
   feed?: Resolver<Maybe<ResolversTypes["Feed"]>, ParentType, ContextType>
+  tweet?: Resolver<Maybe<ResolversTypes["Tweet"]>, ParentType, ContextType>
   boolValue?: Resolver<
     Maybe<ResolversTypes["Boolean"]>,
     ParentType,

@@ -49,6 +49,7 @@ export type Event = {
   eventType: EventType
   createdAt: Scalars["DateTime"]
   feed?: Maybe<Feed>
+  tweet?: Maybe<Tweet>
   boolValue?: Maybe<Scalars["Boolean"]>
 }
 
@@ -69,6 +70,9 @@ export enum EventType {
   FeedSetAutopost = "FEED_SET_AUTOPOST",
   FeedSubscribe = "FEED_SUBSCRIBE",
   FeedUnsubscribe = "FEED_UNSUBSCRIBE",
+  TweetCancel = "TWEET_CANCEL",
+  TweetUncancel = "TWEET_UNCANCEL",
+  TweetEdit = "TWEET_EDIT",
 }
 
 export type Feed = {
@@ -329,7 +333,10 @@ export type RecentEventsQuery = { __typename?: "Query" } & {
 export type EventFieldsFragment = { __typename?: "Event" } & Pick<
   Event,
   "id" | "eventType" | "createdAt" | "boolValue"
-> & { feed: Maybe<{ __typename?: "Feed" } & Pick<Feed, "id" | "title">> }
+> & {
+    feed: Maybe<{ __typename?: "Feed" } & Pick<Feed, "id" | "title">>
+    tweet: Maybe<{ __typename?: "Tweet" } & Pick<Tweet, "id" | "body">>
+  }
 
 export type AllFeedsQueryVariables = {
   cursor?: Maybe<Scalars["Cursor"]>
@@ -521,6 +528,10 @@ export const eventFieldsFragmentDoc = gql`
     feed {
       id
       title
+    }
+    tweet {
+      id
+      body
     }
     boolValue
   }

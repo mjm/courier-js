@@ -10,6 +10,9 @@ export const EventType: EnumMap<EventTypeGQL, EventTypeRepo> = {
   FEED_SET_AUTOPOST: "feed_set_autopost",
   FEED_SUBSCRIBE: "feed_subscribe",
   FEED_UNSUBSCRIBE: "feed_unsubscribe",
+  TWEET_CANCEL: "tweet_cancel",
+  TWEET_UNCANCEL: "tweet_uncancel",
+  TWEET_EDIT: "tweet_edit",
 }
 
 export const Event: EventResolvers = {
@@ -24,6 +27,15 @@ export const Event: EventResolvers = {
       if (subscribedFeed) {
         return await loaders.feeds.load(subscribedFeed.feedId)
       }
+    }
+
+    return null
+  },
+
+  async tweet(event, {}, { loaders }) {
+    const params = event.parameters as any
+    if (params.tweetId) {
+      return await loaders.tweets.load(params.tweetId)
     }
 
     return null

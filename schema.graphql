@@ -244,6 +244,7 @@ type Event {
   createdAt: DateTime!
 
   feed: Feed
+  tweet: Tweet
   boolValue: Boolean
 }
 
@@ -252,4 +253,7 @@ enum EventType {
   FEED_SET_AUTOPOST
   FEED_SUBSCRIBE
   FEED_UNSUBSCRIBE
+  TWEET_CANCEL
+  TWEET_UNCANCEL
+  TWEET_EDIT
 }

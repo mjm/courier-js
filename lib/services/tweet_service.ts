@@ -10,6 +10,7 @@ import TwitterService from "./twitter_service"
 import { UserIdProvider } from "./user_service"
 import { injectable, inject } from "inversify"
 import * as keys from "../key"
+import EventService from "./event_service"
 
 export interface PostQueuedResult {
   succeeded: number
@@ -23,7 +24,8 @@ class TweetService {
     private tweetLoader: TweetLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
     @inject(keys.UserId) private getUserId: UserIdProvider,
-    private twitter: TwitterService
+    private twitter: TwitterService,
+    private events: EventService
   ) {}
 
   async paged(options: TweetPagingOptions = {}): Promise<Pager<Tweet, any>> {
@@ -42,6 +44,8 @@ class TweetService {
     }
 
     this.tweetLoader.replace(id, updatedTweet)
+    await this.events.record("tweet_cancel", { tweetId: id })
+
     return updatedTweet
   }
 
@@ -57,6 +61,8 @@ class TweetService {
     }
 
     this.tweetLoader.replace(id, updatedTweet)
+    await this.events.record("tweet_uncancel", { tweetId: id })
+
     return updatedTweet
   }
 
@@ -75,6 +81,8 @@ class TweetService {
     }
 
     this.tweetLoader.replace(id, updatedTweet)
+    await this.events.record("tweet_edit", { tweetId: id })
+
     return updatedTweet
   }
 
