@@ -125,7 +125,12 @@ const EventDescription = ({ event }: EventDescriptionProps) => {
   const feedTitle = event.feed && event.feed.title
   switch (event.eventType) {
     case EventType.FeedSetAutopost:
-      return <>You changed autoposting for "{feedTitle}"</>
+      return (
+        <>
+          You turned {event.boolValue ? "on" : "off"} autoposting for "
+          {feedTitle}"
+        </>
+      )
     case EventType.FeedRefresh:
       return <>You refreshed "{feedTitle}"</>
     case EventType.FeedSubscribe:

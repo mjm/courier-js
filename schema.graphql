@@ -244,6 +244,7 @@ type Event {
   createdAt: DateTime!
 
   feed: Feed
+  boolValue: Boolean
 }
 
 enum EventType {

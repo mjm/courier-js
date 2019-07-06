@@ -53,6 +53,7 @@ export type Event = {
   eventType: EventType
   createdAt: Scalars["DateTime"]
   feed?: Maybe<Feed>
+  boolValue?: Maybe<Scalars["Boolean"]>
 }
 
 export type EventConnection = {
@@ -494,6 +495,11 @@ export type EventResolvers<
   eventType?: Resolver<ResolversTypes["EventType"], ParentType, ContextType>
   createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>
   feed?: Resolver<Maybe<ResolversTypes["Feed"]>, ParentType, ContextType>
+  boolValue?: Resolver<
+    Maybe<ResolversTypes["Boolean"]>,
+    ParentType,
+    ContextType
+  >
 }
 
 export type EventConnectionResolvers<

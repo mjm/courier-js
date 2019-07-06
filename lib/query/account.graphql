@@ -26,4 +26,5 @@ fragment eventFields on Event {
     id
     title
   }
+  boolValue
 }

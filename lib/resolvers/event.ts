@@ -28,4 +28,13 @@ export const Event: EventResolvers = {
 
     return null
   },
+
+  boolValue(event) {
+    const params = event.parameters as any
+    if (event.eventType === "feed_set_autopost") {
+      return params.value
+    }
+
+    return null
+  },
 }

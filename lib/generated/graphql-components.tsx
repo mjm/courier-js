@@ -49,6 +49,7 @@ export type Event = {
   eventType: EventType
   createdAt: Scalars["DateTime"]
   feed?: Maybe<Feed>
+  boolValue?: Maybe<Scalars["Boolean"]>
 }
 
 export type EventConnection = {
@@ -327,7 +328,7 @@ export type RecentEventsQuery = { __typename?: "Query" } & {
 
 export type EventFieldsFragment = { __typename?: "Event" } & Pick<
   Event,
-  "id" | "eventType" | "createdAt"
+  "id" | "eventType" | "createdAt" | "boolValue"
 > & { feed: Maybe<{ __typename?: "Feed" } & Pick<Feed, "id" | "title">> }
 
 export type AllFeedsQueryVariables = {
@@ -521,6 +522,7 @@ export const eventFieldsFragmentDoc = gql`
       id
       title
     }
+    boolValue
   }
 `
 export const allFeedSubscriptionsFieldsFragmentDoc = gql`
