@@ -153,6 +153,8 @@ export type EventType =
   | "tweet_cancel"
   | "tweet_uncancel"
   | "tweet_edit"
+  | "tweet_post"
+  | "tweet_autopost"
 
 export interface Event {
   id: EventId

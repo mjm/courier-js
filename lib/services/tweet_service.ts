@@ -95,7 +95,9 @@ class TweetService {
       throw new UserInputError("Only a draft tweet can be posted.")
     }
 
-    return await this.doPost(await this.getUserId(), tweet)
+    const postedTweet = await this.doPost(await this.getUserId(), tweet)
+    await this.events.record("tweet_post", { tweetId: id })
+    return postedTweet
   }
 
   async postQueued(): Promise<PostQueuedResult> {
@@ -108,6 +110,11 @@ class TweetService {
           tweet.feedSubscriptionId
         ))!
         await this.doPost(feed.userId, tweet)
+        await this.events.record(
+          "tweet_autopost",
+          { tweetId: tweet.id },
+          { asUser: feed.userId }
+        )
         results.succeeded++
       } catch (e) {
         // log the error but don't fail the request, or we'll fail other tweets

@@ -123,25 +123,63 @@ interface EventDescriptionProps {
 }
 const EventDescription = ({ event }: EventDescriptionProps) => {
   const feedTitle = event.feed && event.feed.title
+  const tweetBody = event.tweet && event.tweet.body
+
   switch (event.eventType) {
     case EventType.FeedSetAutopost:
       return (
         <>
-          You turned {event.boolValue ? "on" : "off"} autoposting for "
-          {feedTitle}"
+          You turned {event.boolValue ? "on" : "off"} autoposting for{" "}
+          <em>{feedTitle}</em>
         </>
       )
     case EventType.FeedRefresh:
-      return <>You refreshed "{feedTitle}"</>
+      return (
+        <>
+          You refreshed <em>{feedTitle}</em>
+        </>
+      )
     case EventType.FeedSubscribe:
-      return <>You subscribed to "{feedTitle}"</>
+      return (
+        <>
+          You subscribed to <em>{feedTitle}</em>
+        </>
+      )
     case EventType.FeedUnsubscribe:
-      return <>You unsubscribed from "{feedTitle}"</>
+      return (
+        <>
+          You unsubscribed from <em>{feedTitle}</em>
+        </>
+      )
     case EventType.TweetCancel:
-      return <>You canceled a draft tweet.</>
+      return (
+        <>
+          You canceled a draft tweet: <em>{tweetBody}</em>
+        </>
+      )
     case EventType.TweetUncancel:
-      return <>You turned a canceled tweet back into a draft.</>
+      return (
+        <>
+          You turned a canceled tweet back into a draft: <em>{tweetBody}</em>
+        </>
+      )
     case EventType.TweetEdit:
-      return <>You edited a draft tweet.</>
+      return (
+        <>
+          You edited a draft tweet: <em>{tweetBody}</em>
+        </>
+      )
+    case EventType.TweetPost:
+      return (
+        <>
+          You posted to Twitter: <em>{tweetBody}</em>
+        </>
+      )
+    case EventType.TweetAutopost:
+      return (
+        <>
+          Your tweet autoposted to Twitter: <em>{tweetBody}</em>
+        </>
+      )
   }
 }

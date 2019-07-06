@@ -77,6 +77,8 @@ export enum EventType {
   TweetCancel = "TWEET_CANCEL",
   TweetUncancel = "TWEET_UNCANCEL",
   TweetEdit = "TWEET_EDIT",
+  TweetPost = "TWEET_POST",
+  TweetAutopost = "TWEET_AUTOPOST",
 }
 
 export type Feed = {

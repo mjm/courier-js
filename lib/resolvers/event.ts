@@ -13,6 +13,8 @@ export const EventType: EnumMap<EventTypeGQL, EventTypeRepo> = {
   TWEET_CANCEL: "tweet_cancel",
   TWEET_UNCANCEL: "tweet_uncancel",
   TWEET_EDIT: "tweet_edit",
+  TWEET_POST: "tweet_post",
+  TWEET_AUTOPOST: "tweet_autopost",
 }
 
 export const Event: EventResolvers = {
