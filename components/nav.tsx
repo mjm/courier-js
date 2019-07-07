@@ -103,28 +103,36 @@ const Nav = ({ user, isAuthenticating }: Props) => (
       <NavItem brand href="/" icon={faPaperPlane}>
         Courier
       </NavItem>
-      <NavItem href="/tweets" icon={faTwitter}>
-        Tweets
-      </NavItem>
-      <NavItem href="/feeds" icon={faRss}>
-        Feeds
-      </NavItem>
-      <li css={{ flexGrow: 1 }} />
       {user ? (
-        <NavItem href="/account">
-          <Image
-            src={user.picture}
-            width={20}
-            height={20}
-            mr={2}
-            borderRadius="9999px"
-          />
-          <Username>{user.name}</Username>
-        </NavItem>
+        <>
+          <NavItem href="/tweets" icon={faTwitter}>
+            Tweets
+          </NavItem>
+          <NavItem href="/feeds" icon={faRss}>
+            Feeds
+          </NavItem>
+          <li css={{ flexGrow: 1 }} />
+          <NavItem href="/account">
+            <Image
+              src={user.picture}
+              width={20}
+              height={20}
+              mr={2}
+              borderRadius="9999px"
+            />
+            <Username>{user.name}</Username>
+          </NavItem>
+        </>
       ) : isAuthenticating ? null : (
-        <NavItem href="/login" icon={faSignInAlt}>
-          Login
-        </NavItem>
+        <>
+          <NavItem href="/features">Features</NavItem>
+          <NavItem href="/pricing">Pricing</NavItem>
+          <NavItem href="/faq">FAQ</NavItem>
+          <li css={{ flexGrow: 1 }} />
+          <NavItem href="/login" icon={faSignInAlt}>
+            Login
+          </NavItem>
+        </>
       )}
     </Flex>
   </Card>
