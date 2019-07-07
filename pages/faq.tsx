@@ -47,7 +47,7 @@ const FAQ = () => {
         </p>
         <p>
           If your blog supports this feature, add the URL{" "}
-          <code>https://app.courier.blog/ping</code> to the list.
+          <code>https://courier.blog/ping</code> to the list.
         </p>
         <p>
           When your blog pings Courier, it will immediately check the feed for
