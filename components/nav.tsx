@@ -7,6 +7,9 @@ import {
   faRss,
   IconDefinition,
   faSignInAlt,
+  faDollarSign,
+  faQuestion,
+  faStar,
 } from "@fortawesome/free-solid-svg-icons"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Card, Image, Flex } from "@rebass/emotion"
@@ -125,9 +128,15 @@ const Nav = ({ user, isAuthenticating }: Props) => (
         </>
       ) : isAuthenticating ? null : (
         <>
-          <NavItem href="/features">Features</NavItem>
-          <NavItem href="/pricing">Pricing</NavItem>
-          <NavItem href="/faq">FAQ</NavItem>
+          <NavItem href="/features" icon={faStar}>
+            Features
+          </NavItem>
+          <NavItem href="/pricing" icon={faDollarSign}>
+            Pricing
+          </NavItem>
+          <NavItem href="/faq" icon={faQuestion}>
+            FAQ
+          </NavItem>
           <li css={{ flexGrow: 1 }} />
           <NavItem href="/login" icon={faSignInAlt}>
             Login
