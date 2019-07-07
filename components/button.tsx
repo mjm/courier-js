@@ -69,6 +69,7 @@ const StyledButton = styled.button<StyledButtonProps>(
     borderRadius: "0.5rem",
     boxShadow: theme.shadows.sm,
     outline: "none",
+    textDecoration: "none",
     ":disabled": {
       backgroundColor: `${theme.colors.gray[200]} !important`,
       color: `${theme.colors.gray[500]} !important`,
@@ -85,7 +86,10 @@ StyledButton.defaultProps = {
   alignSelf: "flex-start",
 }
 
-type Props = React.PropsWithoutRef<JSX.IntrinsicElements["button"]> & {
+type Props = Omit<
+  React.ComponentPropsWithoutRef<typeof StyledButton>,
+  "size" | "color" | "invert"
+> & {
   size?: "small" | "medium" | "large"
   color?: "primary" | "red" | "blue"
   invert?: boolean
@@ -93,6 +97,8 @@ type Props = React.PropsWithoutRef<JSX.IntrinsicElements["button"]> & {
   icon?: IconDefinition
   spin?: boolean
   useSameIconWhileSpinning?: boolean
+
+  as?: string
 } & SpaceProps
 export const Button = forwardRef<HTMLButtonElement, Props>(
   (
