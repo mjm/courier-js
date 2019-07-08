@@ -4,7 +4,7 @@ import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
-import { NextContext } from "next"
+import { NextPageContext } from "next"
 import {
   GetFeedDetailsComponent,
   RefreshFeedComponent,
@@ -157,7 +157,8 @@ const Feed = ({ id }: Props) => {
   )
 }
 
-Feed.getInitialProps = ({ query }: NextContext<any>): Props => {
+Feed.getInitialProps = ({ query }: NextPageContext): Props => {
+  // @ts-ignore
   return { id: query.id }
 }
 

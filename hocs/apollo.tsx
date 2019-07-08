@@ -1,11 +1,11 @@
 import { withData } from "next-apollo"
 import { HttpLink } from "apollo-link-http"
 import { setContext } from "apollo-link-context"
-import { NextContext } from "next"
+import { NextPageContext } from "next"
 import { getToken } from "../utils/auth0"
 import { IncomingMessage } from "http"
 
-const config = (ctx: NextContext) => {
+const config = (ctx: NextPageContext) => {
   const req = ctx && ctx.req
   const authLink = setContext((_, { headers }) => {
     const token = getToken(req, "accessToken")
