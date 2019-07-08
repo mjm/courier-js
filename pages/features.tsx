@@ -2,8 +2,7 @@ import withDefaultPage from "../hocs/defaultPage"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader, PageDescription } from "../components/header"
-import Card, { CardHeader } from "../components/card"
-import { Heading } from "@rebass/emotion"
+import { CardHeader, ContentCard } from "../components/card"
 
 const Features = () => {
   return (
@@ -14,7 +13,7 @@ const Features = () => {
       <PageDescription>
         Courier is your own personal Twitter bot.
       </PageDescription>
-      <Card mt={4}>
+      <ContentCard mt={4}>
         <CardHeader>Smart translation to Twitter-speak</CardHeader>
         <p>
           Every post you write on your blog will be run through Courier’s
@@ -29,17 +28,15 @@ const Features = () => {
           <li>Attach embedded images</li>
           <li>Turn embedded tweets into a “retweet with comment”</li>
         </ul>
-      </Card>
-      <Card mt={3}>
+      </ContentCard>
+      <ContentCard mt={3}>
         <CardHeader>Catch mistakes before they’re posted</CardHeader>
         <p>
           It’s important that your writing looks how you expect when it goes out
           to your followers. Courier has a few different ways to make sure that
           you say exactly what you mean.
         </p>
-        <Heading fontSize={2} color="primary.800" fontWeight={500}>
-          Review your tweets before they go out
-        </Heading>
+        <h2>Review your tweets before they go out</h2>
         <p>
           By default, Courier will hold back your posts from Twitter, so you
           have a chance to review exactly what will be sent to Twitter when
@@ -48,19 +45,17 @@ const Features = () => {
           automatically, you’ll still have a five minute delay where you can
           confirm or reject Courier’s action.
         </p>
-        <Heading fontSize={2} color="primary.800" fontWeight={500}>
-          Edit and make corrections
-        </Heading>
+        <h2>Edit and make corrections</h2>
         <p>
           You’re not stuck with the translation that Courier makes. If you
           notice something that isn’t quite how you want it, you can easily edit
           your post before it gets tweeted.
         </p>
-      </Card>
-      <Card mt={3}>
+      </ContentCard>
+      <ContentCard mt={3}>
         <CardHeader>Mobile friendly</CardHeader>
         <p>Courier works great on both desktop and mobile.</p>
-      </Card>
+      </ContentCard>
     </Container>
   )
 }

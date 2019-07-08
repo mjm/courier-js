@@ -40,3 +40,21 @@ CardHeader.defaultProps = {
   mb: 2,
   color: "primary.800",
 }
+
+export const ContentCard = styled(Card)(({ theme }) => ({
+  lineHeight: theme.lineHeights.relaxed,
+  "p, ul": {
+    marginTop: theme.space[2],
+    marginBottom: 0,
+    ":first-child": {
+      marginTop: 0,
+    },
+  },
+  h2: {
+    fontSize: theme.fontSizes[2],
+    color: theme.colors.primary[800],
+    fontWeight: 500,
+    fontFamily: theme.fonts.display,
+    marginBottom: 0,
+  },
+}))

@@ -2,7 +2,7 @@ import withDefaultPage from "../hocs/defaultPage"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
-import Card, { CardHeader } from "../components/card"
+import { ContentCard, CardHeader } from "../components/card"
 
 const FAQ = () => {
   return (
@@ -10,7 +10,7 @@ const FAQ = () => {
       <Head title="Frequently Asked Questions" />
 
       <PageHeader>FAQ</PageHeader>
-      <Card mt={4}>
+      <ContentCard mt={4}>
         <CardHeader>Why did you make Courier?</CardHeader>
         <p>
           I really like microblogging: in particular, I like posting my content
@@ -29,8 +29,8 @@ const FAQ = () => {
           posting tweets that felt like they were actually written for Twitter.
           Courier is that tool.
         </p>
-      </Card>
-      <Card mt={3}>
+      </ContentCard>
+      <ContentCard mt={3}>
         <CardHeader>
           My tweets aren’t showing up in Courier as quickly as I’d expect
         </CardHeader>
@@ -53,7 +53,7 @@ const FAQ = () => {
           When your blog pings Courier, it will immediately check the feed for
           new posts and create draft tweets for them.
         </p>
-      </Card>
+      </ContentCard>
     </Container>
   )
 }

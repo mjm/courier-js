@@ -2,7 +2,7 @@ import withDefaultPage from "../hocs/defaultPage"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
-import Card from "../components/card"
+import { ContentCard } from "../components/card"
 import Link from "next/link"
 
 const Pricing = () => {
@@ -11,7 +11,7 @@ const Pricing = () => {
       <Head title="Pricing" />
 
       <PageHeader>Pricing</PageHeader>
-      <Card mt={4}>
+      <ContentCard mt={4}>
         <p>
           It’s easy to get started using Courier. You can sign in with your
           Twitter account at any time for free.
@@ -27,13 +27,13 @@ const Pricing = () => {
           <Link href="/account">
             <a>the account page</a>
           </Link>{" "}
-          for $5 per month.
+          for <strong>$5 per month</strong>.
         </p>
         <p>
           You can cancel your subscription at any time, and it will remain
           active for the remainder of the month.
         </p>
-      </Card>
+      </ContentCard>
     </Container>
   )
 }
