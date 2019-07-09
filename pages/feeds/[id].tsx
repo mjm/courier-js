@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react"
-import Container from "../components/container"
-import Head from "../components/head"
-import { PageHeader } from "../components/header"
-import withSecurePage from "../hocs/securePage"
-import withData from "../hocs/apollo"
+import Container from "../../components/container"
+import Head from "../../components/head"
+import { PageHeader } from "../../components/header"
+import withSecurePage from "../../hocs/securePage"
+import withData from "../../hocs/apollo"
 import { NextPageContext } from "next"
 import {
   GetFeedDetailsComponent,
@@ -13,16 +13,16 @@ import {
   AllFeedsDocument,
   AllFeedSubscriptionsFieldsFragment,
   SetFeedOptionsComponent,
-} from "../lib/generated/graphql-components"
-import Loading from "../components/loading"
-import { ErrorBox } from "../components/error"
+} from "../../lib/generated/graphql-components"
+import Loading from "../../components/loading"
+import { ErrorBox } from "../../components/error"
 import Moment from "react-moment"
 import {
   faTrashAlt,
   faSyncAlt,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons"
-import { Button } from "../components/button"
+import { Button } from "../../components/button"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import {
   AlertDialog,
@@ -30,9 +30,9 @@ import {
   AlertDialogDescription,
 } from "@reach/alert-dialog"
 import Router from "next/router"
-import { InfoField, InfoTable } from "../components/info"
-import Card, { CardHeader } from "../components/card"
-import Group from "../components/group"
+import { InfoField, InfoTable } from "../../components/info"
+import Card, { CardHeader } from "../../components/card"
+import Group from "../../components/group"
 
 interface Props {
   id: string

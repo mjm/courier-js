@@ -87,7 +87,7 @@ const FeedsList = () => {
               {nodes.map(({ id, feed }) => (
                 <Card key={id} css={{ a: { textDecoration: "none" } }}>
                   <CardHeader>
-                    <Link href={`/feed?id=${id}`} as={`/feeds/${id}`}>
+                    <Link href="/feeds/[id]" as={`/feeds/${id}`}>
                       <a>{feed.title}</a>
                     </Link>
                   </CardHeader>
