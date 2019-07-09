@@ -69,7 +69,6 @@
     "next-fonts": "^0.17.0",
     "normalizecss": "^3.0.0",
     "pg": "^7.10.0",
-    "pg-native": "^3.0.0",
     "react": "^16.8.6",
     "react-apollo": "^2.5.5",
     "react-dom": "^16.8.6",

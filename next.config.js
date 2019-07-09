@@ -1,3 +1,4 @@
+const webpack = require("webpack")
 const withCSS = require("@zeit/next-css")
 const withFonts = require("next-fonts")
 
@@ -15,6 +16,8 @@ module.exports = withCSS(
       config.node = {
         fs: "empty",
       }
+
+      config.plugins.push(new webpack.IgnorePlugin(/^pg-native$/))
 
       return config
     },
