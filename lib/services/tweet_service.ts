@@ -7,7 +7,6 @@ import { UserInputError } from "apollo-server-core"
 import { Pager } from "../data/pager"
 import { SubscribedFeedLoader } from "../repositories/feed_subscription_repository"
 import TwitterService from "./twitter_service"
-import { UserIdProvider } from "./user_service"
 import { injectable, inject } from "inversify"
 import * as keys from "../key"
 import EventService from "./event_service"
@@ -23,7 +22,7 @@ class TweetService {
     private tweets: TweetRepository,
     private tweetLoader: TweetLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
-    @inject(keys.UserId) private getUserId: UserIdProvider,
+    @inject(keys.UserId) private getUserId: () => Promise<UserId>,
     private twitter: TwitterService,
     private events: EventService
   ) {}

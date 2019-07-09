@@ -8,8 +8,7 @@
   ],
   "routes": [
     { "src": "/graphql", "dest": "api/graphql.ts" },
-    { "src": "/ping", "dest": "api/ping.ts" },
-    { "src": "/api/(.*)", "dest": "/api/$1.ts" }
+    { "src": "/ping", "dest": "api/ping.ts" }
   ],
   "env": {
     "DATABASE_URL": "@courier-staging-database-url",

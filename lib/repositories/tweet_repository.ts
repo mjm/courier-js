@@ -19,7 +19,6 @@ import { Pager } from "../data/pager"
 import moment from "moment"
 import { injectable, inject } from "inversify"
 import Loader, { LoaderQueryFn } from "../data/loader"
-import { UserIdProvider } from "../services/user_service"
 import * as keys from "../key"
 
 type TweetRow = table.tweets & Pick<table.posts, "published_at">
@@ -226,7 +225,7 @@ export default TweetRepository
 export class TweetLoader extends Loader<Tweet, table.tweets> {
   constructor(
     @inject(keys.DB) db: DatabasePoolType,
-    @inject(keys.UserId) private getUserId: UserIdProvider
+    @inject(keys.UserId) private getUserId: () => Promise<UserId>
   ) {
     super(db)
   }

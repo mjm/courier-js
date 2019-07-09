@@ -10,7 +10,6 @@ import {
 import { Pager } from "../data/pager"
 import { injectable, inject } from "inversify"
 import Loader, { LoaderQueryFn } from "../data/loader"
-import { UserIdProvider } from "../services/user_service"
 import * as keys from "../key"
 
 type FeedSubscriptionRow = table.feed_subscriptions & Pick<table.feeds, "url">
@@ -133,7 +132,7 @@ export class SubscribedFeedLoader extends Loader<
 > {
   constructor(
     @inject(keys.DB) db: DatabasePoolType,
-    @inject(keys.UserId) private getUserId: UserIdProvider
+    @inject(keys.UserId) private getUserId: () => Promise<UserId>
   ) {
     super(db)
   }

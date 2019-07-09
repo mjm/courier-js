@@ -8,12 +8,12 @@ import {
   FeedId,
   Feed,
   FeedSubscriptionId,
+  UserId,
 } from "../data/types"
 import { Pager } from "../data/pager"
 import { scrapeFeed, normalizeURL } from "scrape-feed"
 import { locateFeed } from "feed-locator"
 import ImportService from "./import_service"
-import { UserIdProvider } from "./user_service"
 import { injectable, inject } from "inversify"
 import * as keys from "../key"
 import EventService from "./event_service"
@@ -25,7 +25,7 @@ class FeedService {
     private feedSubscriptions: FeedSubscriptionRepository,
     private feedLoader: FeedLoader,
     private subscribedFeedLoader: SubscribedFeedLoader,
-    @inject(keys.UserId) private getUserId: UserIdProvider,
+    @inject(keys.UserId) private getUserId: () => Promise<UserId>,
     private importService: ImportService,
     private events: EventService
   ) {}

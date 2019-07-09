@@ -1,5 +1,5 @@
-import micro, { RequestHandler, send } from "../lib/micro"
-import { CourierContext } from "../lib/context"
+import micro, { RequestHandler, send } from "../../lib/micro"
+import { CourierContext } from "../../lib/context"
 
 const { tweets } = CourierContext.create()
 

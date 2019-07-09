@@ -1,7 +1,8 @@
 {
-  "presets": [
-    "next/babel",
-    "@zeit/next-typescript/babel",
-    "@emotion/babel-preset-css-prop"
+  "presets": ["next/babel", "@emotion/babel-preset-css-prop"],
+  "plugins": [
+    "babel-plugin-transform-typescript-metadata",
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    ["@babel/plugin-proposal-class-properties", { "loose": true }]
   ]
 }

@@ -1,7 +1,6 @@
 import { injectable, inject } from "inversify"
 import EventRepository from "../repositories/event_repository"
 import { Event, EventType, PagingOptions, UserId } from "../data/types"
-import { UserIdProvider } from "./user_service"
 import * as keys from "../key"
 import { Pager } from "../data/pager"
 
@@ -12,7 +11,7 @@ interface RecordOptions {
 @injectable()
 class EventService {
   constructor(
-    @inject(keys.UserId) private getUserId: UserIdProvider,
+    @inject(keys.UserId) private getUserId: () => Promise<UserId>,
     private events: EventRepository
   ) {}
 
