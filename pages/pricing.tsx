@@ -1,11 +1,12 @@
-import withDefaultPage from "../hocs/defaultPage"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import { ContentCard } from "../components/card"
 import Link from "next/link"
+import withPublicPage from "../hocs/publicPage"
+import { NextPage } from "next"
 
-const Pricing = () => {
+const Pricing: NextPage<{}> = () => {
   return (
     <Container>
       <Head title="Pricing" />
@@ -38,4 +39,4 @@ const Pricing = () => {
   )
 }
 
-export default withDefaultPage(Pricing)
+export default withPublicPage(Pricing)

@@ -1,10 +1,11 @@
-import withDefaultPage from "../hocs/defaultPage"
+import withPublicPage from "../hocs/publicPage"
 import Container from "../components/container"
 import Head from "../components/head"
 import { PageHeader, PageDescription } from "../components/header"
 import { CardHeader, ContentCard } from "../components/card"
+import { NextPage } from "next"
 
-const Features = () => {
+const Features: NextPage<{}> = () => {
   return (
     <Container>
       <Head title="Features" />
@@ -60,4 +61,4 @@ const Features = () => {
   )
 }
 
-export default withDefaultPage(Features)
+export default withPublicPage(Features)
