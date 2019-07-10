@@ -22,6 +22,12 @@ module.exports = withCSS(
       // https://github.com/felixge/node-formidable/issues/337
       config.plugins.push(new webpack.DefinePlugin({ "global.GENTLY": false }))
 
+      config.module.rules.push({
+        test: /\.graphql$/,
+        exclude: /node_modules/,
+        use: "raw-loader",
+      })
+
       return config
     },
   })

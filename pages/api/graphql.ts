@@ -1,12 +1,11 @@
 import { ApolloServer, makeExecutableSchema, gql } from "apollo-server-micro"
-import micro from "../lib/micro"
-import { readFileSync } from "fs"
-import * as path from "path"
-import resolvers from "../lib/resolvers"
-import { CourierContext } from "../lib/context"
+import resolvers from "../../lib/resolvers"
+import { CourierContext } from "../../lib/context"
+
+const schemaText = require("../../schema.graphql").default
 
 const typeDefs = gql`
-  ${readFileSync(path.join(__dirname, "../schema.graphql")).toString("utf8")}
+  ${schemaText}
 `
 
 const schema = makeExecutableSchema({ typeDefs, resolvers: resolvers as any })
@@ -17,6 +16,11 @@ const server = new ApolloServer({
   introspection: true,
   playground: true,
 })
-const handler = server.createHandler()
 
-export default micro(handler)
+export default server.createHandler({ path: "/api/graphql" })
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}

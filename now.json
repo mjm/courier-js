@@ -2,12 +2,9 @@
   "version": 2,
   "name": "courier",
   "alias": "courier.now.sh",
-  "builds": [
-    { "src": "next.config.js", "use": "@now/next@canary" },
-    { "src": "api/**/*.ts", "use": "@now/node" }
-  ],
+  "builds": [{ "src": "next.config.js", "use": "@now/next@canary" }],
   "routes": [
-    { "src": "/graphql", "dest": "api/graphql.ts" },
+    { "src": "/graphql", "dest": "/api/graphql" },
     { "src": "/ping", "dest": "/api/ping" }
   ],
   "env": {

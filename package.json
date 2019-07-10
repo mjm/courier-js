@@ -100,6 +100,7 @@
     "babel-plugin-transform-typescript-metadata": "^0.2.2",
     "concurrently": "^4.1.0",
     "node-pg-migrate": "^3.20.0",
+    "raw-loader": "^3.0.0",
     "schemats": "^3.0.3",
     "typescript": "^3.5.2"
   }
