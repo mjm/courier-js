@@ -19,6 +19,9 @@ module.exports = withCSS(
 
       config.plugins.push(new webpack.IgnorePlugin(/^pg-native$/))
 
+      // https://github.com/felixge/node-formidable/issues/337
+      config.plugins.push(new webpack.DefinePlugin({ "global.GENTLY": false }))
+
       return config
     },
   })
