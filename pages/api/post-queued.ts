@@ -1,13 +1,11 @@
-import micro, { RequestHandler, send } from "../../lib/micro"
 import { CourierContext } from "../../lib/context"
+import { NextApiRequest, NextApiResponse } from "next"
 
 const { tweets } = CourierContext.create()
 
-const handler: RequestHandler = async (_req, res) => {
+export default async (_req: NextApiRequest, res: NextApiResponse) => {
   const results = await tweets.postQueued()
 
   console.log(results)
-  send(res, 200, results)
+  res.send(results)
 }
-
-export default micro(handler)
