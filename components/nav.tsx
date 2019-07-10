@@ -87,11 +87,11 @@ const Username = styled.span`
 `
 
 interface Props {
-  user: any
-  isAuthenticating: boolean
+  user?: any
+  isAuthenticating?: boolean
 }
 
-const Nav = ({ user, isAuthenticating }: Props) => (
+const Nav = ({ user, isAuthenticating = false }: Props) => (
   <Card as="nav" bg="primary.700" boxShadow="sm">
     <Global styles={bodyStyles} />
     <Global styles={dialogStyles} />

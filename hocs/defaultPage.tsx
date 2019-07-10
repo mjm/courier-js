@@ -1,40 +1,51 @@
 import React from "react"
 import { getUser, isAuthenticated } from "../utils/auth0"
 import Nav from "../components/nav"
+import { NextPageContext, NextPage } from "next"
 
-interface Props {
+type DefaultPageProps<T> = T & {
   user: any
   isAuthenticating: boolean
-  [key: string]: any
+  isAuthenticated: boolean
+  currentUrl: string
 }
 
-export default (Page: any) =>
-  class DefaultPage extends React.Component<Props> {
-    static async getInitialProps(ctx: any): Promise<any> {
-      const req = ctx && ctx.req
-      const user = getUser(req)
-      let pageProps: any = {}
-      if (Page.getInitialProps) {
-        pageProps = await Page.getInitialProps({ ...ctx, user })
-      }
+export interface DefaultPage<T> {
+  (props: DefaultPageProps<T>): JSX.Element
+  getInitialProps?(ctx: DefaultPageContext): Promise<T>
+}
 
-      return {
-        ...pageProps,
-        user,
-        currentUrl: ctx.pathname,
-        isAuthenticated: !!user && isAuthenticated(req),
-      }
+export type DefaultPageResult<T> = NextPage<DefaultPageProps<T>>
+
+export interface DefaultPageContext extends NextPageContext {
+  user: any
+}
+
+export default function withDefaultPage<T>(
+  Page: DefaultPage<T>
+): DefaultPageResult<T> {
+  const defaultPage: DefaultPageResult<T> = props => (
+    <>
+      <Nav user={props.user} isAuthenticating={props.isAuthenticating} />
+      <Page {...props} />
+    </>
+  )
+
+  defaultPage.getInitialProps = async ctx => {
+    const req = ctx && ctx.req
+    const user = getUser(req)
+    let pageProps: any = {}
+    if (Page.getInitialProps) {
+      pageProps = await Page.getInitialProps({ ...ctx, user })
     }
 
-    render() {
-      return (
-        <>
-          <Nav
-            user={this.props.user}
-            isAuthenticating={this.props.isAuthenticating}
-          />
-          <Page {...this.props} />
-        </>
-      )
+    return {
+      ...pageProps,
+      user,
+      currentUrl: ctx.pathname,
+      isAuthenticated: !!user && isAuthenticated(req),
     }
   }
+
+  return defaultPage
+}

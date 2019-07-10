@@ -1,13 +1,13 @@
 import React from "react"
 import Link from "next/link"
 import Head from "../components/head"
-import withDefaultPage from "../hocs/defaultPage"
+import withDefaultPage, { DefaultPage } from "../hocs/defaultPage"
 import Router from "next/router"
 import { Card, Text, Box, Heading } from "@rebass/emotion"
 import Group from "../components/group"
 import { Button } from "../components/button"
 
-const Home = () => {
+const Home: DefaultPage<{}> = () => {
   return (
     <Box>
       <Head title="Courier" />
@@ -74,7 +74,7 @@ const Home = () => {
   )
 }
 
-Home.getInitialProps = ({ res, user }: any) => {
+Home.getInitialProps = async ({ res, user }) => {
   if (!user) {
     return {}
   }
@@ -85,6 +85,8 @@ Home.getInitialProps = ({ res, user }: any) => {
   } else {
     Router.push("/tweets")
   }
+
+  return {}
 }
 
 export default withDefaultPage(Home)

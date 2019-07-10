@@ -1,5 +1,5 @@
 import React from "react"
-import withDefaultPage from "./defaultPage"
+import withDefaultPage, { DefaultPage, DefaultPageResult } from "./defaultPage"
 import Link from "next/link"
 import Loading from "../components/loading"
 import { PageHeader } from "../components/header"
@@ -11,67 +11,59 @@ import {
 import Icon from "../components/icon"
 import { Text, Flex, Card, Button } from "@rebass/emotion"
 
-interface Props {
-  isAuthenticated: boolean
-  isAuthenticating: boolean
-}
-
-const securePage = (Page: any) =>
-  class SecurePage extends React.Component<Props> {
-    static async getInitialProps(ctx: any) {
-      let pageProps = {}
-
-      if (Page.getInitialProps) {
-        pageProps = await Page.getInitialProps(ctx)
+export default function withSecurePage<T>(
+  Page: DefaultPage<T>
+): DefaultPageResult<T> {
+  const securePage: DefaultPage<T> = props => {
+    if (!props.isAuthenticated) {
+      if (props.isAuthenticating) {
+        return <Loading />
+      } else {
+        return (
+          <Card
+            my="20vh"
+            mx="auto"
+            bg="white"
+            boxShadow="lg"
+            borderTop="4px solid"
+            borderColor="primary.500"
+            p={3}
+            pb={5}
+            css={{ maxWidth: "600px" }}
+          >
+            <Flex flexDirection="column" alignItems="center">
+              <Head title="Log In to Courier" />
+              <PageHeader>
+                <Icon mr={2} color="primary.700" icon={faExclamationTriangle} />
+                Uh Oh!
+              </PageHeader>
+              <Text fontSize={3} textAlign="center" my={3}>
+                You need to be logged in to see this page.
+              </Text>
+              <Link href="/login" passHref>
+                <LoginLink />
+              </Link>
+            </Flex>
+          </Card>
+        )
       }
-
-      return pageProps
     }
 
-    render() {
-      if (!this.props.isAuthenticated) {
-        if (this.props.isAuthenticating) {
-          return <Loading />
-        } else {
-          return (
-            <Card
-              my="20vh"
-              mx="auto"
-              bg="white"
-              boxShadow="lg"
-              borderTop="4px solid"
-              borderColor="primary.500"
-              p={3}
-              pb={5}
-              css={{ maxWidth: "600px" }}
-            >
-              <Flex flexDirection="column" alignItems="center">
-                <Head title="Log In to Courier" />
-                <PageHeader>
-                  <Icon
-                    mr={2}
-                    color="primary.700"
-                    icon={faExclamationTriangle}
-                  />
-                  Uh Oh!
-                </PageHeader>
-                <Text fontSize={3} textAlign="center" my={3}>
-                  You need to be logged in to see this page.
-                </Text>
-                <Link href="/login" passHref>
-                  <LoginLink />
-                </Link>
-              </Flex>
-            </Card>
-          )
-        }
+    return <Page {...props} />
+  }
+
+  if (Page.getInitialProps) {
+    securePage.getInitialProps = async ctx => {
+      if (Page.getInitialProps) {
+        return await Page.getInitialProps(ctx)
       }
 
-      return <Page {...this.props} />
+      throw new Error("getInitialProps was defined later")
     }
   }
 
-export default (Page: any) => withDefaultPage(securePage(Page))
+  return withDefaultPage(securePage)
+}
 
 const LoginLink = ({ href }: { href?: string }) => (
   <Button
