@@ -1,4 +1,3 @@
-import micro from "../../lib/micro"
 import { xmlrpc, XMLRPCRequestHandler } from "../../lib/xmlrpc"
 import { CourierContext } from "../../lib/context"
 
@@ -27,4 +26,4 @@ const handler: XMLRPCRequestHandler = async ({ methodName, params }) => {
   }
 }
 
-export default micro(xmlrpc(handler))
+export default xmlrpc(handler)

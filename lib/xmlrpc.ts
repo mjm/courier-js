@@ -1,6 +1,6 @@
 import Deserializer from "xmlrpc/lib/deserializer"
 import Serializer from "xmlrpc/lib/serializer"
-import { RequestHandler, send } from "./micro"
+import { NextApiRequest, NextApiResponse } from "next"
 
 export interface XMLRPCRequest {
   methodName: string
@@ -12,6 +12,8 @@ export type XMLRPCResponse = any
 export interface XMLRPCRequestHandler {
   (req: XMLRPCRequest): Promise<XMLRPCResponse>
 }
+
+type RequestHandler = (req: NextApiRequest, res: NextApiResponse) => any
 
 export function xmlrpc(fn: XMLRPCRequestHandler): RequestHandler {
   return async (req, res) => {
@@ -41,6 +43,6 @@ export function xmlrpc(fn: XMLRPCRequestHandler): RequestHandler {
     }
 
     res.setHeader("Content-Type", "text/xml")
-    send(res, 200, xml)
+    res.send(xml)
   }
 }
