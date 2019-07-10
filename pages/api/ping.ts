@@ -1,6 +1,6 @@
-import micro from "../lib/micro"
-import { xmlrpc, XMLRPCRequestHandler } from "../lib/xmlrpc"
-import { CourierContext } from "../lib/context"
+import micro from "../../lib/micro"
+import { xmlrpc, XMLRPCRequestHandler } from "../../lib/xmlrpc"
+import { CourierContext } from "../../lib/context"
 
 const { feeds } = CourierContext.create()
 
