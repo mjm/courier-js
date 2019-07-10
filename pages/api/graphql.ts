@@ -17,7 +17,7 @@ const server = new ApolloServer({
   playground: true,
 })
 
-export default server.createHandler({ path: "/api/graphql" })
+export default server.createHandler({ path: "/graphql" })
 
 export const config = {
   api: {
