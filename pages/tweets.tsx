@@ -130,7 +130,7 @@ const TweetsList = ({
                 {totalCount} {title}
                 {totalCount === 1 ? "" : "s"}
               </SectionHeader>
-              <FlushContainer>
+              <FlushContainer mb={4}>
                 <Group direction="column" spacing={3}>
                   {nodes.map(tweet => (
                     <TweetCard key={tweet.id} tweet={tweet} user={user} />
