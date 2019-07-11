@@ -19,7 +19,7 @@ export const PageDescription = (props: TextProps) => (
 export const SectionHeader = (props: HeadingProps) => (
   <Heading
     my={3}
-    fontSize={5}
+    fontSize={[4, 5]}
     color="primary.800"
     letterSpacing="tight"
     {...props}
