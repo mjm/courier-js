@@ -60,9 +60,9 @@ const TweetsList = ({
 
   return (
     <div>
-      <QueryComponent>
+      <QueryComponent fetchPolicy="cache-and-network">
         {({ data, error, loading, fetchMore }) => {
-          if (loading) {
+          if (loading && !(data && data.allTweets)) {
             return (
               <>
                 <SectionHeader>{title}s</SectionHeader>

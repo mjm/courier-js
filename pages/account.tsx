@@ -99,7 +99,7 @@ const RecentEvents = () => {
       <CardHeader>Recent Activity</CardHeader>
       <RecentEventsComponent fetchPolicy="cache-and-network">
         {({ data, loading, error }) => {
-          if (loading) {
+          if (loading && !(data && data.allEvents)) {
             return <Loading />
           }
 
