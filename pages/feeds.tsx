@@ -230,4 +230,4 @@ function updateCachedFeeds(
   })
 }
 
-export default withSecurePage(withData(Feeds))
+export default withData(withSecurePage(Feeds))

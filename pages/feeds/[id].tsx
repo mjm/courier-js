@@ -160,7 +160,7 @@ const Feed = ({ id }: Props) => {
   )
 }
 
-Feed.getInitialProps = ({ query }: NextPageContext): Props => {
+Feed.getInitialProps = async ({ query }: NextPageContext): Promise<Props> => {
   // @ts-ignore
   return { id: query.id }
 }
@@ -307,4 +307,4 @@ const RemoveButton = ({ id }: RemoveButtonProps) => {
   )
 }
 
-export default withSecurePage(withData(Feed))
+export default withData(withSecurePage(Feed))

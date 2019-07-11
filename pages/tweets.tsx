@@ -41,7 +41,7 @@ const Tweets = ({ user }: any) => (
   </Container>
 )
 
-export default withSecurePage(withData(Tweets))
+export default withData(withSecurePage(Tweets))
 
 interface TweetsListProps {
   // this type should match both upcoming and past.

@@ -93,7 +93,7 @@ const Account = () => {
   )
 }
 
-export default withSecurePage(withData(Account))
+export default withData(withSecurePage(Account))
 
 const RecentEvents = () => {
   return (
