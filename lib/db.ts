@@ -20,6 +20,7 @@ const pool = createPool(process.env.DATABASE_URL || "", {
     }),
     createLoggingInterceptor(),
   ],
+  captureStackTrace: false,
 })
 
 export default pool
