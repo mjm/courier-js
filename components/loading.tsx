@@ -17,14 +17,10 @@ const Loading = ({ delay = 1000 }: Props) => {
     return () => clearTimeout(timer)
   }, [delay])
 
-  if (!show) {
-    return null
-  }
-
   return (
     <div>
       <Icon
-        style={{ display: "block" }}
+        css={{ display: "block", visibility: show ? "visible" : "hidden" }}
         my={4}
         mx="auto"
         fontSize={7}
