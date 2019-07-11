@@ -17,6 +17,7 @@ import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
 import Group from "../group"
 import { Image, Box, Flex } from "@rebass/emotion"
+import { URLContainer } from "../url"
 
 mention(linkify)
 
@@ -45,7 +46,7 @@ const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
         }}
         css={{ whiteSpace: "pre-wrap" }}
       >
-        {tweet.body}
+        <URLContainer>{tweet.body}</URLContainer>
       </Linkify>
       {tweet.mediaURLs.length ? (
         <Flex mt={2} flexWrap="wrap">

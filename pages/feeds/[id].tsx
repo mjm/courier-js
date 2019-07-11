@@ -33,6 +33,7 @@ import Router from "next/router"
 import { InfoField, InfoTable } from "../../components/info"
 import Card, { CardHeader } from "../../components/card"
 import Group from "../../components/group"
+import URL from "../../components/url"
 
 interface Props {
   id: string
@@ -81,11 +82,13 @@ const Feed = ({ id }: Props) => {
                   <ErrorBox error={actionError} />
                   <Card>
                     <InfoField label="Feed URL">
-                      <a href={feed.feed.url}>{feed.feed.url}</a>
+                      <a href={feed.feed.url}>
+                        <URL>{feed.feed.url}</URL>
+                      </a>
                     </InfoField>
                     <InfoField label="Home Page">
                       <a href={feed.feed.homePageURL}>
-                        {feed.feed.homePageURL}
+                        <URL>{feed.feed.homePageURL}</URL>
                       </a>
                     </InfoField>
                   </Card>

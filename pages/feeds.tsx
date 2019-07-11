@@ -32,6 +32,7 @@ import orderBy from "lodash/orderBy"
 import Card, { CardHeader } from "../components/card"
 import Group from "../components/group"
 import Icon from "../components/icon"
+import URL from "../components/url"
 
 const Feeds = () => (
   <Container>
@@ -53,12 +54,6 @@ const InfoRow = styled.div(({ theme }: any) => ({
   alignItems: "center",
 }))
 const InfoLink = InfoRow.withComponent("a")
-
-const URL = styled.span`
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-word;
-`
 
 type InfoIconProps = { icon: IconDefinition }
 const InfoIcon = ({ icon }: InfoIconProps) => (

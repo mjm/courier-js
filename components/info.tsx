@@ -8,7 +8,12 @@ type InfoFieldProps = React.PropsWithoutRef<JSX.IntrinsicElements["div"]> & {
 export const InfoField = ({ label, children, ...props }: InfoFieldProps) => (
   <Text lineHeight="relaxed">
     <Flex {...props}>
-      <Text width={180} color="primary.800" fontWeight={500}>
+      <Text
+        width={[120, 180]}
+        color="primary.800"
+        fontWeight={500}
+        css={{ flexShrink: 0 }}
+      >
         {label}
       </Text>
       <Text color="gray.900">{children}</Text>
