@@ -1,6 +1,5 @@
 import React from "react"
 import styled from "@emotion/styled"
-import { Global, InterpolationWithTheme } from "@emotion/core"
 import Link from "next/link"
 import {
   faPaperPlane,
@@ -10,48 +9,14 @@ import {
   faDollarSign,
   faQuestion,
   faStar,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Card, Image, Flex } from "@rebass/emotion"
 import Icon from "./icon"
-
-import "@reach/dialog/styles.css"
-
-const bodyStyles: InterpolationWithTheme<any> = theme => ({
-  html: {
-    boxSizing: "border-box",
-  },
-  "*, *:before, *:after": {
-    boxSizing: "inherit",
-  },
-  body: {
-    fontFamily: theme.fonts.body,
-    backgroundColor: "#f9ffff",
-  },
-})
-
-const dialogStyles: InterpolationWithTheme<any> = theme => ({
-  "[data-reach-dialog-content]": {
-    width: "500px",
-    maxWidth: "100%",
-    backgroundColor: "white",
-    boxShadow: theme.shadow.lg,
-    padding: theme.space[3],
-    borderTop: `3px solid ${theme.colors.primary[600]}`,
-    borderBottomLeftRadius: "0.25rem",
-    borderBottomRightRadius: "0.25rem",
-  },
-  "[data-reach-alert-dialog-label]": {
-    fontFamily: theme.font.display,
-    fontSize: "1.2rem",
-    fontWeight: 500,
-    marginBottom: theme.space[2],
-    color: theme.colors.primary[800],
-  },
-  "[data-reach-alert-dialog-description]": {
-    lineHeight: theme.lineHeights.normal,
-  },
-})
+import { BodyStyles } from "./body"
+import { DialogStyles } from "./dialog"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 const NavLink = styled.a(({ theme }) => ({
   color: "white",
@@ -76,76 +41,107 @@ const BrandLink = styled(NavLink)(({ theme }) => ({
   fontFamily: theme.font.display,
 }))
 
-const Username = styled.span`
-  text-indent: -9999px;
-  width: 0;
+const ToggleButton = styled.button(({ theme }) => ({
+  position: "absolute",
+  top: 8,
+  right: 16,
+  display: "inline-block",
+  backgroundColor: theme.colors.primary[700],
+  color: "white",
+  border: 0,
+  outline: "none",
+  [`@media (min-width: ${theme.breakpoints[0]})`]: {
+    display: "none",
+  },
+}))
 
-  @media (min-width: 640px) {
-    text-indent: 0;
-    width: auto;
-  }
-`
+const Username = styled.span``
 
 interface Props {
   user?: any
   isAuthenticating?: boolean
 }
 
-const Nav = ({ user, isAuthenticating = false }: Props) => (
-  <Card as="nav" bg="primary.700" boxShadow="sm">
-    <Global styles={bodyStyles} />
-    <Global styles={dialogStyles} />
-    <Flex
-      as="ul"
-      alignItems="center"
-      my={0}
-      mx={[0, 3]}
-      px={2}
-      css={{ listStyle: "none", lineHeight: "1.6em" }}
-    >
-      <NavItem brand href="/" icon={faPaperPlane}>
-        Courier
-      </NavItem>
-      {user ? (
-        <>
-          <NavItem href="/tweets" icon={faTwitter}>
-            Tweets
-          </NavItem>
-          <NavItem href="/feeds" icon={faRss}>
-            Feeds
-          </NavItem>
-          <li css={{ flexGrow: 1 }} />
-          <NavItem href="/account">
-            <Image
-              src={user.picture}
-              width={20}
-              height={20}
-              mr={2}
-              borderRadius="9999px"
-            />
-            <Username>{user.name}</Username>
-          </NavItem>
-        </>
-      ) : isAuthenticating ? null : (
-        <>
-          <NavItem href="/features" icon={faStar}>
-            Features
-          </NavItem>
-          <NavItem href="/pricing" icon={faDollarSign}>
-            Pricing
-          </NavItem>
-          <NavItem href="/faq" icon={faQuestion}>
-            FAQ
-          </NavItem>
-          <li css={{ flexGrow: 1 }} />
-          <NavItem href="/login" icon={faSignInAlt}>
-            Login
-          </NavItem>
-        </>
-      )}
-    </Flex>
-  </Card>
-)
+const Nav = ({ user, isAuthenticating = false }: Props) => {
+  const [menuVisible, setMenuVisible] = React.useState(false)
+
+  return (
+    <Card as="nav" bg="primary.700" boxShadow="sm">
+      <BodyStyles />
+      <DialogStyles />
+
+      <Flex
+        as="ul"
+        alignItems={["stretch", "center"]}
+        flexDirection={["column", "row"]}
+        my={0}
+        mx={[0, 3]}
+        px={2}
+        css={{ listStyle: "none", lineHeight: "1.6em" }}
+      >
+        <ToggleButton onClick={() => setMenuVisible(v => !v)}>
+          <FontAwesomeIcon icon={faBars} />
+        </ToggleButton>
+        <NavItem brand href="/" icon={faPaperPlane}>
+          Courier
+        </NavItem>
+        <li
+          css={{
+            flexGrow: 1,
+            display: menuVisible ? "block" : "none",
+            "@media (min-width: 640px)": { display: "block" },
+          }}
+        >
+          <Flex
+            as="ul"
+            alignItems="center"
+            flexDirection={["column", "row"]}
+            px={0}
+            css={{ listStyle: "none" }}
+          >
+            {user ? (
+              <>
+                <NavItem href="/tweets" icon={faTwitter}>
+                  Tweets
+                </NavItem>
+                <NavItem href="/feeds" icon={faRss}>
+                  Feeds
+                </NavItem>
+                <li css={{ flexGrow: 1 }} />
+                <NavItem href="/account">
+                  <Image
+                    src={user.picture}
+                    width={20}
+                    height={20}
+                    mr={2}
+                    borderRadius="9999px"
+                  />
+                  <Username>{user.name}</Username>
+                </NavItem>
+              </>
+            ) : isAuthenticating ? null : (
+              <>
+                <NavItem href="/features" icon={faStar}>
+                  Features
+                </NavItem>
+                <NavItem href="/pricing" icon={faDollarSign}>
+                  Pricing
+                </NavItem>
+                <NavItem href="/faq" icon={faQuestion}>
+                  FAQ
+                </NavItem>
+                <li css={{ flexGrow: 1 }} />
+                <NavItem href="/login" icon={faSignInAlt}>
+                  Login
+                </NavItem>
+              </>
+            )}
+          </Flex>
+        </li>
+      </Flex>
+    </Card>
+  )
+}
 
 export default Nav
 
