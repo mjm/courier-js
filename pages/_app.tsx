@@ -1,5 +1,5 @@
 import React from "react"
-import App, { Container } from "next/app"
+import App from "next/app"
 import Router from "next/router"
 import { renewSession, isAuthenticated } from "../utils/auth0"
 import { config } from "@fortawesome/fontawesome-svg-core"
@@ -45,14 +45,12 @@ class MyApp extends App {
     const { Component, pageProps } = this.props
 
     return (
-      <Container>
-        <ThemeProvider theme={theme}>
-          <Component
-            {...pageProps}
-            isAuthenticating={this.state.isAuthenticating}
-          />
-        </ThemeProvider>
-      </Container>
+      <ThemeProvider theme={theme}>
+        <Component
+          {...pageProps}
+          isAuthenticating={this.state.isAuthenticating}
+        />
+      </ThemeProvider>
     )
   }
 }
