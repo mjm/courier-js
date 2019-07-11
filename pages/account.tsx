@@ -16,11 +16,18 @@ import { ErrorBox } from "../components/error"
 import Card, { CardHeader } from "../components/card"
 import Group from "../components/group"
 import { Button } from "../components/button"
-import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons"
-import { logout } from "../utils/auth0"
+import { faSignOutAlt, faCopy } from "@fortawesome/free-solid-svg-icons"
+import { logout, getToken } from "../utils/auth0"
 import Moment from "react-moment"
 
 const Account = () => {
+  async function copyAPIToken() {
+    const token = getToken(null, "accessToken")
+    if (token) {
+      await navigator.clipboard.writeText(token)
+    }
+  }
+
   return (
     <div>
       <Container>
@@ -53,6 +60,18 @@ const Account = () => {
                       @{user.nickname}
                     </a>
                   </InfoField>
+
+                  <Group
+                    mt={3}
+                    direction="row"
+                    spacing={2}
+                    wrap
+                    alignItems="center"
+                  >
+                    <Button icon={faCopy} onClick={copyAPIToken}>
+                      Copy API Token
+                    </Button>
+                  </Group>
                 </Card>
                 <RecentEvents />
                 <Button
