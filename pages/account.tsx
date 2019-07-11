@@ -80,16 +80,17 @@ const Account = () => {
               </CurrentUserComponent>
             </Card>
             <RecentEvents />
-            <Button
-              color="red"
-              size="medium"
-              icon={faSignOutAlt}
-              onClick={() => logout()}
-            >
-              Sign Out
-            </Button>
           </Group>
         </FlushContainer>
+        <Button
+          mt={3}
+          color="red"
+          size="medium"
+          icon={faSignOutAlt}
+          onClick={() => logout()}
+        >
+          Sign Out
+        </Button>
       </Container>
     </div>
   )
