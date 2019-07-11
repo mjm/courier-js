@@ -1,7 +1,7 @@
 import React from "react"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
-import Container from "../components/container"
+import Container, { FlushContainer } from "../components/container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import { InfoField, InfoTable } from "../components/info"
@@ -34,60 +34,62 @@ const Account = () => {
         <Head title="Your Account" />
 
         <PageHeader mb={4}>Your Account</PageHeader>
-        <Group direction="column" spacing={3}>
-          <Card>
-            <CurrentUserComponent>
-              {({ data, error, loading }) => {
-                if (loading) {
-                  return <Loading />
-                }
+        <FlushContainer>
+          <Group direction="column" spacing={3}>
+            <Card>
+              <CurrentUserComponent>
+                {({ data, error, loading }) => {
+                  if (loading) {
+                    return <Loading />
+                  }
 
-                if (error) {
-                  return <ErrorBox error={error} />
-                }
+                  if (error) {
+                    return <ErrorBox error={error} />
+                  }
 
-                if (!data || !data.currentUser) {
-                  return null
-                }
-                const user = data.currentUser
-                return (
-                  <>
-                    <InfoField label="Name">{user.name}</InfoField>
-                    <InfoField label="Twitter Username">
-                      <a
-                        href={`https://twitter.com/${user.nickname}`}
-                        target="_blank"
+                  if (!data || !data.currentUser) {
+                    return null
+                  }
+                  const user = data.currentUser
+                  return (
+                    <>
+                      <InfoField label="Name">{user.name}</InfoField>
+                      <InfoField label="Twitter Username">
+                        <a
+                          href={`https://twitter.com/${user.nickname}`}
+                          target="_blank"
+                        >
+                          @{user.nickname}
+                        </a>
+                      </InfoField>
+
+                      <Group
+                        mt={3}
+                        direction="row"
+                        spacing={2}
+                        wrap
+                        alignItems="center"
                       >
-                        @{user.nickname}
-                      </a>
-                    </InfoField>
-
-                    <Group
-                      mt={3}
-                      direction="row"
-                      spacing={2}
-                      wrap
-                      alignItems="center"
-                    >
-                      <Button icon={faCopy} onClick={copyAPIToken}>
-                        Copy API Token
-                      </Button>
-                    </Group>
-                  </>
-                )
-              }}
-            </CurrentUserComponent>
-          </Card>
-          <RecentEvents />
-          <Button
-            color="red"
-            size="medium"
-            icon={faSignOutAlt}
-            onClick={() => logout()}
-          >
-            Sign Out
-          </Button>
-        </Group>
+                        <Button icon={faCopy} onClick={copyAPIToken}>
+                          Copy API Token
+                        </Button>
+                      </Group>
+                    </>
+                  )
+                }}
+              </CurrentUserComponent>
+            </Card>
+            <RecentEvents />
+            <Button
+              color="red"
+              size="medium"
+              icon={faSignOutAlt}
+              onClick={() => logout()}
+            >
+              Sign Out
+            </Button>
+          </Group>
+        </FlushContainer>
       </Container>
     </div>
   )

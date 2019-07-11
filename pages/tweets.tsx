@@ -16,7 +16,7 @@ import withData from "../hocs/apollo"
 import { faAngleDoubleDown } from "@fortawesome/free-solid-svg-icons"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
-import Container from "../components/container"
+import Container, { FlushContainer } from "../components/container"
 import ViewTweet from "../components/tweet/view"
 import EditTweet from "../components/tweet/edit"
 import { Button } from "../components/button"
@@ -130,23 +130,25 @@ const TweetsList = ({
                 {totalCount} {title}
                 {totalCount === 1 ? "" : "s"}
               </SectionHeader>
-              <Group direction="column" spacing={3}>
-                {nodes.map(tweet => (
-                  <TweetCard key={tweet.id} tweet={tweet} user={user} />
-                ))}
-                {pageInfo.hasPreviousPage && (
-                  <Flex justifyContent="center">
-                    <Button
-                      size="medium"
-                      icon={faAngleDoubleDown}
-                      spin={isLoadingMore}
-                      onClick={loadMore}
-                    >
-                      Show More…
-                    </Button>
-                  </Flex>
-                )}
-              </Group>
+              <FlushContainer>
+                <Group direction="column" spacing={3}>
+                  {nodes.map(tweet => (
+                    <TweetCard key={tweet.id} tweet={tweet} user={user} />
+                  ))}
+                  {pageInfo.hasPreviousPage && (
+                    <Flex justifyContent="center">
+                      <Button
+                        size="medium"
+                        icon={faAngleDoubleDown}
+                        spin={isLoadingMore}
+                        onClick={loadMore}
+                      >
+                        Show More…
+                      </Button>
+                    </Flex>
+                  )}
+                </Group>
+              </FlushContainer>
             </>
           )
         }}

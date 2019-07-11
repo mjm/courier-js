@@ -17,3 +17,7 @@ const Container = (props: BoxProps & MaxWidthProps) => (
 )
 
 export default Container
+
+export const FlushContainer = (props: BoxProps) => (
+  <Box mx={[-3, 0]} {...props} />
+)

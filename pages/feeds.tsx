@@ -26,7 +26,7 @@ import Moment from "react-moment"
 import Loading from "../components/loading"
 import { Button } from "../components/button"
 import { ErrorBox, FieldError } from "../components/error"
-import Container from "../components/container"
+import Container, { FlushContainer } from "../components/container"
 import Link from "next/link"
 import orderBy from "lodash/orderBy"
 import Card, { CardHeader } from "../components/card"
@@ -62,7 +62,7 @@ const InfoIcon = ({ icon }: InfoIconProps) => (
 
 const FeedsList = () => {
   return (
-    <div>
+    <FlushContainer>
       <AllFeedsComponent>
         {({ data, error, loading }) => {
           if (loading) {
@@ -104,7 +104,7 @@ const FeedsList = () => {
           )
         }}
       </AllFeedsComponent>
-    </div>
+    </FlushContainer>
   )
 }
 
