@@ -3,7 +3,7 @@ import { Heading, HeadingProps, Text, TextProps } from "@rebass/emotion"
 export const PageHeader = (props: HeadingProps) => (
   <Heading
     as="h1"
-    fontSize={8}
+    fontSize={[6, 8]}
     textAlign="center"
     letterSpacing="tight"
     color="primary.900"
