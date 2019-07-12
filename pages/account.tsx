@@ -113,7 +113,7 @@ const RecentEvents = () => {
           }
 
           if (!data) {
-            return null
+            return <>You haven't done anything yet.</>
           }
           const events = data.allEvents.nodes
           return (
