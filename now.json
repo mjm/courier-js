@@ -2,7 +2,7 @@
   "version": 2,
   "name": "courier-staging",
   "alias": ["staging.courier.blog", "courier-staging.now.sh"],
-  "builds": [{ "src": "next.config.js", "use": "@now/next@canary" }],
+  "builds": [{ "src": "next.config.js", "use": "@now/next" }],
   "routes": [
     { "src": "/graphql", "dest": "/api/graphql" },
     { "src": "/ping", "dest": "/api/ping" }
