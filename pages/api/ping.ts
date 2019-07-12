@@ -27,3 +27,9 @@ const handler: XMLRPCRequestHandler = async ({ methodName, params }) => {
 }
 
 export default xmlrpc(handler)
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
