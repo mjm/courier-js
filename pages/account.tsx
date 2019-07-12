@@ -113,9 +113,12 @@ const RecentEvents = () => {
           }
 
           if (!data) {
-            return <>You haven't done anything yet.</>
+            return null
           }
           const events = data.allEvents.nodes
+          if (!events.length) {
+            return <>You haven't done anything yet.</>
+          }
           return (
             <InfoTable>
               <colgroup>
