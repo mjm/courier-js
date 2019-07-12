@@ -22,7 +22,7 @@ import EditTweet from "../components/tweet/edit"
 import { Button } from "../components/button"
 import Card from "../components/card"
 import Group from "../components/group"
-import { Flex } from "@rebass/emotion"
+import { Flex, Text } from "@rebass/emotion"
 
 const Tweets = ({ user }: any) => (
   <Container>
@@ -86,7 +86,18 @@ const TweetsList = ({
 
           const { nodes, pageInfo, totalCount } = data.allTweets
           if (!nodes.length) {
-            return null
+            return (
+              <>
+                <SectionHeader>{title}s</SectionHeader>
+                <FlushContainer>
+                  <Card mb={4}>
+                    <Text textAlign="center">
+                      You don't have {title.toLowerCase()}s.
+                    </Text>
+                  </Card>
+                </FlushContainer>
+              </>
+            )
           }
 
           const loadMore = async () => {
