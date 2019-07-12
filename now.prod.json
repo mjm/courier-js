@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "name": "courier",
+  "alias": ["courier.blog", "courier.now.sh"],
+  "builds": [{ "src": "next.config.js", "use": "@now/next@canary" }],
+  "routes": [
+    { "src": "/graphql", "dest": "/api/graphql" },
+    { "src": "/ping", "dest": "/api/ping" }
+  ],
+  "env": {
+    "DATABASE_URL": "@courier-prod-database-url",
+    "BACKEND_CLIENT_ID": "@courier-prod-backend-client-id",
+    "BACKEND_CLIENT_SECRET": "@courier-prod-backend-client-secret",
+    "CLIENT_ID": "@courier-prod-frontend-client-id",
+    "AUTH_DOMAIN": "@courier-prod-auth-domain",
+    "API_IDENTIFIER": "https://courier.blog/api/",
+    "TWITTER_CONSUMER_KEY": "@courier-twitter-consumer-key",
+    "TWITTER_CONSUMER_SECRET": "@courier-twitter-consumer-secret"
+  },
+  "build": {
+    "env": {
+      "CLIENT_ID": "@courier-prod-frontend-client-id",
+      "AUTH_DOMAIN": "@courier-prod-auth-domain",
+      "API_IDENTIFIER": "https://courier.blog/api/"
+    }
+  }
+}

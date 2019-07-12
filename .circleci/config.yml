@@ -8,13 +8,30 @@ jobs:
       - run:
           name: Install Now CLI
           command: sudo npm install -g --unsafe-perm now
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install NPM modules
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Migrate database
+          command: |
+            if [[ "$CIRCLE_BRANCH" == "master" ]]; then
+              env DATABASE_URL="$PROD_DATABASE_URL" npx node-pg-migrate up
+            else
+              env DATABASE_URL="$STAGING_DATABASE_URL" npx node-pg-migrate up
+            fi
       - run:
           name: Deploy to Now
           command: |
             if [[ "$CIRCLE_BRANCH" == "master" ]]; then
-              now --token $NOW_TOKEN --target production
+              now --token $NOW_TOKEN --target production -A now.prod.json
             else
-              now --token $NOW_TOKEN --target staging
+              now --token $NOW_TOKEN --target production
             fi
 workflows:
   version: 2
