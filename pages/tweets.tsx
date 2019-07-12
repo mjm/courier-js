@@ -92,7 +92,7 @@ const TweetsList = ({
                 <FlushContainer>
                   <Card mb={4}>
                     <Text textAlign="center">
-                      You don't have {title.toLowerCase()}s.
+                      You don't have any {title.toLowerCase()}s.
                     </Text>
                   </Card>
                 </FlushContainer>
