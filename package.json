@@ -62,7 +62,7 @@
     "jwks-rsa": "^1.4.0",
     "jwt-decode": "^2.2.0",
     "linkifyjs": "^2.1.8",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "micro": "^9.3.4",
     "next": "^9.0.0",
     "next-apollo": "^2.1.0",
