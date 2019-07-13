@@ -98,13 +98,11 @@ const subscribeSchema = yup.object().shape({
 interface SubscribeData {
   email: string
   name: string
-  card: any
 }
 
 const initialSubscribeData: SubscribeData = {
   email: "",
   name: "",
-  card: null,
 }
 
 interface SubscribeFormProps {}
@@ -175,7 +173,6 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
                       />
                       <ErrorMessage name="email" component={FieldError} />
                       <CardInput onChange={() => setStatus({ error: null })} />
-                      <ErrorMessage name="card" component={FieldError} />
                     </Group>
                   </Card>
                   <ErrorBox error={error} />
