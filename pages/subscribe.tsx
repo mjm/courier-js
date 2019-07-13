@@ -20,6 +20,7 @@ import { SubscribeComponent } from "../lib/generated/graphql-components"
 import * as yup from "yup"
 import { FormikActions, Formik, Form, Field, ErrorMessage } from "formik"
 import { ErrorBox, FieldError } from "../components/error"
+import { Box } from "@rebass/emotion"
 
 const Subscribe = () => {
   const [stripe, setStripe] = React.useState<stripe.Stripe | null>(null)
@@ -57,7 +58,14 @@ const Subscribe = () => {
                 remainder of time you've paid for.
               </p>
             </ContentCard>
-            <Elements>
+            <Elements
+              fonts={[
+                {
+                  cssSrc:
+                    "https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap",
+                },
+              ]}
+            >
               <SubscribeForm />
             </Elements>
           </Group>
@@ -176,22 +184,24 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
 
 interface CardInputProps extends ReactStripeElements.ElementProps {}
 const CardInput = (props: CardInputProps) => (
-  <ThemeContext.Consumer>
-    {(theme: any) => (
-      <CardElement
-        id="card"
-        style={{
-          base: {
-            fontFamily: theme.fonts.body,
-            fontSize: theme.fontSizes[3],
-            color: theme.colors.primary[800],
-          },
-          empty: {
-            color: theme.colors.primary[800],
-          },
-        }}
-        {...props}
-      />
-    )}
-  </ThemeContext.Consumer>
+  <Box py={2}>
+    <ThemeContext.Consumer>
+      {(theme: any) => (
+        <CardElement
+          id="card"
+          style={{
+            base: {
+              fontFamily: theme.fonts.body,
+              fontSize: theme.fontSizes[3],
+              color: theme.colors.primary[800],
+            },
+            empty: {
+              color: theme.colors.primary[800],
+            },
+          }}
+          {...props}
+        />
+      )}
+    </ThemeContext.Consumer>
+  </Box>
 )
