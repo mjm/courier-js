@@ -1,6 +1,7 @@
 import React from "react"
 import Container, { FlushContainer } from "../components/container"
 import withSecurePage from "../hocs/securePage"
+import withData from "../hocs/apollo"
 import { PageHeader, PageDescription } from "../components/header"
 import Head from "../components/head"
 import {
@@ -14,6 +15,7 @@ import Card, { CardHeader, ContentCard } from "../components/card"
 import Group from "../components/group"
 import { Button } from "../components/button"
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons"
+import { SubscribeComponent } from "../lib/generated/graphql-components"
 
 const Subscribe = () => {
   const [stripe, setStripe] = React.useState<stripe.Stripe | null>(null)
@@ -61,58 +63,75 @@ const Subscribe = () => {
   )
 }
 
-export default withSecurePage(Subscribe)
+export default withData(withSecurePage(Subscribe))
 
 interface SubscribeFormProps {}
 const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
   const [submitting, setSubmitting] = React.useState(false)
 
-  async function subscribe() {
-    if (!stripe) {
-      return
-    }
-
-    setSubmitting(true)
-    try {
-      const token = await stripe.createToken()
-      console.log("subscribe with token", token)
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
   return (
-    <ThemeContext.Consumer>
-      {(theme: any) => (
-        <>
-          <Card>
-            <CardHeader>Card Details</CardHeader>
-            <CardElement
-              style={{
-                base: {
-                  fontFamily: theme.fonts.body,
-                  fontSize: theme.fontSizes[3],
-                  color: theme.colors.primary[800],
+    <SubscribeComponent>
+      {subscribe => {
+        async function doSubscribe() {
+          if (!stripe) {
+            return
+          }
+
+          setSubmitting(true)
+          try {
+            const { token, error } = await stripe.createToken()
+            if (token) {
+              await subscribe({
+                variables: {
+                  input: {
+                    tokenID: token.id,
+                    email: "foo",
+                  },
                 },
-                empty: {
-                  color: theme.colors.primary[800],
-                },
-              }}
-            />
-          </Card>
-          <Button
-            size="large"
-            icon={faCreditCard}
-            onClick={subscribe}
-            spin={submitting}
-            alignSelf="center"
-          >
-            Subscribe
-          </Button>
-        </>
-      )}
-    </ThemeContext.Consumer>
+              })
+            } else {
+              console.error(error)
+            }
+          } catch (e) {
+            console.error(e)
+          } finally {
+            setSubmitting(false)
+          }
+        }
+
+        return (
+          <ThemeContext.Consumer>
+            {(theme: any) => (
+              <>
+                <Card>
+                  <CardHeader>Card Details</CardHeader>
+                  <CardElement
+                    style={{
+                      base: {
+                        fontFamily: theme.fonts.body,
+                        fontSize: theme.fontSizes[3],
+                        color: theme.colors.primary[800],
+                      },
+                      empty: {
+                        color: theme.colors.primary[800],
+                      },
+                    }}
+                  />
+                </Card>
+                <Button
+                  size="large"
+                  icon={faCreditCard}
+                  onClick={doSubscribe}
+                  spin={submitting}
+                  alignSelf="center"
+                >
+                  Subscribe
+                </Button>
+              </>
+            )}
+          </ThemeContext.Consumer>
+        )
+      }}
+    </SubscribeComponent>
   )
 })

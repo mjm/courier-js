@@ -116,6 +116,7 @@ export type Mutation = {
   uncancelTweet: UncancelTweetPayload
   postTweet: PostTweetPayload
   editTweet: EditTweetPayload
+  subscribe?: Maybe<SubscribePayload>
 }
 
 export type MutationAddFeedArgs = {
@@ -148,6 +149,10 @@ export type MutationPostTweetArgs = {
 
 export type MutationEditTweetArgs = {
   input: EditTweetInput
+}
+
+export type MutationSubscribeArgs = {
+  input: SubscribeInput
 }
 
 export type PageInfo = {
@@ -260,6 +265,15 @@ export type SubscribedFeedConnection = {
 export type SubscribedFeedEdge = {
   cursor: Scalars["Cursor"]
   node: SubscribedFeed
+}
+
+export type SubscribeInput = {
+  tokenID: Scalars["ID"]
+  email: Scalars["String"]
+}
+
+export type SubscribePayload = {
+  user: User
 }
 
 export type Tweet = {
@@ -430,6 +444,18 @@ export type GetFeedDetailsQuery = { __typename?: "Query" } & {
         }
       }
     } & AllFeedSubscriptionsFieldsFragment
+  >
+}
+
+export type SubscribeMutationVariables = {
+  input: SubscribeInput
+}
+
+export type SubscribeMutation = { __typename?: "Mutation" } & {
+  subscribe: Maybe<
+    { __typename?: "SubscribePayload" } & {
+      user: { __typename?: "User" } & Pick<User, "name">
+    }
   >
 }
 
@@ -1006,6 +1032,57 @@ export function withGetFeedDetails<TProps, TChildProps = {}>(
     GetFeedDetailsProps<TChildProps>
   >(GetFeedDetailsDocument, {
     alias: "withGetFeedDetails",
+    ...operationOptions,
+  })
+}
+export const SubscribeDocument = gql`
+  mutation Subscribe($input: SubscribeInput!) {
+    subscribe(input: $input) {
+      user {
+        name
+      }
+    }
+  }
+`
+export type SubscribeMutationFn = ReactApollo.MutationFn<
+  SubscribeMutation,
+  SubscribeMutationVariables
+>
+
+export const SubscribeComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<SubscribeMutation, SubscribeMutationVariables>,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: SubscribeMutationVariables }
+) => (
+  <ReactApollo.Mutation<SubscribeMutation, SubscribeMutationVariables>
+    mutation={SubscribeDocument}
+    {...props}
+  />
+)
+
+export type SubscribeProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<SubscribeMutation, SubscribeMutationVariables>
+> &
+  TChildProps
+export function withSubscribe<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    SubscribeMutation,
+    SubscribeMutationVariables,
+    SubscribeProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    SubscribeMutation,
+    SubscribeMutationVariables,
+    SubscribeProps<TChildProps>
+  >(SubscribeDocument, {
+    alias: "withSubscribe",
     ...operationOptions,
   })
 }

@@ -41,4 +41,10 @@ export const Mutation: MutationResolvers = {
     const { id, ...changes } = input
     return { tweet: await tweets.update(id, changes) }
   },
+
+  async subscribe(_, { input }, { user }) {
+    const { email, tokenID } = input
+    console.log("Creating subscription for", email, "with token", tokenID)
+    return { user: await user.getUserInfo() }
+  },
 }

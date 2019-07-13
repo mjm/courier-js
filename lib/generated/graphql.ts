@@ -120,6 +120,7 @@ export type Mutation = {
   uncancelTweet: UncancelTweetPayload
   postTweet: PostTweetPayload
   editTweet: EditTweetPayload
+  subscribe?: Maybe<SubscribePayload>
 }
 
 export type MutationAddFeedArgs = {
@@ -152,6 +153,10 @@ export type MutationPostTweetArgs = {
 
 export type MutationEditTweetArgs = {
   input: EditTweetInput
+}
+
+export type MutationSubscribeArgs = {
+  input: SubscribeInput
 }
 
 export type PageInfo = {
@@ -264,6 +269,15 @@ export type SubscribedFeedConnection = {
 export type SubscribedFeedEdge = {
   cursor: Scalars["Cursor"]
   node: SubscribedFeed
+}
+
+export type SubscribeInput = {
+  tokenID: Scalars["ID"]
+  email: Scalars["String"]
+}
+
+export type SubscribePayload = {
+  user: User
 }
 
 export type Tweet = {
@@ -451,6 +465,8 @@ export type ResolversTypes = {
   EditTweetPayload: Omit<EditTweetPayload, "tweet"> & {
     tweet: ResolversTypes["Tweet"]
   }
+  SubscribeInput: SubscribeInput
+  SubscribePayload: SubscribePayload
   FeedConnection: Pager<types.Feed>
   FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
 }
@@ -620,6 +636,12 @@ export type MutationResolvers<
     ContextType,
     MutationEditTweetArgs
   >
+  subscribe?: Resolver<
+    Maybe<ResolversTypes["SubscribePayload"]>,
+    ParentType,
+    ContextType,
+    MutationSubscribeArgs
+  >
 }
 
 export type PageInfoResolvers<
@@ -766,6 +788,13 @@ export type SubscribedFeedEdgeResolvers<
   node?: Resolver<ResolversTypes["SubscribedFeed"], ParentType, ContextType>
 }
 
+export type SubscribePayloadResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["SubscribePayload"]
+> = {
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>
+}
+
 export type TweetResolvers<
   ContextType = CourierContext,
   ParentType = ResolversTypes["Tweet"]
@@ -852,6 +881,7 @@ export type Resolvers<ContextType = CourierContext> = {
   SubscribedFeed?: SubscribedFeedResolvers<ContextType>
   SubscribedFeedConnection?: SubscribedFeedConnectionResolvers<ContextType>
   SubscribedFeedEdge?: SubscribedFeedEdgeResolvers<ContextType>
+  SubscribePayload?: SubscribePayloadResolvers<ContextType>
   Tweet?: TweetResolvers<ContextType>
   TweetConnection?: TweetConnectionResolvers<ContextType>
   TweetEdge?: TweetEdgeResolvers<ContextType>

@@ -39,6 +39,8 @@ type Mutation {
   uncancelTweet(input: UncancelTweetInput!): UncancelTweetPayload!
   postTweet(input: PostTweetInput!): PostTweetPayload!
   editTweet(input: EditTweetInput!): EditTweetPayload!
+
+  subscribe(input: SubscribeInput!): SubscribePayload
 }
 
 type PageInfo {
@@ -224,6 +226,15 @@ input EditTweetInput {
 
 type EditTweetPayload {
   tweet: Tweet!
+}
+
+input SubscribeInput {
+  tokenID: ID!
+  email: String!
+}
+
+type SubscribePayload {
+  user: User!
 }
 
 type EventConnection {
