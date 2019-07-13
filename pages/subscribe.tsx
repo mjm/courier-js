@@ -1,5 +1,5 @@
 import React from "react"
-import Container from "../components/container"
+import Container, { FlushContainer } from "../components/container"
 import withSecurePage from "../hocs/securePage"
 import { PageHeader, PageDescription } from "../components/header"
 import Head from "../components/head"
@@ -32,27 +32,30 @@ const Subscribe = () => {
           Courier.
         </PageDescription>
 
-        <Group direction="column" spacing={3}>
-          <ContentCard>
-            <CardHeader>Subscribing to Courier</CardHeader>
-            <p>
-              When you subscribe to Courier, you'll be charged{" "}
-              <strong>$5 each month</strong>.
-            </p>
-            <p>
-              As long as you are subscribed, you will be able to use Courier to
-              manually or automatically post tweets to your Twitter account.
-            </p>
-            <p>
-              You can cancel your subscription at any time. If you do, you'll
-              continue to be able to post tweets with Courier for the remainder
-              of time you've paid for.
-            </p>
-          </ContentCard>
-          <Elements>
-            <SubscribeForm />
-          </Elements>
-        </Group>
+        <FlushContainer>
+          <Group direction="column" spacing={3}>
+            <ContentCard>
+              <CardHeader>Subscribing to Courier</CardHeader>
+              <p>
+                When you subscribe to Courier, you'll be charged{" "}
+                <strong>$5 each month</strong>.
+              </p>
+              <p>
+                As long as you are subscribed, you will be able to use Courier
+                to manually or automatically post tweets to your Twitter
+                account.
+              </p>
+              <p>
+                You can cancel your subscription at any time. If you do, you'll
+                continue to be able to post tweets with Courier for the
+                remainder of time you've paid for.
+              </p>
+            </ContentCard>
+            <Elements>
+              <SubscribeForm />
+            </Elements>
+          </Group>
+        </FlushContainer>
       </Container>
     </StripeProvider>
   )
