@@ -10,6 +10,7 @@ module.exports = withCSS(
       CLIENT_ID: process.env.CLIENT_ID,
       AUTH_DOMAIN: process.env.AUTH_DOMAIN,
       API_IDENTIFIER: process.env.API_IDENTIFIER,
+      STRIPE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
     },
 
     webpack(config, options) {

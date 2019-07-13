@@ -10,6 +10,7 @@ const Head = (props: {
   description?: string
   url?: string
   ogImage?: string
+  stripe?: boolean
 }) => (
   <NextHead>
     <meta charSet="UTF-8" />
@@ -35,6 +36,7 @@ const Head = (props: {
     <meta property="og:image" content={props.ogImage || defaultOGImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    {props.stripe ? <script src="https://js.stripe.com/v3/" /> : null}
   </NextHead>
 )
 
