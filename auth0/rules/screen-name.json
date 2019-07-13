@@ -2,6 +2,6 @@
   "enabled": true,
   "script": "./screen-name.js",
   "name": "Use Twitter screen name as nickname",
-  "order": 1,
+  "order": 2,
   "stage": "login_success"
 }

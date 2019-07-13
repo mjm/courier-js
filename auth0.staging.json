@@ -6,7 +6,8 @@
     "API_IDENTIFIER": "https://courier.mjm.now.sh/api/",
     "ENV": "staging",
     "NOW_PROJECT": "courier-staging",
-    "SITE_DOMAIN": "staging.courier.blog"
+    "SITE_DOMAIN": "staging.courier.blog",
+    "ALLOWED_USERS": "mjmoriarity,CourierTest"
   },
   "AUTH0_ALLOW_DELETE": false
 }
