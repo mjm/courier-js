@@ -9,6 +9,7 @@ import {
   injectStripe,
   CardElement,
   Elements,
+  ReactStripeElements,
 } from "react-stripe-elements"
 import { ThemeContext } from "@emotion/core"
 import Card, { CardHeader, ContentCard } from "../components/card"
@@ -16,6 +17,9 @@ import Group from "../components/group"
 import { Button } from "../components/button"
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons"
 import { SubscribeComponent } from "../lib/generated/graphql-components"
+import * as yup from "yup"
+import { FormikActions, Formik, Form, Field, ErrorMessage } from "formik"
+import { ErrorBox, FieldError } from "../components/error"
 
 const Subscribe = () => {
   const [stripe, setStripe] = React.useState<stripe.Stripe | null>(null)
@@ -65,73 +69,129 @@ const Subscribe = () => {
 
 export default withData(withSecurePage(Subscribe))
 
+const subscribeSchema = yup.object().shape({
+  email: yup
+    .string()
+    .required("An email address is needed for sending billing-related emails.")
+    .email("This must be a valid email address."),
+  name: yup.string().required("A name is needed for credit card validation."),
+})
+interface SubscribeData {
+  email: string
+  name: string
+  card: any
+}
+
+const initialSubscribeData: SubscribeData = {
+  email: "",
+  name: "",
+  card: null,
+}
+
 interface SubscribeFormProps {}
 const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
-  const [submitting, setSubmitting] = React.useState(false)
-
   return (
     <SubscribeComponent>
       {subscribe => {
-        async function doSubscribe() {
+        async function onSubmit(
+          input: SubscribeData,
+          actions: FormikActions<SubscribeData>
+        ) {
           if (!stripe) {
             return
           }
 
-          setSubmitting(true)
           try {
-            const { token, error } = await stripe.createToken()
+            const { token, error } = await stripe.createToken({
+              name: input.name,
+            })
             if (token) {
               await subscribe({
                 variables: {
                   input: {
                     tokenID: token.id,
-                    email: "foo",
+                    email: input.email,
                   },
                 },
               })
             } else {
               console.error(error)
+              actions.setStatus({ error })
             }
-          } catch (e) {
-            console.error(e)
+          } catch (error) {
+            console.error(error)
+            actions.setStatus({ error })
           } finally {
-            setSubmitting(false)
+            actions.setSubmitting(false)
           }
         }
 
         return (
-          <ThemeContext.Consumer>
-            {(theme: any) => (
-              <>
-                <Card>
-                  <CardHeader>Card Details</CardHeader>
-                  <CardElement
-                    style={{
-                      base: {
-                        fontFamily: theme.fonts.body,
-                        fontSize: theme.fontSizes[3],
-                        color: theme.colors.primary[800],
-                      },
-                      empty: {
-                        color: theme.colors.primary[800],
-                      },
-                    }}
-                  />
-                </Card>
-                <Button
-                  size="large"
-                  icon={faCreditCard}
-                  onClick={doSubscribe}
-                  spin={submitting}
-                  alignSelf="center"
-                >
-                  Subscribe
-                </Button>
-              </>
+          <Formik
+            initialValues={initialSubscribeData}
+            initialStatus={{ error: null }}
+            validationSchema={subscribeSchema}
+            onSubmit={onSubmit}
+            render={({
+              isSubmitting,
+              isValid,
+              setStatus,
+              status: { error },
+            }) => (
+              <Form>
+                <Group direction="column" spacing={3}>
+                  <Card>
+                    <CardHeader>Card Details</CardHeader>
+                    <Field type="text" name="name" placeholder="Name on card" />
+                    <ErrorMessage name="name" component={FieldError} />
+                    <Field
+                      type="email"
+                      name="email"
+                      placeholder="Email address"
+                    />
+                    <ErrorMessage name="email" component={FieldError} />
+                    <CardInput onChange={() => setStatus({ error: null })} />
+                    <ErrorMessage name="card" component={FieldError} />
+                  </Card>
+                  <ErrorBox error={error} />
+                  <Button
+                    size="large"
+                    type="submit"
+                    icon={faCreditCard}
+                    spin={isSubmitting}
+                    alignSelf="center"
+                    disabled={!isValid}
+                  >
+                    Subscribe
+                  </Button>
+                </Group>
+              </Form>
             )}
-          </ThemeContext.Consumer>
+          />
         )
       }}
     </SubscribeComponent>
   )
 })
+
+interface CardInputProps extends ReactStripeElements.ElementProps {}
+const CardInput = (props: CardInputProps) => (
+  <ThemeContext.Consumer>
+    {(theme: any) => (
+      <CardElement
+        id="card"
+        style={{
+          base: {
+            fontFamily: theme.fonts.body,
+            fontSize: theme.fontSizes[3],
+            color: theme.colors.primary[800],
+          },
+          empty: {
+            color: theme.colors.primary[800],
+          },
+        }}
+        {...props}
+      />
+    )}
+  </ThemeContext.Consumer>
+)
