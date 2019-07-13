@@ -4,6 +4,7 @@
   "scripts": {
     "auth:import:staging": "a0deploy import -c auth0.staging.json -i auth0/ -x $STAGING_AUTH_SECRET",
     "auth:import:prod": "a0deploy import -c auth0.prod.json -i auth0/ -x $PROD_AUTH_SECRET",
+    "auth:export:staging": "a0deploy export -c auth0.staging.json -f directory -o auth0/ -x $STAGING_AUTH_SECRET",
     "dev": "concurrently \"npm:dev-*\"",
     "dev-now": "now dev",
     "dev-gen": "npm run gen -- --watch",

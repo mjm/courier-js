@@ -6,7 +6,8 @@
     "API_IDENTIFIER": "https://courier.blog/api/",
     "ENV": "prod",
     "NOW_PROJECT": "courier",
-    "SITE_DOMAIN": "courier.blog"
+    "SITE_DOMAIN": "courier.blog",
+    "ALLOWED_USERS": ""
   },
   "AUTH0_ALLOW_DELETE": false
 }
