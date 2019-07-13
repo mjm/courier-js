@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  deploy:
+  deploy_staging:
     docker:
       - image: circleci/node:8
     steps:
@@ -19,30 +19,45 @@ jobs:
             - ./node_modules
       - run:
           name: Migrate database
-          command: |
-            if [[ "$CIRCLE_BRANCH" == "master" ]]; then
-              env DATABASE_URL="$PROD_DATABASE_URL" npx node-pg-migrate up
-            else
-              env DATABASE_URL="$STAGING_DATABASE_URL" npx node-pg-migrate up
-            fi
+          command: env DATABASE_URL="$STAGING_DATABASE_URL" npx node-pg-migrate up
       - run:
           name: Update Auth0 configuration
-          command: |
-            if [[ "$CIRCLE_BRANCH" == "master" ]]; then
-              npm run auth:import:prod
-            else
-              npm run auth:import:staging
-            fi
+          command: npm run auth:import:staging
       - run:
           name: Deploy to Now
-          command: |
-            if [[ "$CIRCLE_BRANCH" == "master" ]]; then
-              now --token $NOW_TOKEN --target production -A now.prod.json
-            else
-              now --token $NOW_TOKEN --target production
-            fi
+          command: now --token $NOW_TOKEN --target production
+  deploy_prod:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run:
+          name: Install Now CLI
+          command: sudo npm install -g --unsafe-perm now
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install NPM modules
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Migrate database
+          command: env DATABASE_URL="$PROD_DATABASE_URL" npx node-pg-migrate up
+      - run:
+          name: Update Auth0 configuration
+          command: npm run auth:import:prod
+      - run:
+          name: Deploy to Now
+          command: now --token $NOW_TOKEN --target production -A now.prod.json
 workflows:
   version: 2
   release:
     jobs:
-      - deploy
+      - deploy_staging
+      - deploy_prod:
+          filters:
+            branches:
+              only: master
