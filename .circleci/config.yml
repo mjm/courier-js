@@ -26,6 +26,14 @@ jobs:
               env DATABASE_URL="$STAGING_DATABASE_URL" npx node-pg-migrate up
             fi
       - run:
+          name: Update Auth0 configuration
+          command: |
+            if [[ "$CIRCLE_BRANCH" == "master" ]]; then
+              npm run auth:import:prod
+            else
+              npm run auth:import:staging
+            fi
+      - run:
           name: Deploy to Now
           command: |
             if [[ "$CIRCLE_BRANCH" == "master" ]]; then

@@ -1,0 +1,14 @@
+{
+  "options": {
+    "email": true,
+    "profile": true,
+    "scope": [
+      "email",
+      "profile"
+    ]
+  },
+  "strategy": "google-oauth2",
+  "name": "google-oauth2",
+  "is_domain_connection": false,
+  "enabled_clients": []
+}

@@ -1,0 +1,5 @@
+{
+  "client_id": "Courier API (Test Application)",
+  "audience": @@API_IDENTIFIER@@,
+  "scope": []
+}

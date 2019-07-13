@@ -2,6 +2,8 @@
   "name": "courier",
   "license": "MIT",
   "scripts": {
+    "auth:import:staging": "a0deploy import -c auth0.staging.json -i auth0/ -x $STAGING_AUTH_SECRET",
+    "auth:import:prod": "a0deploy import -c auth0.prod.json -i auth0/ -x $PROD_AUTH_SECRET",
     "dev": "concurrently \"npm:dev-*\"",
     "dev-now": "now dev",
     "dev-gen": "npm run gen -- --watch",
@@ -46,6 +48,7 @@
     "apollo-link-http": "^1.5.14",
     "apollo-server-micro": "^2.4.8",
     "auth0": "^2.17.0",
+    "auth0-deploy-cli": "^3.3.2",
     "auth0-js": "^9.10.2",
     "dataloader": "^1.4.0",
     "emotion-theming": "^10.0.10",

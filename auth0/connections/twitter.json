@@ -1,0 +1,16 @@
+{
+  "options": {
+    "client_id": @@TWITTER_CLIENT_ID@@,
+    "client_secret": @@TWITTER_CLIENT_SECRET@@,
+    "profile": true
+  },
+  "strategy": "twitter",
+  "name": "twitter",
+  "is_domain_connection": false,
+  "enabled_clients": [
+    "Courier Backend",
+    "auth0-deploy-cli-extension",
+    "Courier",
+    "Courier API (Test Application)"
+  ]
+}
