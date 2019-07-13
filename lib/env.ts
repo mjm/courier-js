@@ -9,6 +9,8 @@ class Environment {
   backendClientSecret: string
   twitterConsumerKey: string
   twitterConsumerSecret: string
+  stripeKey: string
+  monthlyPlanId: string
 
   constructor() {
     this.authDomain = requireEnv("AUTH_DOMAIN")
@@ -18,6 +20,8 @@ class Environment {
     this.backendClientSecret = requireEnv("BACKEND_CLIENT_SECRET")
     this.twitterConsumerKey = requireEnv("TWITTER_CONSUMER_KEY")
     this.twitterConsumerSecret = requireEnv("TWITTER_CONSUMER_SECRET")
+    this.stripeKey = requireEnv("STRIPE_SECRET_KEY")
+    this.monthlyPlanId = requireEnv("MONTHLY_PLAN_ID")
   }
 }
 

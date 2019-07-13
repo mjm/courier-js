@@ -9,7 +9,7 @@ import {
 } from "../data/types"
 import { Pager } from "../data/pager"
 import { injectable, inject } from "inversify"
-import Loader, { LoaderQueryFn } from "../data/loader"
+import { LoaderQueryFn, QueryLoader } from "../data/loader"
 import * as keys from "../key"
 
 type FeedSubscriptionRow = table.feed_subscriptions & Pick<table.feeds, "url">
@@ -126,7 +126,7 @@ class FeedSubscriptionRepository {
 export default FeedSubscriptionRepository
 
 @injectable()
-export class SubscribedFeedLoader extends Loader<
+export class SubscribedFeedLoader extends QueryLoader<
   SubscribedFeed,
   table.feed_subscriptions
 > {

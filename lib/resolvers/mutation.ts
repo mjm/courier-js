@@ -42,9 +42,9 @@ export const Mutation: MutationResolvers = {
     return { tweet: await tweets.update(id, changes) }
   },
 
-  async subscribe(_, { input }, { user }) {
+  async subscribe(_, { input }, { billing, user }) {
     const { email, tokenID } = input
-    console.log("Creating subscription for", email, "with token", tokenID)
+    await billing.subscribe(email, tokenID)
     return { user: await user.getUserInfo() }
   },
 }

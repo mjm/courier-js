@@ -11,7 +11,7 @@ import {
 import { Pager } from "../data/pager"
 import moment from "moment"
 import { injectable, inject } from "inversify"
-import Loader, { LoaderQueryFn } from "../data/loader"
+import { LoaderQueryFn, QueryLoader } from "../data/loader"
 import { DB } from "../key"
 
 @injectable()
@@ -118,7 +118,7 @@ class PostRepository {
 export default PostRepository
 
 @injectable()
-export class PostLoader extends Loader<Post, table.posts> {
+export class PostLoader extends QueryLoader<Post, table.posts> {
   constructor(@inject(DB) db: DatabasePoolType) {
     super(db)
   }

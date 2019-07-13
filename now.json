@@ -17,7 +17,8 @@
     "TWITTER_CONSUMER_KEY": "@courier-twitter-consumer-key",
     "TWITTER_CONSUMER_SECRET": "@courier-twitter-consumer-secret",
     "MONTHLY_PLAN_ID": "plan_DdvIUmVUiibVMa",
-    "STRIPE_PUBLISHABLE_KEY": "pk_test_P2pW0N6UFzp1OY5In8KApmxj"
+    "STRIPE_PUBLISHABLE_KEY": "pk_test_P2pW0N6UFzp1OY5In8KApmxj",
+    "STRIPE_SECRET_KEY": "@courier-staging-stripe-secret-key"
   },
   "build": {
     "env": {

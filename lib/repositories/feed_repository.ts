@@ -2,7 +2,7 @@ import { sql, DatabasePoolType } from "../db"
 import * as table from "../data/dbTypes"
 import { FeedId, Feed } from "../data/types"
 import { injectable, inject } from "inversify"
-import Loader, { LoaderQueryFn } from "../data/loader"
+import { LoaderQueryFn, QueryLoader } from "../data/loader"
 import { DB } from "../key"
 
 @injectable()
@@ -81,7 +81,7 @@ class FeedRepository {
 }
 
 @injectable()
-export class FeedLoader extends Loader<Feed, table.feeds> {
+export class FeedLoader extends QueryLoader<Feed, table.feeds> {
   constructor(@inject(DB) db: DatabasePoolType) {
     super(db)
   }

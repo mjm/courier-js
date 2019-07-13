@@ -12,6 +12,9 @@ import UserService, { UserIdProvider } from "./services/user_service"
 import { Container, injectable } from "inversify"
 import * as keys from "./key"
 import EventService from "./services/event_service"
+import Stripe from "stripe"
+import Environment from "./env"
+import BillingService from "./services/billing_service"
 
 const container = new Container({
   autoBindInjectable: true,
@@ -23,6 +26,13 @@ container.bind<UserIdProvider>(keys.UserId).toProvider(context => {
   const user = context.container.get(UserService)
   return () => user.requireUserId()
 })
+container
+  .bind<Stripe>(Stripe)
+  .toDynamicValue(context => {
+    const env = context.container.get(Environment)
+    return new Stripe(env.stripeKey)
+  })
+  .inSingletonScope()
 
 @injectable()
 export class CourierContext {
@@ -38,6 +48,7 @@ export class CourierContext {
   posts: PostService
   tweets: TweetService
   events: EventService
+  billing: BillingService
 
   static async createForRequest(req: IncomingMessage): Promise<CourierContext> {
     const child = container.createChild()
@@ -56,6 +67,7 @@ export class CourierContext {
     posts: PostService,
     tweets: TweetService,
     events: EventService,
+    billing: BillingService,
     feedLoader: FeedLoader,
     subscribedFeedLoader: SubscribedFeedLoader,
     postLoader: PostLoader,
@@ -66,6 +78,7 @@ export class CourierContext {
     this.posts = posts
     this.tweets = tweets
     this.events = events
+    this.billing = billing
 
     this.loaders = {
       feeds: feedLoader,
