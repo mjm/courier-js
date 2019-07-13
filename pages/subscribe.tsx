@@ -21,6 +21,7 @@ import * as yup from "yup"
 import { FormikActions, Formik, Form, Field, ErrorMessage } from "formik"
 import { ErrorBox, FieldError } from "../components/error"
 import { Box } from "@rebass/emotion"
+import styled from "@emotion/styled-base"
 
 const Subscribe = () => {
   const [stripe, setStripe] = React.useState<stripe.Stripe | null>(null)
@@ -76,6 +77,16 @@ const Subscribe = () => {
 }
 
 export default withData(withSecurePage(Subscribe))
+
+const TextField = styled(Field)(({ theme }) => ({
+  color: theme.colors.primary[800],
+  backgroundColor: theme.colors.gray[100],
+  border: 0,
+  //borderBottom: `2px solid ${theme.colors.primary[500]}`,
+  borderRadius: "0.5rem",
+  padding: `${theme.space[2]} ${theme.space[3]}`,
+  display: "block",
+}))
 
 const subscribeSchema = yup.object().shape({
   email: yup
@@ -149,17 +160,23 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
               <Form>
                 <Group direction="column" spacing={3}>
                   <Card>
-                    <CardHeader>Card Details</CardHeader>
-                    <Field type="text" name="name" placeholder="Name on card" />
-                    <ErrorMessage name="name" component={FieldError} />
-                    <Field
-                      type="email"
-                      name="email"
-                      placeholder="Email address"
-                    />
-                    <ErrorMessage name="email" component={FieldError} />
-                    <CardInput onChange={() => setStatus({ error: null })} />
-                    <ErrorMessage name="card" component={FieldError} />
+                    <CardHeader>Payment Details</CardHeader>
+                    <Group direction="column" spacing={2}>
+                      <TextField
+                        type="text"
+                        name="name"
+                        placeholder="Name on card"
+                      />
+                      <ErrorMessage name="name" component={FieldError} />
+                      <TextField
+                        type="email"
+                        name="email"
+                        placeholder="Email address"
+                      />
+                      <ErrorMessage name="email" component={FieldError} />
+                      <CardInput onChange={() => setStatus({ error: null })} />
+                      <ErrorMessage name="card" component={FieldError} />
+                    </Group>
                   </Card>
                   <ErrorBox error={error} />
                   <Button
@@ -184,7 +201,7 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
 
 interface CardInputProps extends ReactStripeElements.ElementProps {}
 const CardInput = (props: CardInputProps) => (
-  <Box py={2}>
+  <Box py={2} px={3} bg="gray.100" css={{ borderRadius: "0.5rem" }}>
     <ThemeContext.Consumer>
       {(theme: any) => (
         <CardElement
@@ -193,9 +210,6 @@ const CardInput = (props: CardInputProps) => (
             base: {
               fontFamily: theme.fonts.body,
               fontSize: theme.fontSizes[3],
-              color: theme.colors.primary[800],
-            },
-            empty: {
               color: theme.colors.primary[800],
             },
           }}
