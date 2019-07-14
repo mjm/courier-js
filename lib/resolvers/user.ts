@@ -66,7 +66,10 @@ export const UserSubscription: UserSubscriptionResolvers = {
         return SubscriptionStatus.Active
       }
     }
-    // TODO expired
+
+    if (subscription.status === "canceled") {
+      return SubscriptionStatus.Expired
+    }
 
     return SubscriptionStatus.Inactive
   },

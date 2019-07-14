@@ -11,6 +11,7 @@ import {
   EventFieldsFragment,
   EventType,
   UserFieldsFragment,
+  SubscriptionStatus,
 } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
@@ -123,10 +124,17 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
       {subscription ? (
         <>
           <InfoField label="Status">{subscription.status}</InfoField>
-          <InfoField label="Renews">
-            <Moment format="LL">{subscription.periodEnd}</Moment> (
-            <Moment fromNow>{subscription.periodEnd}</Moment>)
-          </InfoField>
+          {subscription.status === SubscriptionStatus.Active ? (
+            <InfoField label="Renews">
+              <Moment format="LL">{subscription.periodEnd}</Moment> (
+              <Moment fromNow>{subscription.periodEnd}</Moment>)
+            </InfoField>
+          ) : subscription.status === SubscriptionStatus.Canceled ? (
+            <InfoField label="Expires">
+              <Moment format="LL">{subscription.periodEnd}</Moment> (
+              <Moment fromNow>{subscription.periodEnd}</Moment>)
+            </InfoField>
+          ) : null}
         </>
       ) : (
         <InfoField label="Status">Not subscribed</InfoField>
@@ -140,9 +148,13 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
       )}
       <Group mt={3} direction="row" spacing={2} wrap>
         {subscription ? (
-          <Button icon={faTimesCircle} color="red" invert>
-            Cancel
-          </Button>
+          subscription.status === SubscriptionStatus.Active ? (
+            <Button icon={faTimesCircle} color="red" invert>
+              Cancel
+            </Button>
+          ) : (
+            <Button icon={faCreditCard}>Resubscribe</Button>
+          )
         ) : (
           <Button icon={faCreditCard} onClick={() => router.push("/subscribe")}>
             Subscribe
