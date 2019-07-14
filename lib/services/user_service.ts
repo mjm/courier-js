@@ -2,7 +2,7 @@ import jwksClient from "jwks-rsa"
 import * as jwt from "jsonwebtoken"
 import { AuthenticationClient, ManagementClient } from "auth0"
 import { AuthenticationError } from "apollo-server-core"
-import { UserInfo, UserId, UserToken } from "../data/types"
+import { UserInfo, UserId, UserToken, UserAppMetadata } from "../data/types"
 import Environment from "../env"
 import { injectable, inject } from "inversify"
 import { Token } from "../key"
@@ -43,7 +43,7 @@ class UserService {
       domain: env.authDomain,
       clientId: env.backendClientId,
       clientSecret: env.backendClientSecret,
-      scope: "read:users read:user_idp_tokens",
+      scope: "read:users read:user_idp_tokens update:users_app_metadata",
     })
 
     // Hang on to the promise of doing this verification once
@@ -99,6 +99,13 @@ class UserService {
       // @ts-ignore
       access_token_secret: twitterIdentity.access_token_secret,
     }
+  }
+
+  async update(metadata: UserAppMetadata): Promise<any> {
+    return await this.managementClient.updateAppMetadata(
+      { id: await this.requireUserId() },
+      metadata
+    )
   }
 
   private async doVerify(): Promise<UserToken> {

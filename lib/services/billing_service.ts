@@ -2,6 +2,7 @@ import { injectable, inject } from "inversify"
 import Stripe from "stripe"
 import Environment from "../env"
 import { CustomerLoader } from "../repositories/customer_repository"
+import UserService from "./user_service"
 
 @injectable()
 class BillingService {
@@ -10,7 +11,8 @@ class BillingService {
   constructor(
     env: Environment,
     @inject(Stripe) private stripe: Stripe,
-    private customerLoader: CustomerLoader
+    private customerLoader: CustomerLoader,
+    private userService: UserService
   ) {
     this.planId = env.monthlyPlanId
   }
@@ -23,11 +25,15 @@ class BillingService {
     })
     this.customerLoader.prime(customer.id, customer)
 
+    await this.userService.update({ stripe_customer_id: customer.id })
+
     const subscription = await this.stripe.subscriptions.create({
       customer: customer.id,
       items: [{ plan: this.planId }],
       expand: ["latest_invoice.payment_intent"],
     })
+    await this.userService.update({ stripe_subscription_id: subscription.id })
+
     console.log(subscription)
   }
 }

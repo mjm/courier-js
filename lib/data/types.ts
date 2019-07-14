@@ -32,6 +32,11 @@ export interface UserInfo {
   updated_at: string
 }
 
+export interface UserAppMetadata {
+  stripe_customer_id?: string
+  stripe_subscription_id?: string
+}
+
 export type FeedId = string
 
 export interface Feed {
