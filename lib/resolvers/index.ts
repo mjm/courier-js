@@ -6,6 +6,7 @@ import * as event from "./event"
 import * as feed from "./feed"
 import * as post from "./post"
 import * as tweet from "./tweet"
+import * as user from "./user"
 import { Resolvers } from "../generated/graphql"
 
 const resolvers: Resolvers = {
@@ -17,6 +18,7 @@ const resolvers: Resolvers = {
   ...feed,
   ...post,
   ...tweet,
+  ...user,
 }
 
 export default resolvers

@@ -6,8 +6,8 @@ export type Scalars = {
   Boolean: boolean
   Int: number
   Float: number
-  Cursor: any
   DateTime: any
+  Cursor: any
 }
 
 export type AddFeedInput = {
@@ -24,6 +24,18 @@ export type CancelTweetInput = {
 
 export type CancelTweetPayload = {
   tweet: Tweet
+}
+
+export type CreditCard = {
+  brand: Scalars["String"]
+  lastFour: Scalars["String"]
+  expirationMonth: Scalars["Int"]
+  expirationYear: Scalars["Int"]
+}
+
+export type Customer = {
+  emailAddress?: Maybe<Scalars["String"]>
+  creditCard?: Maybe<CreditCard>
 }
 
 export type DeleteFeedInput = {
@@ -276,6 +288,17 @@ export type SubscribePayload = {
   user: User
 }
 
+export type Subscription = {
+  status: SubscriptionStatus
+  periodEnd: Scalars["DateTime"]
+}
+
+export enum SubscriptionStatus {
+  Active = "ACTIVE",
+  Canceled = "CANCELED",
+  Expired = "EXPIRED",
+}
+
 export type Tweet = {
   id: Scalars["ID"]
   feed: SubscribedFeed
@@ -323,6 +346,8 @@ export type User = {
   name: Scalars["String"]
   nickname: Scalars["String"]
   picture: Scalars["String"]
+  customer?: Maybe<Customer>
+  subscription?: Maybe<Subscription>
 }
 export type CurrentUserQueryVariables = {}
 

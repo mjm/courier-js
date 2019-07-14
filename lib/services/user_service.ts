@@ -80,7 +80,13 @@ class UserService {
       throw new AuthenticationError("No user token was provided")
     }
 
-    return await this.authClient.getProfile(this.token)
+    const profile = await this.authClient.getProfile(this.token)
+    const token = await this.verify()
+    return {
+      ...profile,
+      stripe_customer_id: token["https://courier.blog/customer_id"],
+      stripe_subscription_id: token["https://courier.blog/subscription_id"],
+    }
   }
 
   async getTwitterCredentials(userId: UserId): Promise<TwitterCredentials> {

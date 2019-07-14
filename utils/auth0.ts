@@ -7,7 +7,8 @@ const client = new auth0.WebAuth({
   domain: process.env.AUTH_DOMAIN || "",
   responseType: "token id_token",
   redirectUri: `${getBaseUrl()}/logged-in`,
-  scope: "openid profile email",
+  scope:
+    "openid profile email https://courier.blog/customer_id https://courier.blog/subscription_id",
   audience: process.env.API_IDENTIFIER,
 })
 

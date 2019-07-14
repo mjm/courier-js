@@ -54,6 +54,31 @@ type User {
   name: String!
   nickname: String!
   picture: String!
+  customer: Customer
+  subscription: Subscription
+}
+
+type Customer {
+  emailAddress: String
+  creditCard: CreditCard
+}
+
+type CreditCard {
+  brand: String!
+  lastFour: String!
+  expirationMonth: Int!
+  expirationYear: Int!
+}
+
+type Subscription {
+  status: SubscriptionStatus!
+  periodEnd: DateTime!
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  EXPIRED
 }
 
 type FeedConnection {

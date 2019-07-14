@@ -6,6 +6,7 @@ generates:
     plugins:
       - add: 'import * as types from "../data/types"'
       - add: 'import { Pager } from "../data/pager"'
+      - add: 'import Stripe from "stripe"'
       - add: "export type EnumMap<T extends string, U> = { [K in T]: U }"
       - "typescript"
       - "typescript-resolvers"
@@ -15,6 +16,8 @@ generates:
         Cursor: string
         DateTime: Date
       mappers:
+        CreditCard: Stripe.cards.ICard
+        Customer: Stripe.customers.ICustomer
         Event: types.Event
         EventConnection: Pager<types.Event>
         Feed: types.Feed
@@ -25,6 +28,7 @@ generates:
         SubscribedFeedConnection: Pager<types.SubscribedFeed>
         Tweet: types.Tweet
         TweetConnection: Pager<types.Tweet>
+        User: types.UserInfo
   lib/generated/graphql-components.tsx:
     plugins:
       - "typescript"

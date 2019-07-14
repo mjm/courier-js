@@ -22,6 +22,8 @@ export interface UserToken {
   exp: number
   azp: string
   scope: string
+  "https://courier.blog/customer_id"?: string
+  "https://courier.blog/subscription_id"?: string
 }
 
 export interface UserInfo {
@@ -30,6 +32,8 @@ export interface UserInfo {
   nickname: string
   picture: string
   updated_at: string
+  stripe_customer_id: string | undefined
+  stripe_subscription_id: string | undefined
 }
 
 export interface UserAppMetadata {

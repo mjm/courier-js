@@ -1,5 +1,6 @@
 import * as types from "../data/types"
 import { Pager } from "../data/pager"
+import Stripe from "stripe"
 export type EnumMap<T extends string, U> = { [K in T]: U }
 
 export type Maybe<T> = T | null
@@ -10,8 +11,8 @@ export type Scalars = {
   Boolean: boolean
   Int: number
   Float: number
-  Cursor: string
   DateTime: Date
+  Cursor: string
 }
 
 export type AddFeedInput = {
@@ -28,6 +29,18 @@ export type CancelTweetInput = {
 
 export type CancelTweetPayload = {
   tweet: Tweet
+}
+
+export type CreditCard = {
+  brand: Scalars["String"]
+  lastFour: Scalars["String"]
+  expirationMonth: Scalars["Int"]
+  expirationYear: Scalars["Int"]
+}
+
+export type Customer = {
+  emailAddress?: Maybe<Scalars["String"]>
+  creditCard?: Maybe<CreditCard>
 }
 
 export type DeleteFeedInput = {
@@ -280,6 +293,17 @@ export type SubscribePayload = {
   user: User
 }
 
+export type Subscription = {
+  status: SubscriptionStatus
+  periodEnd: Scalars["DateTime"]
+}
+
+export enum SubscriptionStatus {
+  Active = "ACTIVE",
+  Canceled = "CANCELED",
+  Expired = "EXPIRED",
+}
+
 export type Tweet = {
   id: Scalars["ID"]
   feed: SubscribedFeed
@@ -327,6 +351,8 @@ export type User = {
   name: Scalars["String"]
   nickname: Scalars["String"]
   picture: Scalars["String"]
+  customer?: Maybe<Customer>
+  subscription?: Maybe<Subscription>
 }
 import { CourierContext } from "../context"
 
@@ -408,9 +434,14 @@ export type DirectiveResolverFn<
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Query: {}
-  User: User
+  User: types.UserInfo
   String: Scalars["String"]
+  Customer: Stripe.customers.ICustomer
+  CreditCard: Stripe.cards.ICard
   Int: Scalars["Int"]
+  Subscription: {}
+  SubscriptionStatus: SubscriptionStatus
+  DateTime: Scalars["DateTime"]
   Cursor: Scalars["Cursor"]
   SubscribedFeedConnection: Pager<types.SubscribedFeed>
   SubscribedFeedEdge: Omit<SubscribedFeedEdge, "node"> & {
@@ -419,7 +450,6 @@ export type ResolversTypes = {
   SubscribedFeed: types.SubscribedFeed
   ID: Scalars["ID"]
   Feed: types.Feed
-  DateTime: Scalars["DateTime"]
   PostConnection: Pager<types.Post>
   PostEdge: Omit<PostEdge, "node"> & { node: ResolversTypes["Post"] }
   Post: types.Post
@@ -466,7 +496,9 @@ export type ResolversTypes = {
     tweet: ResolversTypes["Tweet"]
   }
   SubscribeInput: SubscribeInput
-  SubscribePayload: SubscribePayload
+  SubscribePayload: Omit<SubscribePayload, "user"> & {
+    user: ResolversTypes["User"]
+  }
   FeedConnection: Pager<types.Feed>
   FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
 }
@@ -485,9 +517,35 @@ export type CancelTweetPayloadResolvers<
   tweet?: Resolver<ResolversTypes["Tweet"], ParentType, ContextType>
 }
 
+export type CreditCardResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["CreditCard"]
+> = {
+  brand?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  lastFour?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  expirationMonth?: Resolver<ResolversTypes["Int"], ParentType, ContextType>
+  expirationYear?: Resolver<ResolversTypes["Int"], ParentType, ContextType>
+}
+
 export interface CursorScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes["Cursor"], any> {
   name: "Cursor"
+}
+
+export type CustomerResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["Customer"]
+> = {
+  emailAddress?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >
+  creditCard?: Resolver<
+    Maybe<ResolversTypes["CreditCard"]>,
+    ParentType,
+    ContextType
+  >
 }
 
 export interface DateTimeScalarConfig
@@ -795,6 +853,22 @@ export type SubscribePayloadResolvers<
   user?: Resolver<ResolversTypes["User"], ParentType, ContextType>
 }
 
+export type SubscriptionResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["Subscription"]
+> = {
+  status?: SubscriptionResolver<
+    ResolversTypes["SubscriptionStatus"],
+    ParentType,
+    ContextType
+  >
+  periodEnd?: SubscriptionResolver<
+    ResolversTypes["DateTime"],
+    ParentType,
+    ContextType
+  >
+}
+
 export type TweetResolvers<
   ContextType = CourierContext,
   ParentType = ResolversTypes["Tweet"]
@@ -854,12 +928,24 @@ export type UserResolvers<
   name?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   nickname?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   picture?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  customer?: Resolver<
+    Maybe<ResolversTypes["Customer"]>,
+    ParentType,
+    ContextType
+  >
+  subscription?: Resolver<
+    Maybe<ResolversTypes["Subscription"]>,
+    ParentType,
+    ContextType
+  >
 }
 
 export type Resolvers<ContextType = CourierContext> = {
   AddFeedPayload?: AddFeedPayloadResolvers<ContextType>
   CancelTweetPayload?: CancelTweetPayloadResolvers<ContextType>
+  CreditCard?: CreditCardResolvers<ContextType>
   Cursor?: GraphQLScalarType
+  Customer?: CustomerResolvers<ContextType>
   DateTime?: GraphQLScalarType
   DeleteFeedPayload?: DeleteFeedPayloadResolvers<ContextType>
   EditTweetPayload?: EditTweetPayloadResolvers<ContextType>
@@ -882,6 +968,7 @@ export type Resolvers<ContextType = CourierContext> = {
   SubscribedFeedConnection?: SubscribedFeedConnectionResolvers<ContextType>
   SubscribedFeedEdge?: SubscribedFeedEdgeResolvers<ContextType>
   SubscribePayload?: SubscribePayloadResolvers<ContextType>
+  Subscription?: SubscriptionResolvers<ContextType>
   Tweet?: TweetResolvers<ContextType>
   TweetConnection?: TweetConnectionResolvers<ContextType>
   TweetEdge?: TweetEdgeResolvers<ContextType>

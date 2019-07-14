@@ -9,6 +9,10 @@ export class CustomerLoader extends Loader<Stripe.customers.ICustomer, string> {
   }
 
   async fetch(ids: string[]): LoaderBatch<Stripe.customers.ICustomer> {
-    return Promise.all(ids.map(id => this.stripe.customers.retrieve(id)))
+    return Promise.all(
+      ids.map(id =>
+        this.stripe.customers.retrieve(id, { expand: ["default_source"] })
+      )
+    )
   }
 }
