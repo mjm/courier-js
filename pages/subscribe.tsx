@@ -30,7 +30,7 @@ import {
   FieldProps,
 } from "formik"
 import { ErrorBox, FieldError } from "../components/error"
-import { Box } from "@rebass/emotion"
+import { Box, Flex } from "@rebass/emotion"
 import styled from "@emotion/styled-base"
 import { useRouter } from "next/router"
 import { renewSession } from "../utils/auth0"
@@ -218,20 +218,22 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
                           <Group direction="column" spacing={2}>
                             {savedCard && (
                               <>
-                                <Field
-                                  type="radio"
-                                  name="method"
-                                  value="use-saved-card"
-                                  label="Use saved credit card"
-                                  component={RadioButton}
-                                />
-                                <Field
-                                  type="radio"
-                                  name="method"
-                                  value="new-card"
-                                  label="Enter new credit card"
-                                  component={RadioButton}
-                                />
+                                <Flex>
+                                  <Field
+                                    type="radio"
+                                    name="method"
+                                    value="use-saved-card"
+                                    label="Use saved credit card"
+                                    component={RadioButton}
+                                  />
+                                  <Field
+                                    type="radio"
+                                    name="method"
+                                    value="new-card"
+                                    label="Enter new credit card"
+                                    component={RadioButton}
+                                  />
+                                </Flex>
                                 <ErrorMessage
                                   name="method"
                                   component={FieldError}
@@ -294,15 +296,16 @@ interface RadioButtonProps extends FieldProps {
 }
 const RadioButton = ({ field, form, label, ...props }: RadioButtonProps) => {
   return (
-    <label>
+    <Flex as="label" alignItems="baseline" mr={3}>
       <input
         type="radio"
         checked={field.value === form.values[field.name]}
         {...field}
         {...props}
+        css={theme => ({ marginRight: theme.space[2] })}
       />
       {label}
-    </label>
+    </Flex>
   )
 }
 
