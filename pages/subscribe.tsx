@@ -22,6 +22,8 @@ import { FormikActions, Formik, Form, Field, ErrorMessage } from "formik"
 import { ErrorBox, FieldError } from "../components/error"
 import { Box } from "@rebass/emotion"
 import styled from "@emotion/styled-base"
+import { useRouter } from "next/router"
+import { renewSession } from "../utils/auth0"
 
 const Subscribe = () => {
   const [stripe, setStripe] = React.useState<stripe.Stripe | null>(null)
@@ -107,6 +109,8 @@ const initialSubscribeData: SubscribeData = {
 
 interface SubscribeFormProps {}
 const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
+  const router = useRouter()
+
   return (
     <SubscribeComponent>
       {subscribe => {
@@ -131,12 +135,16 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
                   },
                 },
               })
+
+              // ensure we have an up-to-date token, since that's where the
+              // user info on the account page comes from
+              await renewSession()
+
+              router.push("/account")
             } else {
-              console.error(error)
               actions.setStatus({ error })
             }
           } catch (error) {
-            console.error(error)
             actions.setStatus({ error })
           } finally {
             actions.setSubmitting(false)

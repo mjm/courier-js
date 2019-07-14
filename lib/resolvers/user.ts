@@ -10,10 +10,13 @@ import moment from "moment"
 export const User: UserResolvers = {
   async customer({ stripe_customer_id }, {}, { loaders }) {
     if (stripe_customer_id) {
-      return await loaders.customers.load(stripe_customer_id)
-    } else {
-      return null
+      const customer = await loaders.customers.load(stripe_customer_id)
+      if (customer && !(customer as any).deleted) {
+        return customer
+      }
     }
+
+    return null
   },
 
   async subscription({ stripe_subscription_id }, {}, { loaders }) {

@@ -128,7 +128,7 @@ export type Mutation = {
   uncancelTweet: UncancelTweetPayload
   postTweet: PostTweetPayload
   editTweet: EditTweetPayload
-  subscribe?: Maybe<SubscribePayload>
+  subscribe: SubscribePayload
 }
 
 export type MutationAddFeedArgs = {
@@ -498,10 +498,27 @@ export type SubscribeMutationVariables = {
 }
 
 export type SubscribeMutation = { __typename?: "Mutation" } & {
-  subscribe: Maybe<
-    { __typename?: "SubscribePayload" } & {
-      user: { __typename?: "User" } & Pick<User, "name">
+  subscribe: { __typename?: "SubscribePayload" } & {
+    user: { __typename?: "User" } & SubscriptionInfoFragment
+  }
+}
+
+export type SubscriptionInfoFragment = { __typename?: "User" } & {
+  customer: Maybe<
+    { __typename?: "Customer" } & {
+      creditCard: Maybe<
+        { __typename?: "CreditCard" } & Pick<
+          CreditCard,
+          "brand" | "lastFour" | "expirationMonth" | "expirationYear"
+        >
+      >
     }
+  >
+  subscription: Maybe<
+    { __typename?: "UserSubscription" } & Pick<
+      UserSubscription,
+      "status" | "periodEnd"
+    >
   >
 }
 
@@ -640,6 +657,22 @@ export const allFeedSubscriptionsFieldsFragmentDoc = gql`
       refreshedAt
     }
     autopost
+  }
+`
+export const subscriptionInfoFragmentDoc = gql`
+  fragment subscriptionInfo on User {
+    customer {
+      creditCard {
+        brand
+        lastFour
+        expirationMonth
+        expirationYear
+      }
+    }
+    subscription {
+      status
+      periodEnd
+    }
   }
 `
 export const allTweetsFieldsFragmentDoc = gql`
@@ -1103,10 +1136,11 @@ export const SubscribeDocument = gql`
   mutation Subscribe($input: SubscribeInput!) {
     subscribe(input: $input) {
       user {
-        name
+        ...subscriptionInfo
       }
     }
   }
+  ${subscriptionInfoFragmentDoc}
 `
 export type SubscribeMutationFn = ReactApollo.MutationFn<
   SubscribeMutation,

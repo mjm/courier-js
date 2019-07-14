@@ -133,7 +133,7 @@ export type Mutation = {
   uncancelTweet: UncancelTweetPayload
   postTweet: PostTweetPayload
   editTweet: EditTweetPayload
-  subscribe?: Maybe<SubscribePayload>
+  subscribe: SubscribePayload
 }
 
 export type MutationAddFeedArgs = {
@@ -696,7 +696,7 @@ export type MutationResolvers<
     MutationEditTweetArgs
   >
   subscribe?: Resolver<
-    Maybe<ResolversTypes["SubscribePayload"]>,
+    ResolversTypes["SubscribePayload"],
     ParentType,
     ContextType,
     MutationSubscribeArgs

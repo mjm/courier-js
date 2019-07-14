@@ -40,7 +40,7 @@ type Mutation {
   postTweet(input: PostTweetInput!): PostTweetPayload!
   editTweet(input: EditTweetInput!): EditTweetPayload!
 
-  subscribe(input: SubscribeInput!): SubscribePayload
+  subscribe(input: SubscribeInput!): SubscribePayload!
 }
 
 type PageInfo {

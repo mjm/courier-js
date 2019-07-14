@@ -153,7 +153,12 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
               Cancel
             </Button>
           ) : (
-            <Button icon={faCreditCard}>Resubscribe</Button>
+            <Button
+              icon={faCreditCard}
+              onClick={() => router.push("/subscribe")}
+            >
+              Resubscribe
+            </Button>
           )
         ) : (
           <Button icon={faCreditCard} onClick={() => router.push("/subscribe")}>
