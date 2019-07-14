@@ -288,15 +288,11 @@ export type SubscribePayload = {
   user: User
 }
 
-export type Subscription = {
-  status: SubscriptionStatus
-  periodEnd: Scalars["DateTime"]
-}
-
 export enum SubscriptionStatus {
   Active = "ACTIVE",
   Canceled = "CANCELED",
   Expired = "EXPIRED",
+  Inactive = "INACTIVE",
 }
 
 export type Tweet = {
@@ -347,7 +343,12 @@ export type User = {
   nickname: Scalars["String"]
   picture: Scalars["String"]
   customer?: Maybe<Customer>
-  subscription?: Maybe<Subscription>
+  subscription?: Maybe<UserSubscription>
+}
+
+export type UserSubscription = {
+  status: SubscriptionStatus
+  periodEnd: Scalars["DateTime"]
 }
 export type CurrentUserQueryVariables = {}
 

@@ -2,12 +2,23 @@ import {
   UserResolvers,
   CustomerResolvers,
   CreditCardResolvers,
+  UserSubscriptionResolvers,
+  SubscriptionStatus,
 } from "../generated/graphql"
+import moment from "moment"
 
 export const User: UserResolvers = {
   async customer({ stripe_customer_id }, {}, { loaders }) {
     if (stripe_customer_id) {
       return await loaders.customers.load(stripe_customer_id)
+    } else {
+      return null
+    }
+  },
+
+  async subscription({ stripe_subscription_id }, {}, { loaders }) {
+    if (stripe_subscription_id) {
+      return await loaders.subscriptions.load(stripe_subscription_id)
     } else {
       return null
     }
@@ -43,5 +54,27 @@ export const CreditCard: CreditCardResolvers = {
 
   expirationYear({ exp_year }) {
     return exp_year
+  },
+}
+
+export const UserSubscription: UserSubscriptionResolvers = {
+  status(subscription) {
+    if (subscription.status === "active") {
+      if (subscription.cancel_at_period_end) {
+        return SubscriptionStatus.Canceled
+      } else {
+        return SubscriptionStatus.Active
+      }
+    }
+    // TODO expired
+
+    return SubscriptionStatus.Inactive
+  },
+
+  periodEnd(subscription) {
+    return moment
+      .unix(subscription.current_period_end)
+      .utc()
+      .toDate()
   },
 }

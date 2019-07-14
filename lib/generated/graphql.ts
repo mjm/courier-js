@@ -293,15 +293,11 @@ export type SubscribePayload = {
   user: User
 }
 
-export type Subscription = {
-  status: SubscriptionStatus
-  periodEnd: Scalars["DateTime"]
-}
-
 export enum SubscriptionStatus {
   Active = "ACTIVE",
   Canceled = "CANCELED",
   Expired = "EXPIRED",
+  Inactive = "INACTIVE",
 }
 
 export type Tweet = {
@@ -352,7 +348,12 @@ export type User = {
   nickname: Scalars["String"]
   picture: Scalars["String"]
   customer?: Maybe<Customer>
-  subscription?: Maybe<Subscription>
+  subscription?: Maybe<UserSubscription>
+}
+
+export type UserSubscription = {
+  status: SubscriptionStatus
+  periodEnd: Scalars["DateTime"]
 }
 import { CourierContext } from "../context"
 
@@ -439,7 +440,7 @@ export type ResolversTypes = {
   Customer: Stripe.customers.ICustomer
   CreditCard: Stripe.cards.ICard
   Int: Scalars["Int"]
-  Subscription: {}
+  UserSubscription: Stripe.subscriptions.ISubscription
   SubscriptionStatus: SubscriptionStatus
   DateTime: Scalars["DateTime"]
   Cursor: Scalars["Cursor"]
@@ -853,22 +854,6 @@ export type SubscribePayloadResolvers<
   user?: Resolver<ResolversTypes["User"], ParentType, ContextType>
 }
 
-export type SubscriptionResolvers<
-  ContextType = CourierContext,
-  ParentType = ResolversTypes["Subscription"]
-> = {
-  status?: SubscriptionResolver<
-    ResolversTypes["SubscriptionStatus"],
-    ParentType,
-    ContextType
-  >
-  periodEnd?: SubscriptionResolver<
-    ResolversTypes["DateTime"],
-    ParentType,
-    ContextType
-  >
-}
-
 export type TweetResolvers<
   ContextType = CourierContext,
   ParentType = ResolversTypes["Tweet"]
@@ -934,10 +919,22 @@ export type UserResolvers<
     ContextType
   >
   subscription?: Resolver<
-    Maybe<ResolversTypes["Subscription"]>,
+    Maybe<ResolversTypes["UserSubscription"]>,
     ParentType,
     ContextType
   >
+}
+
+export type UserSubscriptionResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["UserSubscription"]
+> = {
+  status?: Resolver<
+    ResolversTypes["SubscriptionStatus"],
+    ParentType,
+    ContextType
+  >
+  periodEnd?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>
 }
 
 export type Resolvers<ContextType = CourierContext> = {
@@ -968,12 +965,12 @@ export type Resolvers<ContextType = CourierContext> = {
   SubscribedFeedConnection?: SubscribedFeedConnectionResolvers<ContextType>
   SubscribedFeedEdge?: SubscribedFeedEdgeResolvers<ContextType>
   SubscribePayload?: SubscribePayloadResolvers<ContextType>
-  Subscription?: SubscriptionResolvers<ContextType>
   Tweet?: TweetResolvers<ContextType>
   TweetConnection?: TweetConnectionResolvers<ContextType>
   TweetEdge?: TweetEdgeResolvers<ContextType>
   UncancelTweetPayload?: UncancelTweetPayloadResolvers<ContextType>
   User?: UserResolvers<ContextType>
+  UserSubscription?: UserSubscriptionResolvers<ContextType>
 }
 
 /**

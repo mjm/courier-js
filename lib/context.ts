@@ -16,6 +16,7 @@ import Stripe from "stripe"
 import Environment from "./env"
 import BillingService from "./services/billing_service"
 import { CustomerLoader } from "./repositories/customer_repository"
+import { SubscriptionLoader } from "./repositories/subscription_repository"
 
 const container = new Container({
   autoBindInjectable: true,
@@ -43,6 +44,7 @@ export class CourierContext {
     posts: PostLoader
     tweets: TweetLoader
     customers: CustomerLoader
+    subscriptions: SubscriptionLoader
   }
 
   user: UserService
@@ -74,7 +76,8 @@ export class CourierContext {
     subscribedFeedLoader: SubscribedFeedLoader,
     postLoader: PostLoader,
     tweetLoader: TweetLoader,
-    customerLoader: CustomerLoader
+    customerLoader: CustomerLoader,
+    subscriptionLoader: SubscriptionLoader
   ) {
     this.user = user
     this.feeds = feeds
@@ -89,6 +92,7 @@ export class CourierContext {
       posts: postLoader,
       tweets: tweetLoader,
       customers: customerLoader,
+      subscriptions: subscriptionLoader,
     }
   }
 }

@@ -29,6 +29,7 @@ generates:
         Tweet: types.Tweet
         TweetConnection: Pager<types.Tweet>
         User: types.UserInfo
+        UserSubscription: Stripe.subscriptions.ISubscription
   lib/generated/graphql-components.tsx:
     plugins:
       - "typescript"

@@ -3,6 +3,7 @@ import Stripe from "stripe"
 import Environment from "../env"
 import { CustomerLoader } from "../repositories/customer_repository"
 import UserService from "./user_service"
+import { SubscriptionLoader } from "../repositories/subscription_repository"
 
 @injectable()
 class BillingService {
@@ -12,6 +13,7 @@ class BillingService {
     env: Environment,
     @inject(Stripe) private stripe: Stripe,
     private customerLoader: CustomerLoader,
+    private subscriptionLoader: SubscriptionLoader,
     private userService: UserService
   ) {
     this.planId = env.monthlyPlanId
@@ -32,9 +34,9 @@ class BillingService {
       items: [{ plan: this.planId }],
       expand: ["latest_invoice.payment_intent"],
     })
-    await this.userService.update({ stripe_subscription_id: subscription.id })
+    this.subscriptionLoader.prime(subscription.id, subscription)
 
-    console.log(subscription)
+    await this.userService.update({ stripe_subscription_id: subscription.id })
   }
 }
 

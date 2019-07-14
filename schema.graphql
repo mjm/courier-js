@@ -55,7 +55,7 @@ type User {
   nickname: String!
   picture: String!
   customer: Customer
-  subscription: Subscription
+  subscription: UserSubscription
 }
 
 type Customer {
@@ -70,7 +70,7 @@ type CreditCard {
   expirationYear: Int!
 }
 
-type Subscription {
+type UserSubscription {
   status: SubscriptionStatus!
   periodEnd: DateTime!
 }
@@ -79,6 +79,7 @@ enum SubscriptionStatus {
   ACTIVE
   CANCELED
   EXPIRED
+  INACTIVE
 }
 
 type FeedConnection {
