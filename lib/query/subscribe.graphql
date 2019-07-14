@@ -20,3 +20,16 @@ fragment subscriptionInfo on User {
     periodEnd
   }
 }
+
+query SavedPaymentMethod {
+  currentUser {
+    customer {
+      creditCard {
+        brand
+        lastFour
+        expirationMonth
+        expirationYear
+      }
+    }
+  }
+}

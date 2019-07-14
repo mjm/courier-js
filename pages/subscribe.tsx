@@ -16,14 +16,25 @@ import Card, { CardHeader, ContentCard } from "../components/card"
 import Group from "../components/group"
 import { Button } from "../components/button"
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons"
-import { SubscribeComponent } from "../lib/generated/graphql-components"
+import {
+  SubscribeComponent,
+  SavedPaymentMethodComponent,
+} from "../lib/generated/graphql-components"
 import * as yup from "yup"
-import { FormikActions, Formik, Form, Field, ErrorMessage } from "formik"
+import {
+  FormikActions,
+  Formik,
+  Form,
+  Field,
+  ErrorMessage,
+  FieldProps,
+} from "formik"
 import { ErrorBox, FieldError } from "../components/error"
 import { Box } from "@rebass/emotion"
 import styled from "@emotion/styled-base"
 import { useRouter } from "next/router"
 import { renewSession } from "../utils/auth0"
+import Loading from "../components/loading"
 
 const Subscribe = () => {
   const [stripe, setStripe] = React.useState<stripe.Stripe | null>(null)
@@ -93,18 +104,32 @@ const TextField = styled(Field)(({ theme }) => ({
 const subscribeSchema = yup.object().shape({
   email: yup
     .string()
-    .required("An email address is needed for sending billing-related emails.")
-    .email("This must be a valid email address."),
-  name: yup.string().required("A name is needed for credit card validation."),
+    .email("This must be a valid email address.")
+    .when("method", {
+      is: m => m === "new-card",
+      then: yup
+        .string()
+        .required(
+          "An email address is needed for sending billing-related emails."
+        ),
+    }),
+  name: yup.string().when("method", {
+    is: m => m === "new-card",
+    then: yup.string().required("A name is needed for credit card validation."),
+  }),
+  method: yup.string().oneOf(["use-saved-card", "new-card"]),
 })
+
 interface SubscribeData {
   email: string
   name: string
+  method: "use-saved-card" | "new-card"
 }
 
 const initialSubscribeData: SubscribeData = {
   email: "",
   name: "",
+  method: "new-card",
 }
 
 interface SubscribeFormProps {}
@@ -112,97 +137,174 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
   const router = useRouter()
 
   return (
-    <SubscribeComponent>
-      {subscribe => {
-        async function onSubmit(
-          input: SubscribeData,
-          actions: FormikActions<SubscribeData>
-        ) {
-          if (!stripe) {
-            return
-          }
-
-          try {
-            const { token, error } = await stripe.createToken({
-              name: input.name,
-            })
-            if (token) {
-              await subscribe({
-                variables: {
-                  input: {
-                    tokenID: token.id,
-                    email: input.email,
-                  },
-                },
-              })
-
-              // ensure we have an up-to-date token, since that's where the
-              // user info on the account page comes from
-              await renewSession()
-
-              router.push("/account")
-            } else {
-              actions.setStatus({ error })
-            }
-          } catch (error) {
-            actions.setStatus({ error })
-          } finally {
-            actions.setSubmitting(false)
-          }
+    <SavedPaymentMethodComponent fetchPolicy="network-only">
+      {({ data, loading, error }) => {
+        if (loading) {
+          return <Loading />
         }
 
+        if (error) {
+          console.error(error)
+          // no return, continue on as though we loaded and just didn't have any
+        }
+
+        const savedCard =
+          data &&
+          data.currentUser &&
+          data.currentUser.customer &&
+          data.currentUser.customer.creditCard
+
         return (
-          <Formik
-            initialValues={initialSubscribeData}
-            initialStatus={{ error: null }}
-            validationSchema={subscribeSchema}
-            onSubmit={onSubmit}
-            render={({
-              isSubmitting,
-              isValid,
-              setStatus,
-              status: { error },
-            }) => (
-              <Form>
-                <Group direction="column" spacing={3}>
-                  <Card>
-                    <CardHeader>Payment Details</CardHeader>
-                    <Group direction="column" spacing={2}>
-                      <TextField
-                        type="text"
-                        name="name"
-                        placeholder="Name on card"
-                      />
-                      <ErrorMessage name="name" component={FieldError} />
-                      <TextField
-                        type="email"
-                        name="email"
-                        placeholder="Email address"
-                      />
-                      <ErrorMessage name="email" component={FieldError} />
-                      <CardInput onChange={() => setStatus({ error: null })} />
-                    </Group>
-                  </Card>
-                  <ErrorBox error={error} />
-                  <Button
-                    size="large"
-                    type="submit"
-                    icon={faCreditCard}
-                    spin={isSubmitting}
-                    alignSelf="center"
-                    disabled={!isValid}
-                  >
-                    Subscribe
-                  </Button>
-                </Group>
-              </Form>
-            )}
-          />
+          <SubscribeComponent>
+            {subscribe => {
+              async function onSubmit(
+                input: SubscribeData,
+                actions: FormikActions<SubscribeData>
+              ) {
+                if (!stripe) {
+                  return
+                }
+
+                try {
+                  const { token, error } = await stripe.createToken({
+                    name: input.name,
+                  })
+                  if (token) {
+                    await subscribe({
+                      variables: {
+                        input: {
+                          tokenID: token.id,
+                          email: input.email,
+                        },
+                      },
+                    })
+
+                    // ensure we have an up-to-date token, since that's where the
+                    // user info on the account page comes from
+                    await renewSession()
+
+                    router.push("/account")
+                  } else {
+                    actions.setStatus({ error })
+                  }
+                } catch (error) {
+                  actions.setStatus({ error })
+                } finally {
+                  actions.setSubmitting(false)
+                }
+              }
+
+              return (
+                <Formik
+                  initialValues={{
+                    ...initialSubscribeData,
+                    method: savedCard ? "use-saved-card" : "new-card",
+                  }}
+                  isInitialValid={!!savedCard}
+                  initialStatus={{ error: null }}
+                  validationSchema={subscribeSchema}
+                  onSubmit={onSubmit}
+                  render={({
+                    values,
+                    isSubmitting,
+                    isValid,
+                    setStatus,
+                    status: { error },
+                  }) => (
+                    <Form>
+                      <Group direction="column" spacing={3}>
+                        <Card>
+                          <CardHeader>Payment Details</CardHeader>
+                          <Group direction="column" spacing={2}>
+                            {savedCard && (
+                              <>
+                                <Field
+                                  type="radio"
+                                  name="method"
+                                  value="use-saved-card"
+                                  label="Use saved credit card"
+                                  component={RadioButton}
+                                />
+                                <Field
+                                  type="radio"
+                                  name="method"
+                                  value="new-card"
+                                  label="Enter new credit card"
+                                  component={RadioButton}
+                                />
+                                <ErrorMessage
+                                  name="method"
+                                  component={FieldError}
+                                />
+                              </>
+                            )}
+                            {values.method === "use-saved-card" ? null : (
+                              <>
+                                <TextField
+                                  type="text"
+                                  name="name"
+                                  placeholder="Name on card"
+                                />
+                                <ErrorMessage
+                                  name="name"
+                                  component={FieldError}
+                                />
+                                <TextField
+                                  type="email"
+                                  name="email"
+                                  placeholder="Email address"
+                                />
+                                <ErrorMessage
+                                  name="email"
+                                  component={FieldError}
+                                />
+                                <CardInput
+                                  onChange={() => setStatus({ error: null })}
+                                />
+                              </>
+                            )}
+                          </Group>
+                        </Card>
+                        <ErrorBox error={error} />
+                        <Button
+                          size="large"
+                          type="submit"
+                          icon={faCreditCard}
+                          spin={isSubmitting}
+                          alignSelf="center"
+                          disabled={!isValid}
+                        >
+                          Subscribe
+                        </Button>
+                      </Group>
+                    </Form>
+                  )}
+                />
+              )
+            }}
+          </SubscribeComponent>
         )
       }}
-    </SubscribeComponent>
+    </SavedPaymentMethodComponent>
   )
 })
+
+interface RadioButtonProps extends FieldProps {
+  label: string
+}
+const RadioButton = ({ field, form, label, ...props }: RadioButtonProps) => {
+  return (
+    <label>
+      <input
+        type="radio"
+        checked={field.value === form.values[field.name]}
+        {...field}
+        {...props}
+      />
+      {label}
+    </label>
+  )
+}
 
 interface CardInputProps extends ReactStripeElements.ElementProps {}
 const CardInput = (props: CardInputProps) => (

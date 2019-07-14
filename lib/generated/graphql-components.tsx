@@ -522,6 +522,25 @@ export type SubscriptionInfoFragment = { __typename?: "User" } & {
   >
 }
 
+export type SavedPaymentMethodQueryVariables = {}
+
+export type SavedPaymentMethodQuery = { __typename?: "Query" } & {
+  currentUser: Maybe<
+    { __typename?: "User" } & {
+      customer: Maybe<
+        { __typename?: "Customer" } & {
+          creditCard: Maybe<
+            { __typename?: "CreditCard" } & Pick<
+              CreditCard,
+              "brand" | "lastFour" | "expirationMonth" | "expirationYear"
+            >
+          >
+        }
+      >
+    }
+  >
+}
+
 export type UpcomingTweetsQueryVariables = {
   cursor?: Maybe<Scalars["Cursor"]>
 }
@@ -1181,6 +1200,64 @@ export function withSubscribe<TProps, TChildProps = {}>(
     SubscribeProps<TChildProps>
   >(SubscribeDocument, {
     alias: "withSubscribe",
+    ...operationOptions,
+  })
+}
+export const SavedPaymentMethodDocument = gql`
+  query SavedPaymentMethod {
+    currentUser {
+      customer {
+        creditCard {
+          brand
+          lastFour
+          expirationMonth
+          expirationYear
+        }
+      }
+    }
+  }
+`
+
+export const SavedPaymentMethodComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.QueryProps<
+        SavedPaymentMethodQuery,
+        SavedPaymentMethodQueryVariables
+      >,
+      "query"
+    >,
+    "variables"
+  > & { variables?: SavedPaymentMethodQueryVariables }
+) => (
+  <ReactApollo.Query<SavedPaymentMethodQuery, SavedPaymentMethodQueryVariables>
+    query={SavedPaymentMethodDocument}
+    {...props}
+  />
+)
+
+export type SavedPaymentMethodProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<
+    SavedPaymentMethodQuery,
+    SavedPaymentMethodQueryVariables
+  >
+> &
+  TChildProps
+export function withSavedPaymentMethod<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    SavedPaymentMethodQuery,
+    SavedPaymentMethodQueryVariables,
+    SavedPaymentMethodProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    SavedPaymentMethodQuery,
+    SavedPaymentMethodQueryVariables,
+    SavedPaymentMethodProps<TChildProps>
+  >(SavedPaymentMethodDocument, {
+    alias: "withSavedPaymentMethod",
     ...operationOptions,
   })
 }
