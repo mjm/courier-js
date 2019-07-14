@@ -1,8 +1,24 @@
 query CurrentUser {
   currentUser {
-    name
-    nickname
-    picture
+    ...userFields
+  }
+}
+
+fragment userFields on User {
+  name
+  nickname
+  picture
+  customer {
+    creditCard {
+      brand
+      lastFour
+      expirationMonth
+      expirationYear
+    }
+  }
+  subscription {
+    status
+    periodEnd
   }
 }
 

@@ -353,10 +353,30 @@ export type UserSubscription = {
 export type CurrentUserQueryVariables = {}
 
 export type CurrentUserQuery = { __typename?: "Query" } & {
-  currentUser: Maybe<
-    { __typename?: "User" } & Pick<User, "name" | "nickname" | "picture">
-  >
+  currentUser: Maybe<{ __typename?: "User" } & UserFieldsFragment>
 }
+
+export type UserFieldsFragment = { __typename?: "User" } & Pick<
+  User,
+  "name" | "nickname" | "picture"
+> & {
+    customer: Maybe<
+      { __typename?: "Customer" } & {
+        creditCard: Maybe<
+          { __typename?: "CreditCard" } & Pick<
+            CreditCard,
+            "brand" | "lastFour" | "expirationMonth" | "expirationYear"
+          >
+        >
+      }
+    >
+    subscription: Maybe<
+      { __typename?: "UserSubscription" } & Pick<
+        UserSubscription,
+        "status" | "periodEnd"
+      >
+    >
+  }
 
 export type RecentEventsQueryVariables = {
   cursor?: Maybe<Scalars["Cursor"]>
@@ -574,6 +594,25 @@ import gql from "graphql-tag"
 import * as React from "react"
 import * as ReactApollo from "react-apollo"
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+export const userFieldsFragmentDoc = gql`
+  fragment userFields on User {
+    name
+    nickname
+    picture
+    customer {
+      creditCard {
+        brand
+        lastFour
+        expirationMonth
+        expirationYear
+      }
+    }
+    subscription {
+      status
+      periodEnd
+    }
+  }
+`
 export const eventFieldsFragmentDoc = gql`
   fragment eventFields on Event {
     id
@@ -636,11 +675,10 @@ export const tweetConnectionFieldsFragmentDoc = gql`
 export const CurrentUserDocument = gql`
   query CurrentUser {
     currentUser {
-      name
-      nickname
-      picture
+      ...userFields
     }
   }
+  ${userFieldsFragmentDoc}
 `
 
 export const CurrentUserComponent = (
