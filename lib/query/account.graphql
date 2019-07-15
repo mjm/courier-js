@@ -48,3 +48,13 @@ fragment eventFields on Event {
   }
   boolValue
 }
+
+mutation CancelSubscription {
+  cancelSubscription(input: {}) {
+    user {
+      subscription {
+        status
+      }
+    }
+  }
+}

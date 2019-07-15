@@ -12,6 +12,10 @@ import {
   EventType,
   UserFieldsFragment,
   SubscriptionStatus,
+  CancelSubscriptionComponent,
+  CurrentUserQuery,
+  CurrentUserDocument,
+  UserSubscription,
 } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
@@ -27,6 +31,7 @@ import {
 import { logout, getToken } from "../utils/auth0"
 import Moment from "react-moment"
 import { useRouter } from "next/router"
+import { DataProxy } from "apollo-cache"
 
 const Account = () => {
   return (
@@ -149,9 +154,7 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
       <Group mt={3} direction="row" spacing={2} wrap>
         {subscription ? (
           subscription.status === SubscriptionStatus.Active ? (
-            <Button icon={faTimesCircle} color="red" invert>
-              Cancel
-            </Button>
+            <CancelButton />
           ) : (
             <Button
               icon={faCreditCard}
@@ -167,6 +170,45 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
         )}
       </Group>
     </Card>
+  )
+}
+
+const CancelButton = () => {
+  const [submitting, setSubmitting] = React.useState(false)
+
+  return (
+    <CancelSubscriptionComponent
+      variables={{ input: {} }}
+      update={(cache, { data }) => {
+        data &&
+          data.cancelSubscription.user.subscription &&
+          updateCachedSubscription(
+            cache,
+            data.cancelSubscription.user.subscription
+          )
+      }}
+    >
+      {cancelSubscription => (
+        <Button
+          icon={faTimesCircle}
+          spin={submitting}
+          color="red"
+          invert
+          onClick={async () => {
+            setSubmitting(true)
+            try {
+              await cancelSubscription()
+            } catch (err) {
+              console.error(err)
+            } finally {
+              setSubmitting(false)
+            }
+          }}
+        >
+          Cancel
+        </Button>
+      )}
+    </CancelSubscriptionComponent>
   )
 }
 
@@ -281,4 +323,22 @@ const EventDescription = ({ event }: EventDescriptionProps) => {
         </>
       )
   }
+}
+
+function updateCachedSubscription(
+  cache: DataProxy,
+  sub: Partial<UserSubscription>
+) {
+  const existingUser = cache.readQuery<CurrentUserQuery>({
+    query: CurrentUserDocument,
+  })!
+  cache.writeQuery({
+    query: CurrentUserDocument,
+    data: {
+      currentUser: {
+        ...existingUser,
+        subscription: { ...existingUser.currentUser!.subscription, ...sub },
+      },
+    },
+  })
 }

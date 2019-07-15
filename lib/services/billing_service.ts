@@ -53,6 +53,21 @@ class BillingService {
 
     await this.userService.update({ stripe_subscription_id: subscription.id })
   }
+
+  async cancel(): Promise<void> {
+    const userInfo = await this.userService.getUserInfo()
+    if (!userInfo.stripe_subscription_id) {
+      throw new Error(
+        "Cannot cancel subscription: you are not currently subscribed"
+      )
+    }
+
+    const subscription = await this.stripe.subscriptions.update(
+      userInfo.stripe_subscription_id,
+      { cancel_at_period_end: true }
+    )
+    this.subscriptionLoader.replace(subscription.id, subscription)
+  }
 }
 
 export default BillingService

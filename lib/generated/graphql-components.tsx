@@ -18,6 +18,14 @@ export type AddFeedPayload = {
   feed: SubscribedFeed
 }
 
+export type CancelSubscriptionInput = {
+  placeholder?: Maybe<Scalars["String"]>
+}
+
+export type CancelSubscriptionPayload = {
+  user: User
+}
+
 export type CancelTweetInput = {
   id: Scalars["ID"]
 }
@@ -129,6 +137,7 @@ export type Mutation = {
   postTweet: PostTweetPayload
   editTweet: EditTweetPayload
   subscribe: SubscribePayload
+  cancelSubscription: CancelSubscriptionPayload
 }
 
 export type MutationAddFeedArgs = {
@@ -165,6 +174,10 @@ export type MutationEditTweetArgs = {
 
 export type MutationSubscribeArgs = {
   input: SubscribeInput
+}
+
+export type MutationCancelSubscriptionArgs = {
+  input: CancelSubscriptionInput
 }
 
 export type PageInfo = {
@@ -399,6 +412,18 @@ export type EventFieldsFragment = { __typename?: "Event" } & Pick<
     feed: Maybe<{ __typename?: "Feed" } & Pick<Feed, "id" | "title">>
     tweet: Maybe<{ __typename?: "Tweet" } & Pick<Tweet, "id" | "body">>
   }
+
+export type CancelSubscriptionMutationVariables = {}
+
+export type CancelSubscriptionMutation = { __typename?: "Mutation" } & {
+  cancelSubscription: { __typename?: "CancelSubscriptionPayload" } & {
+    user: { __typename?: "User" } & {
+      subscription: Maybe<
+        { __typename?: "UserSubscription" } & Pick<UserSubscription, "status">
+      >
+    }
+  }
+}
 
 export type AllFeedsQueryVariables = {
   cursor?: Maybe<Scalars["Cursor"]>
@@ -819,6 +844,68 @@ export function withRecentEvents<TProps, TChildProps = {}>(
     RecentEventsProps<TChildProps>
   >(RecentEventsDocument, {
     alias: "withRecentEvents",
+    ...operationOptions,
+  })
+}
+export const CancelSubscriptionDocument = gql`
+  mutation CancelSubscription {
+    cancelSubscription(input: {}) {
+      user {
+        subscription {
+          status
+        }
+      }
+    }
+  }
+`
+export type CancelSubscriptionMutationFn = ReactApollo.MutationFn<
+  CancelSubscriptionMutation,
+  CancelSubscriptionMutationVariables
+>
+
+export const CancelSubscriptionComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.MutationProps<
+        CancelSubscriptionMutation,
+        CancelSubscriptionMutationVariables
+      >,
+      "mutation"
+    >,
+    "variables"
+  > & { variables?: CancelSubscriptionMutationVariables }
+) => (
+  <ReactApollo.Mutation<
+    CancelSubscriptionMutation,
+    CancelSubscriptionMutationVariables
+  >
+    mutation={CancelSubscriptionDocument}
+    {...props}
+  />
+)
+
+export type CancelSubscriptionProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<
+    CancelSubscriptionMutation,
+    CancelSubscriptionMutationVariables
+  >
+> &
+  TChildProps
+export function withCancelSubscription<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    CancelSubscriptionMutation,
+    CancelSubscriptionMutationVariables,
+    CancelSubscriptionProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    CancelSubscriptionMutation,
+    CancelSubscriptionMutationVariables,
+    CancelSubscriptionProps<TChildProps>
+  >(CancelSubscriptionDocument, {
+    alias: "withCancelSubscription",
     ...operationOptions,
   })
 }

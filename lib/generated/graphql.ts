@@ -23,6 +23,14 @@ export type AddFeedPayload = {
   feed: SubscribedFeed
 }
 
+export type CancelSubscriptionInput = {
+  placeholder?: Maybe<Scalars["String"]>
+}
+
+export type CancelSubscriptionPayload = {
+  user: User
+}
+
 export type CancelTweetInput = {
   id: Scalars["ID"]
 }
@@ -134,6 +142,7 @@ export type Mutation = {
   postTweet: PostTweetPayload
   editTweet: EditTweetPayload
   subscribe: SubscribePayload
+  cancelSubscription: CancelSubscriptionPayload
 }
 
 export type MutationAddFeedArgs = {
@@ -170,6 +179,10 @@ export type MutationEditTweetArgs = {
 
 export type MutationSubscribeArgs = {
   input: SubscribeInput
+}
+
+export type MutationCancelSubscriptionArgs = {
+  input: CancelSubscriptionInput
 }
 
 export type PageInfo = {
@@ -500,6 +513,10 @@ export type ResolversTypes = {
   SubscribePayload: Omit<SubscribePayload, "user"> & {
     user: ResolversTypes["User"]
   }
+  CancelSubscriptionInput: CancelSubscriptionInput
+  CancelSubscriptionPayload: Omit<CancelSubscriptionPayload, "user"> & {
+    user: ResolversTypes["User"]
+  }
   FeedConnection: Pager<types.Feed>
   FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
 }
@@ -509,6 +526,13 @@ export type AddFeedPayloadResolvers<
   ParentType = ResolversTypes["AddFeedPayload"]
 > = {
   feed?: Resolver<ResolversTypes["SubscribedFeed"], ParentType, ContextType>
+}
+
+export type CancelSubscriptionPayloadResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["CancelSubscriptionPayload"]
+> = {
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>
 }
 
 export type CancelTweetPayloadResolvers<
@@ -700,6 +724,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     MutationSubscribeArgs
+  >
+  cancelSubscription?: Resolver<
+    ResolversTypes["CancelSubscriptionPayload"],
+    ParentType,
+    ContextType,
+    MutationCancelSubscriptionArgs
   >
 }
 
@@ -939,6 +969,7 @@ export type UserSubscriptionResolvers<
 
 export type Resolvers<ContextType = CourierContext> = {
   AddFeedPayload?: AddFeedPayloadResolvers<ContextType>
+  CancelSubscriptionPayload?: CancelSubscriptionPayloadResolvers<ContextType>
   CancelTweetPayload?: CancelTweetPayloadResolvers<ContextType>
   CreditCard?: CreditCardResolvers<ContextType>
   Cursor?: GraphQLScalarType

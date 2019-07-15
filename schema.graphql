@@ -41,6 +41,9 @@ type Mutation {
   editTweet(input: EditTweetInput!): EditTweetPayload!
 
   subscribe(input: SubscribeInput!): SubscribePayload!
+  cancelSubscription(
+    input: CancelSubscriptionInput!
+  ): CancelSubscriptionPayload!
 }
 
 type PageInfo {
@@ -260,6 +263,14 @@ input SubscribeInput {
 }
 
 type SubscribePayload {
+  user: User!
+}
+
+input CancelSubscriptionInput {
+  placeholder: String
+}
+
+type CancelSubscriptionPayload {
   user: User!
 }
 
