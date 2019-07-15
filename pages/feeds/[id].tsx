@@ -173,25 +173,19 @@ interface RefreshButtonProps {
 }
 
 const RefreshButton = ({ id, setError }: RefreshButtonProps) => {
-  const [refreshing, setRefreshing] = useState(false)
-
   return (
     <RefreshFeedComponent refetchQueries={[{ query: UpcomingTweetsDocument }]}>
       {refreshFeed => (
         <Button
           mt={3}
-          spin={refreshing}
           icon={faSyncAlt}
           useSameIconWhileSpinning
-          onClick={async () => {
-            setRefreshing(true)
+          onClickAsync={async () => {
             try {
               await refreshFeed({ variables: { input: { id } } })
               setError(undefined)
             } catch (err) {
               setError(err)
-            } finally {
-              setRefreshing(false)
             }
           }}
         >
@@ -207,24 +201,16 @@ interface AutopostButtonProps {
 }
 
 const AutopostButton = ({ feed }: AutopostButtonProps) => {
-  const [isUpdating, setUpdating] = useState(false)
-
   return (
     <SetFeedOptionsComponent>
       {setOptions => (
         <Button
           mt={3}
-          spin={isUpdating}
           icon={faTwitter}
-          onClick={async () => {
-            setUpdating(true)
-            try {
-              await setOptions({
-                variables: { input: { id: feed.id, autopost: !feed.autopost } },
-              })
-            } finally {
-              setUpdating(false)
-            }
+          onClickAsync={async () => {
+            await setOptions({
+              variables: { input: { id: feed.id, autopost: !feed.autopost } },
+            })
           }}
         >
           Turn {feed.autopost ? "Off" : "On"} Autoposting
@@ -241,7 +227,6 @@ interface RemoveButtonProps {
 const RemoveButton = ({ id }: RemoveButtonProps) => {
   const [showDialog, setShowDialog] = useState(false)
   const buttonRef = useRef(null)
-  const [isDeleting, setIsDeleting] = useState(false)
 
   function closeDialog() {
     setShowDialog(false)
@@ -279,9 +264,7 @@ const RemoveButton = ({ id }: RemoveButtonProps) => {
                 <Button
                   color="red"
                   icon={faTrashAlt}
-                  spin={isDeleting}
-                  onClick={async () => {
-                    setIsDeleting(true)
+                  onClickAsync={async () => {
                     try {
                       await deleteFeed({
                         variables: { input: { id } },
@@ -290,8 +273,6 @@ const RemoveButton = ({ id }: RemoveButtonProps) => {
                       Router.push("/feeds")
                     } catch (err) {
                       console.error(err)
-                    } finally {
-                      setIsDeleting(false)
                     }
                   }}
                 >

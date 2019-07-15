@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import styled from "@emotion/styled"
 import {
   AllTweetsFieldsFragment,
@@ -182,25 +182,20 @@ const UncancelButton = ({ id }: CancelButtonProps) => {
 }
 
 const PostButton = ({ id }: CancelButtonProps) => {
-  const [posting, setPosting] = useState(false)
-
   return (
     <PostTweetComponent>
       {postTweet => (
         <Button
-          spin={posting}
           icon={faTwitter}
           color="blue"
           invert
-          onClick={async () => {
-            setPosting(true)
+          onClickAsync={async () => {
             try {
               await postTweet({
                 variables: { input: { id } },
               })
             } catch (e) {
               console.error(e)
-              setPosting(false)
             }
           }}
         >

@@ -174,8 +174,6 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
 }
 
 const CancelButton = () => {
-  const [submitting, setSubmitting] = React.useState(false)
-
   return (
     <CancelSubscriptionComponent
       variables={{ input: {} }}
@@ -191,17 +189,13 @@ const CancelButton = () => {
       {cancelSubscription => (
         <Button
           icon={faTimesCircle}
-          spin={submitting}
           color="red"
           invert
-          onClick={async () => {
-            setSubmitting(true)
+          onClickAsync={async () => {
             try {
               await cancelSubscription()
             } catch (err) {
               console.error(err)
-            } finally {
-              setSubmitting(false)
             }
           }}
         >

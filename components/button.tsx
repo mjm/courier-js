@@ -86,6 +86,10 @@ StyledButton.defaultProps = {
   alignSelf: "flex-start",
 }
 
+type OnClickAsync = (
+  event: React.MouseEvent<HTMLButtonElement>
+) => Promise<void>
+
 type Props = Omit<
   React.ComponentPropsWithoutRef<typeof StyledButton>,
   "size" | "color" | "invert"
@@ -97,6 +101,8 @@ type Props = Omit<
   icon?: IconDefinition
   spin?: boolean
   useSameIconWhileSpinning?: boolean
+
+  onClickAsync?: OnClickAsync
 
   as?: string
 } & SpaceProps
@@ -111,10 +117,27 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
       icon,
       spin = false,
       useSameIconWhileSpinning = false,
+      onClick,
+      onClickAsync,
       ...props
     }: Props,
     ref
   ) => {
+    const [asyncSpin, setAsyncSpin] = React.useState(false)
+    const useOnClickAsync = !!onClickAsync
+    if (onClickAsync) {
+      onClick = async e => {
+        setAsyncSpin(true)
+        try {
+          await onClickAsync(e)
+        } finally {
+          setAsyncSpin(false)
+        }
+      }
+    }
+
+    const realSpin = useOnClickAsync ? asyncSpin : spin
+
     return (
       <StyledButton
         size={size}
@@ -122,14 +145,15 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
         invert={invert}
         ref={ref}
         type="button"
-        disabled={disabled || spin}
+        disabled={disabled || realSpin}
+        onClick={onClick}
         {...props}
       >
         {icon && (
           <Icon
             mr={size === "small" ? 1 : 2}
-            icon={spin && !useSameIconWhileSpinning ? faSpinner : icon}
-            spin={spin}
+            icon={realSpin && !useSameIconWhileSpinning ? faSpinner : icon}
+            spin={realSpin}
           />
         )}
         {children}
