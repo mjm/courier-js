@@ -137,9 +137,9 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
   const router = useRouter()
 
   return (
-    <SavedPaymentMethodComponent fetchPolicy="network-only">
+    <SavedPaymentMethodComponent fetchPolicy="cache-and-network">
       {({ data, loading, error }) => {
-        if (loading) {
+        if (loading && !(data && data.currentUser)) {
           return <Loading />
         }
 
@@ -148,6 +148,7 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
           // no return, continue on as though we loaded and just didn't have any
         }
 
+        // wtb optional chaining in JS
         const savedCard =
           data &&
           data.currentUser &&
@@ -166,27 +167,34 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
                 }
 
                 try {
-                  const { token, error } = await stripe.createToken({
-                    name: input.name,
-                  })
-                  if (token) {
+                  if (input.method === "new-card") {
+                    const { token, error } = await stripe.createToken({
+                      name: input.name,
+                    })
+                    if (error) {
+                      throw error
+                    }
+
                     await subscribe({
                       variables: {
                         input: {
-                          tokenID: token.id,
+                          tokenID: token!.id,
                           email: input.email,
                         },
                       },
                     })
-
-                    // ensure we have an up-to-date token, since that's where the
-                    // user info on the account page comes from
-                    await renewSession()
-
-                    router.push("/account")
                   } else {
-                    actions.setStatus({ error })
+                    // reuse the existing customer
+                    await subscribe({
+                      variables: { input: {} },
+                    })
                   }
+
+                  // ensure we have an up-to-date token, since that's where the
+                  // user info on the account page comes from
+                  await renewSession()
+
+                  router.push("/account")
                 } catch (error) {
                   actions.setStatus({ error })
                 } finally {
@@ -218,12 +226,14 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
                           <Group direction="column" spacing={2}>
                             {savedCard && (
                               <>
-                                <Flex>
+                                <Flex flexWrap="wrap">
                                   <Field
                                     type="radio"
                                     name="method"
                                     value="use-saved-card"
-                                    label="Use saved credit card"
+                                    label={`Use saved credit card (${
+                                      savedCard.brand
+                                    } ${savedCard.lastFour})`}
                                     component={RadioButton}
                                   />
                                   <Field
@@ -292,7 +302,7 @@ const SubscribeForm = injectStripe<SubscribeFormProps>(({ stripe }) => {
 })
 
 interface RadioButtonProps extends FieldProps {
-  label: string
+  label: React.ReactNode
 }
 const RadioButton = ({ field, form, label, ...props }: RadioButtonProps) => {
   return (

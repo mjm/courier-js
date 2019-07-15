@@ -280,8 +280,8 @@ export type SubscribedFeedEdge = {
 }
 
 export type SubscribeInput = {
-  tokenID: Scalars["ID"]
-  email: Scalars["String"]
+  tokenID?: Maybe<Scalars["ID"]>
+  email?: Maybe<Scalars["String"]>
 }
 
 export type SubscribePayload = {

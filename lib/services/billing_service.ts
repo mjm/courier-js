@@ -19,18 +19,33 @@ class BillingService {
     this.planId = env.monthlyPlanId
   }
 
-  async subscribe(email: string, tokenId: string): Promise<any> {
-    console.log("Creating subscription for", email, "with token", tokenId)
-    const customer = await this.stripe.customers.create({
-      email,
-      source: tokenId,
-    })
-    this.customerLoader.prime(customer.id, customer)
+  async subscribe(
+    email?: string | null,
+    tokenId?: string | null
+  ): Promise<any> {
+    let customerId: string
+    if (email && tokenId) {
+      console.log("Creating subscription for", email, "with token", tokenId)
+      const customer = await this.stripe.customers.create({
+        email,
+        source: tokenId,
+      })
+      this.customerLoader.prime(customer.id, customer)
+      customerId = customer.id
 
-    await this.userService.update({ stripe_customer_id: customer.id })
+      await this.userService.update({ stripe_customer_id: customerId })
+    } else {
+      const userInfo = await this.userService.getUserInfo()
+      if (!userInfo.stripe_customer_id) {
+        throw new Error("There is no existing payment method to subscribe with")
+      }
+      customerId = userInfo.stripe_customer_id
+
+      console.log("Creating subscription for existing customer", customerId)
+    }
 
     const subscription = await this.stripe.subscriptions.create({
-      customer: customer.id,
+      customer: customerId,
       items: [{ plan: this.planId }],
       expand: ["latest_invoice.payment_intent"],
     })

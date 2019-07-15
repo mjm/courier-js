@@ -255,8 +255,8 @@ type EditTweetPayload {
 }
 
 input SubscribeInput {
-  tokenID: ID!
-  email: String!
+  tokenID: ID
+  email: String
 }
 
 type SubscribePayload {
