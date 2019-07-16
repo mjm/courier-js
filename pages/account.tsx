@@ -11,7 +11,7 @@ import {
   EventFieldsFragment,
   EventType,
   UserFieldsFragment,
-  SubscriptionStatus,
+  SubscriptionStatus as Status,
   CancelSubscriptionComponent,
   CurrentUserQuery,
   CurrentUserDocument,
@@ -32,7 +32,7 @@ import { logout, getToken } from "../utils/auth0"
 import Moment from "react-moment"
 import { useRouter } from "next/router"
 import { DataProxy } from "apollo-cache"
-import { CreditCard } from "../components/payment"
+import { CreditCard, SubscriptionStatus } from "../components/payment"
 
 const Account = () => {
   return (
@@ -129,13 +129,15 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
       <CardHeader>Subscription</CardHeader>
       {subscription ? (
         <>
-          <InfoField label="Status">{subscription.status}</InfoField>
-          {subscription.status === SubscriptionStatus.Active ? (
+          <InfoField label="Status">
+            <SubscriptionStatus status={subscription.status} />
+          </InfoField>
+          {subscription.status === Status.Active ? (
             <InfoField label="Renews">
               <Moment format="LL">{subscription.periodEnd}</Moment> (
               <Moment fromNow>{subscription.periodEnd}</Moment>)
             </InfoField>
-          ) : subscription.status === SubscriptionStatus.Canceled ? (
+          ) : subscription.status === Status.Canceled ? (
             <InfoField label="Expires">
               <Moment format="LL">{subscription.periodEnd}</Moment> (
               <Moment fromNow>{subscription.periodEnd}</Moment>)
@@ -143,7 +145,9 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
           ) : null}
         </>
       ) : (
-        <InfoField label="Status">Not subscribed</InfoField>
+        <InfoField label="Status">
+          <SubscriptionStatus />
+        </InfoField>
       )}
       {customer && customer.creditCard ? (
         <InfoField label="Payment">
@@ -152,7 +156,7 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
       ) : null}
       <Group mt={3} direction="row" spacing={2} wrap>
         {subscription ? (
-          subscription.status === SubscriptionStatus.Active ? (
+          subscription.status === Status.Active ? (
             <CancelButton />
           ) : (
             <Button
