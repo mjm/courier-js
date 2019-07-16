@@ -10,6 +10,7 @@ import TwitterService from "./twitter_service"
 import { injectable, inject } from "inversify"
 import * as keys from "../key"
 import EventService from "./event_service"
+import BillingService from "./billing_service"
 
 export interface PostQueuedResult {
   succeeded: number
@@ -24,7 +25,8 @@ class TweetService {
     private subscribedFeedLoader: SubscribedFeedLoader,
     @inject(keys.UserId) private getUserId: () => Promise<UserId>,
     private twitter: TwitterService,
-    private events: EventService
+    private events: EventService,
+    private billing: BillingService
   ) {}
 
   async paged(options: TweetPagingOptions = {}): Promise<Pager<Tweet, any>> {
@@ -86,6 +88,10 @@ class TweetService {
   }
 
   async post(id: TweetId): Promise<Tweet> {
+    if (!(await this.billing.isSubscribed())) {
+      throw new Error("You cannot post tweets without an active subscription.")
+    }
+
     const tweet = await this.tweetLoader.load(id)
     if (!tweet) {
       throw new Error(`no tweet found with id ${id}`)

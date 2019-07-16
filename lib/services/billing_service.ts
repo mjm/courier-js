@@ -80,6 +80,15 @@ class BillingService {
     this.subscriptionLoader.replace(subscription.id, subscription)
   }
 
+  async isSubscribed(): Promise<boolean> {
+    const subscription = await this.getSubscription()
+    if (!subscription) {
+      return false
+    }
+
+    return subscription.status === "active"
+  }
+
   private async createCustomer(
     email: string,
     tokenId: string
