@@ -149,9 +149,7 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
         <InfoField label="Payment">
           <CreditCard card={customer.creditCard} />
         </InfoField>
-      ) : (
-        <InfoField label="Payment">No saved payment method</InfoField>
-      )}
+      ) : null}
       <Group mt={3} direction="row" spacing={2} wrap>
         {subscription ? (
           subscription.status === SubscriptionStatus.Active ? (
