@@ -32,7 +32,19 @@ container
   .bind<Stripe>(Stripe)
   .toDynamicValue(context => {
     const env = context.container.get(Environment)
-    return new Stripe(env.stripeKey)
+    const stripe = new Stripe(env.stripeKey)
+
+    // @ts-ignore
+    stripe.on("request", req => {
+      console.log(req)
+    })
+
+    // @ts-ignore
+    stripe.on("response", res => {
+      console.log(res)
+    })
+
+    return stripe
   })
   .inSingletonScope()
 
