@@ -4,6 +4,7 @@ import Environment from "../env"
 import { CustomerLoader } from "../repositories/customer_repository"
 import UserService from "./user_service"
 import { SubscriptionLoader } from "../repositories/subscription_repository"
+import { UserId } from "../data/types"
 
 @injectable()
 class BillingService {
@@ -82,6 +83,24 @@ class BillingService {
 
   async isSubscribed(): Promise<boolean> {
     const subscription = await this.getSubscription()
+    if (!subscription) {
+      return false
+    }
+
+    return subscription.status === "active"
+  }
+
+  async isUserSubscribed(userId: UserId): Promise<boolean> {
+    const {
+      stripe_subscription_id,
+    } = await this.userService.getMetadataForUser(userId)
+    if (!stripe_subscription_id) {
+      return false
+    }
+
+    const subscription = await this.subscriptionLoader.load(
+      stripe_subscription_id
+    )
     if (!subscription) {
       return false
     }

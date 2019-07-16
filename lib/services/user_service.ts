@@ -102,6 +102,11 @@ class UserService {
     }
   }
 
+  async getMetadataForUser(userId: UserId): Promise<UserAppMetadata> {
+    const user = await this.managementClient.getUser({ id: userId })
+    return (user.app_metadata || {}) as UserAppMetadata
+  }
+
   async update(metadata: UserAppMetadata): Promise<any> {
     return await this.managementClient.updateAppMetadata(
       { id: await this.requireUserId() },

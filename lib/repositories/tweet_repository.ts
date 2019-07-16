@@ -194,6 +194,14 @@ class TweetRepository {
     return row && TweetRepository.fromRow(row)
   }
 
+  async dequeue(id: TweetId): Promise<void> {
+    await this.db.query(sql`
+      UPDATE tweets
+         SET post_after = NULL
+       WHERE id = ${id}
+    `)
+  }
+
   static fromRow({
     id,
     post_id,

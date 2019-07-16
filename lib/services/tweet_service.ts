@@ -114,6 +114,17 @@ class TweetService {
         const feed = (await this.subscribedFeedLoader.load(
           tweet.feedSubscriptionId
         ))!
+
+        if (!(await this.billing.isUserSubscribed(feed.userId))) {
+          console.log(
+            `User ${feed.userId} is not currently subscribed. Removing tweet ${
+              tweet.id
+            } from queue.`
+          )
+          await this.tweets.dequeue(tweet.id)
+          continue
+        }
+
         await this.doPost(feed.userId, tweet)
         await this.events.record(
           "tweet_autopost",
