@@ -45,8 +45,10 @@ class BillingService {
         )
       }
 
-      console.log("User has existing non-active subscription, deleting it.")
-      await this.stripe.subscriptions.del(existingSubscription.id)
+      if (existingSubscription.status !== "canceled") {
+        console.log("User has existing non-active subscription, deleting it.")
+        await this.stripe.subscriptions.del(existingSubscription.id)
+      }
     }
 
     const customerId = createNewCustomer
