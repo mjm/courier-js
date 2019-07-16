@@ -22,6 +22,7 @@ class UserService {
   private managementClient: ManagementClient
 
   private verifyPromise: Promise<UserToken>
+  private userInfoPromise: Promise<UserInfo> | null = null
 
   constructor(@inject(Token) private token: string | null, env: Environment) {
     this.jwtOptions = {
@@ -76,17 +77,11 @@ class UserService {
   }
 
   async getUserInfo(): Promise<UserInfo> {
-    if (!this.token) {
-      throw new AuthenticationError("No user token was provided")
+    if (!this.userInfoPromise) {
+      this.userInfoPromise = this.fetchUserInfo()
     }
 
-    const profile = await this.authClient.getProfile(this.token)
-    const token = await this.verify()
-    return {
-      ...profile,
-      stripe_customer_id: token["https://courier.blog/customer_id"],
-      stripe_subscription_id: token["https://courier.blog/subscription_id"],
-    }
+    return this.userInfoPromise
   }
 
   async getTwitterCredentials(userId: UserId): Promise<TwitterCredentials> {
@@ -147,6 +142,20 @@ class UserService {
         cb(null, signingKey)
       }
     })
+  }
+
+  private async fetchUserInfo(): Promise<UserInfo> {
+    if (!this.token) {
+      throw new AuthenticationError("No user token was provided")
+    }
+
+    const profile = await this.authClient.getProfile(this.token)
+    const token = await this.verify()
+    return {
+      ...profile,
+      stripe_customer_id: token["https://courier.blog/customer_id"],
+      stripe_subscription_id: token["https://courier.blog/subscription_id"],
+    }
   }
 }
 
