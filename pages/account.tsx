@@ -32,6 +32,7 @@ import { logout, getToken } from "../utils/auth0"
 import Moment from "react-moment"
 import { useRouter } from "next/router"
 import { DataProxy } from "apollo-cache"
+import { CreditCard } from "../components/payment"
 
 const Account = () => {
   return (
@@ -146,7 +147,7 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
       )}
       {customer && customer.creditCard ? (
         <InfoField label="Payment">
-          {customer.creditCard.brand} {customer.creditCard.lastFour}
+          <CreditCard card={customer.creditCard} />
         </InfoField>
       ) : (
         <InfoField label="Payment">No saved payment method</InfoField>
