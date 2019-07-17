@@ -58,3 +58,11 @@ mutation CancelSubscription {
     }
   }
 }
+
+query GetSubscriptionStatus {
+  currentUser {
+    subscription {
+      status
+    }
+  }
+}

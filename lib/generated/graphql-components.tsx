@@ -425,6 +425,18 @@ export type CancelSubscriptionMutation = { __typename?: "Mutation" } & {
   }
 }
 
+export type GetSubscriptionStatusQueryVariables = {}
+
+export type GetSubscriptionStatusQuery = { __typename?: "Query" } & {
+  currentUser: Maybe<
+    { __typename?: "User" } & {
+      subscription: Maybe<
+        { __typename?: "UserSubscription" } & Pick<UserSubscription, "status">
+      >
+    }
+  >
+}
+
 export type AllFeedsQueryVariables = {
   cursor?: Maybe<Scalars["Cursor"]>
 }
@@ -906,6 +918,62 @@ export function withCancelSubscription<TProps, TChildProps = {}>(
     CancelSubscriptionProps<TChildProps>
   >(CancelSubscriptionDocument, {
     alias: "withCancelSubscription",
+    ...operationOptions,
+  })
+}
+export const GetSubscriptionStatusDocument = gql`
+  query GetSubscriptionStatus {
+    currentUser {
+      subscription {
+        status
+      }
+    }
+  }
+`
+
+export const GetSubscriptionStatusComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.QueryProps<
+        GetSubscriptionStatusQuery,
+        GetSubscriptionStatusQueryVariables
+      >,
+      "query"
+    >,
+    "variables"
+  > & { variables?: GetSubscriptionStatusQueryVariables }
+) => (
+  <ReactApollo.Query<
+    GetSubscriptionStatusQuery,
+    GetSubscriptionStatusQueryVariables
+  >
+    query={GetSubscriptionStatusDocument}
+    {...props}
+  />
+)
+
+export type GetSubscriptionStatusProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<
+    GetSubscriptionStatusQuery,
+    GetSubscriptionStatusQueryVariables
+  >
+> &
+  TChildProps
+export function withGetSubscriptionStatus<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    GetSubscriptionStatusQuery,
+    GetSubscriptionStatusQueryVariables,
+    GetSubscriptionStatusProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    GetSubscriptionStatusQuery,
+    GetSubscriptionStatusQueryVariables,
+    GetSubscriptionStatusProps<TChildProps>
+  >(GetSubscriptionStatusDocument, {
+    alias: "withGetSubscriptionStatus",
     ...operationOptions,
   })
 }

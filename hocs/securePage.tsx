@@ -12,6 +12,7 @@ import Icon from "../components/icon"
 import { Text, Flex, Card, Button } from "@rebass/emotion"
 import { NextPage } from "next"
 import { useAuth } from "../hooks/auth"
+import { SubscriptionProvider } from "../hooks/subscription"
 
 export default function withSecurePage<T>(
   Page: NextPage<T>
@@ -53,17 +54,15 @@ export default function withSecurePage<T>(
       }
     }
 
-    return <Page {...props} />
+    return (
+      <SubscriptionProvider>
+        <Page {...props} />
+      </SubscriptionProvider>
+    )
   }
 
   if (Page.getInitialProps) {
-    securePage.getInitialProps = async ctx => {
-      if (Page.getInitialProps) {
-        return await Page.getInitialProps(ctx)
-      }
-
-      throw new Error("getInitialProps was defined later")
-    }
+    securePage.getInitialProps = Page.getInitialProps.bind(Page)
   }
 
   return withDefaultPage(securePage)

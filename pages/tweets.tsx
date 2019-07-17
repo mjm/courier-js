@@ -24,6 +24,7 @@ import Card from "../components/card"
 import Group from "../components/group"
 import { Flex, Text } from "@rebass/emotion"
 import { NextPage } from "next"
+import { useSubscription } from "../hooks/subscription"
 
 const Tweets: NextPage<{}> = () => (
   <Container>
@@ -33,6 +34,7 @@ const Tweets: NextPage<{}> = () => (
     <PageDescription>
       These are the tweets Courier has translated from your feeds.
     </PageDescription>
+    <SubscribeBanner />
     <TweetsList title="Upcoming Tweet" query={UpcomingTweetsComponent} />
     <TweetsList title="Past Tweet" query={PastTweetsComponent} />
   </Container>
@@ -178,5 +180,20 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
         <ViewTweet tweet={tweet} onEdit={() => setEditing(true)} />
       )}
     </Card>
+  )
+}
+
+const SubscribeBanner = () => {
+  const { isSubscribed } = useSubscription()
+
+  if (isSubscribed) {
+    return null
+  }
+
+  return (
+    <p>
+      You are not currently subscribed to Courier. You cannot post tweets until
+      you subscribe.
+    </p>
   )
 }

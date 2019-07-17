@@ -19,6 +19,7 @@ import Group from "../group"
 import { Image, Box, Flex } from "@rebass/emotion"
 import { URLContainer } from "../url"
 import { useAuth } from "../../hooks/auth"
+import { useSubscription } from "../../hooks/subscription"
 
 mention(linkify)
 
@@ -35,6 +36,7 @@ interface ViewTweetProps {
 
 const ViewTweet = ({ tweet, onEdit }: ViewTweetProps) => {
   const { user } = useAuth()
+  const { isSubscribed } = useSubscription()
 
   return (
     <Group direction="column" spacing={3}>
@@ -74,7 +76,7 @@ const ViewTweet = ({ tweet, onEdit }: ViewTweetProps) => {
               Edit Tweet
             </Button>
             <PostButton id={tweet.id} />
-            {tweet.postAfter && (
+            {isSubscribed && tweet.postAfter && (
               <StatusText css={{ display: "inline-block" }}>
                 will post{" "}
                 <Moment
