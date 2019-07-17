@@ -18,6 +18,7 @@ import mention from "linkifyjs/plugins/mention"
 import Group from "../group"
 import { Image, Box, Flex } from "@rebass/emotion"
 import { URLContainer } from "../url"
+import { useAuth } from "../../hooks/auth"
 
 mention(linkify)
 
@@ -29,11 +30,12 @@ const StatusText = styled.div(({ theme }) => ({
 
 interface ViewTweetProps {
   tweet: AllTweetsFieldsFragment
-  user: any
   onEdit: () => void
 }
 
-const ViewTweet = ({ tweet, user, onEdit }: ViewTweetProps) => {
+const ViewTweet = ({ tweet, onEdit }: ViewTweetProps) => {
+  const { user } = useAuth()
+
   return (
     <Group direction="column" spacing={3}>
       <Linkify

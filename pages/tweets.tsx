@@ -23,8 +23,9 @@ import { Button } from "../components/button"
 import Card from "../components/card"
 import Group from "../components/group"
 import { Flex, Text } from "@rebass/emotion"
+import { NextPage } from "next"
 
-const Tweets = ({ user }: any) => (
+const Tweets: NextPage<{}> = () => (
   <Container>
     <Head title="Your Tweets" />
 
@@ -32,12 +33,8 @@ const Tweets = ({ user }: any) => (
     <PageDescription>
       These are the tweets Courier has translated from your feeds.
     </PageDescription>
-    <TweetsList
-      title="Upcoming Tweet"
-      query={UpcomingTweetsComponent}
-      user={user}
-    />
-    <TweetsList title="Past Tweet" query={PastTweetsComponent} user={user} />
+    <TweetsList title="Upcoming Tweet" query={UpcomingTweetsComponent} />
+    <TweetsList title="Past Tweet" query={PastTweetsComponent} />
   </Container>
 )
 
@@ -49,13 +46,8 @@ interface TweetsListProps {
   query: typeof UpcomingTweetsComponent
 
   title: string
-  user: any
 }
-const TweetsList = ({
-  query: QueryComponent,
-  title,
-  user,
-}: TweetsListProps) => {
+const TweetsList = ({ query: QueryComponent, title }: TweetsListProps) => {
   const [isLoadingMore, setLoadingMore] = useState(false)
 
   return (
@@ -144,7 +136,7 @@ const TweetsList = ({
               <FlushContainer mb={4}>
                 <Group direction="column" spacing={3}>
                   {nodes.map(tweet => (
-                    <TweetCard key={tweet.id} tweet={tweet} user={user} />
+                    <TweetCard key={tweet.id} tweet={tweet} />
                   ))}
                   {pageInfo.hasPreviousPage && (
                     <Flex justifyContent="center">
@@ -170,10 +162,9 @@ const TweetsList = ({
 
 interface TweetCardProps {
   tweet: AllTweetsFieldsFragment
-  user: any
 }
 
-const TweetCard = ({ tweet, user }: TweetCardProps) => {
+const TweetCard = ({ tweet }: TweetCardProps) => {
   const [editing, setEditing] = useState(false)
 
   const appearance =
@@ -184,7 +175,7 @@ const TweetCard = ({ tweet, user }: TweetCardProps) => {
       {editing ? (
         <EditTweet tweet={tweet} onStopEditing={() => setEditing(false)} />
       ) : (
-        <ViewTweet tweet={tweet} user={user} onEdit={() => setEditing(true)} />
+        <ViewTweet tweet={tweet} onEdit={() => setEditing(true)} />
       )}
     </Card>
   )

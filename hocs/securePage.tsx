@@ -1,5 +1,5 @@
 import React from "react"
-import withDefaultPage, { DefaultPage, DefaultPageResult } from "./defaultPage"
+import withDefaultPage, { DefaultPageResult } from "./defaultPage"
 import Link from "next/link"
 import Loading from "../components/loading"
 import { PageHeader } from "../components/header"
@@ -10,13 +10,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import Icon from "../components/icon"
 import { Text, Flex, Card, Button } from "@rebass/emotion"
+import { NextPage } from "next"
+import { useAuth } from "../hooks/auth"
 
 export default function withSecurePage<T>(
-  Page: DefaultPage<T>
+  Page: NextPage<T>
 ): DefaultPageResult<T> {
-  const securePage: DefaultPage<T> = props => {
-    if (!props.isAuthenticated) {
-      if (props.isAuthenticating) {
+  const securePage: NextPage<T> = props => {
+    const { isAuthenticated, isAuthenticating } = useAuth()
+
+    if (!isAuthenticated) {
+      if (isAuthenticating) {
         return <Loading />
       } else {
         return (
