@@ -14,7 +14,12 @@ const server = new ApolloServer({
   schema,
   context: async ({ req }) => CourierContext.createForRequest(req),
   introspection: true,
-  playground: true,
+  // @ts-ignore
+  playground: {
+    settings: {
+      "request.credentials": "same-origin",
+    },
+  },
 })
 
 // HACK: the now dev routing with Next API routes is preserving the prefix,

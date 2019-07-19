@@ -7,7 +7,6 @@ import { PostLoader } from "./repositories/post_repository"
 import PostService from "./services/post_service"
 import { TweetLoader } from "./repositories/tweet_repository"
 import TweetService from "./services/tweet_service"
-import { IncomingHttpHeaders, IncomingMessage } from "http"
 import UserService, { UserIdProvider } from "./services/user_service"
 import { Container, injectable } from "inversify"
 import * as keys from "./key"
@@ -17,6 +16,8 @@ import Environment from "./env"
 import BillingService from "./services/billing_service"
 import { CustomerLoader } from "./repositories/customer_repository"
 import { SubscriptionLoader } from "./repositories/subscription_repository"
+import { parse as parseCookies } from "cookie"
+import { IncomingMessage } from "http"
 
 const container = new Container({
   autoBindInjectable: true,
@@ -68,7 +69,7 @@ export class CourierContext {
 
   static async createForRequest(req: IncomingMessage): Promise<CourierContext> {
     const child = container.createChild()
-    child.bind<string | null>(keys.Token).toConstantValue(getToken(req.headers))
+    child.bind<string | null>(keys.Token).toConstantValue(getToken(req))
 
     return child.get(CourierContext)
   }
@@ -109,15 +110,18 @@ export class CourierContext {
   }
 }
 
-function getToken(headers: IncomingHttpHeaders): string | null {
-  const authz = headers.authorization
-  if (!authz) {
-    return null
+function getToken(req: IncomingMessage): string | null {
+  const authz = req.headers.authorization
+  if (authz && authz.startsWith("Bearer ")) {
+    return authz.substring(7)
   }
 
-  if (!authz.startsWith("Bearer ")) {
-    return null
+  // fallback to checking for cookie
+  const cookies = parseCookies(req.headers.cookie || "")
+  const cookie = cookies.accessToken
+  if (cookie) {
+    return cookie
   }
 
-  return authz.substring(7)
+  return null
 }
