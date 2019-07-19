@@ -8,5 +8,8 @@ function (user, context, callback) {
     context.accessToken[namespace + "subscription_id"] =
       metadata.stripe_subscription_id
   }
+  if (metadata.subscription_status) {
+    context.accessToken[namespace + "status"] = metadata.subscription_status
+  }
   callback(null, user, context)
 }

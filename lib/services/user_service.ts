@@ -160,6 +160,7 @@ class UserService {
       ...profile,
       stripe_customer_id: token["https://courier.blog/customer_id"],
       stripe_subscription_id: token["https://courier.blog/subscription_id"],
+      subscription_status: token["https://courier.blog/status"],
     }
   }
 }

@@ -24,6 +24,7 @@ export interface UserToken {
   scope: string
   "https://courier.blog/customer_id"?: string
   "https://courier.blog/subscription_id"?: string
+  "https://courier.blog/status"?: string
 }
 
 export interface UserInfo {
@@ -34,11 +35,13 @@ export interface UserInfo {
   updated_at: string
   stripe_customer_id: string | undefined
   stripe_subscription_id: string | undefined
+  subscription_status: "active" | undefined
 }
 
 export interface UserAppMetadata {
   stripe_customer_id?: string
   stripe_subscription_id?: string
+  subscription_status?: "active" | undefined
 }
 
 export type FeedId = string
