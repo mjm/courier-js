@@ -119,6 +119,17 @@ export const colors = {
   blue700: "#2B6CB0",
   blue800: "#2C5282",
   blue900: "#2A4365",
+  yellow: {
+    100: "#FFFFF0",
+    200: "#FEFCBF",
+    300: "#FAF089",
+    400: "#F6E05E",
+    500: "#ECC94B",
+    600: "#D69E2E",
+    700: "#B7791F",
+    800: "#975A16",
+    900: "#744210",
+  },
 }
 
 export const shadow = {

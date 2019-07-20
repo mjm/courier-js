@@ -25,6 +25,7 @@ import Group from "../components/group"
 import { Flex, Text } from "@rebass/emotion"
 import { NextPage } from "next"
 import { useSubscription } from "../hooks/subscription"
+import Notice from "../components/notice"
 
 const Tweets: NextPage<{}> = () => (
   <Container>
@@ -191,9 +192,9 @@ const SubscribeBanner = () => {
   }
 
   return (
-    <p>
+    <Notice variant="warning">
       You are not currently subscribed to Courier. You cannot post tweets until
       you subscribe.
-    </p>
+    </Notice>
   )
 }
