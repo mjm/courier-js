@@ -59,6 +59,7 @@ type User {
   picture: String!
   customer: Customer
   subscription: UserSubscription
+  subscriptionStatusOverride: SubscriptionStatus
 }
 
 type Customer {

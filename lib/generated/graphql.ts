@@ -362,6 +362,7 @@ export type User = {
   picture: Scalars["String"]
   customer?: Maybe<Customer>
   subscription?: Maybe<UserSubscription>
+  subscriptionStatusOverride?: Maybe<SubscriptionStatus>
 }
 
 export type UserSubscription = {
@@ -950,6 +951,11 @@ export type UserResolvers<
   >
   subscription?: Resolver<
     Maybe<ResolversTypes["UserSubscription"]>,
+    ParentType,
+    ContextType
+  >
+  subscriptionStatusOverride?: Resolver<
+    Maybe<ResolversTypes["SubscriptionStatus"]>,
     ParentType,
     ContextType
   >

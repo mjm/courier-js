@@ -61,6 +61,7 @@ mutation CancelSubscription {
 
 query GetSubscriptionStatus {
   currentUser {
+    subscriptionStatusOverride
     subscription {
       status
     }

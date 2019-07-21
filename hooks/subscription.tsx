@@ -25,12 +25,11 @@ export const SubscriptionProvider = ({
         return <Loading />
       }
 
-      const status =
-        data &&
-        data.currentUser &&
-        data.currentUser.subscription &&
-        data.currentUser.subscription.status
+      const user = data && data.currentUser
+      const statusOverride = user && user.subscriptionStatusOverride
+      const status = user && user.subscription && user.subscription.status
       const isSubscribed =
+        statusOverride === SubscriptionStatus.Active ||
         status === SubscriptionStatus.Active ||
         status === SubscriptionStatus.Canceled
 

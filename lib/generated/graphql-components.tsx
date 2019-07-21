@@ -357,6 +357,7 @@ export type User = {
   picture: Scalars["String"]
   customer?: Maybe<Customer>
   subscription?: Maybe<UserSubscription>
+  subscriptionStatusOverride?: Maybe<SubscriptionStatus>
 }
 
 export type UserSubscription = {
@@ -429,11 +430,11 @@ export type GetSubscriptionStatusQueryVariables = {}
 
 export type GetSubscriptionStatusQuery = { __typename?: "Query" } & {
   currentUser: Maybe<
-    { __typename?: "User" } & {
-      subscription: Maybe<
-        { __typename?: "UserSubscription" } & Pick<UserSubscription, "status">
-      >
-    }
+    { __typename?: "User" } & Pick<User, "subscriptionStatusOverride"> & {
+        subscription: Maybe<
+          { __typename?: "UserSubscription" } & Pick<UserSubscription, "status">
+        >
+      }
   >
 }
 
@@ -924,6 +925,7 @@ export function withCancelSubscription<TProps, TChildProps = {}>(
 export const GetSubscriptionStatusDocument = gql`
   query GetSubscriptionStatus {
     currentUser {
+      subscriptionStatusOverride
       subscription {
         status
       }

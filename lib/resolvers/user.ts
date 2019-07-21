@@ -26,6 +26,14 @@ export const User: UserResolvers = {
       return null
     }
   },
+
+  subscriptionStatusOverride({ subscription_status }) {
+    if (subscription_status === "active") {
+      return SubscriptionStatus.Active
+    }
+
+    return null
+  },
 }
 
 export const Customer: CustomerResolvers = {
