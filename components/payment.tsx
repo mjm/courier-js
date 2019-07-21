@@ -48,11 +48,22 @@ export const CreditCard = ({ card }: CreditCardProps) => {
 
 interface SubscriptionStatusProps {
   status?: Status
+  overridden?: boolean
 }
-export const SubscriptionStatus = ({ status }: SubscriptionStatusProps) => {
+export const SubscriptionStatus = ({
+  status,
+  overridden = false,
+}: SubscriptionStatusProps) => {
   if (!status) {
     return <Text>Not subscribed</Text>
   }
+
+  const override = overridden ? (
+    <Text as="span" color="gray.600">
+      {" "}
+      (Overridden)
+    </Text>
+  ) : null
 
   switch (status) {
     case Status.Active:
@@ -60,6 +71,7 @@ export const SubscriptionStatus = ({ status }: SubscriptionStatusProps) => {
         <Text>
           <Icon icon={faCheckCircle} mr={1} color="primary.600" />
           Active
+          {override}
         </Text>
       )
     case Status.Canceled:
@@ -67,6 +79,7 @@ export const SubscriptionStatus = ({ status }: SubscriptionStatusProps) => {
         <Text>
           <Icon icon={faTimesCircle} mr={1} color="gray.600" />
           Canceled
+          {override}
         </Text>
       )
     case Status.Expired:
@@ -74,6 +87,7 @@ export const SubscriptionStatus = ({ status }: SubscriptionStatusProps) => {
         <Text>
           <Icon icon={faCalendarTimes} mr={1} color="red.600" />
           Expired
+          {override}
         </Text>
       )
     case Status.Inactive:
@@ -81,6 +95,7 @@ export const SubscriptionStatus = ({ status }: SubscriptionStatusProps) => {
         <Text>
           <Icon icon={faBan} mr={1} color="gray.600" />
           Inactive
+          {override}
         </Text>
       )
     default:

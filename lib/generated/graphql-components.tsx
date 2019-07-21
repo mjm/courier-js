@@ -372,7 +372,7 @@ export type CurrentUserQuery = { __typename?: "Query" } & {
 
 export type UserFieldsFragment = { __typename?: "User" } & Pick<
   User,
-  "name" | "nickname" | "picture"
+  "name" | "nickname" | "picture" | "subscriptionStatusOverride"
 > & {
     customer: Maybe<
       { __typename?: "Customer" } & {
@@ -685,6 +685,7 @@ export const userFieldsFragmentDoc = gql`
       status
       periodEnd
     }
+    subscriptionStatusOverride
   }
 `
 export const eventFieldsFragmentDoc = gql`

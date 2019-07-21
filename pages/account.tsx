@@ -122,7 +122,7 @@ interface SubscriptionCardProps {
 }
 const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
   const router = useRouter()
-  const { customer, subscription } = user
+  const { customer, subscription, subscriptionStatusOverride } = user
 
   return (
     <Card>
@@ -130,7 +130,10 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
       {subscription ? (
         <>
           <InfoField label="Status">
-            <SubscriptionStatus status={subscription.status} />
+            <SubscriptionStatus
+              status={subscriptionStatusOverride || subscription.status}
+              overridden={!!subscriptionStatusOverride}
+            />
           </InfoField>
           {subscription.status === Status.Active ? (
             <InfoField label="Renews">
@@ -154,24 +157,29 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
           <CreditCard card={customer.creditCard} />
         </InfoField>
       ) : null}
-      <Group mt={3} direction="row" spacing={2} wrap>
-        {subscription ? (
-          subscription.status === Status.Active ? (
-            <CancelButton />
+      {subscriptionStatusOverride ? null : (
+        <Group mt={3} direction="row" spacing={2} wrap>
+          {subscription ? (
+            subscription.status === Status.Active ? (
+              <CancelButton />
+            ) : (
+              <Button
+                icon={faCreditCard}
+                onClick={() => router.push("/subscribe")}
+              >
+                Resubscribe
+              </Button>
+            )
           ) : (
             <Button
               icon={faCreditCard}
               onClick={() => router.push("/subscribe")}
             >
-              Resubscribe
+              Subscribe
             </Button>
-          )
-        ) : (
-          <Button icon={faCreditCard} onClick={() => router.push("/subscribe")}>
-            Subscribe
-          </Button>
-        )}
-      </Group>
+          )}
+        </Group>
+      )}
     </Card>
   )
 }

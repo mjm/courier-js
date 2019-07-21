@@ -20,6 +20,7 @@ fragment userFields on User {
     status
     periodEnd
   }
+  subscriptionStatusOverride
 }
 
 query RecentEvents($cursor: Cursor) {
