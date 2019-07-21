@@ -1,13 +1,22 @@
-import { useEffect } from "react"
-
+import React from "react"
+import withPublicPage from "../hocs/publicPage"
+import { NextPage } from "next"
+import Head from "../components/head"
+import Loading from "../components/loading"
 import { authorize } from "../utils/auth0"
+import Container from "../components/container"
 
-const Login = () => {
-  useEffect(() => {
+const Login: NextPage<{}> = () => {
+  React.useEffect(() => {
     authorize()
   }, [])
 
-  return null
+  return (
+    <Container>
+      <Head title="Logging In" />
+      <Loading />
+    </Container>
+  )
 }
 
-export default Login
+export default withPublicPage(Login)
