@@ -20,6 +20,7 @@ import { Image, Box, Flex } from "@rebass/emotion"
 import { URLContainer } from "../url"
 import { useAuth } from "../../hooks/auth"
 import { useSubscription } from "../../hooks/subscription"
+import { useErrors } from "../../hooks/error"
 
 mention(linkify)
 
@@ -186,6 +187,8 @@ const UncancelButton = ({ id }: CancelButtonProps) => {
 }
 
 const PostButton = ({ id }: CancelButtonProps) => {
+  const { setError } = useErrors()
+
   return (
     <PostTweetComponent>
       {postTweet => (
@@ -199,7 +202,7 @@ const PostButton = ({ id }: CancelButtonProps) => {
                 variables: { input: { id } },
               })
             } catch (e) {
-              console.error(e)
+              setError(e)
             }
           }}
         >

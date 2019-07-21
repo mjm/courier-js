@@ -4,13 +4,17 @@ import { isApolloError } from "apollo-client"
 import { CardProps, Box, Text } from "@rebass/emotion"
 import Icon from "./icon"
 import Notice from "./notice"
+import { useErrors } from "../hooks/error"
 
 interface ErrorBoxProps extends CardProps {
   error?: Error
   errors?: Error[]
 }
 export const ErrorBox = ({ error, errors, ...props }: ErrorBoxProps) => {
-  errors = errors || []
+  // pull errors from the ErrorContainer if none are passed in
+  const { errors: ctxErrors } = useErrors()
+
+  errors = errors || ctxErrors || []
 
   if (error) {
     if (isApolloError(error)) {

@@ -26,6 +26,7 @@ import { Flex, Text } from "@rebass/emotion"
 import { NextPage } from "next"
 import { useSubscription } from "../hooks/subscription"
 import Notice from "../components/notice"
+import { ErrorContainer } from "../hooks/error"
 
 const Tweets: NextPage<{}> = () => (
   <Container>
@@ -174,13 +175,16 @@ const TweetCard = ({ tweet }: TweetCardProps) => {
     tweet.status === TweetStatus.Canceled ? "canceled" : "normal"
 
   return (
-    <Card variant={appearance}>
-      {editing ? (
-        <EditTweet tweet={tweet} onStopEditing={() => setEditing(false)} />
-      ) : (
-        <ViewTweet tweet={tweet} onEdit={() => setEditing(true)} />
-      )}
-    </Card>
+    <ErrorContainer>
+      <ErrorBox width={undefined} />
+      <Card variant={appearance}>
+        {editing ? (
+          <EditTweet tweet={tweet} onStopEditing={() => setEditing(false)} />
+        ) : (
+          <ViewTweet tweet={tweet} onEdit={() => setEditing(true)} />
+        )}
+      </Card>
+    </ErrorContainer>
   )
 }
 
