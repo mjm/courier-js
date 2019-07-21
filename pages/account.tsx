@@ -149,7 +149,10 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
         </>
       ) : (
         <InfoField label="Status">
-          <SubscriptionStatus />
+          <SubscriptionStatus
+            status={subscriptionStatusOverride || undefined}
+            overridden={!!subscriptionStatusOverride}
+          />
         </InfoField>
       )}
       {customer && customer.creditCard ? (
