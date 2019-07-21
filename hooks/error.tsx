@@ -14,6 +14,7 @@ const ErrorContext = React.createContext<ErrorState>({
 type Action =
   | { type: "setErrors"; errors: Error[] }
   | { type: "setError"; error: Error }
+  | { type: "clearErrors" }
 
 const reducer: React.Reducer<{ errors: Error[] }, Action> = (
   _state,
@@ -28,24 +29,36 @@ const reducer: React.Reducer<{ errors: Error[] }, Action> = (
       } else {
         return { errors: [action.error] }
       }
+    case "clearErrors":
+      return { errors: [] }
   }
 }
 
 interface ErrorContainerProps {
-  children: React.ReactNode
+  children: ((bag: ErrorsBag) => React.ReactNode) | React.ReactNode
 }
 export const ErrorContainer = ({ children }: ErrorContainerProps) => {
   const [{ errors }, dispatch] = React.useReducer(reducer, { errors: [] })
+  const ctx = { errors, dispatch }
 
-  return (
-    <ErrorContext.Provider value={{ errors, dispatch }}>
-      {children}
-    </ErrorContext.Provider>
-  )
+  if (children instanceof Function) {
+    const bag = createErrorsBag(ctx)
+    children = children(bag)
+  }
+
+  return <ErrorContext.Provider value={ctx}>{children}</ErrorContext.Provider>
 }
 
-export const useErrors = () => {
-  const { errors, dispatch } = React.useContext(ErrorContext)
+export const useErrors = () => createErrorsBag(React.useContext(ErrorContext))
+
+interface ErrorsBag {
+  errors: Error[]
+  setErrors(errors: Error[]): void
+  setError(error: Error): void
+  clearErrors(): void
+}
+
+function createErrorsBag({ errors, dispatch }: ErrorState): ErrorsBag {
   return {
     errors,
     setErrors(errors: Error[]) {
@@ -53,6 +66,9 @@ export const useErrors = () => {
     },
     setError(error: Error) {
       dispatch({ type: "setError", error })
+    },
+    clearErrors() {
+      dispatch({ type: "clearErrors" })
     },
   }
 }

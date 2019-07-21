@@ -33,6 +33,7 @@ import Card, { CardHeader } from "../components/card"
 import Group from "../components/group"
 import Icon from "../components/icon"
 import URL from "../components/url"
+import { ErrorContainer } from "../hooks/error"
 
 const Feeds = () => (
   <Container>
@@ -155,58 +156,68 @@ const newFeedSchema = yup.object().shape({
 })
 const initialNewFeed: AddFeedInput = { url: "" }
 
-const AddFeed = () => (
-  <AddFeedComponent
-    update={(cache, { data }) => {
-      data && updateCachedFeeds(cache, nodes => [...nodes, data.addFeed.feed])
-    }}
-    refetchQueries={[{ query: UpcomingTweetsDocument }]}
-  >
-    {addFeed => {
-      const onSubmit = async (
-        input: AddFeedInput,
-        actions: FormikActions<AddFeedInput>
-      ) => {
-        try {
-          await addFeed({ variables: { input } })
-          actions.resetForm()
-        } catch (error) {
-          actions.setStatus({ error })
-        } finally {
-          actions.setSubmitting(false)
-        }
-      }
+const AddFeed = () => {
+  return (
+    <ErrorContainer>
+      {({ setError }) => (
+        <AddFeedComponent
+          update={(cache, { data }) => {
+            data &&
+              updateCachedFeeds(cache, nodes => [...nodes, data.addFeed.feed])
+          }}
+          refetchQueries={[{ query: UpcomingTweetsDocument }]}
+        >
+          {addFeed => {
+            const onSubmit = async (
+              input: AddFeedInput,
+              actions: FormikActions<AddFeedInput>
+            ) => {
+              try {
+                await addFeed({ variables: { input } })
+                actions.resetForm()
+              } catch (error) {
+                setError(error)
+              } finally {
+                actions.setSubmitting(false)
+              }
+            }
 
-      return (
-        <Formik
-          initialValues={initialNewFeed}
-          initialStatus={{ error: null }}
-          validationSchema={newFeedSchema}
-          onSubmit={onSubmit}
-          render={({ isSubmitting, status: { error } }) => (
-            <Form>
-              <ErrorBox error={error} />
-              <FormContainer>
-                <FormField>
-                  <URLField type="text" name="url" placeholder="https://" />
-                  <ErrorMessage name="url" component={FieldError} />
-                </FormField>
-                <Button
-                  size="large"
-                  type="submit"
-                  icon={faPlusCircle}
-                  spin={isSubmitting}
-                >
-                  Add Feed
-                </Button>
-              </FormContainer>
-            </Form>
-          )}
-        />
-      )
-    }}
-  </AddFeedComponent>
-)
+            return (
+              <Formik
+                initialValues={initialNewFeed}
+                validationSchema={newFeedSchema}
+                onSubmit={onSubmit}
+                render={({ isSubmitting }) => (
+                  <Form>
+                    <ErrorBox mb={3} />
+                    <FormContainer>
+                      <FormField>
+                        <URLField
+                          type="text"
+                          name="url"
+                          placeholder="https://"
+                        />
+                        <ErrorMessage name="url" component={FieldError} />
+                      </FormField>
+                      <Button
+                        size="large"
+                        type="submit"
+                        icon={faPlusCircle}
+                        spin={isSubmitting}
+                      >
+                        Add Feed
+                      </Button>
+                    </FormContainer>
+                  </Form>
+                )}
+              />
+            )
+          }}
+        </AddFeedComponent>
+      )}
+    </ErrorContainer>
+  )
+}
 
 type Nodes = AllFeedsQuery["allSubscribedFeeds"]["nodes"]
 
