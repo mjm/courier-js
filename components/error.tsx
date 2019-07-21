@@ -12,15 +12,21 @@ interface ErrorBoxProps extends CardProps {
 }
 export const ErrorBox = ({ error, errors, ...props }: ErrorBoxProps) => {
   // pull errors from the ErrorContainer if none are passed in
-  const { errors: ctxErrors } = useErrors()
+  const { errors: ctxErrors, clearErrors } = useErrors()
+  let onClose: undefined | (() => void)
 
-  errors = errors || ctxErrors || []
+  if (ctxErrors && !errors) {
+    errors = ctxErrors
+    onClose = clearErrors
+  } else {
+    errors = errors || []
 
-  if (error) {
-    if (isApolloError(error)) {
-      errors = [...(errors || []), ...error.graphQLErrors]
-    } else {
-      errors = [...(errors || []), error]
+    if (error) {
+      if (isApolloError(error)) {
+        errors = [...(errors || []), ...error.graphQLErrors]
+      } else {
+        errors = [...(errors || []), error]
+      }
     }
   }
 
@@ -29,7 +35,7 @@ export const ErrorBox = ({ error, errors, ...props }: ErrorBoxProps) => {
   }
 
   return (
-    <Notice {...props} variant="error">
+    <Notice {...props} variant="error" onClose={onClose}>
       {errors.length > 1 ? (
         <>
           <Text>There were some issues adding the feed:</Text>

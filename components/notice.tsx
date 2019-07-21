@@ -1,8 +1,9 @@
 import React from "react"
-import { Card, CardProps, Flex } from "@rebass/emotion"
+import { Card, CardProps, Flex, Button } from "@rebass/emotion"
 import {
   faExclamationCircle,
   faExclamationTriangle,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons"
 import Icon from "./icon"
 
@@ -13,8 +14,14 @@ const variants = {
 
 interface NoticeProps extends CardProps {
   variant?: "error" | "warning"
+  onClose?: () => void
 }
-const Notice = ({ variant = "warning", children, ...props }: NoticeProps) => {
+const Notice = ({
+  variant = "warning",
+  onClose,
+  children,
+  ...props
+}: NoticeProps) => {
   const { color, icon } = variants[variant]
   return (
     <Card
@@ -30,7 +37,19 @@ const Notice = ({ variant = "warning", children, ...props }: NoticeProps) => {
     >
       <Flex>
         <Icon mr={2} mt="2px" color={`${color}.500`} icon={icon} />
-        <div>{children}</div>
+        <div css={{ flexGrow: 1 }}>{children}</div>
+        {onClose && (
+          <Button
+            onClick={onClose}
+            color={`${color}.500`}
+            fontWeight={400}
+            bg="transparent"
+            px={0}
+            py={0}
+          >
+            <Icon icon={faTimesCircle} />
+          </Button>
+        )}
       </Flex>
     </Card>
   )
