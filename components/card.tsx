@@ -58,3 +58,18 @@ export const ContentCard = styled(Card)(({ theme }) => ({
     marginBottom: 0,
   },
 }))
+
+export const PageCard = (props: CardProps) => (
+  <RCard
+    my="20vh"
+    mx="auto"
+    bg="white"
+    boxShadow="lg"
+    borderTop="4px solid"
+    borderColor="primary.500"
+    p={3}
+    pb={5}
+    css={{ maxWidth: "600px" }}
+    {...props}
+  />
+)

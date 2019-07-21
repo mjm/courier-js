@@ -9,10 +9,11 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons"
 import Icon from "../components/icon"
-import { Text, Flex, Card, Button } from "@rebass/emotion"
+import { Text, Flex, Button } from "@rebass/emotion"
 import { NextPage } from "next"
 import { useAuth } from "../hooks/auth"
 import { SubscriptionProvider } from "../hooks/subscription"
+import { PageCard } from "../components/card"
 
 export default function withSecurePage<T>(
   Page: NextPage<T>
@@ -25,17 +26,7 @@ export default function withSecurePage<T>(
         return <Loading />
       } else {
         return (
-          <Card
-            my="20vh"
-            mx="auto"
-            bg="white"
-            boxShadow="lg"
-            borderTop="4px solid"
-            borderColor="primary.500"
-            p={3}
-            pb={5}
-            css={{ maxWidth: "600px" }}
-          >
+          <PageCard>
             <Flex flexDirection="column" alignItems="center">
               <Head title="Log In to Courier" />
               <PageHeader>
@@ -49,7 +40,7 @@ export default function withSecurePage<T>(
                 <LoginLink />
               </Link>
             </Flex>
-          </Card>
+          </PageCard>
         )
       }
     }
