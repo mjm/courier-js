@@ -18,6 +18,7 @@ import { CustomerLoader } from "./repositories/customer_repository"
 import { SubscriptionLoader } from "./repositories/subscription_repository"
 import { parse as parseCookies } from "cookie"
 import { IncomingMessage } from "http"
+import BillingEventService from "./services/billing_event_service"
 
 const container = new Container({
   autoBindInjectable: true,
@@ -66,6 +67,7 @@ export class CourierContext {
   tweets: TweetService
   events: EventService
   billing: BillingService
+  billingEvents: BillingEventService
 
   static async createForRequest(req: IncomingMessage): Promise<CourierContext> {
     const child = container.createChild()
@@ -85,6 +87,7 @@ export class CourierContext {
     tweets: TweetService,
     events: EventService,
     billing: BillingService,
+    billingEvents: BillingEventService,
     feedLoader: FeedLoader,
     subscribedFeedLoader: SubscribedFeedLoader,
     postLoader: PostLoader,
@@ -98,6 +101,7 @@ export class CourierContext {
     this.tweets = tweets
     this.events = events
     this.billing = billing
+    this.billingEvents = billingEvents
 
     this.loaders = {
       feeds: feedLoader,

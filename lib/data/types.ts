@@ -167,6 +167,11 @@ export type EventType =
   | "tweet_edit"
   | "tweet_post"
   | "tweet_autopost"
+  | "subscription_create"
+  | "subscription_renew"
+  | "subscription_cancel"
+  | "subscription_reactivate"
+  | "subscription_expire"
 
 export interface Event {
   id: EventId

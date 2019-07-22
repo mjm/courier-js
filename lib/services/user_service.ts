@@ -1,6 +1,6 @@
 import jwksClient from "jwks-rsa"
 import * as jwt from "jsonwebtoken"
-import { AuthenticationClient, ManagementClient } from "auth0"
+import { AuthenticationClient, ManagementClient, User } from "auth0"
 import { AuthenticationError } from "apollo-server-core"
 import { UserInfo, UserId, UserToken, UserAppMetadata } from "../data/types"
 import Environment from "../env"
@@ -112,6 +112,17 @@ class UserService {
       { id: await this.requireUserId() },
       metadata
     )
+  }
+
+  async findBySubscriptionId(id: string): Promise<User> {
+    const users = await this.managementClient.getUsers({
+      q: `app_metadata.stripe_subscription_id:"${id}"`,
+    })
+    if (!users.length) {
+      throw new Error(`Could not find a user for subscription ${id}`)
+    }
+
+    return users[0]
   }
 
   private async doVerify(): Promise<UserToken> {

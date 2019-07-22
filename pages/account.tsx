@@ -330,6 +330,16 @@ const EventDescription = ({ event }: EventDescriptionProps) => {
           Your tweet autoposted to Twitter: <em>{tweetBody}</em>
         </>
       )
+    case EventType.SubscriptionCreate:
+      return <>You subscribed to Courier</>
+    case EventType.SubscriptionRenew:
+      return <>Your Courier subscription renewed automatically</>
+    case EventType.SubscriptionCancel:
+      return <>You canceled your Courier subscription</>
+    case EventType.SubscriptionReactivate:
+      return <>You reactivated your Courier subscription before it expired</>
+    case EventType.SubscriptionExpire:
+      return <>Your Courier subscription expired</>
   }
 }
 

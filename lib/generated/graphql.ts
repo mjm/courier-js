@@ -100,6 +100,11 @@ export enum EventType {
   TweetEdit = "TWEET_EDIT",
   TweetPost = "TWEET_POST",
   TweetAutopost = "TWEET_AUTOPOST",
+  SubscriptionCreate = "SUBSCRIPTION_CREATE",
+  SubscriptionRenew = "SUBSCRIPTION_RENEW",
+  SubscriptionCancel = "SUBSCRIPTION_CANCEL",
+  SubscriptionReactivate = "SUBSCRIPTION_REACTIVATE",
+  SubscriptionExpire = "SUBSCRIPTION_EXPIRE",
 }
 
 export type Feed = {
