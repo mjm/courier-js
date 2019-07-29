@@ -11,6 +11,7 @@ import { injectable, inject } from "inversify"
 import * as keys from "../key"
 import EventService from "./event_service"
 import BillingService from "./billing_service"
+import PublishService from "./publish_service"
 
 export interface PostQueuedResult {
   succeeded: number
@@ -26,7 +27,8 @@ class TweetService {
     @inject(keys.UserId) private getUserId: () => Promise<UserId>,
     private twitter: TwitterService,
     private events: EventService,
-    private billing: BillingService
+    private billing: BillingService,
+    private publish: PublishService
   ) {}
 
   async paged(options: TweetPagingOptions = {}): Promise<Pager<Tweet, any>> {
@@ -143,9 +145,11 @@ class TweetService {
   }
 
   private async doPost(userId: UserId, tweet: Tweet): Promise<Tweet> {
-    const postedTweetId = await this.twitter.tweet(userId, tweet)
+    const postedTweet = await this.twitter.tweet(userId, tweet)
 
-    const updatedTweet = await this.tweets.post(tweet.id, postedTweetId)
+    await this.publish.addTweetToPost(tweet.postId, postedTweet.url)
+
+    const updatedTweet = await this.tweets.post(tweet.id, postedTweet.id)
     if (!updatedTweet) {
       // another request squeezed in between our initial fetch and our update.
       // this is probably fine: Twitter silently rejects duplicate posts that are

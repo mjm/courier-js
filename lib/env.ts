@@ -12,6 +12,10 @@ class Environment {
   stripeKey: string
   monthlyPlanId: string
 
+  // remove these when we actually store this information
+  micropubToken: string
+  micropubUrl: string
+
   constructor() {
     this.authDomain = requireEnv("AUTH_DOMAIN")
     this.apiIdentifier = requireEnv("API_IDENTIFIER")
@@ -22,6 +26,9 @@ class Environment {
     this.twitterConsumerSecret = requireEnv("TWITTER_CONSUMER_SECRET")
     this.stripeKey = requireEnv("STRIPE_SECRET_KEY")
     this.monthlyPlanId = requireEnv("MONTHLY_PLAN_ID")
+
+    this.micropubToken = requireEnv("MICROPUB_TOKEN")
+    this.micropubUrl = requireEnv("MICROPUB_URL")
   }
 }
 
