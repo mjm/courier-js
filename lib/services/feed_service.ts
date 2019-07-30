@@ -17,6 +17,8 @@ import ImportService from "./import_service"
 import { injectable, inject } from "inversify"
 import * as keys from "../key"
 import EventService from "./event_service"
+import Microformats from "microformat-node"
+import fetch from "isomorphic-unfetch"
 
 @injectable()
 class FeedService {
@@ -66,6 +68,8 @@ class FeedService {
     const result = await this.importService.importPosts(id, entries)
     console.log(result)
 
+    const micropubEndpoint = (await this.getMicropubEndpoint(homePageURL)) || ""
+
     // Only after importing posts should we update feed details. Otherwise, the
     // caching headers will stop us from getting any missed posts again until the
     // feed is updated again.
@@ -73,6 +77,7 @@ class FeedService {
       title,
       homePageURL,
       cachingHeaders,
+      micropubEndpoint,
     })
     this.feedLoader.replace(id, updatedFeed)
 
@@ -141,6 +146,23 @@ class FeedService {
     }
 
     return feed
+  }
+
+  private async getMicropubEndpoint(url: string): Promise<string | null> {
+    const resp = await fetch(url)
+    const html = await resp.text()
+
+    const result = await Microformats.getAsync({
+      html,
+      baseUrl: url,
+      textFormat: "normalised",
+    })
+
+    if (result.rels.micropub.length) {
+      return result.rels.micropub[0]
+    }
+
+    return null
   }
 }
 

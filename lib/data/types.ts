@@ -51,6 +51,7 @@ export interface Feed {
   url: string
   title: string
   homePageURL: string
+  micropubEndpoint: string
   cachingHeaders: CachingHeaders | null
   refreshedAt: Date | null
   createdAt: Date

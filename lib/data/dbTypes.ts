@@ -65,6 +65,7 @@ export namespace feedsFields {
     export type created_at = Date;
     export type updated_at = Date;
     export type caching_headers = Object | null;
+    export type mp_endpoint = string;
 
 }
 
@@ -77,6 +78,7 @@ export interface feeds {
     created_at: feedsFields.created_at;
     updated_at: feedsFields.updated_at;
     caching_headers: feedsFields.caching_headers;
+    mp_endpoint: feedsFields.mp_endpoint;
 
 }
 
