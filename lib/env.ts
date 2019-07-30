@@ -12,9 +12,8 @@ class Environment {
   stripeKey: string
   monthlyPlanId: string
 
-  // remove these when we actually store this information
+  // remove this when we actually store this information
   micropubToken: string
-  micropubUrl: string
 
   constructor() {
     this.authDomain = requireEnv("AUTH_DOMAIN")
@@ -28,7 +27,6 @@ class Environment {
     this.monthlyPlanId = requireEnv("MONTHLY_PLAN_ID")
 
     this.micropubToken = requireEnv("MICROPUB_TOKEN")
-    this.micropubUrl = requireEnv("MICROPUB_URL")
   }
 }
 

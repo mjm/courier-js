@@ -19,7 +19,6 @@
     "MONTHLY_PLAN_ID": "plan_DdvIUmVUiibVMa",
     "STRIPE_PUBLISHABLE_KEY": "pk_test_P2pW0N6UFzp1OY5In8KApmxj",
     "STRIPE_SECRET_KEY": "@courier-staging-stripe-secret-key",
-    "MICROPUB_URL": "https://gatsby-blog.now.sh/api/micropub",
     "MICROPUB_TOKEN": "@courier-staging-micropub-token"
   },
   "build": {
