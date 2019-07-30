@@ -158,7 +158,7 @@ class FeedService {
       textFormat: "normalised",
     })
 
-    if (result.rels.micropub.length) {
+    if (result.rels.micropub && result.rels.micropub.length) {
       return result.rels.micropub[0]
     }
 
