@@ -107,6 +107,7 @@ export type Feed = {
   url: Scalars["String"]
   title: Scalars["String"]
   homePageURL: Scalars["String"]
+  micropubEndpoint: Scalars["String"]
   refreshedAt?: Maybe<Scalars["DateTime"]>
   createdAt: Scalars["DateTime"]
   updatedAt: Scalars["DateTime"]
@@ -464,7 +465,12 @@ export type AllFeedSubscriptionsFieldsFragment = {
 } & Pick<SubscribedFeed, "id" | "autopost"> & {
     feed: { __typename?: "Feed" } & Pick<
       Feed,
-      "id" | "url" | "title" | "homePageURL" | "refreshedAt"
+      | "id"
+      | "url"
+      | "title"
+      | "homePageURL"
+      | "micropubEndpoint"
+      | "refreshedAt"
     >
   }
 
@@ -717,6 +723,7 @@ export const allFeedSubscriptionsFieldsFragmentDoc = gql`
       url
       title
       homePageURL
+      micropubEndpoint
       refreshedAt
     }
     autopost

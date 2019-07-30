@@ -103,6 +103,7 @@ type Feed {
   url: String!
   title: String!
   homePageURL: String!
+  micropubEndpoint: String!
   refreshedAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!

@@ -18,6 +18,7 @@ fragment allFeedSubscriptionsFields on SubscribedFeed {
     url
     title
     homePageURL
+    micropubEndpoint
     refreshedAt
   }
   autopost

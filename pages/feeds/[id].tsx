@@ -92,6 +92,11 @@ const Feed = ({ id }: Props) => {
                             <URL>{feed.feed.homePageURL}</URL>
                           </a>
                         </InfoField>
+                        {feed.feed.micropubEndpoint ? (
+                          <InfoField label="Micropub API">
+                            <URL>{feed.feed.micropubEndpoint}</URL>
+                          </InfoField>
+                        ) : null}
                       </Card>
                       <Card>
                         <CardHeader>Recent Posts</CardHeader>

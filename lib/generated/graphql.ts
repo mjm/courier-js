@@ -112,6 +112,7 @@ export type Feed = {
   url: Scalars["String"]
   title: Scalars["String"]
   homePageURL: Scalars["String"]
+  micropubEndpoint: Scalars["String"]
   refreshedAt?: Maybe<Scalars["DateTime"]>
   createdAt: Scalars["DateTime"]
   updatedAt: Scalars["DateTime"]
@@ -640,6 +641,7 @@ export type FeedResolvers<
   url?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   title?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   homePageURL?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  micropubEndpoint?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   refreshedAt?: Resolver<
     Maybe<ResolversTypes["DateTime"]>,
     ParentType,
