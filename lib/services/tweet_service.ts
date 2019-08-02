@@ -147,7 +147,7 @@ class TweetService {
   private async doPost(userId: UserId, tweet: Tweet): Promise<Tweet> {
     const postedTweet = await this.twitter.tweet(userId, tweet)
 
-    await this.publish.addTweetToPost(tweet.postId, postedTweet.url)
+    await this.publish.addTweetToPost(userId, tweet.postId, postedTweet.url)
 
     const updatedTweet = await this.tweets.post(tweet.id, postedTweet.id)
     if (!updatedTweet) {

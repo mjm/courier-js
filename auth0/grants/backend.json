@@ -1,5 +1,10 @@
 {
   "client_id": "Courier Backend",
   "audience": "https://##AUTH_DOMAIN##/api/v2/",
-  "scope": ["read:users", "read:user_idp_tokens", "update:users_app_metadata"]
+  "scope": [
+    "read:users",
+    "read:user_idp_tokens",
+    "update:users_app_metadata",
+    "update:users"
+  ]
 }

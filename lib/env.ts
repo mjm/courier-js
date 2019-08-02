@@ -11,9 +11,7 @@ class Environment {
   twitterConsumerSecret: string
   stripeKey: string
   monthlyPlanId: string
-
-  // remove this when we actually store this information
-  micropubToken: string
+  authEncryptKey: Buffer
 
   constructor() {
     this.authDomain = requireEnv("AUTH_DOMAIN")
@@ -25,8 +23,7 @@ class Environment {
     this.twitterConsumerSecret = requireEnv("TWITTER_CONSUMER_SECRET")
     this.stripeKey = requireEnv("STRIPE_SECRET_KEY")
     this.monthlyPlanId = requireEnv("MONTHLY_PLAN_ID")
-
-    this.micropubToken = requireEnv("MICROPUB_TOKEN")
+    this.authEncryptKey = Buffer.from(requireEnv("AUTH_ENCRYPT_KEY"), "base64")
   }
 }
 

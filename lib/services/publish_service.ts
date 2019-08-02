@@ -1,19 +1,23 @@
 import { injectable } from "inversify"
-import Environment from "../env"
-import { PostId } from "../data/types"
+import { PostId, UserId } from "../data/types"
 import { PostLoader } from "../repositories/post_repository"
 import { Micropub } from "micropub-client"
 import { FeedLoader } from "../repositories/feed_repository"
+import UserService from "./user_service"
 
 @injectable()
 class PublishService {
   constructor(
-    private env: Environment,
+    private userService: UserService,
     private postLoader: PostLoader,
     private feedLoader: FeedLoader
   ) {}
 
-  async addTweetToPost(postId: PostId, tweetUrl: string): Promise<void> {
+  async addTweetToPost(
+    userId: UserId,
+    postId: PostId,
+    tweetUrl: string
+  ): Promise<void> {
     const post = await this.postLoader.load(postId)
     if (!post) {
       throw new Error("Could not find post to update.")
@@ -31,11 +35,16 @@ class PublishService {
       return
     }
 
-    const micropub = new Micropub({
-      url,
-      // TODO get this from stored user data
-      token: this.env.micropubToken,
-    })
+    let token = await this.userService.getMicropubToken(
+      userId,
+      feed.homePageURL
+    )
+    if (!token) {
+      // this user hasn't logged in to the site
+      return
+    }
+
+    const micropub = new Micropub({ url, token })
 
     console.log(`Adding syndication link to ${post.url}`)
     await micropub.update({

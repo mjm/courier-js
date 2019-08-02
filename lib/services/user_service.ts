@@ -6,6 +6,7 @@ import { UserInfo, UserId, UserToken, UserAppMetadata } from "../data/types"
 import Environment from "../env"
 import { injectable, inject } from "inversify"
 import { Token } from "../key"
+import * as crypto from "crypto"
 
 export type UserIdProvider = () => Promise<UserId>
 
@@ -20,6 +21,8 @@ class UserService {
   private jwksClient: jwksClient.JwksClient
   private authClient: AuthenticationClient
   private managementClient: ManagementClient
+
+  private authEncryptKey: Buffer
 
   private verifyPromise: Promise<UserToken>
   private userInfoPromise: Promise<UserInfo> | null = null
@@ -44,8 +47,11 @@ class UserService {
       domain: env.authDomain,
       clientId: env.backendClientId,
       clientSecret: env.backendClientSecret,
-      scope: "read:users read:user_idp_tokens update:users_app_metadata",
+      scope:
+        "read:users read:user_idp_tokens update:users_app_metadata update:users",
     })
+
+    this.authEncryptKey = env.authEncryptKey
 
     // Hang on to the promise of doing this verification once
     this.verifyPromise = this.doVerify()
@@ -102,9 +108,102 @@ class UserService {
     }
   }
 
+  async getMicropubToken(
+    userId: UserId | null,
+    url: string
+  ): Promise<string | null> {
+    userId = userId || (await this.requireUserId())
+    const user = await this.managementClient.getUser({ id: userId })
+
+    if (!user.user_metadata || !user.user_metadata.micropub_tokens) {
+      return null
+    }
+
+    url = url.replace(/\./g, "-")
+
+    const tokens = user.user_metadata.micropub_tokens as Record<string, string>
+    const token = tokens[url]
+    if (!token) {
+      return null
+    }
+
+    const tokenBuffer = Buffer.from(token, "hex")
+    const iv = tokenBuffer.slice(0, 16)
+    const encryptedToken = tokenBuffer.slice(16)
+    const decipher = crypto.createDecipheriv(
+      "aes-256-cbc",
+      this.authEncryptKey,
+      iv
+    )
+
+    return new Promise<string>((resolve, reject) => {
+      const chunks: Buffer[] = []
+      decipher.on("readable", () => {
+        let chunk: Buffer | null
+        while (null !== (chunk = decipher.read())) {
+          chunks.push(chunk)
+        }
+      })
+      decipher.on("end", () => {
+        resolve(Buffer.concat(chunks).toString("utf8"))
+      })
+      decipher.on("error", err => {
+        reject(err)
+      })
+      decipher.write(encryptedToken)
+      decipher.end()
+    })
+  }
+
   async getMetadataForUser(userId: UserId): Promise<UserAppMetadata> {
     const user = await this.managementClient.getUser({ id: userId })
     return (user.app_metadata || {}) as UserAppMetadata
+  }
+
+  async setMicropubToken(
+    userId: UserId | null,
+    url: string,
+    token: string
+  ): Promise<void> {
+    userId = userId || (await this.requireUserId())
+
+    const iv = crypto.randomBytes(16)
+    const cipher = crypto.createCipheriv("aes-256-cbc", this.authEncryptKey, iv)
+
+    const encryptedToken = await new Promise<string>((resolve, reject) => {
+      // include the iv at the beginning of the encrypted token
+      const chunks: Buffer[] = [iv]
+      cipher.on("readable", () => {
+        let chunk: Buffer | null
+        while (null !== (chunk = cipher.read())) {
+          chunks.push(chunk)
+        }
+      })
+      cipher.on("end", () => {
+        resolve(Buffer.concat(chunks).toString("hex"))
+      })
+      cipher.on("error", err => {
+        reject(err)
+      })
+      cipher.write(token)
+      cipher.end()
+    })
+
+    const user = await this.managementClient.getUser({ id: userId })
+    const tokens =
+      (user.user_metadata && user.user_metadata.micropub_tokens) || {}
+
+    url = url.replace(/\./g, "-")
+
+    await this.managementClient.updateUserMetadata(
+      { id: userId },
+      {
+        micropub_tokens: {
+          ...tokens,
+          [url]: encryptedToken,
+        },
+      }
+    )
   }
 
   async update(metadata: UserAppMetadata): Promise<any> {
