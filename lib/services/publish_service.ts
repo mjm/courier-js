@@ -4,6 +4,8 @@ import { PostLoader } from "../repositories/post_repository"
 import { Micropub } from "micropub-client"
 import { FeedLoader } from "../repositories/feed_repository"
 import UserService from "./user_service"
+import Microformats, { MicroformatDocument } from "microformat-node"
+import fetch from "isomorphic-unfetch"
 
 @injectable()
 class PublishService {
@@ -52,6 +54,17 @@ class PublishService {
       add: {
         syndication: [tweetUrl],
       },
+    })
+  }
+
+  async getMicroformats(url: string): Promise<MicroformatDocument> {
+    const resp = await fetch(url)
+    const html = await resp.text()
+
+    return await Microformats.getAsync({
+      html,
+      baseUrl: url,
+      textFormat: "normalised",
     })
   }
 }

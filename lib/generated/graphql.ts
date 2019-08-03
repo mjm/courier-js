@@ -1,6 +1,7 @@
 import * as types from "../data/types"
 import { Pager } from "../data/pager"
 import Stripe from "stripe"
+import { MicroformatDocument } from "microformat-node"
 export type EnumMap<T extends string, U> = { [K in T]: U }
 
 export type Maybe<T> = T | null
@@ -138,6 +139,11 @@ export type FeedEdge = {
   node: Feed
 }
 
+export type MicroformatPage = {
+  authorizationEndpoint?: Maybe<Scalars["String"]>
+  tokenEndpoint?: Maybe<Scalars["String"]>
+}
+
 export type Mutation = {
   addFeed: AddFeedPayload
   refreshFeed: RefreshFeedPayload
@@ -240,6 +246,7 @@ export type Query = {
   subscribedFeed?: Maybe<SubscribedFeed>
   allTweets: TweetConnection
   allEvents: EventConnection
+  microformats?: Maybe<MicroformatPage>
 }
 
 export type QueryAllSubscribedFeedsArgs = {
@@ -266,6 +273,10 @@ export type QueryAllEventsArgs = {
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
   after?: Maybe<Scalars["Cursor"]>
+}
+
+export type QueryMicroformatsArgs = {
+  url: Scalars["String"]
 }
 
 export type RefreshFeedInput = {
@@ -485,6 +496,7 @@ export type ResolversTypes = {
   EventEdge: Omit<EventEdge, "node"> & { node: ResolversTypes["Event"] }
   Event: types.Event
   EventType: EventType
+  MicroformatPage: MicroformatDocument
   Mutation: {}
   AddFeedInput: AddFeedInput
   AddFeedPayload: Omit<AddFeedPayload, "feed"> & {
@@ -675,6 +687,22 @@ export type FeedEdgeResolvers<
   node?: Resolver<ResolversTypes["Feed"], ParentType, ContextType>
 }
 
+export type MicroformatPageResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["MicroformatPage"]
+> = {
+  authorizationEndpoint?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >
+  tokenEndpoint?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >
+}
+
 export type MutationResolvers<
   ContextType = CourierContext,
   ParentType = ResolversTypes["Mutation"]
@@ -833,6 +861,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     QueryAllEventsArgs
+  >
+  microformats?: Resolver<
+    Maybe<ResolversTypes["MicroformatPage"]>,
+    ParentType,
+    ContextType,
+    QueryMicroformatsArgs
   >
 }
 
@@ -996,6 +1030,7 @@ export type Resolvers<ContextType = CourierContext> = {
   Feed?: FeedResolvers<ContextType>
   FeedConnection?: FeedConnectionResolvers<ContextType>
   FeedEdge?: FeedEdgeResolvers<ContextType>
+  MicroformatPage?: MicroformatPageResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
   PageInfo?: PageInfoResolvers<ContextType>
   Post?: PostResolvers<ContextType>

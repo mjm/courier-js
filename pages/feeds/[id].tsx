@@ -13,6 +13,7 @@ import {
   AllFeedsDocument,
   AllFeedSubscriptionsFieldsFragment,
   SetFeedOptionsComponent,
+  GetEndpointsDocument,
 } from "../../lib/generated/graphql-components"
 import Loading from "../../components/loading"
 import { ErrorBox } from "../../components/error"
@@ -35,6 +36,8 @@ import Card, { CardHeader } from "../../components/card"
 import Group from "../../components/group"
 import URL from "../../components/url"
 import { ErrorContainer, useErrors } from "../../hooks/error"
+import { ApolloConsumer } from "react-apollo"
+import { beginIndieAuth } from "../../utils/indieauth"
 
 interface Props {
   id: string
@@ -93,9 +96,14 @@ const Feed = ({ id }: Props) => {
                           </a>
                         </InfoField>
                         {feed.feed.micropubEndpoint ? (
-                          <InfoField label="Micropub API">
-                            <URL>{feed.feed.micropubEndpoint}</URL>
-                          </InfoField>
+                          <>
+                            <InfoField label="Micropub API">
+                              <URL>{feed.feed.micropubEndpoint}</URL>
+                            </InfoField>
+                            <MicropubAuthButton
+                              homePageURL={feed.feed.homePageURL}
+                            />
+                          </>
                         ) : null}
                       </Card>
                       <Card>
@@ -168,6 +176,41 @@ const Feed = ({ id }: Props) => {
 Feed.getInitialProps = async ({ query }: NextPageContext): Promise<Props> => {
   // @ts-ignore
   return { id: query.id }
+}
+
+interface MicropubAuthButtonProps {
+  homePageURL: string
+}
+
+const MicropubAuthButton = ({ homePageURL }: MicropubAuthButtonProps) => {
+  return (
+    <ApolloConsumer>
+      {client => {
+        async function onClick() {
+          const { data } = await client.query({
+            query: GetEndpointsDocument,
+            variables: { url: homePageURL },
+          })
+
+          const { authorizationEndpoint } = data.microformats
+          if (authorizationEndpoint) {
+            beginIndieAuth({
+              endpoint: authorizationEndpoint,
+              redirectURI: "syndicate-callback",
+              me: homePageURL,
+              scopes: "update post",
+            })
+          }
+        }
+
+        return (
+          <Button mt={3} onClickAsync={onClick}>
+            Set Up Syndication
+          </Button>
+        )
+      }}
+    </ApolloConsumer>
+  )
 }
 
 interface RefreshButtonProps {

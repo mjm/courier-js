@@ -21,4 +21,8 @@ export const Query: QueryResolvers = {
   async allEvents(_parent, args, { events }) {
     return await events.paged(args)
   },
+
+  async microformats(_parent, { url }, { publish }) {
+    return await publish.getMicroformats(url)
+  },
 }

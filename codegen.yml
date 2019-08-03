@@ -7,6 +7,7 @@ generates:
       - add: 'import * as types from "../data/types"'
       - add: 'import { Pager } from "../data/pager"'
       - add: 'import Stripe from "stripe"'
+      - add: 'import { MicroformatDocument } from "microformat-node"'
       - add: "export type EnumMap<T extends string, U> = { [K in T]: U }"
       - "typescript"
       - "typescript-resolvers"
@@ -22,6 +23,7 @@ generates:
         EventConnection: Pager<types.Event>
         Feed: types.Feed
         FeedConnection: Pager<types.Feed>
+        MicroformatPage: MicroformatDocument
         Post: types.Post
         PostConnection: Pager<types.Post>
         SubscribedFeed: types.SubscribedFeed

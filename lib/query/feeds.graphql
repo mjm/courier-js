@@ -74,3 +74,10 @@ query GetFeedDetails($id: ID!) {
     }
   }
 }
+
+query GetEndpoints($url: String!) {
+  microformats(url: $url) {
+    authorizationEndpoint
+    tokenEndpoint
+  }
+}

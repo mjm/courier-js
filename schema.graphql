@@ -27,6 +27,8 @@ type Query {
     before: Cursor
     after: Cursor
   ): EventConnection!
+
+  microformats(url: String!): MicroformatPage
 }
 
 type Mutation {
@@ -313,4 +315,9 @@ enum EventType {
   SUBSCRIPTION_CANCEL
   SUBSCRIPTION_REACTIVATE
   SUBSCRIPTION_EXPIRE
+}
+
+type MicroformatPage {
+  authorizationEndpoint: String
+  tokenEndpoint: String
 }

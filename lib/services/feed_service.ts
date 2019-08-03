@@ -17,8 +17,7 @@ import ImportService from "./import_service"
 import { injectable, inject } from "inversify"
 import * as keys from "../key"
 import EventService from "./event_service"
-import Microformats from "microformat-node"
-import fetch from "isomorphic-unfetch"
+import PublishService from "./publish_service"
 
 @injectable()
 class FeedService {
@@ -29,7 +28,8 @@ class FeedService {
     private subscribedFeedLoader: SubscribedFeedLoader,
     @inject(keys.UserId) private getUserId: () => Promise<UserId>,
     private importService: ImportService,
-    private events: EventService
+    private events: EventService,
+    private publish: PublishService
   ) {}
 
   async paged(
@@ -149,14 +149,7 @@ class FeedService {
   }
 
   private async getMicropubEndpoint(url: string): Promise<string | null> {
-    const resp = await fetch(url)
-    const html = await resp.text()
-
-    const result = await Microformats.getAsync({
-      html,
-      baseUrl: url,
-      textFormat: "normalised",
-    })
+    const result = await this.publish.getMicroformats(url)
 
     if (result.rels.micropub && result.rels.micropub.length) {
       return result.rels.micropub[0]

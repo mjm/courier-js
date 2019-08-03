@@ -4,6 +4,7 @@ import * as paging from "./paging"
 import * as date from "./date"
 import * as event from "./event"
 import * as feed from "./feed"
+import * as microformat from "./microformat"
 import * as post from "./post"
 import * as tweet from "./tweet"
 import * as user from "./user"
@@ -16,6 +17,7 @@ const resolvers: Resolvers = {
   ...date,
   ...event,
   ...feed,
+  ...microformat,
   ...post,
   ...tweet,
   ...user,
