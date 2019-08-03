@@ -62,6 +62,7 @@ type User {
   customer: Customer
   subscription: UserSubscription
   subscriptionStatusOverride: SubscriptionStatus
+  micropubSites: [String!]!
 }
 
 type Customer {

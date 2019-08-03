@@ -23,6 +23,8 @@ import {
   faSyncAlt,
   faTimes,
   faClone,
+  faCheckCircle,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons"
 import { Button } from "../../components/button"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
@@ -39,6 +41,7 @@ import URL from "../../components/url"
 import { ErrorContainer, useErrors } from "../../hooks/error"
 import { ApolloConsumer } from "react-apollo"
 import { beginIndieAuth } from "../../utils/indieauth"
+import Icon from "../../components/icon"
 
 interface Props {
   id: string
@@ -76,7 +79,11 @@ const Feed = ({ id }: Props) => {
               return null
             }
             const feed = data.subscribedFeed
+            const user = data.currentUser!
             if (feed) {
+              const isMicropubAuthenticated = user.micropubSites.includes(
+                feed.feed.homePageURL.replace(/\./g, "-")
+              )
               return (
                 <>
                   <Head title={`${feed.feed.title} - Feed Details`} />
@@ -99,7 +106,24 @@ const Feed = ({ id }: Props) => {
                         {feed.feed.micropubEndpoint ? (
                           <>
                             <InfoField label="Micropub API">
-                              <URL>{feed.feed.micropubEndpoint}</URL>
+                              <URL>
+                                {feed.feed.micropubEndpoint}
+                                {isMicropubAuthenticated ? (
+                                  <Icon
+                                    ml={2}
+                                    icon={faCheckCircle}
+                                    color="primary.600"
+                                    title="You are set up to post back syndication links to this site."
+                                  />
+                                ) : (
+                                  <Icon
+                                    ml={2}
+                                    icon={faTimesCircle}
+                                    color="gray.500"
+                                    title="You are not posting syndication links back to this site."
+                                  />
+                                )}
+                              </URL>
                             </InfoField>
                             <MicropubAuthButton
                               homePageURL={feed.feed.homePageURL}

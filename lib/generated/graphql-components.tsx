@@ -374,6 +374,7 @@ export type User = {
   customer?: Maybe<Customer>
   subscription?: Maybe<UserSubscription>
   subscriptionStatusOverride?: Maybe<SubscriptionStatus>
+  micropubSites: Array<Scalars["String"]>
 }
 
 export type UserSubscription = {
@@ -550,6 +551,7 @@ export type GetFeedDetailsQuery = { __typename?: "Query" } & {
       }
     } & AllFeedSubscriptionsFieldsFragment
   >
+  currentUser: Maybe<{ __typename?: "User" } & Pick<User, "micropubSites">>
 }
 
 export type GetEndpointsQueryVariables = {
@@ -1302,6 +1304,9 @@ export const GetFeedDetailsDocument = gql`
           }
         }
       }
+    }
+    currentUser {
+      micropubSites
     }
   }
   ${allFeedSubscriptionsFieldsFragmentDoc}

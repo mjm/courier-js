@@ -34,6 +34,10 @@ export const User: UserResolvers = {
 
     return null
   },
+
+  micropubSites({ micropub_sites }) {
+    return micropub_sites
+  },
 }
 
 export const Customer: CustomerResolvers = {

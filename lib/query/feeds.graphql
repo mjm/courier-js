@@ -73,6 +73,9 @@ query GetFeedDetails($id: ID!) {
       }
     }
   }
+  currentUser {
+    micropubSites
+  }
 }
 
 query GetEndpoints($url: String!) {

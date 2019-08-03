@@ -380,6 +380,7 @@ export type User = {
   customer?: Maybe<Customer>
   subscription?: Maybe<UserSubscription>
   subscriptionStatusOverride?: Maybe<SubscriptionStatus>
+  micropubSites: Array<Scalars["String"]>
 }
 
 export type UserSubscription = {
@@ -997,6 +998,11 @@ export type UserResolvers<
   >
   subscriptionStatusOverride?: Resolver<
     Maybe<ResolversTypes["SubscriptionStatus"]>,
+    ParentType,
+    ContextType
+  >
+  micropubSites?: Resolver<
+    Array<ResolversTypes["String"]>,
     ParentType,
     ContextType
   >
