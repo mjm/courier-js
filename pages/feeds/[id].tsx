@@ -22,6 +22,7 @@ import {
   faTrashAlt,
   faSyncAlt,
   faTimes,
+  faClone,
 } from "@fortawesome/free-solid-svg-icons"
 import { Button } from "../../components/button"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
@@ -205,7 +206,7 @@ const MicropubAuthButton = ({ homePageURL }: MicropubAuthButtonProps) => {
         }
 
         return (
-          <Button mt={3} onClickAsync={onClick}>
+          <Button icon={faClone} mt={3} onClickAsync={onClick}>
             Set Up Syndication
           </Button>
         )
