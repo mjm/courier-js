@@ -1,4 +1,6 @@
-const rootUrl = window.location.protocol + "//" + window.location.host + "/"
+function rootUrl(): string {
+  return window.location.protocol + "//" + window.location.host + "/"
+}
 
 interface IndieAuthInit {
   endpoint: string
@@ -16,8 +18,8 @@ export function beginIndieAuth({
   const params = new URLSearchParams()
   params.set("me", me)
   params.set("scope", scopes)
-  params.set("client_id", rootUrl)
-  params.set("redirect_uri", rootUrl + redirectURI)
+  params.set("client_id", rootUrl())
+  params.set("redirect_uri", rootUrl() + redirectURI)
   params.set("state", "foo") // TODO generate a random string and store in sessionStorage
   params.set("response_type", "code")
   const url = `${endpoint}?${params.toString()}`
