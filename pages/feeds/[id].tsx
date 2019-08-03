@@ -42,6 +42,7 @@ import { ErrorContainer, useErrors } from "../../hooks/error"
 import { ApolloConsumer } from "react-apollo"
 import { beginIndieAuth } from "../../utils/indieauth"
 import Icon from "../../components/icon"
+import striptags from "striptags"
 
 interface Props {
   id: string
@@ -146,7 +147,7 @@ const Feed = ({ id }: Props) => {
                               <tr key={post.id}>
                                 <td>
                                   <a href={post.url} target="_blank">
-                                    {post.title || post.htmlContent}
+                                    {post.title || striptags(post.htmlContent)}
                                   </a>
                                 </td>
                                 <td>
