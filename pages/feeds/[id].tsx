@@ -192,13 +192,14 @@ const MicropubAuthButton = ({ homePageURL }: MicropubAuthButtonProps) => {
             variables: { url: homePageURL },
           })
 
-          const { authorizationEndpoint } = data.microformats
-          if (authorizationEndpoint) {
+          const { authorizationEndpoint, tokenEndpoint } = data.microformats
+          if (authorizationEndpoint && tokenEndpoint) {
             beginIndieAuth({
               endpoint: authorizationEndpoint,
-              redirectURI: "syndicate-callback",
+              tokenEndpoint,
+              redirectURI: "api/syndication-callback",
               me: homePageURL,
-              scopes: "update post",
+              scopes: "update",
             })
           }
         }
