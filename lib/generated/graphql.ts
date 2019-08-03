@@ -1,6 +1,7 @@
 import * as types from "../data/types"
 import { Pager } from "../data/pager"
 import Stripe from "stripe"
+import { MicroformatDocument } from "microformat-node"
 export type EnumMap<T extends string, U> = { [K in T]: U }
 
 export type Maybe<T> = T | null
@@ -112,6 +113,7 @@ export type Feed = {
   url: Scalars["String"]
   title: Scalars["String"]
   homePageURL: Scalars["String"]
+  micropubEndpoint: Scalars["String"]
   refreshedAt?: Maybe<Scalars["DateTime"]>
   createdAt: Scalars["DateTime"]
   updatedAt: Scalars["DateTime"]
@@ -135,6 +137,11 @@ export type FeedConnection = {
 export type FeedEdge = {
   cursor: Scalars["Cursor"]
   node: Feed
+}
+
+export type MicroformatPage = {
+  authorizationEndpoint?: Maybe<Scalars["String"]>
+  tokenEndpoint?: Maybe<Scalars["String"]>
 }
 
 export type Mutation = {
@@ -239,6 +246,7 @@ export type Query = {
   subscribedFeed?: Maybe<SubscribedFeed>
   allTweets: TweetConnection
   allEvents: EventConnection
+  microformats?: Maybe<MicroformatPage>
 }
 
 export type QueryAllSubscribedFeedsArgs = {
@@ -265,6 +273,10 @@ export type QueryAllEventsArgs = {
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
   after?: Maybe<Scalars["Cursor"]>
+}
+
+export type QueryMicroformatsArgs = {
+  url: Scalars["String"]
 }
 
 export type RefreshFeedInput = {
@@ -368,6 +380,7 @@ export type User = {
   customer?: Maybe<Customer>
   subscription?: Maybe<UserSubscription>
   subscriptionStatusOverride?: Maybe<SubscriptionStatus>
+  micropubSites: Array<Scalars["String"]>
 }
 
 export type UserSubscription = {
@@ -484,6 +497,7 @@ export type ResolversTypes = {
   EventEdge: Omit<EventEdge, "node"> & { node: ResolversTypes["Event"] }
   Event: types.Event
   EventType: EventType
+  MicroformatPage: MicroformatDocument
   Mutation: {}
   AddFeedInput: AddFeedInput
   AddFeedPayload: Omit<AddFeedPayload, "feed"> & {
@@ -640,6 +654,7 @@ export type FeedResolvers<
   url?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   title?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   homePageURL?: Resolver<ResolversTypes["String"], ParentType, ContextType>
+  micropubEndpoint?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   refreshedAt?: Resolver<
     Maybe<ResolversTypes["DateTime"]>,
     ParentType,
@@ -671,6 +686,22 @@ export type FeedEdgeResolvers<
 > = {
   cursor?: Resolver<ResolversTypes["Cursor"], ParentType, ContextType>
   node?: Resolver<ResolversTypes["Feed"], ParentType, ContextType>
+}
+
+export type MicroformatPageResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["MicroformatPage"]
+> = {
+  authorizationEndpoint?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >
+  tokenEndpoint?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >
 }
 
 export type MutationResolvers<
@@ -832,6 +863,12 @@ export type QueryResolvers<
     ContextType,
     QueryAllEventsArgs
   >
+  microformats?: Resolver<
+    Maybe<ResolversTypes["MicroformatPage"]>,
+    ParentType,
+    ContextType,
+    QueryMicroformatsArgs
+  >
 }
 
 export type RefreshFeedPayloadResolvers<
@@ -964,6 +1001,11 @@ export type UserResolvers<
     ParentType,
     ContextType
   >
+  micropubSites?: Resolver<
+    Array<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >
 }
 
 export type UserSubscriptionResolvers<
@@ -994,6 +1036,7 @@ export type Resolvers<ContextType = CourierContext> = {
   Feed?: FeedResolvers<ContextType>
   FeedConnection?: FeedConnectionResolvers<ContextType>
   FeedEdge?: FeedEdgeResolvers<ContextType>
+  MicroformatPage?: MicroformatPageResolvers<ContextType>
   Mutation?: MutationResolvers<ContextType>
   PageInfo?: PageInfoResolvers<ContextType>
   Post?: PostResolvers<ContextType>

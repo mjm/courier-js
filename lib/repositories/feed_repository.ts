@@ -41,13 +41,18 @@ class FeedRepository {
       title,
       homePageURL,
       cachingHeaders,
-    }: Pick<Feed, "title" | "homePageURL" | "cachingHeaders">
+      micropubEndpoint,
+    }: Pick<
+      Feed,
+      "title" | "homePageURL" | "cachingHeaders" | "micropubEndpoint"
+    >
   ): Promise<Feed> {
     const row = await this.db.one(sql<table.feeds>`
       UPDATE feeds
          SET title = ${title},
              home_page_url = ${homePageURL},
              caching_headers = ${JSON.stringify(cachingHeaders)},
+             mp_endpoint = ${micropubEndpoint},
              refreshed_at = CURRENT_TIMESTAMP,
              updated_at = CURRENT_TIMESTAMP
        WHERE id = ${id}
@@ -62,6 +67,7 @@ class FeedRepository {
     url,
     title,
     home_page_url,
+    mp_endpoint,
     caching_headers,
     refreshed_at,
     created_at,
@@ -72,6 +78,7 @@ class FeedRepository {
       url,
       title,
       homePageURL: home_page_url,
+      micropubEndpoint: mp_endpoint,
       cachingHeaders: caching_headers,
       refreshedAt: refreshed_at,
       createdAt: created_at,

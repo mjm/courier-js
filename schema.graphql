@@ -27,6 +27,8 @@ type Query {
     before: Cursor
     after: Cursor
   ): EventConnection!
+
+  microformats(url: String!): MicroformatPage
 }
 
 type Mutation {
@@ -60,6 +62,7 @@ type User {
   customer: Customer
   subscription: UserSubscription
   subscriptionStatusOverride: SubscriptionStatus
+  micropubSites: [String!]!
 }
 
 type Customer {
@@ -103,6 +106,7 @@ type Feed {
   url: String!
   title: String!
   homePageURL: String!
+  micropubEndpoint: String!
   refreshedAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -312,4 +316,9 @@ enum EventType {
   SUBSCRIPTION_CANCEL
   SUBSCRIPTION_REACTIVATE
   SUBSCRIPTION_EXPIRE
+}
+
+type MicroformatPage {
+  authorizationEndpoint: String
+  tokenEndpoint: String
 }

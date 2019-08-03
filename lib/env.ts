@@ -11,6 +11,7 @@ class Environment {
   twitterConsumerSecret: string
   stripeKey: string
   monthlyPlanId: string
+  authEncryptKey: Buffer
 
   constructor() {
     this.authDomain = requireEnv("AUTH_DOMAIN")
@@ -22,6 +23,7 @@ class Environment {
     this.twitterConsumerSecret = requireEnv("TWITTER_CONSUMER_SECRET")
     this.stripeKey = requireEnv("STRIPE_SECRET_KEY")
     this.monthlyPlanId = requireEnv("MONTHLY_PLAN_ID")
+    this.authEncryptKey = Buffer.from(requireEnv("AUTH_ENCRYPT_KEY"), "base64")
   }
 }
 

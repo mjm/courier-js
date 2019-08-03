@@ -25,6 +25,7 @@ export interface UserToken {
   "https://courier.blog/customer_id"?: string
   "https://courier.blog/subscription_id"?: string
   "https://courier.blog/status"?: string
+  "https://courier.blog/micropub_sites": string[]
 }
 
 export interface UserInfo {
@@ -36,6 +37,7 @@ export interface UserInfo {
   stripe_customer_id: string | undefined
   stripe_subscription_id: string | undefined
   subscription_status: "active" | undefined
+  micropub_sites: string[]
 }
 
 export interface UserAppMetadata {
@@ -51,6 +53,7 @@ export interface Feed {
   url: string
   title: string
   homePageURL: string
+  micropubEndpoint: string
   cachingHeaders: CachingHeaders | null
   refreshedAt: Date | null
   createdAt: Date

@@ -107,6 +107,7 @@ export type Feed = {
   url: Scalars["String"]
   title: Scalars["String"]
   homePageURL: Scalars["String"]
+  micropubEndpoint: Scalars["String"]
   refreshedAt?: Maybe<Scalars["DateTime"]>
   createdAt: Scalars["DateTime"]
   updatedAt: Scalars["DateTime"]
@@ -130,6 +131,11 @@ export type FeedConnection = {
 export type FeedEdge = {
   cursor: Scalars["Cursor"]
   node: Feed
+}
+
+export type MicroformatPage = {
+  authorizationEndpoint?: Maybe<Scalars["String"]>
+  tokenEndpoint?: Maybe<Scalars["String"]>
 }
 
 export type Mutation = {
@@ -234,6 +240,7 @@ export type Query = {
   subscribedFeed?: Maybe<SubscribedFeed>
   allTweets: TweetConnection
   allEvents: EventConnection
+  microformats?: Maybe<MicroformatPage>
 }
 
 export type QueryAllSubscribedFeedsArgs = {
@@ -260,6 +267,10 @@ export type QueryAllEventsArgs = {
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
   after?: Maybe<Scalars["Cursor"]>
+}
+
+export type QueryMicroformatsArgs = {
+  url: Scalars["String"]
 }
 
 export type RefreshFeedInput = {
@@ -363,6 +374,7 @@ export type User = {
   customer?: Maybe<Customer>
   subscription?: Maybe<UserSubscription>
   subscriptionStatusOverride?: Maybe<SubscriptionStatus>
+  micropubSites: Array<Scalars["String"]>
 }
 
 export type UserSubscription = {
@@ -464,7 +476,12 @@ export type AllFeedSubscriptionsFieldsFragment = {
 } & Pick<SubscribedFeed, "id" | "autopost"> & {
     feed: { __typename?: "Feed" } & Pick<
       Feed,
-      "id" | "url" | "title" | "homePageURL" | "refreshedAt"
+      | "id"
+      | "url"
+      | "title"
+      | "homePageURL"
+      | "micropubEndpoint"
+      | "refreshedAt"
     >
   }
 
@@ -533,6 +550,20 @@ export type GetFeedDetailsQuery = { __typename?: "Query" } & {
         }
       }
     } & AllFeedSubscriptionsFieldsFragment
+  >
+  currentUser: Maybe<{ __typename?: "User" } & Pick<User, "micropubSites">>
+}
+
+export type GetEndpointsQueryVariables = {
+  url: Scalars["String"]
+}
+
+export type GetEndpointsQuery = { __typename?: "Query" } & {
+  microformats: Maybe<
+    { __typename?: "MicroformatPage" } & Pick<
+      MicroformatPage,
+      "authorizationEndpoint" | "tokenEndpoint"
+    >
   >
 }
 
@@ -717,6 +748,7 @@ export const allFeedSubscriptionsFieldsFragmentDoc = gql`
       url
       title
       homePageURL
+      micropubEndpoint
       refreshedAt
     }
     autopost
@@ -1273,6 +1305,9 @@ export const GetFeedDetailsDocument = gql`
         }
       }
     }
+    currentUser {
+      micropubSites
+    }
   }
   ${allFeedSubscriptionsFieldsFragmentDoc}
 `
@@ -1311,6 +1346,52 @@ export function withGetFeedDetails<TProps, TChildProps = {}>(
     GetFeedDetailsProps<TChildProps>
   >(GetFeedDetailsDocument, {
     alias: "withGetFeedDetails",
+    ...operationOptions,
+  })
+}
+export const GetEndpointsDocument = gql`
+  query GetEndpoints($url: String!) {
+    microformats(url: $url) {
+      authorizationEndpoint
+      tokenEndpoint
+    }
+  }
+`
+
+export const GetEndpointsComponent = (
+  props: Omit<
+    Omit<
+      ReactApollo.QueryProps<GetEndpointsQuery, GetEndpointsQueryVariables>,
+      "query"
+    >,
+    "variables"
+  > & { variables: GetEndpointsQueryVariables }
+) => (
+  <ReactApollo.Query<GetEndpointsQuery, GetEndpointsQueryVariables>
+    query={GetEndpointsDocument}
+    {...props}
+  />
+)
+
+export type GetEndpointsProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<GetEndpointsQuery, GetEndpointsQueryVariables>
+> &
+  TChildProps
+export function withGetEndpoints<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    GetEndpointsQuery,
+    GetEndpointsQueryVariables,
+    GetEndpointsProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    GetEndpointsQuery,
+    GetEndpointsQueryVariables,
+    GetEndpointsProps<TChildProps>
+  >(GetEndpointsDocument, {
+    alias: "withGetEndpoints",
     ...operationOptions,
   })
 }

@@ -18,6 +18,7 @@ fragment allFeedSubscriptionsFields on SubscribedFeed {
     url
     title
     homePageURL
+    micropubEndpoint
     refreshedAt
   }
   autopost
@@ -71,5 +72,15 @@ query GetFeedDetails($id: ID!) {
         }
       }
     }
+  }
+  currentUser {
+    micropubSites
+  }
+}
+
+query GetEndpoints($url: String!) {
+  microformats(url: $url) {
+    authorizationEndpoint
+    tokenEndpoint
   }
 }

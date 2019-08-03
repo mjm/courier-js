@@ -8,11 +8,16 @@ import { injectable } from "inversify"
 /** A reference to a particular media item in the Twitter API. */
 type MediaId = string
 
+interface TweetResponse {
+  id: string
+  url: string
+}
+
 @injectable()
 class TwitterService {
   constructor(private env: Environment, private userService: UserService) {}
 
-  async tweet(userId: UserId, tweet: Tweet): Promise<string> {
+  async tweet(userId: UserId, tweet: Tweet): Promise<TweetResponse> {
     const token = await this.userService.getTwitterCredentials(userId)
     const client = this.createClient(token)
 
@@ -25,7 +30,12 @@ class TwitterService {
       media_ids: mediaIDs.join(","),
     })
 
-    return postedTweet.id_str
+    return {
+      id: postedTweet.id_str,
+      url: `https://twitter.com/${postedTweet.user.screen_name}/status/${
+        postedTweet.id_str
+      }`,
+    }
   }
 
   private createClient(token: TwitterCredentials): Twitter {

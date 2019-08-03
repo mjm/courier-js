@@ -13,6 +13,7 @@ import {
   AllFeedsDocument,
   AllFeedSubscriptionsFieldsFragment,
   SetFeedOptionsComponent,
+  GetEndpointsDocument,
 } from "../../lib/generated/graphql-components"
 import Loading from "../../components/loading"
 import { ErrorBox } from "../../components/error"
@@ -21,6 +22,9 @@ import {
   faTrashAlt,
   faSyncAlt,
   faTimes,
+  faClone,
+  faCheckCircle,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons"
 import { Button } from "../../components/button"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
@@ -35,6 +39,9 @@ import Card, { CardHeader } from "../../components/card"
 import Group from "../../components/group"
 import URL from "../../components/url"
 import { ErrorContainer, useErrors } from "../../hooks/error"
+import { ApolloConsumer } from "react-apollo"
+import { beginIndieAuth } from "../../utils/indieauth"
+import Icon from "../../components/icon"
 
 interface Props {
   id: string
@@ -72,7 +79,11 @@ const Feed = ({ id }: Props) => {
               return null
             }
             const feed = data.subscribedFeed
+            const user = data.currentUser!
             if (feed) {
+              const isMicropubAuthenticated = user.micropubSites.includes(
+                feed.feed.homePageURL.replace(/\./g, "-")
+              )
               return (
                 <>
                   <Head title={`${feed.feed.title} - Feed Details`} />
@@ -92,6 +103,33 @@ const Feed = ({ id }: Props) => {
                             <URL>{feed.feed.homePageURL}</URL>
                           </a>
                         </InfoField>
+                        {feed.feed.micropubEndpoint ? (
+                          <>
+                            <InfoField label="Micropub API">
+                              <URL>
+                                {feed.feed.micropubEndpoint}
+                                {isMicropubAuthenticated ? (
+                                  <Icon
+                                    ml={2}
+                                    icon={faCheckCircle}
+                                    color="primary.600"
+                                    title="You are set up to post back syndication links to this site."
+                                  />
+                                ) : (
+                                  <Icon
+                                    ml={2}
+                                    icon={faTimesCircle}
+                                    color="gray.500"
+                                    title="You are not posting syndication links back to this site."
+                                  />
+                                )}
+                              </URL>
+                            </InfoField>
+                            <MicropubAuthButton
+                              homePageURL={feed.feed.homePageURL}
+                            />
+                          </>
+                        ) : null}
                       </Card>
                       <Card>
                         <CardHeader>Recent Posts</CardHeader>
@@ -163,6 +201,42 @@ const Feed = ({ id }: Props) => {
 Feed.getInitialProps = async ({ query }: NextPageContext): Promise<Props> => {
   // @ts-ignore
   return { id: query.id }
+}
+
+interface MicropubAuthButtonProps {
+  homePageURL: string
+}
+
+const MicropubAuthButton = ({ homePageURL }: MicropubAuthButtonProps) => {
+  return (
+    <ApolloConsumer>
+      {client => {
+        async function onClick() {
+          const { data } = await client.query({
+            query: GetEndpointsDocument,
+            variables: { url: homePageURL },
+          })
+
+          const { authorizationEndpoint, tokenEndpoint } = data.microformats
+          if (authorizationEndpoint && tokenEndpoint) {
+            beginIndieAuth({
+              endpoint: authorizationEndpoint,
+              tokenEndpoint,
+              redirectURI: "api/syndication-callback",
+              me: homePageURL,
+              scopes: "update",
+            })
+          }
+        }
+
+        return (
+          <Button icon={faClone} mt={3} onClickAsync={onClick}>
+            Set Up Syndication
+          </Button>
+        )
+      }}
+    </ApolloConsumer>
+  )
 }
 
 interface RefreshButtonProps {
