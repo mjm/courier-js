@@ -15,7 +15,7 @@ import { isSameDate } from "../data/util"
 import FeedSubscriptionRepository, {
   SubscribedFeedLoader,
 } from "../repositories/feed_subscription_repository"
-import { translate } from "html-to-tweets"
+import { translate, Tweet } from "html-to-tweets"
 import TweetRepository, { TweetLoader } from "../repositories/tweet_repository"
 import { injectable } from "inversify"
 
@@ -129,11 +129,13 @@ class ImportService {
     post: Post
   ): Promise<void> {
     // Generate the expected tweets
-    const tweets = translate({
+    const actions = translate({
       url: post.url,
       title: post.title,
       html: post.htmlContent,
     })
+    // TODO handle retweets
+    const tweets = actions.filter(t => t.action === "tweet") as Tweet[]
 
     // Get the existing tweets for this post/subscription combo
     const existingTweets = await this.tweets.findAllByPost(
