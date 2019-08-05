@@ -111,24 +111,50 @@ class TweetRepository {
       ? sql.raw("CURRENT_TIMESTAMP + interval '5 minutes'")
       : null
 
-    const row = await this.db.one(sql<table.tweets>`
-      INSERT INTO tweets (
-        feed_subscription_id,
-        post_id,
-        body,
-        media_urls,
-        position,
-        post_after
-      ) VALUES (
-        ${input.feedSubscriptionId},
-        ${input.postId},
-        ${input.body},
-        ${sql.array(input.mediaURLs, "text")},
-        ${input.position},
-        ${postAfter}
-      )
-      RETURNING *
-    `)
+    let row: table.tweets
+    if (input.action === "tweet") {
+      row = await this.db.one(sql<table.tweets>`
+        INSERT INTO tweets (
+          feed_subscription_id,
+          post_id,
+          action,
+          body,
+          media_urls,
+          position,
+          post_after
+        ) VALUES (
+          ${input.feedSubscriptionId},
+          ${input.postId},
+          'tweet',
+          ${input.body},
+          ${sql.array(input.mediaURLs, "text")},
+          ${input.position},
+          ${postAfter}
+        )
+        RETURNING *
+      `)
+    } else if (input.action === "retweet") {
+      row = await this.db.one(sql<table.tweets>`
+        INSERT INTO tweets (
+          feed_subscription_id,
+          post_id,
+          action,
+          retweet_id,
+          position,
+          post_after
+        ) VALUES (
+          ${input.feedSubscriptionId},
+          ${input.postId},
+          'retweet'
+          ${input.retweetID},
+          ${input.position},
+          ${postAfter}
+        )
+        RETURNING *
+      `)
+    } else {
+      throw new Error(`Unrecognized tweet action type`)
+    }
 
     return TweetRepository.fromRow(row)
   }
@@ -138,8 +164,14 @@ class TweetRepository {
       body: input.body,
       updated_at: sql.raw("CURRENT_TIMESTAMP"),
     }
+    if (input.action) {
+      assignments.action = input.action
+    }
     if (input.mediaURLs) {
       assignments.media_urls = sql.array(input.mediaURLs, "text")
+    }
+    if (input.retweetID !== undefined && input.retweetID !== null) {
+      assignments.retweet_id = input.retweetID
     }
 
     const row = await this.db.maybeOne(sql<table.tweets>`
@@ -206,8 +238,10 @@ class TweetRepository {
     id,
     post_id,
     feed_subscription_id,
+    action,
     body,
     media_urls,
+    retweet_id,
     status,
     post_after,
     posted_at,
@@ -217,8 +251,10 @@ class TweetRepository {
       id: id.toString(),
       feedSubscriptionId: feed_subscription_id.toString(),
       postId: post_id.toString(),
+      action,
       body,
       mediaURLs: media_urls,
+      retweetID: retweet_id,
       status,
       postAfter: post_after,
       postedAt: posted_at,

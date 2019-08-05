@@ -7,6 +7,7 @@ import {
   CancelTweetComponent,
   UncancelTweetComponent,
   PostTweetComponent,
+  TweetAction,
 } from "../../lib/generated/graphql-components"
 import Linkify from "linkifyjs/react"
 import { faEdit, faBan } from "@fortawesome/free-solid-svg-icons"
@@ -41,41 +42,56 @@ const ViewTweet = ({ tweet, onEdit }: ViewTweetProps) => {
 
   return (
     <Group direction="column" spacing={3}>
-      <Linkify
-        tagName="div"
-        options={{
-          formatHref: {
-            mention: val => `https://twitter.com${val}`,
-          },
-          target: "_blank",
-        }}
-        css={{ whiteSpace: "pre-wrap" }}
-      >
-        <URLContainer>{tweet.body}</URLContainer>
-      </Linkify>
-      {tweet.mediaURLs.length ? (
-        <Flex mt={2} flexWrap="wrap">
-          {tweet.mediaURLs.map(url => (
-            <Box
-              key={url}
-              as="figure"
-              width={[1 / 2, 1 / 4]}
-              m={0}
-              py={0}
-              px={1}
-            >
-              <Image width={1} borderRadius="1rem" src={url} />
-            </Box>
-          ))}
-        </Flex>
-      ) : null}
+      {tweet.action === TweetAction.Tweet ? (
+        <>
+          <Linkify
+            tagName="div"
+            options={{
+              formatHref: {
+                mention: val => `https://twitter.com${val}`,
+              },
+              target: "_blank",
+            }}
+            css={{ whiteSpace: "pre-wrap" }}
+          >
+            <URLContainer>{tweet.body}</URLContainer>
+          </Linkify>
+          {tweet.mediaURLs.length ? (
+            <Flex mt={2} flexWrap="wrap">
+              {tweet.mediaURLs.map(url => (
+                <Box
+                  key={url}
+                  as="figure"
+                  width={[1 / 2, 1 / 4]}
+                  m={0}
+                  py={0}
+                  px={1}
+                >
+                  <Image width={1} borderRadius="1rem" src={url} />
+                </Box>
+              ))}
+            </Flex>
+          ) : null}
+        </>
+      ) : (
+        <div>
+          <a
+            href={`https://twitter.com/user/status/${tweet.retweetID}`}
+            target="_blank"
+          >
+            Retweet
+          </a>
+        </div>
+      )}
       <Group direction="row" spacing={2} wrap alignItems="center">
         {tweet.status === TweetStatus.Draft && (
           <>
             <CancelButton id={tweet.id} />
-            <Button icon={faEdit} invert onClick={onEdit}>
-              Edit Tweet
-            </Button>
+            {tweet.action === TweetAction.Tweet ? (
+              <Button icon={faEdit} invert onClick={onEdit}>
+                Edit Tweet
+              </Button>
+            ) : null}
             <PostButton id={tweet.id} />
             {isSubscribed && tweet.postAfter && (
               <StatusText css={{ display: "inline-block" }}>

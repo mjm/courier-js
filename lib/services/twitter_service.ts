@@ -21,20 +21,33 @@ class TwitterService {
     const token = await this.userService.getTwitterCredentials(userId)
     const client = this.createClient(token)
 
-    const mediaIDs = await Promise.all(
-      tweet.mediaURLs.map(url => this.uploadMedia(client, url))
-    )
-
-    const postedTweet = await client.post("statuses/update", {
-      status: tweet.body,
-      media_ids: mediaIDs.join(","),
-    })
+    const postedTweet = await this.postTweet(client, tweet)
 
     return {
       id: postedTweet.id_str,
       url: `https://twitter.com/${postedTweet.user.screen_name}/status/${
         postedTweet.id_str
       }`,
+    }
+  }
+
+  async postTweet(
+    client: Twitter,
+    tweet: Tweet
+  ): Promise<Twitter.ResponseData> {
+    if (tweet.action === "tweet") {
+      const mediaIDs = await Promise.all(
+        tweet.mediaURLs.map(url => this.uploadMedia(client, url))
+      )
+
+      return await client.post("statuses/update", {
+        status: tweet.body,
+        media_ids: mediaIDs.join(","),
+      })
+    } else if (tweet.action === "retweet") {
+      return await client.post(`statuses/retweet/${tweet.retweetID}`, {})
+    } else {
+      throw new Error("Unrecognized tweet action")
     }
   }
 

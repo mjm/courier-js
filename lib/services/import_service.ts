@@ -15,7 +15,7 @@ import { isSameDate } from "../data/util"
 import FeedSubscriptionRepository, {
   SubscribedFeedLoader,
 } from "../repositories/feed_subscription_repository"
-import { translate, Tweet } from "html-to-tweets"
+import { translate } from "html-to-tweets"
 import TweetRepository, { TweetLoader } from "../repositories/tweet_repository"
 import { injectable } from "inversify"
 
@@ -129,13 +129,11 @@ class ImportService {
     post: Post
   ): Promise<void> {
     // Generate the expected tweets
-    const actions = translate({
+    const tweets = translate({
       url: post.url,
       title: post.title,
       html: post.htmlContent,
     })
-    // TODO handle retweets
-    const tweets = actions.filter(t => t.action === "tweet") as Tweet[]
 
     // Get the existing tweets for this post/subscription combo
     const existingTweets = await this.tweets.findAllByPost(
@@ -150,14 +148,29 @@ class ImportService {
     for (let [i, tweet, existingTweet] of zippedTweets) {
       if (!existingTweet && tweet) {
         // we need to make a new tweet here
-        const newTweet = await this.tweets.create({
+
+        const tweetBase = {
           feedSubscriptionId: feedSubscription.id,
           postId: post.id,
-          body: tweet.body,
-          mediaURLs: tweet.mediaURLs,
           position: i,
           autopost: feedSubscription.autopost,
-        })
+        }
+
+        const newTweet = await this.tweets.create(
+          tweet.action === "tweet"
+            ? {
+                ...tweetBase,
+                action: "tweet",
+                body: tweet.body,
+                mediaURLs: tweet.mediaURLs,
+              }
+            : {
+                ...tweetBase,
+                action: "retweet",
+                retweetID: tweet.tweetID,
+              }
+        )
+
         this.tweetLoader.prime(newTweet.id, newTweet)
       } else if (!tweet && existingTweet) {
         // we need to delete the tweet that already exists?
@@ -168,10 +181,22 @@ class ImportService {
           continue
         }
 
-        const updatedTweet = await this.tweets.update(existingTweet.id, {
-          body: tweet.body,
-          mediaURLs: tweet.mediaURLs,
-        })
+        const updatedTweet = await this.tweets.update(
+          existingTweet.id,
+          tweet.action === "tweet"
+            ? {
+                action: "tweet",
+                body: tweet.body,
+                mediaURLs: tweet.mediaURLs,
+                retweetID: "",
+              }
+            : {
+                action: "retweet",
+                body: "",
+                mediaURLs: [],
+                retweetID: tweet.tweetID,
+              }
+        )
 
         if (updatedTweet) {
           this.tweetLoader.replace(updatedTweet.id, updatedTweet)

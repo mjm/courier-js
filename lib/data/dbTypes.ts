@@ -1,5 +1,6 @@
 /* tslint:disable */
 
+export type tweet_action = 'retweet' | 'tweet';
 export type tweet_status = 'canceled' | 'draft' | 'posted';
 
 export namespace feed_subscriptionsFields {
@@ -95,6 +96,8 @@ export namespace tweetsFields {
     export type created_at = Date;
     export type updated_at = Date;
     export type post_after = Date | null;
+    export type action = tweet_action;
+    export type retweet_id = string;
 
 }
 
@@ -111,6 +114,8 @@ export interface tweets {
     created_at: tweetsFields.created_at;
     updated_at: tweetsFields.updated_at;
     post_after: tweetsFields.post_after;
+    action: tweetsFields.action;
+    retweet_id: tweetsFields.retweet_id;
 
 }
 

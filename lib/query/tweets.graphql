@@ -31,8 +31,10 @@ fragment allTweetsFields on Tweet {
     publishedAt
     modifiedAt
   }
+  action
   body
   mediaURLs
+  retweetID
   status
   postAfter
   postedAt

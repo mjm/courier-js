@@ -328,12 +328,19 @@ export type Tweet = {
   id: Scalars["ID"]
   feed: SubscribedFeed
   post: Post
+  action: TweetAction
   body: Scalars["String"]
   mediaURLs: Array<Scalars["String"]>
+  retweetID: Scalars["String"]
   status: TweetStatus
   postAfter?: Maybe<Scalars["DateTime"]>
   postedAt?: Maybe<Scalars["DateTime"]>
   postedTweetID?: Maybe<Scalars["String"]>
+}
+
+export enum TweetAction {
+  Tweet = "TWEET",
+  Retweet = "RETWEET",
 }
 
 export type TweetConnection = {
@@ -644,8 +651,10 @@ export type TweetConnectionFieldsFragment = {
 export type AllTweetsFieldsFragment = { __typename?: "Tweet" } & Pick<
   Tweet,
   | "id"
+  | "action"
   | "body"
   | "mediaURLs"
+  | "retweetID"
   | "status"
   | "postAfter"
   | "postedAt"
@@ -779,8 +788,10 @@ export const allTweetsFieldsFragmentDoc = gql`
       publishedAt
       modifiedAt
     }
+    action
     body
     mediaURLs
+    retweetID
     status
     postAfter
     postedAt

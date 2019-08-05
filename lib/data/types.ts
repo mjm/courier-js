@@ -129,14 +129,17 @@ export interface Tweet {
   id: TweetId
   feedSubscriptionId: FeedSubscriptionId
   postId: PostId
+  action: TweetAction
   body: string
   mediaURLs: string[]
+  retweetID: string
   status: TweetStatus
   postAfter: Date | null
   postedAt: Date | null
   postedTweetID: string | null
 }
 
+export type TweetAction = table.tweet_action
 export type TweetStatus = table.tweet_status
 
 export interface ImportTweetsInput {
@@ -144,18 +147,31 @@ export interface ImportTweetsInput {
   post: Post
 }
 
-export interface NewTweetInput {
+export interface NewTweetInputBase {
   feedSubscriptionId: FeedSubscriptionId
   postId: PostId
-  body: string
-  mediaURLs: string[]
   position: number
   autopost: boolean
 }
 
+export interface NewTweetTweetInput extends NewTweetInputBase {
+  action: "tweet"
+  body: string
+  mediaURLs: string[]
+}
+
+export interface NewTweetRetweetInput extends NewTweetInputBase {
+  action: "retweet"
+  retweetID: string
+}
+
+export type NewTweetInput = NewTweetTweetInput | NewTweetRetweetInput
+
 export interface UpdateTweetInput {
+  action?: TweetAction
   body: string
   mediaURLs?: string[] | null
+  retweetID?: string | null
 }
 
 export type EventId = string

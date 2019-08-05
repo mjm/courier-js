@@ -195,12 +195,19 @@ type Tweet {
   id: ID!
   feed: SubscribedFeed!
   post: Post!
+  action: TweetAction!
   body: String!
   mediaURLs: [String!]!
+  retweetID: String!
   status: TweetStatus!
   postAfter: DateTime
   postedAt: DateTime
   postedTweetID: String
+}
+
+enum TweetAction {
+  TWEET
+  RETWEET
 }
 
 enum TweetStatus {

@@ -334,12 +334,19 @@ export type Tweet = {
   id: Scalars["ID"]
   feed: SubscribedFeed
   post: Post
+  action: TweetAction
   body: Scalars["String"]
   mediaURLs: Array<Scalars["String"]>
+  retweetID: Scalars["String"]
   status: TweetStatus
   postAfter?: Maybe<Scalars["DateTime"]>
   postedAt?: Maybe<Scalars["DateTime"]>
   postedTweetID?: Maybe<Scalars["String"]>
+}
+
+export enum TweetAction {
+  Tweet = "TWEET",
+  Retweet = "RETWEET",
 }
 
 export type TweetConnection = {
@@ -492,6 +499,7 @@ export type ResolversTypes = {
   TweetConnection: Pager<types.Tweet>
   TweetEdge: Omit<TweetEdge, "node"> & { node: ResolversTypes["Tweet"] }
   Tweet: types.Tweet
+  TweetAction: TweetAction
   TweetStatus: TweetStatus
   EventConnection: Pager<types.Event>
   EventEdge: Omit<EventEdge, "node"> & { node: ResolversTypes["Event"] }
@@ -934,8 +942,10 @@ export type TweetResolvers<
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>
   feed?: Resolver<ResolversTypes["SubscribedFeed"], ParentType, ContextType>
   post?: Resolver<ResolversTypes["Post"], ParentType, ContextType>
+  action?: Resolver<ResolversTypes["TweetAction"], ParentType, ContextType>
   body?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   mediaURLs?: Resolver<Array<ResolversTypes["String"]>, ParentType, ContextType>
+  retweetID?: Resolver<ResolversTypes["String"], ParentType, ContextType>
   status?: Resolver<ResolversTypes["TweetStatus"], ParentType, ContextType>
   postAfter?: Resolver<
     Maybe<ResolversTypes["DateTime"]>,
