@@ -12,10 +12,10 @@ import {
   EventType,
   UserFieldsFragment,
   SubscriptionStatus as Status,
-  CancelSubscriptionComponent,
   CurrentUserQuery,
   CurrentUserDocument,
   UserSubscription,
+  useCancelSubscriptionMutation,
 } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
@@ -188,35 +188,33 @@ const SubscriptionCard = ({ user }: SubscriptionCardProps) => {
 }
 
 const CancelButton = () => {
+  const [cancelSubscription] = useCancelSubscriptionMutation({
+    variables: { input: {} },
+    update: (cache, { data }) => {
+      data &&
+        data.cancelSubscription.user.subscription &&
+        updateCachedSubscription(
+          cache,
+          data.cancelSubscription.user.subscription
+        )
+    },
+  })
+
   return (
-    <CancelSubscriptionComponent
-      variables={{ input: {} }}
-      update={(cache, { data }) => {
-        data &&
-          data.cancelSubscription.user.subscription &&
-          updateCachedSubscription(
-            cache,
-            data.cancelSubscription.user.subscription
-          )
+    <Button
+      icon={faTimesCircle}
+      color="red"
+      invert
+      onClickAsync={async () => {
+        try {
+          await cancelSubscription()
+        } catch (err) {
+          console.error(err)
+        }
       }}
     >
-      {cancelSubscription => (
-        <Button
-          icon={faTimesCircle}
-          color="red"
-          invert
-          onClickAsync={async () => {
-            try {
-              await cancelSubscription()
-            } catch (err) {
-              console.error(err)
-            }
-          }}
-        >
-          Cancel
-        </Button>
-      )}
-    </CancelSubscriptionComponent>
+      Cancel
+    </Button>
   )
 }
 

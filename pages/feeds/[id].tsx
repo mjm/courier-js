@@ -7,13 +7,13 @@ import withData from "../../hocs/apollo"
 import { NextPageContext } from "next"
 import {
   GetFeedDetailsComponent,
-  RefreshFeedComponent,
   UpcomingTweetsDocument,
-  DeleteFeedComponent,
   AllFeedsDocument,
   AllFeedSubscriptionsFieldsFragment,
-  SetFeedOptionsComponent,
   GetEndpointsDocument,
+  useRefreshFeedMutation,
+  useSetFeedOptionsMutation,
+  useDeleteFeedMutation,
 } from "../../lib/generated/graphql-components"
 import Loading from "../../components/loading"
 import { ErrorBox } from "../../components/error"
@@ -242,27 +242,26 @@ interface RefreshButtonProps {
 
 const RefreshButton = ({ id }: RefreshButtonProps) => {
   const { setError, clearErrors } = useErrors()
+  const [refreshFeed] = useRefreshFeedMutation({
+    refetchQueries: [{ query: UpcomingTweetsDocument }],
+  })
 
   return (
-    <RefreshFeedComponent refetchQueries={[{ query: UpcomingTweetsDocument }]}>
-      {refreshFeed => (
-        <Button
-          mt={3}
-          icon={faSyncAlt}
-          useSameIconWhileSpinning
-          onClickAsync={async () => {
-            try {
-              await refreshFeed({ variables: { input: { id } } })
-              clearErrors()
-            } catch (err) {
-              setError(err)
-            }
-          }}
-        >
-          Refresh
-        </Button>
-      )}
-    </RefreshFeedComponent>
+    <Button
+      mt={3}
+      icon={faSyncAlt}
+      useSameIconWhileSpinning
+      onClickAsync={async () => {
+        try {
+          await refreshFeed({ variables: { input: { id } } })
+          clearErrors()
+        } catch (err) {
+          setError(err)
+        }
+      }}
+    >
+      Refresh
+    </Button>
   )
 }
 
@@ -272,28 +271,25 @@ interface AutopostButtonProps {
 
 const AutopostButton = ({ feed }: AutopostButtonProps) => {
   const { setError, clearErrors } = useErrors()
+  const [setOptions] = useSetFeedOptionsMutation()
 
   return (
-    <SetFeedOptionsComponent>
-      {setOptions => (
-        <Button
-          mt={3}
-          icon={faTwitter}
-          onClickAsync={async () => {
-            try {
-              await setOptions({
-                variables: { input: { id: feed.id, autopost: !feed.autopost } },
-              })
-              clearErrors()
-            } catch (err) {
-              setError(err)
-            }
-          }}
-        >
-          Turn {feed.autopost ? "Off" : "On"} Autoposting
-        </Button>
-      )}
-    </SetFeedOptionsComponent>
+    <Button
+      mt={3}
+      icon={faTwitter}
+      onClickAsync={async () => {
+        try {
+          await setOptions({
+            variables: { input: { id: feed.id, autopost: !feed.autopost } },
+          })
+          clearErrors()
+        } catch (err) {
+          setError(err)
+        }
+      }}
+    >
+      Turn {feed.autopost ? "Off" : "On"} Autoposting
+    </Button>
   )
 }
 
@@ -304,6 +300,10 @@ interface RemoveButtonProps {
 const RemoveButton = ({ id }: RemoveButtonProps) => {
   const [showDialog, setShowDialog] = useState(false)
   const buttonRef = useRef(null)
+  const [deleteFeed] = useDeleteFeedMutation({
+    refetchQueries: [{ query: AllFeedsDocument }],
+    awaitRefetchQueries: true,
+  })
 
   return (
     <ErrorContainer>
@@ -314,67 +314,55 @@ const RemoveButton = ({ id }: RemoveButtonProps) => {
         }
 
         return (
-          <DeleteFeedComponent
-            refetchQueries={[{ query: AllFeedsDocument }]}
-            awaitRefetchQueries
-          >
-            {deleteFeed => (
-              <>
-                <Button
-                  mt={3}
-                  color="red"
-                  invert
-                  icon={faTrashAlt}
-                  onClick={() => setShowDialog(true)}
-                >
-                  Remove Feed
-                </Button>
+          <>
+            <Button
+              mt={3}
+              color="red"
+              invert
+              icon={faTrashAlt}
+              onClick={() => setShowDialog(true)}
+            >
+              Remove Feed
+            </Button>
 
-                {showDialog && (
-                  <AlertDialog
-                    leastDestructiveRef={buttonRef}
-                    onDismiss={closeDialog}
+            {showDialog && (
+              <AlertDialog
+                leastDestructiveRef={buttonRef}
+                onDismiss={closeDialog}
+              >
+                <ErrorBox mb={3} />
+
+                <AlertDialogLabel>Are you sure?</AlertDialogLabel>
+
+                <AlertDialogDescription>
+                  Are you sure you want to delete this feed from your account?
+                </AlertDialogDescription>
+
+                <Group direction="row" spacing={2} mt={3}>
+                  <Button
+                    color="red"
+                    icon={faTrashAlt}
+                    onClickAsync={async () => {
+                      try {
+                        await deleteFeed({
+                          variables: { input: { id } },
+                        })
+                        closeDialog()
+                        Router.push("/feeds")
+                      } catch (err) {
+                        setError(err)
+                      }
+                    }}
                   >
-                    <ErrorBox mb={3} />
-
-                    <AlertDialogLabel>Are you sure?</AlertDialogLabel>
-
-                    <AlertDialogDescription>
-                      Are you sure you want to delete this feed from your
-                      account?
-                    </AlertDialogDescription>
-
-                    <Group direction="row" spacing={2} mt={3}>
-                      <Button
-                        color="red"
-                        icon={faTrashAlt}
-                        onClickAsync={async () => {
-                          try {
-                            await deleteFeed({
-                              variables: { input: { id } },
-                            })
-                            closeDialog()
-                            Router.push("/feeds")
-                          } catch (err) {
-                            setError(err)
-                          }
-                        }}
-                      >
-                        Remove Feed
-                      </Button>
-                      <Button
-                        ref={buttonRef}
-                        icon={faTimes}
-                        onClick={closeDialog}
-                      >
-                        Don't Remove
-                      </Button>
-                    </Group>
-                  </AlertDialog>
-                )}
-              </>
+                    Remove Feed
+                  </Button>
+                  <Button ref={buttonRef} icon={faTimes} onClick={closeDialog}>
+                    Don't Remove
+                  </Button>
+                </Group>
+              </AlertDialog>
             )}
-          </DeleteFeedComponent>
+          </>
         )
       }}
     </ErrorContainer>

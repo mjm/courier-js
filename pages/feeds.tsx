@@ -4,11 +4,11 @@ import Head from "../components/head"
 import { PageHeader, PageDescription } from "../components/header"
 import {
   AllFeedsComponent,
-  AddFeedComponent,
   AllFeedsDocument,
   AllFeedsQuery,
   AddFeedInput,
   UpcomingTweetsDocument,
+  useAddFeedMutation,
 } from "../lib/generated/graphql-components"
 import withData from "../hocs/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
@@ -157,64 +157,57 @@ const newFeedSchema = yup.object().shape({
 const initialNewFeed: AddFeedInput = { url: "" }
 
 const AddFeed = () => {
+  const [addFeed] = useAddFeedMutation({
+    update: (cache, { data }) => {
+      data && updateCachedFeeds(cache, nodes => [...nodes, data.addFeed.feed])
+    },
+    refetchQueries: [{ query: UpcomingTweetsDocument }],
+  })
+
   return (
     <ErrorContainer>
-      {({ setError }) => (
-        <AddFeedComponent
-          update={(cache, { data }) => {
-            data &&
-              updateCachedFeeds(cache, nodes => [...nodes, data.addFeed.feed])
-          }}
-          refetchQueries={[{ query: UpcomingTweetsDocument }]}
-        >
-          {addFeed => {
-            const onSubmit = async (
-              input: AddFeedInput,
-              actions: FormikActions<AddFeedInput>
-            ) => {
-              try {
-                await addFeed({ variables: { input } })
-                actions.resetForm()
-              } catch (error) {
-                setError(error)
-              } finally {
-                actions.setSubmitting(false)
-              }
-            }
+      {({ setError }) => {
+        const onSubmit = async (
+          input: AddFeedInput,
+          actions: FormikActions<AddFeedInput>
+        ) => {
+          try {
+            await addFeed({ variables: { input } })
+            actions.resetForm()
+          } catch (error) {
+            setError(error)
+          } finally {
+            actions.setSubmitting(false)
+          }
+        }
 
-            return (
-              <Formik
-                initialValues={initialNewFeed}
-                validationSchema={newFeedSchema}
-                onSubmit={onSubmit}
-                render={({ isSubmitting }) => (
-                  <Form>
-                    <ErrorBox mb={3} />
-                    <FormContainer>
-                      <FormField>
-                        <URLField
-                          type="text"
-                          name="url"
-                          placeholder="https://"
-                        />
-                        <ErrorMessage name="url" component={FieldError} />
-                      </FormField>
-                      <Button
-                        size="large"
-                        type="submit"
-                        icon={faPlusCircle}
-                        spin={isSubmitting}
-                      >
-                        Add Feed
-                      </Button>
-                    </FormContainer>
-                  </Form>
-                )}
-              />
-            )
-          }}
-        </AddFeedComponent>
-      )}
+        return (
+          <Formik
+            initialValues={initialNewFeed}
+            validationSchema={newFeedSchema}
+            onSubmit={onSubmit}
+            render={({ isSubmitting }) => (
+              <Form>
+                <ErrorBox mb={3} />
+                <FormContainer>
+                  <FormField>
+                    <URLField type="text" name="url" placeholder="https://" />
+                    <ErrorMessage name="url" component={FieldError} />
+                  </FormField>
+                  <Button
+                    size="large"
+                    type="submit"
+                    icon={faPlusCircle}
+                    spin={isSubmitting}
+                  >
+                    Add Feed
+                  </Button>
+                </FormContainer>
+              </Form>
+            )}
+          />
+        )
+      }}
     </ErrorContainer>
   )
 }
