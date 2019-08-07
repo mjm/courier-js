@@ -1,7 +1,7 @@
 import React from "react"
 import {
-  GetSubscriptionStatusComponent,
   SubscriptionStatus,
+  useGetSubscriptionStatusQuery,
 } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 
@@ -18,28 +18,26 @@ interface SubscriptionProviderProps {
 }
 export const SubscriptionProvider = ({
   children,
-}: SubscriptionProviderProps) => (
-  <GetSubscriptionStatusComponent>
-    {({ data, loading }) => {
-      if (loading && !(data && data.currentUser)) {
-        return <Loading />
-      }
+}: SubscriptionProviderProps) => {
+  const { data, loading } = useGetSubscriptionStatusQuery()
 
-      const user = data && data.currentUser
-      const statusOverride = user && user.subscriptionStatusOverride
-      const status = user && user.subscription && user.subscription.status
-      const isSubscribed =
-        statusOverride === SubscriptionStatus.Active ||
-        status === SubscriptionStatus.Active ||
-        status === SubscriptionStatus.Canceled
+  if (loading && !(data && data.currentUser)) {
+    return <Loading />
+  }
 
-      return (
-        <SubscriptionContext.Provider value={{ isSubscribed }}>
-          {children}
-        </SubscriptionContext.Provider>
-      )
-    }}
-  </GetSubscriptionStatusComponent>
-)
+  const user = data && data.currentUser
+  const statusOverride = user && user.subscriptionStatusOverride
+  const status = user && user.subscription && user.subscription.status
+  const isSubscribed =
+    statusOverride === SubscriptionStatus.Active ||
+    status === SubscriptionStatus.Active ||
+    status === SubscriptionStatus.Canceled
+
+  return (
+    <SubscriptionContext.Provider value={{ isSubscribed }}>
+      {children}
+    </SubscriptionContext.Provider>
+  )
+}
 
 export const useSubscription = () => React.useContext(SubscriptionContext)

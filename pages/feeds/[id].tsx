@@ -4,9 +4,8 @@ import Head from "../../components/head"
 import { PageHeader } from "../../components/header"
 import withSecurePage from "../../hocs/securePage"
 import withData from "../../hocs/apollo"
-import { NextPageContext } from "next"
+import { NextPageContext, NextPage } from "next"
 import {
-  GetFeedDetailsComponent,
   UpcomingTweetsDocument,
   AllFeedsDocument,
   AllFeedSubscriptionsFieldsFragment,
@@ -14,6 +13,7 @@ import {
   useRefreshFeedMutation,
   useSetFeedOptionsMutation,
   useDeleteFeedMutation,
+  useGetFeedDetailsQuery,
 } from "../../lib/generated/graphql-components"
 import Loading from "../../components/loading"
 import { ErrorBox } from "../../components/error"
@@ -48,7 +48,7 @@ interface Props {
   id: string
 }
 
-const Feed = ({ id }: Props) => {
+const Feed: NextPage<Props> = ({ id }) => {
   return (
     <Container
       css={{
@@ -56,144 +56,7 @@ const Feed = ({ id }: Props) => {
       }}
     >
       <ErrorContainer>
-        <GetFeedDetailsComponent variables={{ id }}>
-          {({ data, error, loading }) => {
-            if (loading) {
-              return (
-                <>
-                  <Head title="Feed Details" />
-                  <Loading />
-                </>
-              )
-            }
-
-            if (error) {
-              return (
-                <>
-                  <Head title="Feed Details" />
-                  <ErrorBox error={error} />
-                </>
-              )
-            }
-
-            if (!data) {
-              return null
-            }
-            const feed = data.subscribedFeed
-            const user = data.currentUser!
-            if (feed) {
-              const isMicropubAuthenticated = user.micropubSites.includes(
-                feed.feed.homePageURL.replace(/\./g, "-")
-              )
-              return (
-                <>
-                  <Head title={`${feed.feed.title} - Feed Details`} />
-
-                  <PageHeader mb={4}>{feed.feed.title}</PageHeader>
-                  <FlushContainer>
-                    <Group direction="column" spacing={3}>
-                      <ErrorBox width={undefined} />
-                      <Card>
-                        <InfoField label="Feed URL">
-                          <a href={feed.feed.url}>
-                            <URL>{feed.feed.url}</URL>
-                          </a>
-                        </InfoField>
-                        <InfoField label="Home Page">
-                          <a href={feed.feed.homePageURL}>
-                            <URL>{feed.feed.homePageURL}</URL>
-                          </a>
-                        </InfoField>
-                        {feed.feed.micropubEndpoint ? (
-                          <>
-                            <InfoField label="Micropub API">
-                              <URL>
-                                {feed.feed.micropubEndpoint}
-                                {isMicropubAuthenticated ? (
-                                  <Icon
-                                    ml={2}
-                                    icon={faCheckCircle}
-                                    color="primary.600"
-                                    title="You are set up to post back syndication links to this site."
-                                  />
-                                ) : (
-                                  <Icon
-                                    ml={2}
-                                    icon={faTimesCircle}
-                                    color="gray.500"
-                                    title="You are not posting syndication links back to this site."
-                                  />
-                                )}
-                              </URL>
-                            </InfoField>
-                            <MicropubAuthButton
-                              homePageURL={feed.feed.homePageURL}
-                            />
-                          </>
-                        ) : null}
-                      </Card>
-                      <Card>
-                        <CardHeader>Recent Posts</CardHeader>
-                        <InfoField label="Last Checked">
-                          <Moment fromNow>{feed.feed.refreshedAt}</Moment>
-                        </InfoField>
-                        <InfoTable>
-                          <colgroup>
-                            <col />
-                            <col css={{ width: "150px" }} />
-                          </colgroup>
-                          <tbody>
-                            {feed.feed.posts.nodes.map(post => (
-                              <tr key={post.id}>
-                                <td>
-                                  <a href={post.url} target="_blank">
-                                    {post.title || striptags(post.htmlContent)}
-                                  </a>
-                                </td>
-                                <td>
-                                  <Moment fromNow>{post.publishedAt}</Moment>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </InfoTable>
-                        <RefreshButton id={feed.feed.id} />
-                      </Card>
-                      <Card>
-                        <CardHeader>Autoposting</CardHeader>
-                        {feed.autopost ? (
-                          <div>
-                            Courier is importing tweets from this feed and{" "}
-                            <strong>
-                              will post them to Twitter automatically.
-                            </strong>
-                          </div>
-                        ) : (
-                          <div>
-                            Courier is importing tweets from this feed, but they{" "}
-                            <strong>will not be posted automatically.</strong>
-                          </div>
-                        )}
-                        <AutopostButton feed={feed} />
-                      </Card>
-                      <Card>
-                        <CardHeader>Remove This Feed</CardHeader>
-                        <div>
-                          If you remove this feed, Courier will stop seeing new
-                          posts from it. Tweets that have already been imported
-                          from this feed's posts will not be affected.
-                        </div>
-                        <RemoveButton id={feed.id} />
-                      </Card>
-                    </Group>
-                  </FlushContainer>
-                </>
-              )
-            } else {
-              return <p>Can't find that feed.</p>
-            }
-          }}
-        </GetFeedDetailsComponent>
+        <FeedDetails id={id} />
       </ErrorContainer>
     </Container>
   )
@@ -202,6 +65,141 @@ const Feed = ({ id }: Props) => {
 Feed.getInitialProps = async ({ query }: NextPageContext): Promise<Props> => {
   // @ts-ignore
   return { id: query.id }
+}
+
+const FeedDetails: React.FC<Props> = ({ id }) => {
+  const { loading, error, data } = useGetFeedDetailsQuery({ variables: { id } })
+
+  if (loading) {
+    return (
+      <>
+        <Head title="Feed Details" />
+        <Loading />
+      </>
+    )
+  }
+
+  if (error) {
+    return (
+      <>
+        <Head title="Feed Details" />
+        <ErrorBox error={error} />
+      </>
+    )
+  }
+
+  if (!data) {
+    return null
+  }
+  const feed = data.subscribedFeed
+  const user = data.currentUser!
+  if (feed) {
+    const isMicropubAuthenticated = user.micropubSites.includes(
+      feed.feed.homePageURL.replace(/\./g, "-")
+    )
+    return (
+      <>
+        <Head title={`${feed.feed.title} - Feed Details`} />
+
+        <PageHeader mb={4}>{feed.feed.title}</PageHeader>
+        <FlushContainer>
+          <Group direction="column" spacing={3}>
+            <ErrorBox width={undefined} />
+            <Card>
+              <InfoField label="Feed URL">
+                <a href={feed.feed.url}>
+                  <URL>{feed.feed.url}</URL>
+                </a>
+              </InfoField>
+              <InfoField label="Home Page">
+                <a href={feed.feed.homePageURL}>
+                  <URL>{feed.feed.homePageURL}</URL>
+                </a>
+              </InfoField>
+              {feed.feed.micropubEndpoint ? (
+                <>
+                  <InfoField label="Micropub API">
+                    <URL>
+                      {feed.feed.micropubEndpoint}
+                      {isMicropubAuthenticated ? (
+                        <Icon
+                          ml={2}
+                          icon={faCheckCircle}
+                          color="primary.600"
+                          title="You are set up to post back syndication links to this site."
+                        />
+                      ) : (
+                        <Icon
+                          ml={2}
+                          icon={faTimesCircle}
+                          color="gray.500"
+                          title="You are not posting syndication links back to this site."
+                        />
+                      )}
+                    </URL>
+                  </InfoField>
+                  <MicropubAuthButton homePageURL={feed.feed.homePageURL} />
+                </>
+              ) : null}
+            </Card>
+            <Card>
+              <CardHeader>Recent Posts</CardHeader>
+              <InfoField label="Last Checked">
+                <Moment fromNow>{feed.feed.refreshedAt}</Moment>
+              </InfoField>
+              <InfoTable>
+                <colgroup>
+                  <col />
+                  <col css={{ width: "150px" }} />
+                </colgroup>
+                <tbody>
+                  {feed.feed.posts.nodes.map(post => (
+                    <tr key={post.id}>
+                      <td>
+                        <a href={post.url} target="_blank">
+                          {post.title || striptags(post.htmlContent)}
+                        </a>
+                      </td>
+                      <td>
+                        <Moment fromNow>{post.publishedAt}</Moment>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </InfoTable>
+              <RefreshButton id={feed.feed.id} />
+            </Card>
+            <Card>
+              <CardHeader>Autoposting</CardHeader>
+              {feed.autopost ? (
+                <div>
+                  Courier is importing tweets from this feed and{" "}
+                  <strong>will post them to Twitter automatically.</strong>
+                </div>
+              ) : (
+                <div>
+                  Courier is importing tweets from this feed, but they{" "}
+                  <strong>will not be posted automatically.</strong>
+                </div>
+              )}
+              <AutopostButton feed={feed} />
+            </Card>
+            <Card>
+              <CardHeader>Remove This Feed</CardHeader>
+              <div>
+                If you remove this feed, Courier will stop seeing new posts from
+                it. Tweets that have already been imported from this feed's
+                posts will not be affected.
+              </div>
+              <RemoveButton id={feed.id} />
+            </Card>
+          </Group>
+        </FlushContainer>
+      </>
+    )
+  } else {
+    return <p>Can't find that feed.</p>
+  }
 }
 
 interface MicropubAuthButtonProps {

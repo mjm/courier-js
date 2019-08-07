@@ -15,7 +15,6 @@
     "migrate": "node-pg-migrate up && npm run gen:schema"
   },
   "dependencies": {
-    "@apollo/react-components": "^3.0.0",
     "@apollo/react-hooks": "^3.0.0",
     "@apollo/react-ssr": "^3.0.0",
     "@emotion/babel-preset-css-prop": "^10.0.9",

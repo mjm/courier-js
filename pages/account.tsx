@@ -6,8 +6,6 @@ import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import { InfoField, InfoTable } from "../components/info"
 import {
-  CurrentUserComponent,
-  RecentEventsComponent,
   EventFieldsFragment,
   EventType,
   UserFieldsFragment,
@@ -16,6 +14,8 @@ import {
   CurrentUserDocument,
   UserSubscription,
   useCancelSubscriptionMutation,
+  useCurrentUserQuery,
+  useRecentEventsQuery,
 } from "../lib/generated/graphql-components"
 import Loading from "../components/loading"
 import { ErrorBox } from "../components/error"
@@ -62,29 +62,27 @@ const Account = () => {
 export default withData(withSecurePage(Account))
 
 const UserInfo = () => {
+  const { loading, error, data } = useCurrentUserQuery({
+    fetchPolicy: "cache-and-network",
+  })
+
+  if (loading && !(data && data.currentUser)) {
+    return <Loading />
+  }
+
+  if (error) {
+    return <ErrorBox error={error} />
+  }
+
+  if (!data || !data.currentUser) {
+    return null
+  }
+  const user = data.currentUser
   return (
-    <CurrentUserComponent fetchPolicy="cache-and-network">
-      {({ data, error, loading }) => {
-        if (loading && !(data && data.currentUser)) {
-          return <Loading />
-        }
-
-        if (error) {
-          return <ErrorBox error={error} />
-        }
-
-        if (!data || !data.currentUser) {
-          return null
-        }
-        const user = data.currentUser
-        return (
-          <>
-            <UserCard user={user} />
-            <SubscriptionCard user={user} />
-          </>
-        )
-      }}
-    </CurrentUserComponent>
+    <>
+      <UserCard user={user} />
+      <SubscriptionCard user={user} />
+    </>
   )
 }
 
@@ -222,46 +220,50 @@ const RecentEvents = () => {
   return (
     <Card>
       <CardHeader>Recent Activity</CardHeader>
-      <RecentEventsComponent fetchPolicy="cache-and-network">
-        {({ data, loading, error }) => {
-          if (loading && !(data && data.allEvents)) {
-            return <Loading />
-          }
-
-          if (error) {
-            return <ErrorBox error={error} />
-          }
-
-          if (!data) {
-            return null
-          }
-          const events = data.allEvents.nodes
-          if (!events.length) {
-            return <>You haven't done anything yet.</>
-          }
-          return (
-            <InfoTable>
-              <colgroup>
-                <col />
-                <col css={{ width: "150px" }} />
-              </colgroup>
-              <tbody>
-                {events.map(event => (
-                  <tr key={event.id}>
-                    <td>
-                      <EventDescription event={event} />
-                    </td>
-                    <td>
-                      <Moment fromNow>{event.createdAt}</Moment>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </InfoTable>
-          )
-        }}
-      </RecentEventsComponent>
+      <RecentEventsContent />
     </Card>
+  )
+}
+
+const RecentEventsContent = () => {
+  const { loading, error, data } = useRecentEventsQuery({
+    fetchPolicy: "cache-and-network",
+  })
+
+  if (loading && !(data && data.allEvents)) {
+    return <Loading />
+  }
+
+  if (error) {
+    return <ErrorBox error={error} />
+  }
+
+  if (!data) {
+    return null
+  }
+  const events = data.allEvents.nodes
+  if (!events.length) {
+    return <>You haven't done anything yet.</>
+  }
+  return (
+    <InfoTable>
+      <colgroup>
+        <col />
+        <col css={{ width: "150px" }} />
+      </colgroup>
+      <tbody>
+        {events.map(event => (
+          <tr key={event.id}>
+            <td>
+              <EventDescription event={event} />
+            </td>
+            <td>
+              <Moment fromNow>{event.createdAt}</Moment>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </InfoTable>
   )
 }
 
