@@ -3,12 +3,12 @@ import styled from "@emotion/styled"
 import Head from "../components/head"
 import { PageHeader, PageDescription } from "../components/header"
 import {
-  AllFeedsComponent,
-  AddFeedComponent,
   AllFeedsDocument,
   AllFeedsQuery,
   AddFeedInput,
   UpcomingTweetsDocument,
+  useAddFeedMutation,
+  useAllFeedsQuery,
 } from "../lib/generated/graphql-components"
 import withData from "../hocs/apollo"
 import { Formik, Form, Field, FormikActions, ErrorMessage } from "formik"
@@ -62,49 +62,39 @@ const InfoIcon = ({ icon }: InfoIconProps) => (
 )
 
 const FeedsList = () => {
+  const { loading, error, data } = useAllFeedsQuery()
+
   return (
     <FlushContainer>
-      <AllFeedsComponent>
-        {({ data, error, loading }) => {
-          if (loading) {
-            return <Loading />
-          }
-
-          if (error) {
-            return <ErrorBox error={error} />
-          }
-
-          if (!data) {
-            return null
-          }
-          const nodes = data.allSubscribedFeeds.nodes
-          return (
-            <Group direction="column" spacing={3} mb={3}>
-              {nodes.map(({ id, feed }) => (
-                <Card key={id} css={{ a: { textDecoration: "none" } }}>
-                  <CardHeader>
-                    <Link href="/feeds/[id]" as={`/feeds/${id}`}>
-                      <a>{feed.title}</a>
-                    </Link>
-                  </CardHeader>
-                  <InfoLink href={feed.homePageURL}>
-                    <InfoIcon icon={faHome} />
-                    <URL>{feed.homePageURL}</URL>
-                  </InfoLink>
-                  {feed.refreshedAt && (
-                    <InfoRow>
-                      <InfoIcon icon={faHistory} />
-                      <span>
-                        Checked <Moment fromNow>{feed.refreshedAt}</Moment>
-                      </span>
-                    </InfoRow>
-                  )}
-                </Card>
-              ))}
-            </Group>
-          )
-        }}
-      </AllFeedsComponent>
+      {loading ? (
+        <Loading />
+      ) : error ? (
+        <ErrorBox error={error} />
+      ) : !data ? null : (
+        <Group direction="column" spacing={3} mb={3}>
+          {data.allSubscribedFeeds.nodes.map(({ id, feed }) => (
+            <Card key={id} css={{ a: { textDecoration: "none" } }}>
+              <CardHeader>
+                <Link href="/feeds/[id]" as={`/feeds/${id}`}>
+                  <a>{feed.title}</a>
+                </Link>
+              </CardHeader>
+              <InfoLink href={feed.homePageURL}>
+                <InfoIcon icon={faHome} />
+                <URL>{feed.homePageURL}</URL>
+              </InfoLink>
+              {feed.refreshedAt && (
+                <InfoRow>
+                  <InfoIcon icon={faHistory} />
+                  <span>
+                    Checked <Moment fromNow>{feed.refreshedAt}</Moment>
+                  </span>
+                </InfoRow>
+              )}
+            </Card>
+          ))}
+        </Group>
+      )}
     </FlushContainer>
   )
 }
@@ -157,64 +147,57 @@ const newFeedSchema = yup.object().shape({
 const initialNewFeed: AddFeedInput = { url: "" }
 
 const AddFeed = () => {
+  const [addFeed] = useAddFeedMutation({
+    update: (cache, { data }) => {
+      data && updateCachedFeeds(cache, nodes => [...nodes, data.addFeed.feed])
+    },
+    refetchQueries: [{ query: UpcomingTweetsDocument }],
+  })
+
   return (
     <ErrorContainer>
-      {({ setError }) => (
-        <AddFeedComponent
-          update={(cache, { data }) => {
-            data &&
-              updateCachedFeeds(cache, nodes => [...nodes, data.addFeed.feed])
-          }}
-          refetchQueries={[{ query: UpcomingTweetsDocument }]}
-        >
-          {addFeed => {
-            const onSubmit = async (
-              input: AddFeedInput,
-              actions: FormikActions<AddFeedInput>
-            ) => {
-              try {
-                await addFeed({ variables: { input } })
-                actions.resetForm()
-              } catch (error) {
-                setError(error)
-              } finally {
-                actions.setSubmitting(false)
-              }
-            }
+      {({ setError }) => {
+        const onSubmit = async (
+          input: AddFeedInput,
+          actions: FormikActions<AddFeedInput>
+        ) => {
+          try {
+            await addFeed({ variables: { input } })
+            actions.resetForm()
+          } catch (error) {
+            setError(error)
+          } finally {
+            actions.setSubmitting(false)
+          }
+        }
 
-            return (
-              <Formik
-                initialValues={initialNewFeed}
-                validationSchema={newFeedSchema}
-                onSubmit={onSubmit}
-                render={({ isSubmitting }) => (
-                  <Form>
-                    <ErrorBox mb={3} />
-                    <FormContainer>
-                      <FormField>
-                        <URLField
-                          type="text"
-                          name="url"
-                          placeholder="https://"
-                        />
-                        <ErrorMessage name="url" component={FieldError} />
-                      </FormField>
-                      <Button
-                        size="large"
-                        type="submit"
-                        icon={faPlusCircle}
-                        spin={isSubmitting}
-                      >
-                        Add Feed
-                      </Button>
-                    </FormContainer>
-                  </Form>
-                )}
-              />
-            )
-          }}
-        </AddFeedComponent>
-      )}
+        return (
+          <Formik
+            initialValues={initialNewFeed}
+            validationSchema={newFeedSchema}
+            onSubmit={onSubmit}
+            render={({ isSubmitting }) => (
+              <Form>
+                <ErrorBox mb={3} />
+                <FormContainer>
+                  <FormField>
+                    <URLField type="text" name="url" placeholder="https://" />
+                    <ErrorMessage name="url" component={FieldError} />
+                  </FormField>
+                  <Button
+                    size="large"
+                    type="submit"
+                    icon={faPlusCircle}
+                    spin={isSubmitting}
+                  >
+                    Add Feed
+                  </Button>
+                </FormContainer>
+              </Form>
+            )}
+          />
+        )
+      }}
     </ErrorContainer>
   )
 }

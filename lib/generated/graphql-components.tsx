@@ -1,3 +1,7 @@
+import gql from "graphql-tag"
+import * as ApolloReactCommon from "@apollo/react-common"
+import * as ApolloReactHooks from "@apollo/react-hooks"
+
 export type Maybe<T> = T | null
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -708,12 +712,7 @@ export type EditTweetMutation = { __typename?: "Mutation" } & {
     tweet: { __typename?: "Tweet" } & Pick<Tweet, "id" | "body" | "mediaURLs">
   }
 }
-
-import gql from "graphql-tag"
-import * as React from "react"
-import * as ReactApollo from "react-apollo"
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-export const userFieldsFragmentDoc = gql`
+export const UserFieldsFragmentDoc = gql`
   fragment userFields on User {
     name
     nickname
@@ -733,7 +732,7 @@ export const userFieldsFragmentDoc = gql`
     subscriptionStatusOverride
   }
 `
-export const eventFieldsFragmentDoc = gql`
+export const EventFieldsFragmentDoc = gql`
   fragment eventFields on Event {
     id
     eventType
@@ -749,7 +748,7 @@ export const eventFieldsFragmentDoc = gql`
     boolValue
   }
 `
-export const allFeedSubscriptionsFieldsFragmentDoc = gql`
+export const AllFeedSubscriptionsFieldsFragmentDoc = gql`
   fragment allFeedSubscriptionsFields on SubscribedFeed {
     id
     feed {
@@ -763,7 +762,7 @@ export const allFeedSubscriptionsFieldsFragmentDoc = gql`
     autopost
   }
 `
-export const subscriptionInfoFragmentDoc = gql`
+export const SubscriptionInfoFragmentDoc = gql`
   fragment subscriptionInfo on User {
     customer {
       creditCard {
@@ -779,7 +778,7 @@ export const subscriptionInfoFragmentDoc = gql`
     }
   }
 `
-export const allTweetsFieldsFragmentDoc = gql`
+export const AllTweetsFieldsFragmentDoc = gql`
   fragment allTweetsFields on Tweet {
     id
     post {
@@ -798,7 +797,7 @@ export const allTweetsFieldsFragmentDoc = gql`
     postedTweetID
   }
 `
-export const tweetConnectionFieldsFragmentDoc = gql`
+export const TweetConnectionFieldsFragmentDoc = gql`
   fragment tweetConnectionFields on TweetConnection {
     nodes {
       ...allTweetsFields
@@ -809,7 +808,7 @@ export const tweetConnectionFieldsFragmentDoc = gql`
     }
     totalCount
   }
-  ${allTweetsFieldsFragmentDoc}
+  ${AllTweetsFieldsFragmentDoc}
 `
 export const CurrentUserDocument = gql`
   query CurrentUser {
@@ -817,46 +816,25 @@ export const CurrentUserDocument = gql`
       ...userFields
     }
   }
-  ${userFieldsFragmentDoc}
+  ${UserFieldsFragmentDoc}
 `
 
-export const CurrentUserComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.QueryProps<CurrentUserQuery, CurrentUserQueryVariables>,
-      "query"
-    >,
-    "variables"
-  > & { variables?: CurrentUserQueryVariables }
-) => (
-  <ReactApollo.Query<CurrentUserQuery, CurrentUserQueryVariables>
-    query={CurrentUserDocument}
-    {...props}
-  />
-)
-
-export type CurrentUserProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<CurrentUserQuery, CurrentUserQueryVariables>
-> &
-  TChildProps
-export function withCurrentUser<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useCurrentUserQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
     CurrentUserQuery,
-    CurrentUserQueryVariables,
-    CurrentUserProps<TChildProps>
+    CurrentUserQueryVariables
   >
 ) {
-  return ReactApollo.withQuery<
-    TProps,
-    CurrentUserQuery,
-    CurrentUserQueryVariables,
-    CurrentUserProps<TChildProps>
-  >(CurrentUserDocument, {
-    alias: "withCurrentUser",
-    ...operationOptions,
-  })
+  return ApolloReactHooks.useQuery<CurrentUserQuery, CurrentUserQueryVariables>(
+    CurrentUserDocument,
+    baseOptions
+  )
 }
+export type CurrentUserQueryHookResult = ReturnType<typeof useCurrentUserQuery>
+export type CurrentUserQueryResult = ApolloReactCommon.QueryResult<
+  CurrentUserQuery,
+  CurrentUserQueryVariables
+>
 export const RecentEventsDocument = gql`
   query RecentEvents($cursor: Cursor) {
     allEvents(last: 15, before: $cursor) @connection(key: "events") {
@@ -869,46 +847,27 @@ export const RecentEventsDocument = gql`
       }
     }
   }
-  ${eventFieldsFragmentDoc}
+  ${EventFieldsFragmentDoc}
 `
 
-export const RecentEventsComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.QueryProps<RecentEventsQuery, RecentEventsQueryVariables>,
-      "query"
-    >,
-    "variables"
-  > & { variables?: RecentEventsQueryVariables }
-) => (
-  <ReactApollo.Query<RecentEventsQuery, RecentEventsQueryVariables>
-    query={RecentEventsDocument}
-    {...props}
-  />
-)
-
-export type RecentEventsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<RecentEventsQuery, RecentEventsQueryVariables>
-> &
-  TChildProps
-export function withRecentEvents<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useRecentEventsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
     RecentEventsQuery,
-    RecentEventsQueryVariables,
-    RecentEventsProps<TChildProps>
+    RecentEventsQueryVariables
   >
 ) {
-  return ReactApollo.withQuery<
-    TProps,
+  return ApolloReactHooks.useQuery<
     RecentEventsQuery,
-    RecentEventsQueryVariables,
-    RecentEventsProps<TChildProps>
-  >(RecentEventsDocument, {
-    alias: "withRecentEvents",
-    ...operationOptions,
-  })
+    RecentEventsQueryVariables
+  >(RecentEventsDocument, baseOptions)
 }
+export type RecentEventsQueryHookResult = ReturnType<
+  typeof useRecentEventsQuery
+>
+export type RecentEventsQueryResult = ApolloReactCommon.QueryResult<
+  RecentEventsQuery,
+  RecentEventsQueryVariables
+>
 export const CancelSubscriptionDocument = gql`
   mutation CancelSubscription {
     cancelSubscription(input: {}) {
@@ -920,57 +879,32 @@ export const CancelSubscriptionDocument = gql`
     }
   }
 `
-export type CancelSubscriptionMutationFn = ReactApollo.MutationFn<
+export type CancelSubscriptionMutationFn = ApolloReactCommon.MutationFunction<
   CancelSubscriptionMutation,
   CancelSubscriptionMutationVariables
 >
 
-export const CancelSubscriptionComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.MutationProps<
-        CancelSubscriptionMutation,
-        CancelSubscriptionMutationVariables
-      >,
-      "mutation"
-    >,
-    "variables"
-  > & { variables?: CancelSubscriptionMutationVariables }
-) => (
-  <ReactApollo.Mutation<
+export function useCancelSubscriptionMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
     CancelSubscriptionMutation,
     CancelSubscriptionMutationVariables
-  >
-    mutation={CancelSubscriptionDocument}
-    {...props}
-  />
-)
-
-export type CancelSubscriptionProps<TChildProps = {}> = Partial<
-  ReactApollo.MutateProps<
-    CancelSubscriptionMutation,
-    CancelSubscriptionMutationVariables
-  >
-> &
-  TChildProps
-export function withCancelSubscription<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
-    CancelSubscriptionMutation,
-    CancelSubscriptionMutationVariables,
-    CancelSubscriptionProps<TChildProps>
   >
 ) {
-  return ReactApollo.withMutation<
-    TProps,
+  return ApolloReactHooks.useMutation<
     CancelSubscriptionMutation,
-    CancelSubscriptionMutationVariables,
-    CancelSubscriptionProps<TChildProps>
-  >(CancelSubscriptionDocument, {
-    alias: "withCancelSubscription",
-    ...operationOptions,
-  })
+    CancelSubscriptionMutationVariables
+  >(CancelSubscriptionDocument, baseOptions)
 }
+export type CancelSubscriptionMutationHookResult = ReturnType<
+  typeof useCancelSubscriptionMutation
+>
+export type CancelSubscriptionMutationResult = ApolloReactCommon.MutationResult<
+  CancelSubscriptionMutation
+>
+export type CancelSubscriptionMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  CancelSubscriptionMutation,
+  CancelSubscriptionMutationVariables
+>
 export const GetSubscriptionStatusDocument = gql`
   query GetSubscriptionStatus {
     currentUser {
@@ -982,52 +916,24 @@ export const GetSubscriptionStatusDocument = gql`
   }
 `
 
-export const GetSubscriptionStatusComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.QueryProps<
-        GetSubscriptionStatusQuery,
-        GetSubscriptionStatusQueryVariables
-      >,
-      "query"
-    >,
-    "variables"
-  > & { variables?: GetSubscriptionStatusQueryVariables }
-) => (
-  <ReactApollo.Query<
+export function useGetSubscriptionStatusQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
     GetSubscriptionStatusQuery,
     GetSubscriptionStatusQueryVariables
-  >
-    query={GetSubscriptionStatusDocument}
-    {...props}
-  />
-)
-
-export type GetSubscriptionStatusProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<
-    GetSubscriptionStatusQuery,
-    GetSubscriptionStatusQueryVariables
-  >
-> &
-  TChildProps
-export function withGetSubscriptionStatus<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
-    GetSubscriptionStatusQuery,
-    GetSubscriptionStatusQueryVariables,
-    GetSubscriptionStatusProps<TChildProps>
   >
 ) {
-  return ReactApollo.withQuery<
-    TProps,
+  return ApolloReactHooks.useQuery<
     GetSubscriptionStatusQuery,
-    GetSubscriptionStatusQueryVariables,
-    GetSubscriptionStatusProps<TChildProps>
-  >(GetSubscriptionStatusDocument, {
-    alias: "withGetSubscriptionStatus",
-    ...operationOptions,
-  })
+    GetSubscriptionStatusQueryVariables
+  >(GetSubscriptionStatusDocument, baseOptions)
 }
+export type GetSubscriptionStatusQueryHookResult = ReturnType<
+  typeof useGetSubscriptionStatusQuery
+>
+export type GetSubscriptionStatusQueryResult = ApolloReactCommon.QueryResult<
+  GetSubscriptionStatusQuery,
+  GetSubscriptionStatusQueryVariables
+>
 export const AllFeedsDocument = gql`
   query AllFeeds($cursor: Cursor) {
     allSubscribedFeeds(first: 20, after: $cursor)
@@ -1041,46 +947,25 @@ export const AllFeedsDocument = gql`
       }
     }
   }
-  ${allFeedSubscriptionsFieldsFragmentDoc}
+  ${AllFeedSubscriptionsFieldsFragmentDoc}
 `
 
-export const AllFeedsComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.QueryProps<AllFeedsQuery, AllFeedsQueryVariables>,
-      "query"
-    >,
-    "variables"
-  > & { variables?: AllFeedsQueryVariables }
-) => (
-  <ReactApollo.Query<AllFeedsQuery, AllFeedsQueryVariables>
-    query={AllFeedsDocument}
-    {...props}
-  />
-)
-
-export type AllFeedsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<AllFeedsQuery, AllFeedsQueryVariables>
-> &
-  TChildProps
-export function withAllFeeds<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useAllFeedsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
     AllFeedsQuery,
-    AllFeedsQueryVariables,
-    AllFeedsProps<TChildProps>
+    AllFeedsQueryVariables
   >
 ) {
-  return ReactApollo.withQuery<
-    TProps,
-    AllFeedsQuery,
-    AllFeedsQueryVariables,
-    AllFeedsProps<TChildProps>
-  >(AllFeedsDocument, {
-    alias: "withAllFeeds",
-    ...operationOptions,
-  })
+  return ApolloReactHooks.useQuery<AllFeedsQuery, AllFeedsQueryVariables>(
+    AllFeedsDocument,
+    baseOptions
+  )
 }
+export type AllFeedsQueryHookResult = ReturnType<typeof useAllFeedsQuery>
+export type AllFeedsQueryResult = ApolloReactCommon.QueryResult<
+  AllFeedsQuery,
+  AllFeedsQueryVariables
+>
 export const AddFeedDocument = gql`
   mutation AddFeed($input: AddFeedInput!) {
     addFeed(input: $input) {
@@ -1089,50 +974,32 @@ export const AddFeedDocument = gql`
       }
     }
   }
-  ${allFeedSubscriptionsFieldsFragmentDoc}
+  ${AllFeedSubscriptionsFieldsFragmentDoc}
 `
-export type AddFeedMutationFn = ReactApollo.MutationFn<
+export type AddFeedMutationFn = ApolloReactCommon.MutationFunction<
   AddFeedMutation,
   AddFeedMutationVariables
 >
 
-export const AddFeedComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.MutationProps<AddFeedMutation, AddFeedMutationVariables>,
-      "mutation"
-    >,
-    "variables"
-  > & { variables?: AddFeedMutationVariables }
-) => (
-  <ReactApollo.Mutation<AddFeedMutation, AddFeedMutationVariables>
-    mutation={AddFeedDocument}
-    {...props}
-  />
-)
-
-export type AddFeedProps<TChildProps = {}> = Partial<
-  ReactApollo.MutateProps<AddFeedMutation, AddFeedMutationVariables>
-> &
-  TChildProps
-export function withAddFeed<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useAddFeedMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
     AddFeedMutation,
-    AddFeedMutationVariables,
-    AddFeedProps<TChildProps>
+    AddFeedMutationVariables
   >
 ) {
-  return ReactApollo.withMutation<
-    TProps,
+  return ApolloReactHooks.useMutation<
     AddFeedMutation,
-    AddFeedMutationVariables,
-    AddFeedProps<TChildProps>
-  >(AddFeedDocument, {
-    alias: "withAddFeed",
-    ...operationOptions,
-  })
+    AddFeedMutationVariables
+  >(AddFeedDocument, baseOptions)
 }
+export type AddFeedMutationHookResult = ReturnType<typeof useAddFeedMutation>
+export type AddFeedMutationResult = ApolloReactCommon.MutationResult<
+  AddFeedMutation
+>
+export type AddFeedMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  AddFeedMutation,
+  AddFeedMutationVariables
+>
 export const RefreshFeedDocument = gql`
   mutation RefreshFeed($input: RefreshFeedInput!) {
     refreshFeed(input: $input) {
@@ -1145,51 +1012,32 @@ export const RefreshFeedDocument = gql`
     }
   }
 `
-export type RefreshFeedMutationFn = ReactApollo.MutationFn<
+export type RefreshFeedMutationFn = ApolloReactCommon.MutationFunction<
   RefreshFeedMutation,
   RefreshFeedMutationVariables
 >
 
-export const RefreshFeedComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.MutationProps<
-        RefreshFeedMutation,
-        RefreshFeedMutationVariables
-      >,
-      "mutation"
-    >,
-    "variables"
-  > & { variables?: RefreshFeedMutationVariables }
-) => (
-  <ReactApollo.Mutation<RefreshFeedMutation, RefreshFeedMutationVariables>
-    mutation={RefreshFeedDocument}
-    {...props}
-  />
-)
-
-export type RefreshFeedProps<TChildProps = {}> = Partial<
-  ReactApollo.MutateProps<RefreshFeedMutation, RefreshFeedMutationVariables>
-> &
-  TChildProps
-export function withRefreshFeed<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useRefreshFeedMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
     RefreshFeedMutation,
-    RefreshFeedMutationVariables,
-    RefreshFeedProps<TChildProps>
+    RefreshFeedMutationVariables
   >
 ) {
-  return ReactApollo.withMutation<
-    TProps,
+  return ApolloReactHooks.useMutation<
     RefreshFeedMutation,
-    RefreshFeedMutationVariables,
-    RefreshFeedProps<TChildProps>
-  >(RefreshFeedDocument, {
-    alias: "withRefreshFeed",
-    ...operationOptions,
-  })
+    RefreshFeedMutationVariables
+  >(RefreshFeedDocument, baseOptions)
 }
+export type RefreshFeedMutationHookResult = ReturnType<
+  typeof useRefreshFeedMutation
+>
+export type RefreshFeedMutationResult = ApolloReactCommon.MutationResult<
+  RefreshFeedMutation
+>
+export type RefreshFeedMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  RefreshFeedMutation,
+  RefreshFeedMutationVariables
+>
 export const SetFeedOptionsDocument = gql`
   mutation SetFeedOptions($input: SetFeedOptionsInput!) {
     setFeedOptions(input: $input) {
@@ -1200,54 +1048,32 @@ export const SetFeedOptionsDocument = gql`
     }
   }
 `
-export type SetFeedOptionsMutationFn = ReactApollo.MutationFn<
+export type SetFeedOptionsMutationFn = ApolloReactCommon.MutationFunction<
   SetFeedOptionsMutation,
   SetFeedOptionsMutationVariables
 >
 
-export const SetFeedOptionsComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.MutationProps<
-        SetFeedOptionsMutation,
-        SetFeedOptionsMutationVariables
-      >,
-      "mutation"
-    >,
-    "variables"
-  > & { variables?: SetFeedOptionsMutationVariables }
-) => (
-  <ReactApollo.Mutation<SetFeedOptionsMutation, SetFeedOptionsMutationVariables>
-    mutation={SetFeedOptionsDocument}
-    {...props}
-  />
-)
-
-export type SetFeedOptionsProps<TChildProps = {}> = Partial<
-  ReactApollo.MutateProps<
+export function useSetFeedOptionsMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
     SetFeedOptionsMutation,
     SetFeedOptionsMutationVariables
   >
-> &
-  TChildProps
-export function withSetFeedOptions<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
-    SetFeedOptionsMutation,
-    SetFeedOptionsMutationVariables,
-    SetFeedOptionsProps<TChildProps>
-  >
 ) {
-  return ReactApollo.withMutation<
-    TProps,
+  return ApolloReactHooks.useMutation<
     SetFeedOptionsMutation,
-    SetFeedOptionsMutationVariables,
-    SetFeedOptionsProps<TChildProps>
-  >(SetFeedOptionsDocument, {
-    alias: "withSetFeedOptions",
-    ...operationOptions,
-  })
+    SetFeedOptionsMutationVariables
+  >(SetFeedOptionsDocument, baseOptions)
 }
+export type SetFeedOptionsMutationHookResult = ReturnType<
+  typeof useSetFeedOptionsMutation
+>
+export type SetFeedOptionsMutationResult = ApolloReactCommon.MutationResult<
+  SetFeedOptionsMutation
+>
+export type SetFeedOptionsMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  SetFeedOptionsMutation,
+  SetFeedOptionsMutationVariables
+>
 export const DeleteFeedDocument = gql`
   mutation DeleteFeed($input: DeleteFeedInput!) {
     deleteFeed(input: $input) {
@@ -1255,51 +1081,32 @@ export const DeleteFeedDocument = gql`
     }
   }
 `
-export type DeleteFeedMutationFn = ReactApollo.MutationFn<
+export type DeleteFeedMutationFn = ApolloReactCommon.MutationFunction<
   DeleteFeedMutation,
   DeleteFeedMutationVariables
 >
 
-export const DeleteFeedComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.MutationProps<
-        DeleteFeedMutation,
-        DeleteFeedMutationVariables
-      >,
-      "mutation"
-    >,
-    "variables"
-  > & { variables?: DeleteFeedMutationVariables }
-) => (
-  <ReactApollo.Mutation<DeleteFeedMutation, DeleteFeedMutationVariables>
-    mutation={DeleteFeedDocument}
-    {...props}
-  />
-)
-
-export type DeleteFeedProps<TChildProps = {}> = Partial<
-  ReactApollo.MutateProps<DeleteFeedMutation, DeleteFeedMutationVariables>
-> &
-  TChildProps
-export function withDeleteFeed<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useDeleteFeedMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
     DeleteFeedMutation,
-    DeleteFeedMutationVariables,
-    DeleteFeedProps<TChildProps>
+    DeleteFeedMutationVariables
   >
 ) {
-  return ReactApollo.withMutation<
-    TProps,
+  return ApolloReactHooks.useMutation<
     DeleteFeedMutation,
-    DeleteFeedMutationVariables,
-    DeleteFeedProps<TChildProps>
-  >(DeleteFeedDocument, {
-    alias: "withDeleteFeed",
-    ...operationOptions,
-  })
+    DeleteFeedMutationVariables
+  >(DeleteFeedDocument, baseOptions)
 }
+export type DeleteFeedMutationHookResult = ReturnType<
+  typeof useDeleteFeedMutation
+>
+export type DeleteFeedMutationResult = ApolloReactCommon.MutationResult<
+  DeleteFeedMutation
+>
+export type DeleteFeedMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  DeleteFeedMutation,
+  DeleteFeedMutationVariables
+>
 export const GetFeedDetailsDocument = gql`
   query GetFeedDetails($id: ID!) {
     subscribedFeed(id: $id) {
@@ -1320,46 +1127,27 @@ export const GetFeedDetailsDocument = gql`
       micropubSites
     }
   }
-  ${allFeedSubscriptionsFieldsFragmentDoc}
+  ${AllFeedSubscriptionsFieldsFragmentDoc}
 `
 
-export const GetFeedDetailsComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.QueryProps<GetFeedDetailsQuery, GetFeedDetailsQueryVariables>,
-      "query"
-    >,
-    "variables"
-  > & { variables: GetFeedDetailsQueryVariables }
-) => (
-  <ReactApollo.Query<GetFeedDetailsQuery, GetFeedDetailsQueryVariables>
-    query={GetFeedDetailsDocument}
-    {...props}
-  />
-)
-
-export type GetFeedDetailsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<GetFeedDetailsQuery, GetFeedDetailsQueryVariables>
-> &
-  TChildProps
-export function withGetFeedDetails<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useGetFeedDetailsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
     GetFeedDetailsQuery,
-    GetFeedDetailsQueryVariables,
-    GetFeedDetailsProps<TChildProps>
+    GetFeedDetailsQueryVariables
   >
 ) {
-  return ReactApollo.withQuery<
-    TProps,
+  return ApolloReactHooks.useQuery<
     GetFeedDetailsQuery,
-    GetFeedDetailsQueryVariables,
-    GetFeedDetailsProps<TChildProps>
-  >(GetFeedDetailsDocument, {
-    alias: "withGetFeedDetails",
-    ...operationOptions,
-  })
+    GetFeedDetailsQueryVariables
+  >(GetFeedDetailsDocument, baseOptions)
 }
+export type GetFeedDetailsQueryHookResult = ReturnType<
+  typeof useGetFeedDetailsQuery
+>
+export type GetFeedDetailsQueryResult = ApolloReactCommon.QueryResult<
+  GetFeedDetailsQuery,
+  GetFeedDetailsQueryVariables
+>
 export const GetEndpointsDocument = gql`
   query GetEndpoints($url: String!) {
     microformats(url: $url) {
@@ -1369,43 +1157,24 @@ export const GetEndpointsDocument = gql`
   }
 `
 
-export const GetEndpointsComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.QueryProps<GetEndpointsQuery, GetEndpointsQueryVariables>,
-      "query"
-    >,
-    "variables"
-  > & { variables: GetEndpointsQueryVariables }
-) => (
-  <ReactApollo.Query<GetEndpointsQuery, GetEndpointsQueryVariables>
-    query={GetEndpointsDocument}
-    {...props}
-  />
-)
-
-export type GetEndpointsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<GetEndpointsQuery, GetEndpointsQueryVariables>
-> &
-  TChildProps
-export function withGetEndpoints<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useGetEndpointsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
     GetEndpointsQuery,
-    GetEndpointsQueryVariables,
-    GetEndpointsProps<TChildProps>
+    GetEndpointsQueryVariables
   >
 ) {
-  return ReactApollo.withQuery<
-    TProps,
+  return ApolloReactHooks.useQuery<
     GetEndpointsQuery,
-    GetEndpointsQueryVariables,
-    GetEndpointsProps<TChildProps>
-  >(GetEndpointsDocument, {
-    alias: "withGetEndpoints",
-    ...operationOptions,
-  })
+    GetEndpointsQueryVariables
+  >(GetEndpointsDocument, baseOptions)
 }
+export type GetEndpointsQueryHookResult = ReturnType<
+  typeof useGetEndpointsQuery
+>
+export type GetEndpointsQueryResult = ApolloReactCommon.QueryResult<
+  GetEndpointsQuery,
+  GetEndpointsQueryVariables
+>
 export const SubscribeDocument = gql`
   mutation Subscribe($input: SubscribeInput!) {
     subscribe(input: $input) {
@@ -1414,50 +1183,34 @@ export const SubscribeDocument = gql`
       }
     }
   }
-  ${subscriptionInfoFragmentDoc}
+  ${SubscriptionInfoFragmentDoc}
 `
-export type SubscribeMutationFn = ReactApollo.MutationFn<
+export type SubscribeMutationFn = ApolloReactCommon.MutationFunction<
   SubscribeMutation,
   SubscribeMutationVariables
 >
 
-export const SubscribeComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.MutationProps<SubscribeMutation, SubscribeMutationVariables>,
-      "mutation"
-    >,
-    "variables"
-  > & { variables?: SubscribeMutationVariables }
-) => (
-  <ReactApollo.Mutation<SubscribeMutation, SubscribeMutationVariables>
-    mutation={SubscribeDocument}
-    {...props}
-  />
-)
-
-export type SubscribeProps<TChildProps = {}> = Partial<
-  ReactApollo.MutateProps<SubscribeMutation, SubscribeMutationVariables>
-> &
-  TChildProps
-export function withSubscribe<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useSubscribeMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
     SubscribeMutation,
-    SubscribeMutationVariables,
-    SubscribeProps<TChildProps>
+    SubscribeMutationVariables
   >
 ) {
-  return ReactApollo.withMutation<
-    TProps,
+  return ApolloReactHooks.useMutation<
     SubscribeMutation,
-    SubscribeMutationVariables,
-    SubscribeProps<TChildProps>
-  >(SubscribeDocument, {
-    alias: "withSubscribe",
-    ...operationOptions,
-  })
+    SubscribeMutationVariables
+  >(SubscribeDocument, baseOptions)
 }
+export type SubscribeMutationHookResult = ReturnType<
+  typeof useSubscribeMutation
+>
+export type SubscribeMutationResult = ApolloReactCommon.MutationResult<
+  SubscribeMutation
+>
+export type SubscribeMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  SubscribeMutation,
+  SubscribeMutationVariables
+>
 export const SavedPaymentMethodDocument = gql`
   query SavedPaymentMethod {
     currentUser {
@@ -1473,49 +1226,24 @@ export const SavedPaymentMethodDocument = gql`
   }
 `
 
-export const SavedPaymentMethodComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.QueryProps<
-        SavedPaymentMethodQuery,
-        SavedPaymentMethodQueryVariables
-      >,
-      "query"
-    >,
-    "variables"
-  > & { variables?: SavedPaymentMethodQueryVariables }
-) => (
-  <ReactApollo.Query<SavedPaymentMethodQuery, SavedPaymentMethodQueryVariables>
-    query={SavedPaymentMethodDocument}
-    {...props}
-  />
-)
-
-export type SavedPaymentMethodProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<
+export function useSavedPaymentMethodQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
     SavedPaymentMethodQuery,
     SavedPaymentMethodQueryVariables
   >
-> &
-  TChildProps
-export function withSavedPaymentMethod<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
-    SavedPaymentMethodQuery,
-    SavedPaymentMethodQueryVariables,
-    SavedPaymentMethodProps<TChildProps>
-  >
 ) {
-  return ReactApollo.withQuery<
-    TProps,
+  return ApolloReactHooks.useQuery<
     SavedPaymentMethodQuery,
-    SavedPaymentMethodQueryVariables,
-    SavedPaymentMethodProps<TChildProps>
-  >(SavedPaymentMethodDocument, {
-    alias: "withSavedPaymentMethod",
-    ...operationOptions,
-  })
+    SavedPaymentMethodQueryVariables
+  >(SavedPaymentMethodDocument, baseOptions)
 }
+export type SavedPaymentMethodQueryHookResult = ReturnType<
+  typeof useSavedPaymentMethodQuery
+>
+export type SavedPaymentMethodQueryResult = ApolloReactCommon.QueryResult<
+  SavedPaymentMethodQuery,
+  SavedPaymentMethodQueryVariables
+>
 export const UpcomingTweetsDocument = gql`
   query UpcomingTweets($cursor: Cursor) {
     allTweets(filter: UPCOMING, last: 10, before: $cursor)
@@ -1523,46 +1251,27 @@ export const UpcomingTweetsDocument = gql`
       ...tweetConnectionFields
     }
   }
-  ${tweetConnectionFieldsFragmentDoc}
+  ${TweetConnectionFieldsFragmentDoc}
 `
 
-export const UpcomingTweetsComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.QueryProps<UpcomingTweetsQuery, UpcomingTweetsQueryVariables>,
-      "query"
-    >,
-    "variables"
-  > & { variables?: UpcomingTweetsQueryVariables }
-) => (
-  <ReactApollo.Query<UpcomingTweetsQuery, UpcomingTweetsQueryVariables>
-    query={UpcomingTweetsDocument}
-    {...props}
-  />
-)
-
-export type UpcomingTweetsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<UpcomingTweetsQuery, UpcomingTweetsQueryVariables>
-> &
-  TChildProps
-export function withUpcomingTweets<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useUpcomingTweetsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
     UpcomingTweetsQuery,
-    UpcomingTweetsQueryVariables,
-    UpcomingTweetsProps<TChildProps>
+    UpcomingTweetsQueryVariables
   >
 ) {
-  return ReactApollo.withQuery<
-    TProps,
+  return ApolloReactHooks.useQuery<
     UpcomingTweetsQuery,
-    UpcomingTweetsQueryVariables,
-    UpcomingTweetsProps<TChildProps>
-  >(UpcomingTweetsDocument, {
-    alias: "withUpcomingTweets",
-    ...operationOptions,
-  })
+    UpcomingTweetsQueryVariables
+  >(UpcomingTweetsDocument, baseOptions)
 }
+export type UpcomingTweetsQueryHookResult = ReturnType<
+  typeof useUpcomingTweetsQuery
+>
+export type UpcomingTweetsQueryResult = ApolloReactCommon.QueryResult<
+  UpcomingTweetsQuery,
+  UpcomingTweetsQueryVariables
+>
 export const PastTweetsDocument = gql`
   query PastTweets($cursor: Cursor) {
     allTweets(filter: PAST, last: 10, before: $cursor)
@@ -1570,46 +1279,25 @@ export const PastTweetsDocument = gql`
       ...tweetConnectionFields
     }
   }
-  ${tweetConnectionFieldsFragmentDoc}
+  ${TweetConnectionFieldsFragmentDoc}
 `
 
-export const PastTweetsComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.QueryProps<PastTweetsQuery, PastTweetsQueryVariables>,
-      "query"
-    >,
-    "variables"
-  > & { variables?: PastTweetsQueryVariables }
-) => (
-  <ReactApollo.Query<PastTweetsQuery, PastTweetsQueryVariables>
-    query={PastTweetsDocument}
-    {...props}
-  />
-)
-
-export type PastTweetsProps<TChildProps = {}> = Partial<
-  ReactApollo.DataProps<PastTweetsQuery, PastTweetsQueryVariables>
-> &
-  TChildProps
-export function withPastTweets<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function usePastTweetsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
     PastTweetsQuery,
-    PastTweetsQueryVariables,
-    PastTweetsProps<TChildProps>
+    PastTweetsQueryVariables
   >
 ) {
-  return ReactApollo.withQuery<
-    TProps,
-    PastTweetsQuery,
-    PastTweetsQueryVariables,
-    PastTweetsProps<TChildProps>
-  >(PastTweetsDocument, {
-    alias: "withPastTweets",
-    ...operationOptions,
-  })
+  return ApolloReactHooks.useQuery<PastTweetsQuery, PastTweetsQueryVariables>(
+    PastTweetsDocument,
+    baseOptions
+  )
 }
+export type PastTweetsQueryHookResult = ReturnType<typeof usePastTweetsQuery>
+export type PastTweetsQueryResult = ApolloReactCommon.QueryResult<
+  PastTweetsQuery,
+  PastTweetsQueryVariables
+>
 export const CancelTweetDocument = gql`
   mutation CancelTweet($input: CancelTweetInput!) {
     cancelTweet(input: $input) {
@@ -1620,51 +1308,32 @@ export const CancelTweetDocument = gql`
     }
   }
 `
-export type CancelTweetMutationFn = ReactApollo.MutationFn<
+export type CancelTweetMutationFn = ApolloReactCommon.MutationFunction<
   CancelTweetMutation,
   CancelTweetMutationVariables
 >
 
-export const CancelTweetComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.MutationProps<
-        CancelTweetMutation,
-        CancelTweetMutationVariables
-      >,
-      "mutation"
-    >,
-    "variables"
-  > & { variables?: CancelTweetMutationVariables }
-) => (
-  <ReactApollo.Mutation<CancelTweetMutation, CancelTweetMutationVariables>
-    mutation={CancelTweetDocument}
-    {...props}
-  />
-)
-
-export type CancelTweetProps<TChildProps = {}> = Partial<
-  ReactApollo.MutateProps<CancelTweetMutation, CancelTweetMutationVariables>
-> &
-  TChildProps
-export function withCancelTweet<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useCancelTweetMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
     CancelTweetMutation,
-    CancelTweetMutationVariables,
-    CancelTweetProps<TChildProps>
+    CancelTweetMutationVariables
   >
 ) {
-  return ReactApollo.withMutation<
-    TProps,
+  return ApolloReactHooks.useMutation<
     CancelTweetMutation,
-    CancelTweetMutationVariables,
-    CancelTweetProps<TChildProps>
-  >(CancelTweetDocument, {
-    alias: "withCancelTweet",
-    ...operationOptions,
-  })
+    CancelTweetMutationVariables
+  >(CancelTweetDocument, baseOptions)
 }
+export type CancelTweetMutationHookResult = ReturnType<
+  typeof useCancelTweetMutation
+>
+export type CancelTweetMutationResult = ApolloReactCommon.MutationResult<
+  CancelTweetMutation
+>
+export type CancelTweetMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  CancelTweetMutation,
+  CancelTweetMutationVariables
+>
 export const UncancelTweetDocument = gql`
   mutation UncancelTweet($input: UncancelTweetInput!) {
     uncancelTweet(input: $input) {
@@ -1675,51 +1344,32 @@ export const UncancelTweetDocument = gql`
     }
   }
 `
-export type UncancelTweetMutationFn = ReactApollo.MutationFn<
+export type UncancelTweetMutationFn = ApolloReactCommon.MutationFunction<
   UncancelTweetMutation,
   UncancelTweetMutationVariables
 >
 
-export const UncancelTweetComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.MutationProps<
-        UncancelTweetMutation,
-        UncancelTweetMutationVariables
-      >,
-      "mutation"
-    >,
-    "variables"
-  > & { variables?: UncancelTweetMutationVariables }
-) => (
-  <ReactApollo.Mutation<UncancelTweetMutation, UncancelTweetMutationVariables>
-    mutation={UncancelTweetDocument}
-    {...props}
-  />
-)
-
-export type UncancelTweetProps<TChildProps = {}> = Partial<
-  ReactApollo.MutateProps<UncancelTweetMutation, UncancelTweetMutationVariables>
-> &
-  TChildProps
-export function withUncancelTweet<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useUncancelTweetMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
     UncancelTweetMutation,
-    UncancelTweetMutationVariables,
-    UncancelTweetProps<TChildProps>
+    UncancelTweetMutationVariables
   >
 ) {
-  return ReactApollo.withMutation<
-    TProps,
+  return ApolloReactHooks.useMutation<
     UncancelTweetMutation,
-    UncancelTweetMutationVariables,
-    UncancelTweetProps<TChildProps>
-  >(UncancelTweetDocument, {
-    alias: "withUncancelTweet",
-    ...operationOptions,
-  })
+    UncancelTweetMutationVariables
+  >(UncancelTweetDocument, baseOptions)
 }
+export type UncancelTweetMutationHookResult = ReturnType<
+  typeof useUncancelTweetMutation
+>
+export type UncancelTweetMutationResult = ApolloReactCommon.MutationResult<
+  UncancelTweetMutation
+>
+export type UncancelTweetMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  UncancelTweetMutation,
+  UncancelTweetMutationVariables
+>
 export const PostTweetDocument = gql`
   mutation PostTweet($input: PostTweetInput!) {
     postTweet(input: $input) {
@@ -1734,48 +1384,32 @@ export const PostTweetDocument = gql`
     }
   }
 `
-export type PostTweetMutationFn = ReactApollo.MutationFn<
+export type PostTweetMutationFn = ApolloReactCommon.MutationFunction<
   PostTweetMutation,
   PostTweetMutationVariables
 >
 
-export const PostTweetComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.MutationProps<PostTweetMutation, PostTweetMutationVariables>,
-      "mutation"
-    >,
-    "variables"
-  > & { variables?: PostTweetMutationVariables }
-) => (
-  <ReactApollo.Mutation<PostTweetMutation, PostTweetMutationVariables>
-    mutation={PostTweetDocument}
-    {...props}
-  />
-)
-
-export type PostTweetProps<TChildProps = {}> = Partial<
-  ReactApollo.MutateProps<PostTweetMutation, PostTweetMutationVariables>
-> &
-  TChildProps
-export function withPostTweet<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function usePostTweetMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
     PostTweetMutation,
-    PostTweetMutationVariables,
-    PostTweetProps<TChildProps>
+    PostTweetMutationVariables
   >
 ) {
-  return ReactApollo.withMutation<
-    TProps,
+  return ApolloReactHooks.useMutation<
     PostTweetMutation,
-    PostTweetMutationVariables,
-    PostTweetProps<TChildProps>
-  >(PostTweetDocument, {
-    alias: "withPostTweet",
-    ...operationOptions,
-  })
+    PostTweetMutationVariables
+  >(PostTweetDocument, baseOptions)
 }
+export type PostTweetMutationHookResult = ReturnType<
+  typeof usePostTweetMutation
+>
+export type PostTweetMutationResult = ApolloReactCommon.MutationResult<
+  PostTweetMutation
+>
+export type PostTweetMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  PostTweetMutation,
+  PostTweetMutationVariables
+>
 export const EditTweetDocument = gql`
   mutation EditTweet($input: EditTweetInput!) {
     editTweet(input: $input) {
@@ -1787,45 +1421,29 @@ export const EditTweetDocument = gql`
     }
   }
 `
-export type EditTweetMutationFn = ReactApollo.MutationFn<
+export type EditTweetMutationFn = ApolloReactCommon.MutationFunction<
   EditTweetMutation,
   EditTweetMutationVariables
 >
 
-export const EditTweetComponent = (
-  props: Omit<
-    Omit<
-      ReactApollo.MutationProps<EditTweetMutation, EditTweetMutationVariables>,
-      "mutation"
-    >,
-    "variables"
-  > & { variables?: EditTweetMutationVariables }
-) => (
-  <ReactApollo.Mutation<EditTweetMutation, EditTweetMutationVariables>
-    mutation={EditTweetDocument}
-    {...props}
-  />
-)
-
-export type EditTweetProps<TChildProps = {}> = Partial<
-  ReactApollo.MutateProps<EditTweetMutation, EditTweetMutationVariables>
-> &
-  TChildProps
-export function withEditTweet<TProps, TChildProps = {}>(
-  operationOptions?: ReactApollo.OperationOption<
-    TProps,
+export function useEditTweetMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
     EditTweetMutation,
-    EditTweetMutationVariables,
-    EditTweetProps<TChildProps>
+    EditTweetMutationVariables
   >
 ) {
-  return ReactApollo.withMutation<
-    TProps,
+  return ApolloReactHooks.useMutation<
     EditTweetMutation,
-    EditTweetMutationVariables,
-    EditTweetProps<TChildProps>
-  >(EditTweetDocument, {
-    alias: "withEditTweet",
-    ...operationOptions,
-  })
+    EditTweetMutationVariables
+  >(EditTweetDocument, baseOptions)
 }
+export type EditTweetMutationHookResult = ReturnType<
+  typeof useEditTweetMutation
+>
+export type EditTweetMutationResult = ApolloReactCommon.MutationResult<
+  EditTweetMutation
+>
+export type EditTweetMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  EditTweetMutation,
+  EditTweetMutationVariables
+>

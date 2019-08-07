@@ -4,10 +4,10 @@ import {
   AllTweetsFieldsFragment,
   TweetStatus,
   Tweet,
-  CancelTweetComponent,
-  UncancelTweetComponent,
-  PostTweetComponent,
   TweetAction,
+  useCancelTweetMutation,
+  useUncancelTweetMutation,
+  usePostTweetMutation,
 } from "../../lib/generated/graphql-components"
 import Linkify from "linkifyjs/react"
 import { faEdit, faBan } from "@fortawesome/free-solid-svg-icons"
@@ -140,91 +140,84 @@ interface CancelButtonProps {
   id: Tweet["id"]
 }
 const CancelButton = ({ id }: CancelButtonProps) => {
+  const [cancelTweet] = useCancelTweetMutation()
+
   return (
-    <CancelTweetComponent>
-      {cancelTweet => (
-        <Button
-          icon={faBan}
-          color="red"
-          invert
-          onClick={() => {
-            cancelTweet({
-              variables: { input: { id } },
-              optimisticResponse: {
-                __typename: "Mutation",
-                cancelTweet: {
-                  __typename: "CancelTweetPayload",
-                  tweet: {
-                    __typename: "Tweet",
-                    id,
-                    status: TweetStatus.Canceled,
-                  },
-                },
+    <Button
+      icon={faBan}
+      color="red"
+      invert
+      onClick={() => {
+        cancelTweet({
+          variables: { input: { id } },
+          optimisticResponse: {
+            __typename: "Mutation",
+            cancelTweet: {
+              __typename: "CancelTweetPayload",
+              tweet: {
+                __typename: "Tweet",
+                id,
+                status: TweetStatus.Canceled,
               },
-            })
-          }}
-        >
-          Don't Post
-        </Button>
-      )}
-    </CancelTweetComponent>
+            },
+          },
+        })
+      }}
+    >
+      Don't Post
+    </Button>
   )
 }
 
 const UncancelButton = ({ id }: CancelButtonProps) => {
+  const [uncancelTweet] = useUncancelTweetMutation()
+
   return (
-    <UncancelTweetComponent>
-      {uncancelTweet => (
-        <a
-          href="#"
-          onClick={e => {
-            e.preventDefault()
-            uncancelTweet({
-              variables: { input: { id } },
-              optimisticResponse: {
-                __typename: "Mutation",
-                uncancelTweet: {
-                  __typename: "UncancelTweetPayload",
-                  tweet: {
-                    __typename: "Tweet",
-                    id,
-                    status: TweetStatus.Draft,
-                  },
-                },
+    <a
+      href="#"
+      onClick={e => {
+        e.preventDefault()
+        uncancelTweet({
+          variables: { input: { id } },
+          optimisticResponse: {
+            __typename: "Mutation",
+            uncancelTweet: {
+              __typename: "UncancelTweetPayload",
+              tweet: {
+                __typename: "Tweet",
+                id,
+                status: TweetStatus.Draft,
               },
-            })
-          }}
-        >
-          undo?
-        </a>
-      )}
-    </UncancelTweetComponent>
+            },
+          },
+        })
+      }}
+    >
+      undo?
+    </a>
   )
 }
 
 const PostButton = ({ id }: CancelButtonProps) => {
   const { setError } = useErrors()
+  const [postTweet] = usePostTweetMutation()
 
   return (
-    <PostTweetComponent>
-      {postTweet => (
-        <Button
-          icon={faTwitter}
-          color="blue"
-          invert
-          onClickAsync={async () => {
-            try {
-              await postTweet({
-                variables: { input: { id } },
-              })
-            } catch (e) {
-              setError(e)
-            }
-          }}
-        >
-          Post to Twitter
-        </Button>
-      )}
-    </PostTweetComponent>
+    <Button
+      icon={faTwitter}
+      color="blue"
+      invert
+      onClickAsync={async () => {
+        try {
+          await postTweet({
+            variables: { input: { id } },
+          })
+        } catch (e) {
+          setError(e)
+        }
+      }}
+    >
+      Post to Twitter
+    </Button>
   )
 }

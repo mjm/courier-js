@@ -6,10 +6,11 @@ import {
   SectionHeader,
 } from "../components/header"
 import {
-  UpcomingTweetsComponent,
-  PastTweetsComponent,
   AllTweetsFieldsFragment,
   TweetStatus,
+  UpcomingTweetsDocument,
+  PastTweetsDocument,
+  UpcomingTweetsQuery,
 } from "../lib/generated/graphql-components"
 import withSecurePage from "../hocs/securePage"
 import withData from "../hocs/apollo"
@@ -27,6 +28,7 @@ import { NextPage } from "next"
 import { useSubscription } from "../hooks/subscription"
 import Notice from "../components/notice"
 import { ErrorContainer } from "../hooks/error"
+import { useQuery } from "@apollo/react-hooks"
 
 const Tweets: NextPage<{}> = () => (
   <Container>
@@ -37,8 +39,8 @@ const Tweets: NextPage<{}> = () => (
       These are the tweets Courier has translated from your feeds.
     </PageDescription>
     <SubscribeBanner />
-    <TweetsList title="Upcoming Tweet" query={UpcomingTweetsComponent} />
-    <TweetsList title="Past Tweet" query={PastTweetsComponent} />
+    <TweetsList title="Upcoming Tweet" query={UpcomingTweetsDocument} />
+    <TweetsList title="Past Tweet" query={PastTweetsDocument} />
   </Container>
 )
 
@@ -47,119 +49,117 @@ export default withData(withSecurePage(Tweets))
 interface TweetsListProps {
   // this type should match both upcoming and past.
   // we just had to pick one to use to grab the type
-  query: typeof UpcomingTweetsComponent
+  query: typeof UpcomingTweetsDocument
 
   title: string
 }
-const TweetsList = ({ query: QueryComponent, title }: TweetsListProps) => {
+const TweetsList = ({ query, title }: TweetsListProps) => {
   const [isLoadingMore, setLoadingMore] = useState(false)
+  const { loading, error, data, fetchMore } = useQuery<UpcomingTweetsQuery>(
+    query,
+    {
+      fetchPolicy: "cache-and-network",
+    }
+  )
+
+  if (loading && !(data && data.allTweets)) {
+    return (
+      <div>
+        <SectionHeader>{title}s</SectionHeader>
+        <Loading />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div>
+        <SectionHeader>{title}s</SectionHeader>
+        <ErrorBox error={error} />
+      </div>
+    )
+  }
+
+  if (!data) {
+    return null
+  }
+
+  const { nodes, pageInfo, totalCount } = data.allTweets
+  if (!nodes.length) {
+    return (
+      <div>
+        <SectionHeader>{title}s</SectionHeader>
+        <FlushContainer>
+          <Card mb={4}>
+            <Text textAlign="center">
+              You don't have any {title.toLowerCase()}s.
+            </Text>
+          </Card>
+        </FlushContainer>
+      </div>
+    )
+  }
+
+  const loadMore = async () => {
+    setLoadingMore(true)
+    try {
+      await fetchMore({
+        variables: {
+          cursor: pageInfo.endCursor,
+        },
+        updateQuery(previousResult, { fetchMoreResult }) {
+          if (!fetchMoreResult) {
+            return previousResult
+          }
+          const oldNodes = previousResult.allTweets.nodes
+          const {
+            nodes: newNodes,
+            pageInfo,
+            totalCount,
+          } = fetchMoreResult.allTweets
+
+          return {
+            allTweets: {
+              __typename: "TweetConnection",
+              nodes: [...oldNodes, ...newNodes],
+              pageInfo,
+              totalCount,
+            },
+          }
+        },
+      })
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoadingMore(false)
+    }
+  }
 
   return (
     <div>
-      <QueryComponent fetchPolicy="cache-and-network">
-        {({ data, error, loading, fetchMore }) => {
-          if (loading && !(data && data.allTweets)) {
-            return (
-              <>
-                <SectionHeader>{title}s</SectionHeader>
-                <Loading />
-              </>
-            )
-          }
-
-          if (error) {
-            return (
-              <>
-                <SectionHeader>{title}s</SectionHeader>
-                <ErrorBox error={error} />
-              </>
-            )
-          }
-
-          if (!data) {
-            return null
-          }
-
-          const { nodes, pageInfo, totalCount } = data.allTweets
-          if (!nodes.length) {
-            return (
-              <>
-                <SectionHeader>{title}s</SectionHeader>
-                <FlushContainer>
-                  <Card mb={4}>
-                    <Text textAlign="center">
-                      You don't have any {title.toLowerCase()}s.
-                    </Text>
-                  </Card>
-                </FlushContainer>
-              </>
-            )
-          }
-
-          const loadMore = async () => {
-            setLoadingMore(true)
-            try {
-              await fetchMore({
-                variables: {
-                  cursor: pageInfo.endCursor,
-                },
-                updateQuery(previousResult, { fetchMoreResult }) {
-                  if (!fetchMoreResult) {
-                    return previousResult
-                  }
-                  const oldNodes = previousResult.allTweets.nodes
-                  const {
-                    nodes: newNodes,
-                    pageInfo,
-                    totalCount,
-                  } = fetchMoreResult.allTweets
-
-                  return {
-                    allTweets: {
-                      __typename: "TweetConnection",
-                      nodes: [...oldNodes, ...newNodes],
-                      pageInfo,
-                      totalCount,
-                    },
-                  }
-                },
-              })
-            } catch (err) {
-              console.error(err)
-            } finally {
-              setLoadingMore(false)
-            }
-          }
-
-          return (
-            <>
-              <SectionHeader>
-                {totalCount} {title}
-                {totalCount === 1 ? "" : "s"}
-              </SectionHeader>
-              <FlushContainer mb={4}>
-                <Group direction="column" spacing={3}>
-                  {nodes.map(tweet => (
-                    <TweetCard key={tweet.id} tweet={tweet} />
-                  ))}
-                  {pageInfo.hasPreviousPage && (
-                    <Flex justifyContent="center">
-                      <Button
-                        size="medium"
-                        icon={faAngleDoubleDown}
-                        spin={isLoadingMore}
-                        onClick={loadMore}
-                      >
-                        Show More…
-                      </Button>
-                    </Flex>
-                  )}
-                </Group>
-              </FlushContainer>
-            </>
-          )
-        }}
-      </QueryComponent>
+      <SectionHeader>
+        {totalCount} {title}
+        {totalCount === 1 ? "" : "s"}
+      </SectionHeader>
+      <FlushContainer mb={4}>
+        <Group direction="column" spacing={3}>
+          {nodes.map(tweet => (
+            <TweetCard key={tweet.id} tweet={tweet} />
+          ))}
+          {pageInfo.hasPreviousPage && (
+            <Flex justifyContent="center">
+              <Button
+                size="medium"
+                icon={faAngleDoubleDown}
+                spin={isLoadingMore}
+                onClick={loadMore}
+              >
+                Show More…
+              </Button>
+            </Flex>
+          )}
+        </Group>
+      </FlushContainer>
     </div>
   )
 }
