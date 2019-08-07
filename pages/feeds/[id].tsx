@@ -39,7 +39,7 @@ import Card, { CardHeader } from "../../components/card"
 import Group from "../../components/group"
 import URL from "../../components/url"
 import { ErrorContainer, useErrors } from "../../hooks/error"
-import { ApolloConsumer } from "react-apollo"
+import { useApolloClient } from "@apollo/react-hooks"
 import { beginIndieAuth } from "../../utils/indieauth"
 import Icon from "../../components/icon"
 import striptags from "striptags"
@@ -209,34 +209,30 @@ interface MicropubAuthButtonProps {
 }
 
 const MicropubAuthButton = ({ homePageURL }: MicropubAuthButtonProps) => {
+  const client = useApolloClient()
+
+  async function onClick() {
+    const { data } = await client.query({
+      query: GetEndpointsDocument,
+      variables: { url: homePageURL },
+    })
+
+    const { authorizationEndpoint, tokenEndpoint } = data.microformats
+    if (authorizationEndpoint && tokenEndpoint) {
+      beginIndieAuth({
+        endpoint: authorizationEndpoint,
+        tokenEndpoint,
+        redirectURI: "api/syndication-callback",
+        me: homePageURL,
+        scopes: "update",
+      })
+    }
+  }
+
   return (
-    <ApolloConsumer>
-      {client => {
-        async function onClick() {
-          const { data } = await client.query({
-            query: GetEndpointsDocument,
-            variables: { url: homePageURL },
-          })
-
-          const { authorizationEndpoint, tokenEndpoint } = data.microformats
-          if (authorizationEndpoint && tokenEndpoint) {
-            beginIndieAuth({
-              endpoint: authorizationEndpoint,
-              tokenEndpoint,
-              redirectURI: "api/syndication-callback",
-              me: homePageURL,
-              scopes: "update",
-            })
-          }
-        }
-
-        return (
-          <Button icon={faClone} mt={3} onClickAsync={onClick}>
-            Set Up Syndication
-          </Button>
-        )
-      }}
-    </ApolloConsumer>
+    <Button icon={faClone} mt={3} onClickAsync={onClick}>
+      Set Up Syndication
+    </Button>
   )
 }
 
