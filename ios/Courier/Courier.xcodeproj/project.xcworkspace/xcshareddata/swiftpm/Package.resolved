@@ -1,0 +1,79 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Apollo",
+        "repositoryURL": "https://github.com/apollographql/apollo-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "3f3111d0ab1334fd344691ac95f163a2a78ab3c6",
+          "version": "0.19.0"
+        }
+      },
+      {
+        "package": "Combinable",
+        "repositoryURL": "https://github.com/mjm/Combinable.git",
+        "state": {
+          "branch": "master",
+          "revision": "4f3a723782551c7fdbd8547bca6a1335c98ff4da",
+          "version": null
+        }
+      },
+      {
+        "package": "Events",
+        "repositoryURL": "https://github.com/mjm/Events.git",
+        "state": {
+          "branch": "master",
+          "revision": "9811e5406c7e948ded073862bcd842ea1d7b5de2",
+          "version": null
+        }
+      },
+      {
+        "package": "LogfmtEncoder",
+        "repositoryURL": "https://github.com/mjm/LogfmtEncoder",
+        "state": {
+          "branch": "master",
+          "revision": "f72d2b3732cabf9acb898e7738f2cb903f914172",
+          "version": null
+        }
+      },
+      {
+        "package": "SQLite.swift",
+        "repositoryURL": "https://github.com/stephencelis/SQLite.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "0a9893ec030501a3956bee572d6b4fdd3ae158a1",
+          "version": "0.12.2"
+        }
+      },
+      {
+        "package": "Starscream",
+        "repositoryURL": "https://github.com/daltoniam/Starscream",
+        "state": {
+          "branch": null,
+          "revision": "e6b65c6d9077ea48b4a7bdda8994a1d3c6969c8d",
+          "version": "3.1.1"
+        }
+      },
+      {
+        "package": "swift-nio-zlib-support",
+        "repositoryURL": "https://github.com/apple/swift-nio-zlib-support.git",
+        "state": {
+          "branch": null,
+          "revision": "37760e9a52030bb9011972c5213c3350fa9d41fd",
+          "version": "1.0.0"
+        }
+      },
+      {
+        "package": "UserActions",
+        "repositoryURL": "https://github.com/mjm/UserActions.git",
+        "state": {
+          "branch": "master",
+          "revision": "a0fb5cdcfebca27dc6fe9b33742259f010a0e277",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,42 @@
+query UpcomingTweets($cursor: Cursor) {
+  allTweets(filter: UPCOMING, last: 10, before: $cursor)
+    @connection(key: "upcomingTweets") {
+    ...tweetConnectionFields
+  }
+}
+
+query PastTweets($cursor: Cursor) {
+  allTweets(filter: PAST, last: 10, before: $cursor)
+    @connection(key: "pastTweets") {
+    ...tweetConnectionFields
+  }
+}
+
+fragment tweetConnectionFields on TweetConnection {
+  nodes {
+    ...allTweetsFields
+  }
+  pageInfo {
+    hasPreviousPage
+    endCursor
+  }
+  totalCount
+}
+
+fragment allTweetsFields on Tweet {
+  id
+  post {
+    id
+    url
+    publishedAt
+    modifiedAt
+  }
+  action
+  body
+  mediaURLs
+  retweetID
+  status
+  postAfter
+  postedAt
+  postedTweetID
+}
