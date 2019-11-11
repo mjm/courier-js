@@ -17,6 +17,14 @@ extension ApolloClientProtocol {
     ) -> WatchQueryPublisher<Query> {
         WatchQueryPublisher(client: self, query: query, cachePolicy: cachePolicy)
     }
+
+    func publisher<Mutation: GraphQLMutation>(
+        mutation: Mutation
+    ) -> AnyPublisher<GraphQLResult<Mutation.Data>, Error> {
+        Future { promise in
+            _ = self.perform(mutation: mutation, context: nil, queue: .main, resultHandler: promise)
+        }.eraseToAnyPublisher()
+    }
 }
 
 struct WatchQueryPublisher<Query: GraphQLQuery>: Publisher {

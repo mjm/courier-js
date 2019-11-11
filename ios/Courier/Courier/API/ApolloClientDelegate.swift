@@ -43,6 +43,7 @@ final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNet
 
     func networkTransport(_ networkTransport: HTTPNetworkTransport, receivedError error: Error, for request: URLRequest, response: URLResponse?, retryHandler: @escaping (Bool) -> Void) {
         print("Got error in request: \(error)")
+        retryHandler(false)
     }
 
     func networkTransport(_ networkTransport: HTTPNetworkTransport, receivedGraphQLErrors errors: [GraphQLError], retryHandler: @escaping (Bool) -> Void) {
@@ -58,7 +59,6 @@ final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNet
                 }
             }
         } else {
-            print("not retrying")
             retryHandler(false)
         }
     }

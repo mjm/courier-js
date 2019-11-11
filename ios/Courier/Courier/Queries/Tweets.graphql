@@ -38,3 +38,44 @@ fragment allTweetsFields on Tweet {
   postedAt
   postedTweetID
 }
+
+mutation CancelTweet($input: CancelTweetInput!) {
+  cancelTweet(input: $input) {
+    tweet {
+      id
+      status
+    }
+  }
+}
+
+mutation UncancelTweet($input: UncancelTweetInput!) {
+  uncancelTweet(input: $input) {
+    tweet {
+      id
+      status
+    }
+  }
+}
+
+mutation PostTweet($input: PostTweetInput!) {
+  postTweet(input: $input) {
+    tweet {
+      id
+      body
+      mediaURLs
+      status
+      postedAt
+      postedTweetID
+    }
+  }
+}
+
+mutation EditTweet($input: EditTweetInput!) {
+  editTweet(input: $input) {
+    tweet {
+      id
+      body
+      mediaURLs
+    }
+  }
+}

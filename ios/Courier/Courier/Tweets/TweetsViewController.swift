@@ -36,6 +36,7 @@ final class TweetsViewController: UITableViewController {
                 .upcoming: NSLocalizedString("Upcoming Tweets", comment: ""),
                 .past: NSLocalizedString("Past Tweets", comment: ""),
             ])
+            .editable()
             .bound(to: viewModel.snapshot, animate: $animate)
     }
 
@@ -44,6 +45,17 @@ final class TweetsViewController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         animate = true
+    }
+
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let model = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+
+        let cancel = model.cancelAction.contextualAction()
+
+        let actions = UISwipeActionsConfiguration(actions: [cancel])
+        return actions
     }
 }
 

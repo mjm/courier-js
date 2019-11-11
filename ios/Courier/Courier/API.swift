@@ -3,43 +3,20 @@
 import Apollo
 import Foundation
 
-public enum TweetAction: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
-  public typealias RawValue = String
-  case tweet
-  case retweet
-  /// Auto generated constant for unknown enum values
-  case __unknown(RawValue)
+public struct CancelTweetInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
 
-  public init?(rawValue: RawValue) {
-    switch rawValue {
-      case "TWEET": self = .tweet
-      case "RETWEET": self = .retweet
-      default: self = .__unknown(rawValue)
-    }
+  public init(id: GraphQLID) {
+    graphQLMap = ["id": id]
   }
 
-  public var rawValue: RawValue {
-    switch self {
-      case .tweet: return "TWEET"
-      case .retweet: return "RETWEET"
-      case .__unknown(let value): return value
+  public var id: GraphQLID {
+    get {
+      return graphQLMap["id"] as! GraphQLID
     }
-  }
-
-  public static func == (lhs: TweetAction, rhs: TweetAction) -> Bool {
-    switch (lhs, rhs) {
-      case (.tweet, .tweet): return true
-      case (.retweet, .retweet): return true
-      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
-      default: return false
+    set {
+      graphQLMap.updateValue(newValue, forKey: "id")
     }
-  }
-
-  public static var allCases: [TweetAction] {
-    return [
-      .tweet,
-      .retweet,
-    ]
   }
 }
 
@@ -84,6 +61,133 @@ public enum TweetStatus: RawRepresentable, Equatable, Hashable, CaseIterable, Ap
       .draft,
       .canceled,
       .posted,
+    ]
+  }
+}
+
+public struct UncancelTweetInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  public init(id: GraphQLID) {
+    graphQLMap = ["id": id]
+  }
+
+  public var id: GraphQLID {
+    get {
+      return graphQLMap["id"] as! GraphQLID
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "id")
+    }
+  }
+}
+
+public struct PostTweetInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  public init(id: GraphQLID, body: Swift.Optional<String?> = nil, mediaUrLs: Swift.Optional<[String]?> = nil) {
+    graphQLMap = ["id": id, "body": body, "mediaURLs": mediaUrLs]
+  }
+
+  public var id: GraphQLID {
+    get {
+      return graphQLMap["id"] as! GraphQLID
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "id")
+    }
+  }
+
+  public var body: Swift.Optional<String?> {
+    get {
+      return graphQLMap["body"] as? Swift.Optional<String?> ?? Swift.Optional<String?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "body")
+    }
+  }
+
+  public var mediaUrLs: Swift.Optional<[String]?> {
+    get {
+      return graphQLMap["mediaURLs"] as? Swift.Optional<[String]?> ?? Swift.Optional<[String]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "mediaURLs")
+    }
+  }
+}
+
+public struct EditTweetInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  public init(id: GraphQLID, body: String, mediaUrLs: Swift.Optional<[String]?> = nil) {
+    graphQLMap = ["id": id, "body": body, "mediaURLs": mediaUrLs]
+  }
+
+  public var id: GraphQLID {
+    get {
+      return graphQLMap["id"] as! GraphQLID
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "id")
+    }
+  }
+
+  public var body: String {
+    get {
+      return graphQLMap["body"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "body")
+    }
+  }
+
+  public var mediaUrLs: Swift.Optional<[String]?> {
+    get {
+      return graphQLMap["mediaURLs"] as? Swift.Optional<[String]?> ?? Swift.Optional<[String]?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "mediaURLs")
+    }
+  }
+}
+
+public enum TweetAction: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case tweet
+  case retweet
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "TWEET": self = .tweet
+      case "RETWEET": self = .retweet
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .tweet: return "TWEET"
+      case .retweet: return "RETWEET"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: TweetAction, rhs: TweetAction) -> Bool {
+    switch (lhs, rhs) {
+      case (.tweet, .tweet): return true
+      case (.retweet, .retweet): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [TweetAction] {
+    return [
+      .tweet,
+      .retweet,
     ]
   }
 }
@@ -289,6 +393,621 @@ public final class PastTweetsQuery: GraphQLQuery {
           }
           set {
             resultMap += newValue.resultMap
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class CancelTweetMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    mutation CancelTweet($input: CancelTweetInput!) {
+      cancelTweet(input: $input) {
+        __typename
+        tweet {
+          __typename
+          id
+          status
+        }
+      }
+    }
+    """
+
+  public let operationName = "CancelTweet"
+
+  public var input: CancelTweetInput
+
+  public init(input: CancelTweetInput) {
+    self.input = input
+  }
+
+  public var variables: GraphQLMap? {
+    return ["input": input]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Mutation"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("cancelTweet", arguments: ["input": GraphQLVariable("input")], type: .nonNull(.object(CancelTweet.selections))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(cancelTweet: CancelTweet) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "cancelTweet": cancelTweet.resultMap])
+    }
+
+    public var cancelTweet: CancelTweet {
+      get {
+        return CancelTweet(unsafeResultMap: resultMap["cancelTweet"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "cancelTweet")
+      }
+    }
+
+    public struct CancelTweet: GraphQLSelectionSet {
+      public static let possibleTypes = ["CancelTweetPayload"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("tweet", type: .nonNull(.object(Tweet.selections))),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(tweet: Tweet) {
+        self.init(unsafeResultMap: ["__typename": "CancelTweetPayload", "tweet": tweet.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var tweet: Tweet {
+        get {
+          return Tweet(unsafeResultMap: resultMap["tweet"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "tweet")
+        }
+      }
+
+      public struct Tweet: GraphQLSelectionSet {
+        public static let possibleTypes = ["Tweet"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+          GraphQLField("status", type: .nonNull(.scalar(TweetStatus.self))),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(id: GraphQLID, status: TweetStatus) {
+          self.init(unsafeResultMap: ["__typename": "Tweet", "id": id, "status": status])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var id: GraphQLID {
+          get {
+            return resultMap["id"]! as! GraphQLID
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "id")
+          }
+        }
+
+        public var status: TweetStatus {
+          get {
+            return resultMap["status"]! as! TweetStatus
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "status")
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class UncancelTweetMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    mutation UncancelTweet($input: UncancelTweetInput!) {
+      uncancelTweet(input: $input) {
+        __typename
+        tweet {
+          __typename
+          id
+          status
+        }
+      }
+    }
+    """
+
+  public let operationName = "UncancelTweet"
+
+  public var input: UncancelTweetInput
+
+  public init(input: UncancelTweetInput) {
+    self.input = input
+  }
+
+  public var variables: GraphQLMap? {
+    return ["input": input]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Mutation"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("uncancelTweet", arguments: ["input": GraphQLVariable("input")], type: .nonNull(.object(UncancelTweet.selections))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(uncancelTweet: UncancelTweet) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "uncancelTweet": uncancelTweet.resultMap])
+    }
+
+    public var uncancelTweet: UncancelTweet {
+      get {
+        return UncancelTweet(unsafeResultMap: resultMap["uncancelTweet"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "uncancelTweet")
+      }
+    }
+
+    public struct UncancelTweet: GraphQLSelectionSet {
+      public static let possibleTypes = ["UncancelTweetPayload"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("tweet", type: .nonNull(.object(Tweet.selections))),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(tweet: Tweet) {
+        self.init(unsafeResultMap: ["__typename": "UncancelTweetPayload", "tweet": tweet.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var tweet: Tweet {
+        get {
+          return Tweet(unsafeResultMap: resultMap["tweet"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "tweet")
+        }
+      }
+
+      public struct Tweet: GraphQLSelectionSet {
+        public static let possibleTypes = ["Tweet"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+          GraphQLField("status", type: .nonNull(.scalar(TweetStatus.self))),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(id: GraphQLID, status: TweetStatus) {
+          self.init(unsafeResultMap: ["__typename": "Tweet", "id": id, "status": status])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var id: GraphQLID {
+          get {
+            return resultMap["id"]! as! GraphQLID
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "id")
+          }
+        }
+
+        public var status: TweetStatus {
+          get {
+            return resultMap["status"]! as! TweetStatus
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "status")
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class PostTweetMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    mutation PostTweet($input: PostTweetInput!) {
+      postTweet(input: $input) {
+        __typename
+        tweet {
+          __typename
+          id
+          body
+          mediaURLs
+          status
+          postedAt
+          postedTweetID
+        }
+      }
+    }
+    """
+
+  public let operationName = "PostTweet"
+
+  public var input: PostTweetInput
+
+  public init(input: PostTweetInput) {
+    self.input = input
+  }
+
+  public var variables: GraphQLMap? {
+    return ["input": input]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Mutation"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("postTweet", arguments: ["input": GraphQLVariable("input")], type: .nonNull(.object(PostTweet.selections))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(postTweet: PostTweet) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "postTweet": postTweet.resultMap])
+    }
+
+    public var postTweet: PostTweet {
+      get {
+        return PostTweet(unsafeResultMap: resultMap["postTweet"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "postTweet")
+      }
+    }
+
+    public struct PostTweet: GraphQLSelectionSet {
+      public static let possibleTypes = ["PostTweetPayload"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("tweet", type: .nonNull(.object(Tweet.selections))),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(tweet: Tweet) {
+        self.init(unsafeResultMap: ["__typename": "PostTweetPayload", "tweet": tweet.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var tweet: Tweet {
+        get {
+          return Tweet(unsafeResultMap: resultMap["tweet"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "tweet")
+        }
+      }
+
+      public struct Tweet: GraphQLSelectionSet {
+        public static let possibleTypes = ["Tweet"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+          GraphQLField("body", type: .nonNull(.scalar(String.self))),
+          GraphQLField("mediaURLs", type: .nonNull(.list(.nonNull(.scalar(String.self))))),
+          GraphQLField("status", type: .nonNull(.scalar(TweetStatus.self))),
+          GraphQLField("postedAt", type: .scalar(String.self)),
+          GraphQLField("postedTweetID", type: .scalar(String.self)),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(id: GraphQLID, body: String, mediaUrLs: [String], status: TweetStatus, postedAt: String? = nil, postedTweetId: String? = nil) {
+          self.init(unsafeResultMap: ["__typename": "Tweet", "id": id, "body": body, "mediaURLs": mediaUrLs, "status": status, "postedAt": postedAt, "postedTweetID": postedTweetId])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var id: GraphQLID {
+          get {
+            return resultMap["id"]! as! GraphQLID
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "id")
+          }
+        }
+
+        public var body: String {
+          get {
+            return resultMap["body"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "body")
+          }
+        }
+
+        public var mediaUrLs: [String] {
+          get {
+            return resultMap["mediaURLs"]! as! [String]
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "mediaURLs")
+          }
+        }
+
+        public var status: TweetStatus {
+          get {
+            return resultMap["status"]! as! TweetStatus
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "status")
+          }
+        }
+
+        public var postedAt: String? {
+          get {
+            return resultMap["postedAt"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "postedAt")
+          }
+        }
+
+        public var postedTweetId: String? {
+          get {
+            return resultMap["postedTweetID"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "postedTweetID")
+          }
+        }
+      }
+    }
+  }
+}
+
+public final class EditTweetMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    mutation EditTweet($input: EditTweetInput!) {
+      editTweet(input: $input) {
+        __typename
+        tweet {
+          __typename
+          id
+          body
+          mediaURLs
+        }
+      }
+    }
+    """
+
+  public let operationName = "EditTweet"
+
+  public var input: EditTweetInput
+
+  public init(input: EditTweetInput) {
+    self.input = input
+  }
+
+  public var variables: GraphQLMap? {
+    return ["input": input]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Mutation"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("editTweet", arguments: ["input": GraphQLVariable("input")], type: .nonNull(.object(EditTweet.selections))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(editTweet: EditTweet) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "editTweet": editTweet.resultMap])
+    }
+
+    public var editTweet: EditTweet {
+      get {
+        return EditTweet(unsafeResultMap: resultMap["editTweet"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "editTweet")
+      }
+    }
+
+    public struct EditTweet: GraphQLSelectionSet {
+      public static let possibleTypes = ["EditTweetPayload"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("tweet", type: .nonNull(.object(Tweet.selections))),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(tweet: Tweet) {
+        self.init(unsafeResultMap: ["__typename": "EditTweetPayload", "tweet": tweet.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var tweet: Tweet {
+        get {
+          return Tweet(unsafeResultMap: resultMap["tweet"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "tweet")
+        }
+      }
+
+      public struct Tweet: GraphQLSelectionSet {
+        public static let possibleTypes = ["Tweet"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+          GraphQLField("body", type: .nonNull(.scalar(String.self))),
+          GraphQLField("mediaURLs", type: .nonNull(.list(.nonNull(.scalar(String.self))))),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(id: GraphQLID, body: String, mediaUrLs: [String]) {
+          self.init(unsafeResultMap: ["__typename": "Tweet", "id": id, "body": body, "mediaURLs": mediaUrLs])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var id: GraphQLID {
+          get {
+            return resultMap["id"]! as! GraphQLID
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "id")
+          }
+        }
+
+        public var body: String {
+          get {
+            return resultMap["body"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "body")
+          }
+        }
+
+        public var mediaUrLs: [String] {
+          get {
+            return resultMap["mediaURLs"]! as! [String]
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "mediaURLs")
           }
         }
       }

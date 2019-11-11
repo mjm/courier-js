@@ -34,6 +34,10 @@ final class TweetCellViewModel {
             dateString.flatMap { dateFormatter.date(from: $0) }
         }.eraseToAnyPublisher()
     }
+
+    var cancelAction: BoundUserAction<Void> {
+        tweet.cancelAction.bind(to: actionRunner, options: .destructive)
+    }
 }
 
 extension TweetCellViewModel: Hashable {
