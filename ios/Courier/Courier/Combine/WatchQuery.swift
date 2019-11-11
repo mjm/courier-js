@@ -13,7 +13,7 @@ import Dispatch
 extension ApolloClientProtocol {
     func publisher<Query: GraphQLQuery>(
         query: Query,
-        cachePolicy: CachePolicy = .returnCacheDataElseFetch
+        cachePolicy: CachePolicy = .returnCacheDataAndFetch
     ) -> WatchQueryPublisher<Query> {
         WatchQueryPublisher(client: self, query: query, cachePolicy: cachePolicy)
     }

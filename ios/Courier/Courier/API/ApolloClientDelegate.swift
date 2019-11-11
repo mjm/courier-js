@@ -20,6 +20,7 @@ extension ApolloClient {
 
 final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNetworkTransportRetryDelegate, HTTPNetworkTransportGraphQLErrorDelegate {
 
+    let retryQueue = DispatchQueue(label: "com.mattmoriarity.Threads.retryRequests")
     let credentialsManager: CredentialsManager
 
     private var credentials: Credentials?
@@ -49,12 +50,9 @@ final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNet
         if isUnauthenticated {
             getCredentials { error in
                 if error == nil {
-                    print("retrying request")
                     retryHandler(true)
                 } else {
-                    print("waiting 10 sec then retrying")
-                    RunLoop.main.schedule(after: .init(.init(timeIntervalSinceNow: 10))) {
-                        print("retrying request")
+                    self.retryQueue.asyncAfter(deadline: .now() + .seconds(30)) {
                         retryHandler(true)
                     }
                 }

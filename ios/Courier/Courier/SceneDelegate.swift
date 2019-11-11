@@ -12,27 +12,35 @@ import UIKit
 import UserActions
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDelegate {
-
     var window: UIWindow?
 
     let actionRunner = UserActions.Runner()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let window = window else { return }
-        guard let splitViewController = window.rootViewController as? UISplitViewController else { return }
-        guard let navigationController = splitViewController.viewControllers.last as? UINavigationController else { return }
-        navigationController.topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
-        navigationController.topViewController?.navigationItem.leftItemsSupplementBackButton = true
+        guard let scene = scene as? UIWindowScene else { return }
+
+        let window = UIWindow(windowScene: scene)
+
+        // create master view controller
+        let tweetsViewController = TweetsViewController()
+        let masterNavController = UINavigationController(rootViewController: tweetsViewController)
+
+        // create detail view controller
+        let detailViewController = DetailViewController()
+        let detailNavController = UINavigationController(rootViewController: detailViewController)
+
+        // create split view controller
+        let splitViewController = UISplitViewController()
+        splitViewController.viewControllers = [masterNavController, detailNavController]
         splitViewController.delegate = self
 
-//        actionRunner.perform(LogoutAction())
+        detailViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
+        detailViewController.navigationItem.leftItemsSupplementBackButton = true
 
-        ApolloClient.main.fetch(query: PastTweetsQuery()) { result in
-            print(result)
-        }
+        window.rootViewController = splitViewController
+        self.window = window
+        window.makeKeyAndVisible()
+
         actionRunner.perform(LoginAction())
     }
 

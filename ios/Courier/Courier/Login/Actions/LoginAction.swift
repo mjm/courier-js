@@ -11,13 +11,15 @@ import Combinable
 import UserActions
 
 struct LoginAction: ReactiveUserAction {
+    typealias ResultType = Credentials
+
     var undoActionName: String? { nil }
 
     var canPerform: Bool {
         !CredentialsManager.shared.hasValid()
     }
 
-    func publisher(context: UserActions.Context<LoginAction>) -> AnyPublisher<(), Swift.Error> {
+    func publisher(context: UserActions.Context<LoginAction>) -> AnyPublisher<Credentials, Swift.Error> {
         Future<Credentials, Swift.Error> { promise in
             Auth0
                 .webAuth()
@@ -35,6 +37,8 @@ struct LoginAction: ReactiveUserAction {
             if !CredentialsManager.shared.store(credentials: credentials) {
                 throw Error.storeCredentialsFailed
             }
+
+            return credentials
         }.eraseToAnyPublisher()
     }
 
