@@ -1,0 +1,48 @@
+//
+//  LoginAction.swift
+//  Courier
+//
+//  Created by Matt Moriarity on 11/10/19.
+//  Copyright © 2019 Matt Moriarity. All rights reserved.
+//
+
+import Auth0
+import Combinable
+import UserActions
+
+struct LoginAction: ReactiveUserAction {
+    var undoActionName: String? { nil }
+
+    var canPerform: Bool {
+        !CredentialsManager.shared.hasValid()
+    }
+
+    func publisher(context: UserActions.Context<LoginAction>) -> AnyPublisher<(), Swift.Error> {
+        Future<Credentials, Swift.Error> { promise in
+            Auth0
+                .webAuth()
+                .scope("openid profile email https://courier.blog/customer_id https://courier.blog/subscription_id")
+                .audience("https://courier.blog/api/")
+                .start { result in
+                    switch result {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let credentials):
+                        promise(.success(credentials))
+                    }
+            }
+        }.tryMap { credentials in
+            if !CredentialsManager.shared.store(credentials: credentials) {
+                throw Error.storeCredentialsFailed
+            }
+        }.eraseToAnyPublisher()
+    }
+
+    enum Error: LocalizedError {
+        case storeCredentialsFailed
+
+        var errorDescription: String? {
+            "Failed Storing Credentials"
+        }
+    }
+}

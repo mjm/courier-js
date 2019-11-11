@@ -58,7 +58,7 @@ extension WatchQueryPublisher {
             cachePolicy: CachePolicy
         ) {
             self.downstream = downstream
-            watcher = GraphQLQueryWatcher(client: client, query: query) { [weak self] result in
+            watcher = client.watch(query: query, cachePolicy: cachePolicy, queue: .main) { [weak self] result in
                 guard let self = self else { return }
                 do {
                     _ = try self.downstream.receive(result.get())

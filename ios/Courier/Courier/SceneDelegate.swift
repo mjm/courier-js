@@ -9,11 +9,13 @@
 import Apollo
 import Auth0
 import UIKit
+import UserActions
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
 
+    let actionRunner = UserActions.Runner()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -26,23 +28,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDe
         navigationController.topViewController?.navigationItem.leftItemsSupplementBackButton = true
         splitViewController.delegate = self
 
-        Auth0
-            .webAuth()
-            .scope("openid profile email https://courier.blog/customer_id https://courier.blog/subscription_id")
-            .audience("https://courier.blog/api/")
-            .start { result in
-                switch result {
-                case .failure(let error):
-                    print("Error logging in: \(error)")
-                case .success(let credentials):
-                    let stored = CredentialsManager.shared.store(credentials: credentials)
-                    print("Were credentials stored? \(stored)")
+//        actionRunner.perform(LogoutAction())
 
-                    ApolloClient.main.fetch(query: PastTweetsQuery()) { result in
-                        print(result)
-                    }
-                }
+        ApolloClient.main.fetch(query: PastTweetsQuery()) { result in
+            print(result)
         }
+        actionRunner.perform(LoginAction())
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

@@ -28,6 +28,9 @@
 		C9A749B82378BA430046E924 /* Auth0.plist in Resources */ = {isa = PBXBuildFile; fileRef = C9A749B72378BA430046E924 /* Auth0.plist */; };
 		C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */; };
 		C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */; };
+		C9A749C1237907DF0046E924 /* LoginAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749C0237907DF0046E924 /* LoginAction.swift */; };
+		C9A749C323790D710046E924 /* LogoutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749C223790D710046E924 /* LogoutAction.swift */; };
+		C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749C5237911810046E924 /* TweetsViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +65,9 @@
 		C9A749B72378BA430046E924 /* Auth0.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Auth0.plist; sourceTree = "<group>"; };
 		C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApolloClientDelegate.swift; sourceTree = "<group>"; };
 		C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManager.swift; sourceTree = "<group>"; };
+		C9A749C0237907DF0046E924 /* LoginAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginAction.swift; sourceTree = "<group>"; };
+		C9A749C223790D710046E924 /* LogoutAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutAction.swift; sourceTree = "<group>"; };
+		C9A749C5237911810046E924 /* TweetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +120,8 @@
 				C9A749B92378BB900046E924 /* API */,
 				C9A749A9237856C40046E924 /* Combine */,
 				C9A749A2237853B70046E924 /* Queries */,
+				C9A749BE237907BC0046E924 /* Login */,
+				C9A749C4237911670046E924 /* Tweets */,
 				C9A7496D237852430046E924 /* AppDelegate.swift */,
 				C9A7496F237852430046E924 /* SceneDelegate.swift */,
 				C9A74971237852430046E924 /* MasterViewController.swift */,
@@ -171,6 +179,31 @@
 				C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */,
 			);
 			path = API;
+			sourceTree = "<group>";
+		};
+		C9A749BE237907BC0046E924 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				C9A749BF237907CD0046E924 /* Actions */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		C9A749BF237907CD0046E924 /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				C9A749C0237907DF0046E924 /* LoginAction.swift */,
+				C9A749C223790D710046E924 /* LogoutAction.swift */,
+			);
+			path = Actions;
+			sourceTree = "<group>";
+		};
+		C9A749C4237911670046E924 /* Tweets */ = {
+			isa = PBXGroup;
+			children = (
+				C9A749C5237911810046E924 /* TweetsViewModel.swift */,
+			);
+			path = Tweets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -336,12 +369,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9A7496E237852430046E924 /* AppDelegate.swift in Sources */,
+				C9A749C323790D710046E924 /* LogoutAction.swift in Sources */,
 				C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */,
+				C9A749C1237907DF0046E924 /* LoginAction.swift in Sources */,
 				C9A74970237852430046E924 /* SceneDelegate.swift in Sources */,
 				C9A74972237852430046E924 /* MasterViewController.swift in Sources */,
 				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
 				C9A74974237852430046E924 /* DetailViewController.swift in Sources */,
 				C9A749AB237856D00046E924 /* WatchQuery.swift in Sources */,
+				C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */,
 				C9A749A7237854F00046E924 /* API.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

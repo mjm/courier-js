@@ -18,7 +18,7 @@ extension ApolloClient {
     }()
 }
 
-final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNetworkTransportRetryDelegate {
+final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNetworkTransportRetryDelegate, HTTPNetworkTransportGraphQLErrorDelegate {
 
     let credentialsManager: CredentialsManager
 
@@ -44,12 +44,34 @@ final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNet
         print("Got error in request: \(error)")
     }
 
-    private func getCredentials() {
+    func networkTransport(_ networkTransport: HTTPNetworkTransport, receivedGraphQLErrors errors: [GraphQLError], retryHandler: @escaping (Bool) -> Void) {
+        let isUnauthenticated = errors.contains { ($0.extensions?["code"] as? String) == "UNAUTHENTICATED" }
+        if isUnauthenticated {
+            getCredentials { error in
+                if error == nil {
+                    print("retrying request")
+                    retryHandler(true)
+                } else {
+                    print("waiting 10 sec then retrying")
+                    RunLoop.main.schedule(after: .init(.init(timeIntervalSinceNow: 10))) {
+                        print("retrying request")
+                        retryHandler(true)
+                    }
+                }
+            }
+        } else {
+            print("not retrying")
+            retryHandler(false)
+        }
+    }
+
+    private func getCredentials(completion: @escaping (Error?) -> Void = { _ in }) {
         credentialsManager.credentials { error, credentials in
             if let error = error {
-                print("Error retrieving credentials from credentials manager: \(error)")
+                completion(error)
             } else if let credentials = credentials {
                 self.credentials = credentials
+                completion(nil)
             }
         }
     }
