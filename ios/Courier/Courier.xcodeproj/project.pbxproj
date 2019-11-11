@@ -35,6 +35,8 @@
 		C9A749CB2379D1260046E924 /* TweetCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749CA2379D1260046E924 /* TweetCellViewModel.swift */; };
 		C9A749CD2379D3450046E924 /* TweetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749CC2379D3450046E924 /* TweetsViewController.swift */; };
 		C9A749CF2379D7400046E924 /* TweetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749CE2379D7400046E924 /* TweetCell.swift */; };
+		C9A749D1237A02A60046E924 /* ApplyingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749D0237A02A60046E924 /* ApplyingChanges.swift */; };
+		C9A749D3237A03CF0046E924 /* Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749D2237A03CF0046E924 /* Tweet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +78,8 @@
 		C9A749CA2379D1260046E924 /* TweetCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetCellViewModel.swift; sourceTree = "<group>"; };
 		C9A749CC2379D3450046E924 /* TweetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetsViewController.swift; sourceTree = "<group>"; };
 		C9A749CE2379D7400046E924 /* TweetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetCell.swift; sourceTree = "<group>"; };
+		C9A749D0237A02A60046E924 /* ApplyingChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplyingChanges.swift; sourceTree = "<group>"; };
+		C9A749D2237A03CF0046E924 /* Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tweet.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,6 +172,7 @@
 			isa = PBXGroup;
 			children = (
 				C9A749AA237856D00046E924 /* WatchQuery.swift */,
+				C9A749D0237A02A60046E924 /* ApplyingChanges.swift */,
 			);
 			path = Combine;
 			sourceTree = "<group>";
@@ -186,6 +191,7 @@
 			children = (
 				C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */,
 				C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */,
+				C9A749D2237A03CF0046E924 /* Tweet.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -393,7 +399,9 @@
 				C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */,
 				C9A749C1237907DF0046E924 /* LoginAction.swift in Sources */,
 				C9A749CD2379D3450046E924 /* TweetsViewController.swift in Sources */,
+				C9A749D3237A03CF0046E924 /* Tweet.swift in Sources */,
 				C9A74970237852430046E924 /* SceneDelegate.swift in Sources */,
+				C9A749D1237A02A60046E924 /* ApplyingChanges.swift in Sources */,
 				C9A74972237852430046E924 /* MasterViewController.swift in Sources */,
 				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
 				C9A74974237852430046E924 /* DetailViewController.swift in Sources */,

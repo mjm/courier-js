@@ -7,6 +7,7 @@
 //
 
 import Combinable
+import Foundation
 import UserActions
 
 final class TweetCellViewModel {
@@ -20,6 +21,18 @@ final class TweetCellViewModel {
 
     var body: AnyPublisher<String, Never> {
         $tweet.map(\.body).removeDuplicates().eraseToAnyPublisher()
+    }
+
+    var status: AnyPublisher<TweetStatus, Never> {
+        $tweet.map(\.status).removeDuplicates().eraseToAnyPublisher()
+    }
+
+    private let dateFormatter = ISO8601DateFormatter()
+
+    var postedAt: AnyPublisher<Date?, Never> {
+        $tweet.map(\.postedAt).removeDuplicates().map { [dateFormatter] dateString in
+            dateString.flatMap { dateFormatter.date(from: $0) }
+        }.eraseToAnyPublisher()
     }
 }
 

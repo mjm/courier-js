@@ -26,48 +26,12 @@ final class TweetsViewModel: ViewModel {
     override init(client: ApolloClient = .main) {
         super.init(client: client)
 
-        $upcomingTweetViewModels.combineLatest(upcomingTweets) { [actionRunner] models, tweets in
-            let diff = tweets.difference(from: models.map { $0.tweet }) { $0.id == $1.id }
-
-            var newModels = models
-
-            for change in diff {
-                switch change {
-                case .remove(let index, _, _):
-                    newModels.remove(at: index)
-                case .insert(let index, let tweet, _):
-                    newModels.insert(Item(tweet: tweet, actionRunner: actionRunner), at: index)
-                }
-            }
-
-            // update tweets for existing models
-            for (model, tweet) in zip(newModels, tweets) {
-                model.tweet = tweet
-            }
-
-            return newModels
+        $upcomingTweetViewModels.applyingChanges(from: upcomingTweets, keyPath: \.tweet) { [actionRunner] tweet in
+            Item(tweet: tweet, actionRunner: actionRunner)
         }.assign(to: \.upcomingTweetViewModels, on: self, weak: true).store(in: &cancellables)
 
-        $pastTweetViewModels.combineLatest(pastTweets) { [actionRunner] models, tweets in
-            let diff = tweets.difference(from: models.map { $0.tweet }) { $0.id == $1.id }
-
-            var newModels = models
-
-            for change in diff {
-                switch change {
-                case .remove(let index, _, _):
-                    newModels.remove(at: index)
-                case .insert(let index, let tweet, _):
-                    newModels.insert(Item(tweet: tweet, actionRunner: actionRunner), at: index)
-                }
-            }
-
-            // update tweets for existing models
-            for (model, tweet) in zip(newModels, tweets) {
-                model.tweet = tweet
-            }
-
-            return newModels
+        $pastTweetViewModels.applyingChanges(from: pastTweets, keyPath: \.tweet) { [actionRunner] tweet in
+            Item(tweet: tweet, actionRunner: actionRunner)
         }.assign(to: \.pastTweetViewModels, on: self, weak: true).store(in: &cancellables)
     }
 
@@ -85,15 +49,28 @@ final class TweetsViewModel: ViewModel {
         }.eraseToAnyPublisher()
     }
 
+//    var upcomingTweets: AnyPublisher<[AllTweetsFields], Never> {
+//        apolloClient.publisher(query: UpcomingTweetsQuery()).map { result in
+//            result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
+//        }.ignoreError().eraseToAnyPublisher()
+//    }
+//
+//    var pastTweets: AnyPublisher<[AllTweetsFields], Never> {
+//        apolloClient.publisher(query: PastTweetsQuery()).map { result in
+//            result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
+//        }.ignoreError().eraseToAnyPublisher()
+//    }
+
     var upcomingTweets: AnyPublisher<[AllTweetsFields], Never> {
-        apolloClient.publisher(query: UpcomingTweetsQuery()).map { result in
-            result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
-        }.ignoreError().eraseToAnyPublisher()
+        Just([
+            AllTweetsFields(id: "1", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a test tweet", mediaUrLs: [], retweetId: "", status: .draft)
+        ]).eraseToAnyPublisher()
     }
 
     var pastTweets: AnyPublisher<[AllTweetsFields], Never> {
-        apolloClient.publisher(query: PastTweetsQuery()).map { result in
-            result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
-        }.ignoreError().eraseToAnyPublisher()
+        Just([
+            AllTweetsFields(id: "2", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a different tweet", mediaUrLs: [], retweetId: "", status: .canceled),
+            AllTweetsFields(id: "2", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a different tweet", mediaUrLs: [], retweetId: "", status: .posted, postedAt: "2019-11-10T00:00:00Z"),
+        ]).eraseToAnyPublisher()
     }
 }
