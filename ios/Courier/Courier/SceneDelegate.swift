@@ -6,6 +6,8 @@
 //  Copyright © 2019 Matt Moriarity. All rights reserved.
 //
 
+import Apollo
+import Auth0
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDelegate {
@@ -23,6 +25,37 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDe
         navigationController.topViewController?.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
         navigationController.topViewController?.navigationItem.leftItemsSupplementBackButton = true
         splitViewController.delegate = self
+
+        Auth0
+            .webAuth()
+            .scope("openid profile email https://courier.blog/customer_id https://courier.blog/subscription_id")
+            .audience("https://courier.blog/api/")
+            .start { result in
+                switch result {
+                case .failure(let error):
+                    print("Error logging in: \(error)")
+                case .success(let credentials):
+                    let stored = CredentialsManager.shared.store(credentials: credentials)
+                    print("Were credentials stored? \(stored)")
+
+                    ApolloClient.main.fetch(query: PastTweetsQuery()) { result in
+                        print(result)
+                    }
+                }
+        }
+    }
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        for context in URLContexts {
+            if context.url.host?.contains("auth0.com") ?? false {
+                let options: [A0URLOptionsKey: Any] = [
+                    .sourceApplication: context.options.sourceApplication as Any,
+                    .annotation: context.options.annotation as Any,
+                    .openInPlace: context.options.openInPlace,
+                ]
+                _ = Auth0.resumeAuth(context.url, options: options)
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

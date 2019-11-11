@@ -93,7 +93,7 @@ public final class UpcomingTweetsQuery: GraphQLQuery {
   public let operationDefinition =
     """
     query UpcomingTweets($cursor: Cursor) {
-      allTweets(filter: UPCOMING, last: 10, before: $cursor) @connection(key: "upcomingTweets") {
+      allTweets(filter: UPCOMING, last: 10, before: $cursor) {
         __typename
         ...tweetConnectionFields
       }
@@ -197,7 +197,7 @@ public final class PastTweetsQuery: GraphQLQuery {
   public let operationDefinition =
     """
     query PastTweets($cursor: Cursor) {
-      allTweets(filter: PAST, last: 10, before: $cursor) @connection(key: "pastTweets") {
+      allTweets(filter: PAST, last: 10, before: $cursor) {
         __typename
         ...tweetConnectionFields
       }

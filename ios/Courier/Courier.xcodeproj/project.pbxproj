@@ -21,11 +21,13 @@
 		C9A7499B237852BD0046E924 /* UserActions in Frameworks */ = {isa = PBXBuildFile; productRef = C9A7499A237852BD0046E924 /* UserActions */; };
 		C9A7499E237853300046E924 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = C9A7499D237853300046E924 /* Apollo */; };
 		C9A749A0237853300046E924 /* ApolloSQLite in Frameworks */ = {isa = PBXBuildFile; productRef = C9A7499F237853300046E924 /* ApolloSQLite */; };
-		C9A749A4237853D40046E924 /* Tweets.graphql in Resources */ = {isa = PBXBuildFile; fileRef = C9A749A3237853D40046E924 /* Tweets.graphql */; };
 		C9A749A7237854F00046E924 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749A5237854F00046E924 /* API.swift */; };
 		C9A749AB237856D00046E924 /* WatchQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749AA237856D00046E924 /* WatchQuery.swift */; };
 		C9A749B12378AFB40046E924 /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A749AF2378AFB40046E924 /* Auth0.framework */; };
 		C9A749B22378AFB40046E924 /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A749B02378AFB40046E924 /* SimpleKeychain.framework */; };
+		C9A749B82378BA430046E924 /* Auth0.plist in Resources */ = {isa = PBXBuildFile; fileRef = C9A749B72378BA430046E924 /* Auth0.plist */; };
+		C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */; };
+		C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +59,9 @@
 		C9A749AA237856D00046E924 /* WatchQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchQuery.swift; sourceTree = "<group>"; };
 		C9A749AF2378AFB40046E924 /* Auth0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Auth0.framework; path = Carthage/Build/iOS/Auth0.framework; sourceTree = SOURCE_ROOT; };
 		C9A749B02378AFB40046E924 /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = SOURCE_ROOT; };
+		C9A749B72378BA430046E924 /* Auth0.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Auth0.plist; sourceTree = "<group>"; };
+		C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApolloClientDelegate.swift; sourceTree = "<group>"; };
+		C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +111,7 @@
 		C9A7496C237852430046E924 /* Courier */ = {
 			isa = PBXGroup;
 			children = (
+				C9A749B92378BB900046E924 /* API */,
 				C9A749A9237856C40046E924 /* Combine */,
 				C9A749A2237853B70046E924 /* Queries */,
 				C9A7496D237852430046E924 /* AppDelegate.swift */,
@@ -116,6 +122,7 @@
 				C9A74978237852450046E924 /* Assets.xcassets */,
 				C9A7497A237852450046E924 /* LaunchScreen.storyboard */,
 				C9A7497D237852450046E924 /* Info.plist */,
+				C9A749B72378BA430046E924 /* Auth0.plist */,
 				C9A749A5237854F00046E924 /* API.swift */,
 				C9A749A6237854F00046E924 /* schema.json */,
 				C9A749AE2378AFA80046E924 /* Frameworks */,
@@ -155,6 +162,15 @@
 				C9A749B02378AFB40046E924 /* SimpleKeychain.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C9A749B92378BB900046E924 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */,
+				C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */,
+			);
+			path = API;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -254,10 +270,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9A749B82378BA430046E924 /* Auth0.plist in Resources */,
 				C9A7497C237852450046E924 /* LaunchScreen.storyboard in Resources */,
 				C9A74979237852450046E924 /* Assets.xcassets in Resources */,
 				C9A74977237852430046E924 /* Main.storyboard in Resources */,
-				C9A749A4237853D40046E924 /* Tweets.graphql in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,7 +295,7 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Courier/**/*.graphql",
+				"$(SRCROOT)/Courier/Queries/*.graphql",
 			);
 			name = "Generate Apollo GraphQL API";
 			outputFileListPaths = (
@@ -320,8 +336,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9A7496E237852430046E924 /* AppDelegate.swift in Sources */,
+				C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */,
 				C9A74970237852430046E924 /* SceneDelegate.swift in Sources */,
 				C9A74972237852430046E924 /* MasterViewController.swift in Sources */,
+				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
 				C9A74974237852430046E924 /* DetailViewController.swift in Sources */,
 				C9A749AB237856D00046E924 /* WatchQuery.swift in Sources */,
 				C9A749A7237854F00046E924 /* API.swift in Sources */,
