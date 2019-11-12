@@ -47,6 +47,7 @@ final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNet
     }
 
     func networkTransport(_ networkTransport: HTTPNetworkTransport, receivedGraphQLErrors errors: [GraphQLError], retryHandler: @escaping (Bool) -> Void) {
+        print("Got GraphQL errors: \(errors)")
         let isUnauthenticated = errors.contains { ($0.extensions?["code"] as? String) == "UNAUTHENTICATED" }
         if isUnauthenticated {
             getCredentials { error in

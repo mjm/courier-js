@@ -20,9 +20,15 @@ extension ApolloClientProtocol {
 
     func publisher<Mutation: GraphQLMutation>(
         mutation: Mutation
-    ) -> AnyPublisher<GraphQLResult<Mutation.Data>, Error> {
+    ) -> AnyPublisher<Mutation.Data, Error> {
         Future { promise in
             _ = self.perform(mutation: mutation, context: nil, queue: .main, resultHandler: promise)
+        }.tryMap { result in
+            if let error = result.errors?.first {
+                throw error
+            }
+
+            return result.data!
         }.eraseToAnyPublisher()
     }
 }

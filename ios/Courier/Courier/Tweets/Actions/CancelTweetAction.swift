@@ -13,15 +13,19 @@ import Foundation
 import UserActions
 
 struct CancelTweetAction: ReactiveUserAction {
-    let tweetId: GraphQLID
+    let tweet: AllTweetsFields
 
     var undoActionName: String? { nil }
     var displayName: String? { NSLocalizedString("Don't Post", comment: "") }
 
-    func publisher(context: UserActions.Context<Self>) -> AnyPublisher<(), Error> {
-        Event.current[.tweetId] = tweetId
+    var canPerform: Bool {
+        tweet.status == .draft
+    }
 
-        let input = CancelTweetInput(id: tweetId)
+    func publisher(context: UserActions.Context<Self>) -> AnyPublisher<(), Error> {
+        Event.current[.tweetId] = tweet.id
+
+        let input = CancelTweetInput(id: tweet.id)
         return context.apolloClient
             .publisher(mutation: CancelTweetMutation(input: input))
             .map { _ in () }
@@ -30,5 +34,5 @@ struct CancelTweetAction: ReactiveUserAction {
 }
 
 extension AllTweetsFields {
-    var cancelAction: CancelTweetAction { .init(tweetId: id) }
+    var cancelAction: CancelTweetAction { .init(tweet: self) }
 }

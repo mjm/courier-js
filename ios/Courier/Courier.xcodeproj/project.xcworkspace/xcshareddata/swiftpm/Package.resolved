@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "Entwine",
+        "repositoryURL": "https://github.com/mjm/Entwine",
+        "state": {
+          "branch": "master",
+          "revision": "32f10d1fc2305af0248a59eb4a4545a43b179ccc",
+          "version": null
+        }
+      },
+      {
         "package": "Events",
         "repositoryURL": "https://github.com/mjm/Events.git",
         "state": {
@@ -69,7 +78,7 @@
         "repositoryURL": "https://github.com/mjm/UserActions.git",
         "state": {
           "branch": "master",
-          "revision": "18464a40d33cddb47dec661474139212fcfd7f4d",
+          "revision": "72348f861b4491fa5a9fce08a698e52b30344a43",
           "version": null
         }
       }

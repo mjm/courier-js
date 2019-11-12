@@ -40,8 +40,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDe
         window.rootViewController = splitViewController
         self.window = window
         window.makeKeyAndVisible()
-
-        actionRunner.perform(LoginAction())
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -77,6 +75,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDe
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
+        actionRunner.perform(LoginAction())
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {

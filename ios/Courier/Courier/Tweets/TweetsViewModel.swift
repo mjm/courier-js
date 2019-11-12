@@ -49,28 +49,28 @@ final class TweetsViewModel: ViewModel {
         }.eraseToAnyPublisher()
     }
 
-//    var upcomingTweets: AnyPublisher<[AllTweetsFields], Never> {
-//        apolloClient.publisher(query: UpcomingTweetsQuery()).map { result in
-//            result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
-//        }.ignoreError().eraseToAnyPublisher()
-//    }
-//
-//    var pastTweets: AnyPublisher<[AllTweetsFields], Never> {
-//        apolloClient.publisher(query: PastTweetsQuery()).map { result in
-//            result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
-//        }.ignoreError().eraseToAnyPublisher()
-//    }
-
     var upcomingTweets: AnyPublisher<[AllTweetsFields], Never> {
-        Just([
-            AllTweetsFields(id: "1", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a test tweet", mediaUrLs: [], retweetId: "", status: .draft)
-        ]).eraseToAnyPublisher()
+        apolloClient.publisher(query: UpcomingTweetsQuery()).map { result in
+            result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
+        }.ignoreError().eraseToAnyPublisher()
     }
 
     var pastTweets: AnyPublisher<[AllTweetsFields], Never> {
-        Just([
-            AllTweetsFields(id: "2", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a different tweet", mediaUrLs: [], retweetId: "", status: .canceled),
-            AllTweetsFields(id: "2", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a different tweet", mediaUrLs: [], retweetId: "", status: .posted, postedAt: "2019-11-10T00:00:00Z"),
-        ]).eraseToAnyPublisher()
+        apolloClient.publisher(query: PastTweetsQuery()).map { result in
+            result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
+        }.ignoreError().eraseToAnyPublisher()
     }
+
+//    var upcomingTweets: AnyPublisher<[AllTweetsFields], Never> {
+//        Just([
+//            AllTweetsFields(id: "1", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a test tweet", mediaUrLs: [], retweetId: "", status: .draft)
+//        ]).eraseToAnyPublisher()
+//    }
+//
+//    var pastTweets: AnyPublisher<[AllTweetsFields], Never> {
+//        Just([
+//            AllTweetsFields(id: "2", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a different tweet", mediaUrLs: [], retweetId: "", status: .canceled),
+//            AllTweetsFields(id: "2", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a different tweet", mediaUrLs: [], retweetId: "", status: .posted, postedAt: "2019-11-10T00:00:00Z"),
+//        ]).eraseToAnyPublisher()
+//    }
 }
