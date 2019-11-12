@@ -27,7 +27,11 @@ final class TweetCellViewModel {
         $tweet.map(\.status).removeDuplicates().eraseToAnyPublisher()
     }
 
-    private let dateFormatter = ISO8601DateFormatter()
+    private let dateFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions.insert(.withFractionalSeconds)
+        return formatter
+    }()
 
     var postedAt: AnyPublisher<Date?, Never> {
         $tweet.map(\.postedAt).removeDuplicates().map { [dateFormatter] dateString in
