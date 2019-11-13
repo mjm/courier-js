@@ -52,10 +52,14 @@ final class TweetsViewController: UITableViewController {
             return nil
         }
 
-        let cancel = model.cancelAction.contextualAction()
+        let cancel = model.cancelAction?.contextualAction()
+        let uncancel = model.uncancelAction?.contextualAction()
+        uncancel?.backgroundColor = .systemTeal
 
-        let actions = UISwipeActionsConfiguration(actions: [cancel])
-        return actions
+        return UISwipeActionsConfiguration(actions: [
+            cancel,
+            uncancel,
+        ].compactMap { $0 })
     }
 }
 

@@ -39,8 +39,14 @@ final class TweetCellViewModel {
         }.eraseToAnyPublisher()
     }
 
-    var cancelAction: BoundUserAction<Void> {
-        tweet.cancelAction.bind(to: actionRunner, options: .destructive)
+    var cancelAction: BoundUserAction<Void>? {
+        let action = tweet.cancelAction
+        return action.canPerform ? action.bind(to: actionRunner, options: .destructive) : nil
+    }
+
+    var uncancelAction: BoundUserAction<Void>? {
+        let action = tweet.uncancelAction
+        return action.canPerform ? action.bind(to: actionRunner) : nil
     }
 }
 
