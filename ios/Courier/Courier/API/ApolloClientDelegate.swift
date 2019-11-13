@@ -13,7 +13,7 @@ import Foundation
 extension ApolloClient {
     static let main: ApolloClient = {
         let delegate = ApolloClientDelegate(credentialsManager: .shared)
-        let transport = HTTPNetworkTransport(url: URL(string: "https://courier.blog/graphql")!, delegate: delegate)
+        let transport = HTTPNetworkTransport(url: Endpoint.current.url.appendingPathComponent("/graphql"), delegate: delegate)
         return ApolloClient(networkTransport: transport)
     }()
 }

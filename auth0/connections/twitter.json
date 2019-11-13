@@ -10,6 +10,7 @@
   "enabled_clients": [
     "Courier Backend",
     "auth0-deploy-cli-extension",
+    "Courier iOS",
     "Courier",
     "Courier API (Test Application)"
   ]

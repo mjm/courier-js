@@ -21,10 +21,10 @@ struct LoginAction: ReactiveUserAction {
 
     func publisher(context: UserActions.Context<LoginAction>) -> AnyPublisher<Credentials, Swift.Error> {
         Future<Credentials, Swift.Error> { promise in
-            Auth0
-                .webAuth()
+            Endpoint.current.webAuth
+                .useLegacyAuthentication()
                 .scope("openid profile email https://courier.blog/customer_id https://courier.blog/subscription_id")
-                .audience("https://courier.blog/api/")
+                .audience(Endpoint.current.apiIdentifier)
                 .start { result in
                     switch result {
                     case .failure(let error):

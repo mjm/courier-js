@@ -15,8 +15,7 @@ struct LogoutAction: ReactiveUserAction {
 
     func publisher(context: UserActions.Context<LogoutAction>) -> AnyPublisher<(), Error> {
         Future<(), Error> { promise in
-            Auth0
-                .webAuth()
+            Endpoint.current.webAuth
                 .clearSession(federated: false) { result in
                     _ = CredentialsManager.shared.clear()
                     promise(.success(()))
