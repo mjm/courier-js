@@ -14,7 +14,18 @@ extension ApolloClient {
     static let main: ApolloClient = {
         let delegate = ApolloClientDelegate(credentialsManager: .shared)
         let transport = HTTPNetworkTransport(url: Endpoint.current.url.appendingPathComponent("/graphql"), delegate: delegate)
-        return ApolloClient(networkTransport: transport)
+
+        // TODO: make this an on-disk cache
+        let store = ApolloStore(cache: InMemoryNormalizedCache())
+        store.cacheKeyForObject = { obj in
+            if let typename = obj["__typename"] as? String, let id = obj["id"] as? String {
+                return "\(typename)__\(id)"
+            }
+
+            return nil
+        }
+
+        return ApolloClient(networkTransport: transport, store: store)
     }()
 }
 
