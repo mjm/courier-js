@@ -70,5 +70,15 @@ final class TweetCell: CombinableTableViewCell {
 
         statusText.assign(to: \.text, on: statusLabel).store(in: &cancellables)
         statusText.map { $0 == nil }.assign(to: \.isHidden, on: statusLabel).store(in: &cancellables)
+
+        model.status.map { status -> UIColor? in
+            status == .canceled ? .secondarySystemBackground : .systemBackground
+        }.assign(to: \.backgroundColor, on: self, weak: true).store(in: &cancellables)
+
+        let textColor = model.status.map { status -> UIColor? in
+            status == .canceled ? .secondaryLabel : .label
+        }
+        textColor.assign(to: \.textColor, on: bodyLabel).store(in: &cancellables)
+        textColor.assign(to: \.textColor, on: statusLabel).store(in: &cancellables)
     }
 }
