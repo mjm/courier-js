@@ -17,9 +17,6 @@
 		C9A671B6237D220900EEE913 /* TweetBodyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A671B5237D220900EEE913 /* TweetBodyCell.swift */; };
 		C9A7496E237852430046E924 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A7496D237852430046E924 /* AppDelegate.swift */; };
 		C9A74970237852430046E924 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A7496F237852430046E924 /* SceneDelegate.swift */; };
-		C9A74972237852430046E924 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A74971237852430046E924 /* MasterViewController.swift */; };
-		C9A74974237852430046E924 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A74973237852430046E924 /* DetailViewController.swift */; };
-		C9A74977237852430046E924 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9A74975237852430046E924 /* Main.storyboard */; };
 		C9A74979237852450046E924 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9A74978237852450046E924 /* Assets.xcassets */; };
 		C9A7497C237852450046E924 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9A7497A237852450046E924 /* LaunchScreen.storyboard */; };
 		C9A74987237852450046E924 /* CourierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A74986237852450046E924 /* CourierTests.swift */; };
@@ -70,9 +67,6 @@
 		C9A7496A237852430046E924 /* Courier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Courier.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A7496D237852430046E924 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C9A7496F237852430046E924 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		C9A74971237852430046E924 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
-		C9A74973237852430046E924 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
-		C9A74976237852430046E924 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C9A74978237852450046E924 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C9A7497B237852450046E924 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C9A7497D237852450046E924 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -186,9 +180,6 @@
 				C9A7496F237852430046E924 /* SceneDelegate.swift */,
 				C9A749C72379CEA90046E924 /* ViewModel.swift */,
 				C9A749D7237A0B410046E924 /* EventKeys.swift */,
-				C9A74971237852430046E924 /* MasterViewController.swift */,
-				C9A74973237852430046E924 /* DetailViewController.swift */,
-				C9A74975237852430046E924 /* Main.storyboard */,
 				C9A74978237852450046E924 /* Assets.xcassets */,
 				C9A7497A237852450046E924 /* LaunchScreen.storyboard */,
 				C9A7497D237852450046E924 /* Info.plist */,
@@ -390,7 +381,6 @@
 			files = (
 				C9A7497C237852450046E924 /* LaunchScreen.storyboard in Resources */,
 				C9A74979237852450046E924 /* Assets.xcassets in Resources */,
-				C9A74977237852430046E924 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,10 +455,8 @@
 				C9A36B7B237BC6240069EED1 /* SplitViewController.swift in Sources */,
 				C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */,
 				C9A671B4237D1FDE00EEE913 /* TweetBodyCellViewModel.swift in Sources */,
-				C9A74972237852430046E924 /* MasterViewController.swift in Sources */,
 				C9A749D6237A091E0046E924 /* CancelTweetAction.swift in Sources */,
 				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
-				C9A74974237852430046E924 /* DetailViewController.swift in Sources */,
 				C9A36B79237BC61C0069EED1 /* SplitViewModel.swift in Sources */,
 				C9A749AB237856D00046E924 /* Apollo.swift in Sources */,
 				C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */,
@@ -501,14 +489,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		C9A74975237852430046E924 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C9A74976237852430046E924 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		C9A7497A237852450046E924 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
