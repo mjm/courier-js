@@ -23,6 +23,8 @@ final class TweetsViewModel: ViewModel {
     @Published private(set) var upcomingTweetViewModels: [Item] = []
     @Published private(set) var pastTweetViewModels: [Item] = []
 
+    @Published var selection: Item?
+
     override init(client: ApolloClient = .main) {
         super.init(client: client)
 
@@ -73,4 +75,10 @@ final class TweetsViewModel: ViewModel {
 //            AllTweetsFields(id: "2", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a different tweet", mediaUrLs: [], retweetId: "", status: .posted, postedAt: "2019-11-10T00:00:00Z"),
 //        ]).eraseToAnyPublisher()
 //    }
+
+    var allTweetModels: AnyPublisher<[TweetCellViewModel], Never> {
+        $upcomingTweetViewModels.combineLatest($pastTweetViewModels) { upcoming, past in
+            upcoming + past
+        }.eraseToAnyPublisher()
+    }
 }

@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B6E237BAED30069EED1 /* Endpoint.swift */; };
 		C9A36B71237BC0380069EED1 /* UncancelTweetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */; };
+		C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B73237BC2DE0069EED1 /* TweetDetailViewModel.swift */; };
+		C9A36B76237BC4070069EED1 /* TweetDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B75237BC4070069EED1 /* TweetDetailViewController.swift */; };
+		C9A36B79237BC61C0069EED1 /* SplitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B78237BC61C0069EED1 /* SplitViewModel.swift */; };
+		C9A36B7B237BC6240069EED1 /* SplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B7A237BC6240069EED1 /* SplitViewController.swift */; };
 		C9A7496E237852430046E924 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A7496D237852430046E924 /* AppDelegate.swift */; };
 		C9A74970237852430046E924 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A7496F237852430046E924 /* SceneDelegate.swift */; };
 		C9A74972237852430046E924 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A74971237852430046E924 /* MasterViewController.swift */; };
@@ -55,6 +59,10 @@
 /* Begin PBXFileReference section */
 		C9A36B6E237BAED30069EED1 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncancelTweetAction.swift; sourceTree = "<group>"; };
+		C9A36B73237BC2DE0069EED1 /* TweetDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetDetailViewModel.swift; sourceTree = "<group>"; };
+		C9A36B75237BC4070069EED1 /* TweetDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetDetailViewController.swift; sourceTree = "<group>"; };
+		C9A36B78237BC61C0069EED1 /* SplitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewModel.swift; sourceTree = "<group>"; };
+		C9A36B7A237BC6240069EED1 /* SplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewController.swift; sourceTree = "<group>"; };
 		C9A7496A237852430046E924 /* Courier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Courier.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A7496D237852430046E924 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C9A7496F237852430046E924 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -114,6 +122,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C9A36B72237BC2CF0069EED1 /* Tweet Detail */ = {
+			isa = PBXGroup;
+			children = (
+				C9A36B73237BC2DE0069EED1 /* TweetDetailViewModel.swift */,
+				C9A36B75237BC4070069EED1 /* TweetDetailViewController.swift */,
+			);
+			path = "Tweet Detail";
+			sourceTree = "<group>";
+		};
+		C9A36B77237BC60D0069EED1 /* Split View */ = {
+			isa = PBXGroup;
+			children = (
+				C9A36B78237BC61C0069EED1 /* SplitViewModel.swift */,
+				C9A36B7A237BC6240069EED1 /* SplitViewController.swift */,
+			);
+			path = "Split View";
+			sourceTree = "<group>";
+		};
 		C9A74961237852430046E924 = {
 			isa = PBXGroup;
 			children = (
@@ -139,7 +165,9 @@
 				C9A749A9237856C40046E924 /* Combine */,
 				C9A749A2237853B70046E924 /* Queries */,
 				C9A749BE237907BC0046E924 /* Login */,
+				C9A36B77237BC60D0069EED1 /* Split View */,
 				C9A749C4237911670046E924 /* Tweets */,
+				C9A36B72237BC2CF0069EED1 /* Tweet Detail */,
 				C9A7496D237852430046E924 /* AppDelegate.swift */,
 				C9A7496F237852430046E924 /* SceneDelegate.swift */,
 				C9A749C72379CEA90046E924 /* ViewModel.swift */,
@@ -410,6 +438,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9A36B76237BC4070069EED1 /* TweetDetailViewController.swift in Sources */,
 				C9A7496E237852430046E924 /* AppDelegate.swift in Sources */,
 				C9A36B71237BC0380069EED1 /* UncancelTweetAction.swift in Sources */,
 				C9A749C323790D710046E924 /* LogoutAction.swift in Sources */,
@@ -419,10 +448,13 @@
 				C9A749D3237A03CF0046E924 /* Tweet.swift in Sources */,
 				C9A74970237852430046E924 /* SceneDelegate.swift in Sources */,
 				C9A749D1237A02A60046E924 /* ApplyingChanges.swift in Sources */,
+				C9A36B7B237BC6240069EED1 /* SplitViewController.swift in Sources */,
+				C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */,
 				C9A74972237852430046E924 /* MasterViewController.swift in Sources */,
 				C9A749D6237A091E0046E924 /* CancelTweetAction.swift in Sources */,
 				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
 				C9A74974237852430046E924 /* DetailViewController.swift in Sources */,
+				C9A36B79237BC61C0069EED1 /* SplitViewModel.swift in Sources */,
 				C9A749AB237856D00046E924 /* Apollo.swift in Sources */,
 				C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */,
 				C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */,

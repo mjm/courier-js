@@ -21,21 +21,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDe
 
         let window = UIWindow(windowScene: scene)
 
-        // create master view controller
-        let tweetsViewController = TweetsViewController()
-        let masterNavController = UINavigationController(rootViewController: tweetsViewController)
-
-        // create detail view controller
-        let detailViewController = DetailViewController()
-        let detailNavController = UINavigationController(rootViewController: detailViewController)
-
         // create split view controller
-        let splitViewController = UISplitViewController()
-        splitViewController.viewControllers = [masterNavController, detailNavController]
+        let splitViewController = SplitViewController()
         splitViewController.delegate = self
-
-        detailViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
-        detailViewController.navigationItem.leftItemsSupplementBackButton = true
 
         window.rootViewController = splitViewController
         self.window = window
@@ -89,8 +77,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDe
 
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController:UIViewController) -> Bool {
         guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
-        guard let topAsDetailController = secondaryAsNavController.topViewController as? DetailViewController else { return false }
-        if topAsDetailController.detailItem == nil {
+        guard let topAsDetailController = secondaryAsNavController.topViewController as? TweetDetailViewController else { return false }
+        if topAsDetailController.viewModel.tweet == nil {
             // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
             return true
         }

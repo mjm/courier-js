@@ -40,11 +40,27 @@ final class TweetsViewController: UITableViewController {
             .bound(to: viewModel.snapshot, animate: $animate)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
+        super.viewWillAppear(animated)
+    }
+
     @Published private var animate = false
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         animate = true
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let model = dataSource.itemIdentifier(for: indexPath) else {
+            return
+        }
+
+        viewModel.selection = model
+        if let detailViewController = (splitViewController as? SplitViewController)?.detailNavController {
+            self.splitViewController?.showDetailViewController(detailViewController, sender: self)
+        }
     }
 
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
