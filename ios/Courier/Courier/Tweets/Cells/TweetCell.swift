@@ -10,7 +10,7 @@ import CombinableUI
 import UIKit
 
 final class TweetCell: CombinableTableViewCell {
-    private let bodyLabel = UILabel()
+    private let bodyLabel = NoInsetTextView()
     private let statusLabel = UILabel()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -19,7 +19,7 @@ final class TweetCell: CombinableTableViewCell {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
-        stackView.spacing = 16
+        stackView.spacing = 8
 
         contentView.addSubview(stackView)
         NSLayoutConstraint.activate([
@@ -29,8 +29,10 @@ final class TweetCell: CombinableTableViewCell {
             stackView.trailingAnchor.constraint(equalTo: contentView.readableContentGuide.trailingAnchor),
         ])
 
-        bodyLabel.numberOfLines = 0
         bodyLabel.font = .preferredFont(forTextStyle: .body)
+        bodyLabel.isEditable = false
+        bodyLabel.isScrollEnabled = false
+        bodyLabel.dataDetectorTypes = .link
         stackView.addArrangedSubview(bodyLabel)
 
         statusLabel.font = .preferredFont(forTextStyle: .caption1)
@@ -80,5 +82,13 @@ final class TweetCell: CombinableTableViewCell {
         }
         textColor.assign(to: \.textColor, on: bodyLabel).store(in: &cancellables)
         textColor.assign(to: \.textColor, on: statusLabel).store(in: &cancellables)
+    }
+}
+
+private class NoInsetTextView: UITextView {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        textContainerInset = UIEdgeInsets.zero
+        textContainer.lineFragmentPadding = 0
     }
 }
