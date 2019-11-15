@@ -32,7 +32,7 @@ final class TweetCell: CombinableTableViewCell {
         bodyLabel.font = .preferredFont(forTextStyle: .body)
         bodyLabel.backgroundColor = .clear
         bodyLabel.isEditable = false
-        bodyLabel.isSelectable = false
+//        bodyLabel.isSelectable = false
         bodyLabel.isScrollEnabled = false
         bodyLabel.dataDetectorTypes = .link
         stackView.addArrangedSubview(bodyLabel)

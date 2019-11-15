@@ -11,7 +11,7 @@ import Combinable
 import UIKit
 
 final class TweetsViewModel: ViewModel {
-    enum Section {
+    enum Section: Int {
         case upcoming
         case past
     }
@@ -23,6 +23,7 @@ final class TweetsViewModel: ViewModel {
     @Published private(set) var upcomingTweetViewModels: [Item] = []
     @Published private(set) var pastTweetViewModels: [Item] = []
 
+    @Published var selectedSection: Section = .upcoming
     @Published var selection: Item?
 
     override init(client: ApolloClient = .main) {
@@ -38,14 +39,17 @@ final class TweetsViewModel: ViewModel {
     }
 
     var snapshot: AnyPublisher<Snapshot, Never> {
-        $upcomingTweetViewModels.combineLatest($pastTweetViewModels) { upcoming, past in
+        $selectedSection.combineLatest($upcomingTweetViewModels, $pastTweetViewModels) { section, upcoming, past in
             var snapshot = Snapshot()
 
-            snapshot.appendSections([.upcoming])
-            snapshot.appendItems(upcoming, toSection: .upcoming)
+            snapshot.appendSections([section])
 
-            snapshot.appendSections([.past])
-            snapshot.appendItems(past, toSection: .past)
+            switch section {
+            case .upcoming:
+                snapshot.appendItems(upcoming, toSection: section)
+            case .past:
+                snapshot.appendItems(past, toSection: section)
+            }
 
             return snapshot
         }.eraseToAnyPublisher()

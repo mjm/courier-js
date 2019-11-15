@@ -23,21 +23,37 @@ final class TweetsViewController: UITableViewController {
 
     typealias DataSource = CombinableTableViewDataSource<TweetsViewModel.Section, TweetsViewModel.Item>
     private var dataSource: DataSource!
+    private var cancellables = Set<AnyCancellable>()
+
+    let sectionChooser = UISegmentedControl(items: [
+        NSLocalizedString("Upcoming Tweets", comment: ""),
+        NSLocalizedString("Past Tweets", comment: ""),
+    ])
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("Tweets", comment: "")
+        navigationItem.titleView = sectionChooser
 
         viewModel.presenter = self
 
         dataSource = DataSource(tableView)
-            .titled([
-                .upcoming: NSLocalizedString("Upcoming Tweets", comment: ""),
-                .past: NSLocalizedString("Past Tweets", comment: ""),
-            ])
             .editable()
             .bound(to: viewModel.snapshot, animate: $animate)
+
+        viewModel.$selectedSection
+            .map(\.rawValue)
+            .assign(to: \.selectedSegmentIndex, on: sectionChooser)
+            .store(in: &cancellables)
+
+        sectionChooser.selectionDidChange
+            .compactMap { TweetsViewModel.Section(rawValue: $0) }
+            .sink { [viewModel, weak self] section in
+                self?.animate = false
+                viewModel.selectedSection = section
+                self?.animate = true
+            }
+            .store(in: &cancellables)
     }
 
     override func viewWillAppear(_ animated: Bool) {
