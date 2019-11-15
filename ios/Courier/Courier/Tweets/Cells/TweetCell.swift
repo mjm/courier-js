@@ -30,7 +30,9 @@ final class TweetCell: CombinableTableViewCell {
         ])
 
         bodyLabel.font = .preferredFont(forTextStyle: .body)
+        bodyLabel.backgroundColor = .clear
         bodyLabel.isEditable = false
+        bodyLabel.isSelectable = false
         bodyLabel.isScrollEnabled = false
         bodyLabel.dataDetectorTypes = .link
         stackView.addArrangedSubview(bodyLabel)
@@ -54,14 +56,15 @@ final class TweetCell: CombinableTableViewCell {
     func bind(to model: TweetCellViewModel) {
         model.body.optionally().assign(to: \.text, on: bodyLabel).store(in: &cancellables)
 
-        let statusText = model.status.combineLatest(model.postedAt).map { [relativeDateFormatter] input -> String? in
-            let (status, postedAt) = input
+        let currentTime = Timer.publish(every: 10, on: .main, in: .common).autoconnect().prepend(Date())
+        let statusText = model.status.combineLatest(model.postedAt, currentTime).map { [relativeDateFormatter] input -> String? in
+            let (status, postedAt, currentTime) = input
 
             switch status {
             case .canceled: return NSLocalizedString("Canceled", comment: "")
             case .posted:
                 if let postedAt = postedAt {
-                    let dateString = relativeDateFormatter.localizedString(for: postedAt, relativeTo: Date())
+                    let dateString = relativeDateFormatter.localizedString(for: postedAt, relativeTo: currentTime)
                     return String(format: NSLocalizedString("Posted %@", comment: ""), dateString)
                 } else {
                     return NSLocalizedString("Posted", comment: "")

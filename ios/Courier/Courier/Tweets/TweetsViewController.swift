@@ -77,6 +77,20 @@ final class TweetsViewController: UITableViewController {
             uncancel,
         ].compactMap { $0 })
     }
+
+    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let model = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+
+        guard let post = model.postAction?.contextualAction() else {
+            return nil
+        }
+
+        post.backgroundColor = .systemGreen
+
+        return UISwipeActionsConfiguration(actions: [post])
+    }
 }
 
 extension TweetsViewModel.Item: BindableCell {

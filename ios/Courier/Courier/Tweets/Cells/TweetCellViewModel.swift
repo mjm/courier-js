@@ -48,6 +48,11 @@ final class TweetCellViewModel {
         let action = tweet.uncancelAction
         return action.canPerform ? action.bind(to: actionRunner) : nil
     }
+
+    var postAction: BoundUserAction<Void>? {
+        let action = tweet.postAction
+        return action.canPerform ? action.bind(to: actionRunner) : nil
+    }
 }
 
 extension TweetCellViewModel: Hashable {
