@@ -25,11 +25,20 @@ final class TweetDetailViewController: UITableViewController {
     private var dataSource: DataSource!
     var cancellables = Set<AnyCancellable>()
 
+    private let saveButtonItem = UIBarButtonItem(title: NSLocalizedString("Save", comment: ""),
+                                                 style: .plain,
+                                                 target: self,
+                                                 action: #selector(saveTweet))
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         tableView.rowHeight = UITableView.automaticDimension
         tableView.keyboardDismissMode = .interactive
+
+        navigationItem.rightBarButtonItems = [
+            saveButtonItem
+        ]
 
         viewModel.presenter = self
 
@@ -37,6 +46,8 @@ final class TweetDetailViewController: UITableViewController {
 
         dataSource = DataSource(tableView)
             .bound(to: viewModel.snapshot, animate: $animate, on: RunLoop.main)
+
+        viewModel.canSave.assign(to: \.isEnabled, on: saveButtonItem).store(in: &cancellables)
     }
 
     @Published private var animate = false
@@ -44,6 +55,10 @@ final class TweetDetailViewController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         animate = true
+    }
+
+    @objc func saveTweet() {
+        viewModel.saveAction?.perform()
     }
 }
 

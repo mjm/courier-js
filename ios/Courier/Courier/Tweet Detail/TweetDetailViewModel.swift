@@ -9,6 +9,7 @@
 import Apollo
 import Combinable
 import UIKit
+import UserActions
 
 final class TweetDetailViewModel: ViewModel {
     enum Section {
@@ -47,5 +48,24 @@ final class TweetDetailViewModel: ViewModel {
 
             return snapshot
         }.eraseToAnyPublisher()
+    }
+
+    var canSave: AnyPublisher<Bool, Never> {
+        $tweet.combineLatest(bodyViewModel.$body) { tweet, newBody in
+            guard let tweet = tweet else { return false }
+
+            return tweet.status == .draft && tweet.body != newBody
+        }.eraseToAnyPublisher()
+    }
+
+    var saveAction: BoundUserAction<Void>? {
+        guard let existingTweet = tweet else { return nil }
+
+        var tweet = existingTweet
+        if let newBody = bodyViewModel.body {
+            tweet.body = newBody
+        }
+
+        return tweet.saveAction.bind(to: actionRunner)
     }
 }
