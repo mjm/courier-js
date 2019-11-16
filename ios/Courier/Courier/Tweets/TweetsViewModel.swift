@@ -67,19 +67,6 @@ final class TweetsViewModel: ViewModel {
         }.ignoreError().eraseToAnyPublisher()
     }
 
-//    var upcomingTweets: AnyPublisher<[AllTweetsFields], Never> {
-//        Just([
-//            AllTweetsFields(id: "1", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a test tweet", mediaUrLs: [], retweetId: "", status: .draft)
-//        ]).eraseToAnyPublisher()
-//    }
-//
-//    var pastTweets: AnyPublisher<[AllTweetsFields], Never> {
-//        Just([
-//            AllTweetsFields(id: "2", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a different tweet", mediaUrLs: [], retweetId: "", status: .canceled),
-//            AllTweetsFields(id: "2", post: .init(id: "1", url: "https://example.com/foo"), action: .tweet, body: "This is a different tweet", mediaUrLs: [], retweetId: "", status: .posted, postedAt: "2019-11-10T00:00:00Z"),
-//        ]).eraseToAnyPublisher()
-//    }
-
     var allTweetModels: AnyPublisher<[TweetCellViewModel], Never> {
         $upcomingTweetViewModels.combineLatest($pastTweetViewModels) { upcoming, past in
             upcoming + past

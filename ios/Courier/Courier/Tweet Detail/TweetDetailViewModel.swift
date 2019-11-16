@@ -46,7 +46,6 @@ final class TweetDetailViewModel: ViewModel {
             self.tweetSubscription = self.apolloClient.publisher(query: GetTweetQuery(id: tweetId))
                 .ignoreError()
                 .map { result in result.data?.tweet?.fragments.allTweetsFields }
-                .print()
                 .assign(to: \.tweet, on: self, weak: true)
         }.store(in: &cancellables)
 
