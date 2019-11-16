@@ -25,6 +25,18 @@ extension ApolloClient {
             return nil
         }
 
+        store.withinReadWriteTransaction({ t in
+            var upcomingData = try UpcomingTweetsQuery.Data(allTweets: .init(jsonObject: [:]))
+            upcomingData.allTweets.fragments.tweetConnectionFields = try TweetConnectionFields(tweets: AllTweetsFields.fakeUpcomingTweets)
+
+            try t.write(data: upcomingData, forQuery: UpcomingTweetsQuery())
+
+            var pastData = try PastTweetsQuery.Data(allTweets: .init(jsonObject: [:]))
+            pastData.allTweets.fragments.tweetConnectionFields = try TweetConnectionFields(tweets: AllTweetsFields.fakePastTweets)
+
+            try t.write(data: pastData, forQuery: PastTweetsQuery())
+        })
+
         return ApolloClient(networkTransport: transport, store: store)
     }()
 }
