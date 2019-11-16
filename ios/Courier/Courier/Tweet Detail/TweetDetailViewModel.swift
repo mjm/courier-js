@@ -22,13 +22,33 @@ final class TweetDetailViewModel: ViewModel {
 
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
 
-    @Published var tweet: AllTweetsFields?
+    @Published var tweetId: GraphQLID?
+    @Published private(set) var tweet: AllTweetsFields?
 
     var bodyViewModel = TweetBodyCellViewModel()
 
-    init(tweet: AllTweetsFields? = nil, client: ApolloClient = .main) {
-        self.tweet = tweet
+    private var tweetSubscription: AnyCancellable?
+
+    init(tweetId: GraphQLID? = nil, client: ApolloClient = .main) {
+        self.tweetId = tweetId
         super.init(client: client)
+
+        $tweetId.removeDuplicates().sink { [weak self] tweetId in
+            guard let self = self else { return }
+
+            // clear out stale data
+            self.tweet = nil
+
+            guard let tweetId = tweetId else {
+                return
+            }
+
+            self.tweetSubscription = self.apolloClient.publisher(query: GetTweetQuery(id: tweetId))
+                .ignoreError()
+                .map { result in result.data?.tweet?.fragments.allTweetsFields }
+                .print()
+                .assign(to: \.tweet, on: self, weak: true)
+        }.store(in: &cancellables)
 
         $tweet.removeDuplicates { $0?.id == $1?.id }.map { $0?.body }.assign(to: \.body, on: bodyViewModel).store(in: &cancellables)
     }

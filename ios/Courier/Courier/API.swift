@@ -400,6 +400,110 @@ public final class PastTweetsQuery: GraphQLQuery {
   }
 }
 
+public final class GetTweetQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    query GetTweet($id: ID!) {
+      tweet(id: $id) {
+        __typename
+        ...allTweetsFields
+      }
+    }
+    """
+
+  public let operationName = "GetTweet"
+
+  public var queryDocument: String { return operationDefinition.appending(AllTweetsFields.fragmentDefinition) }
+
+  public var id: GraphQLID
+
+  public init(id: GraphQLID) {
+    self.id = id
+  }
+
+  public var variables: GraphQLMap? {
+    return ["id": id]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Query"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("tweet", arguments: ["id": GraphQLVariable("id")], type: .object(Tweet.selections)),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(tweet: Tweet? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "tweet": tweet.flatMap { (value: Tweet) -> ResultMap in value.resultMap }])
+    }
+
+    public var tweet: Tweet? {
+      get {
+        return (resultMap["tweet"] as? ResultMap).flatMap { Tweet(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "tweet")
+      }
+    }
+
+    public struct Tweet: GraphQLSelectionSet {
+      public static let possibleTypes = ["Tweet"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLFragmentSpread(AllTweetsFields.self),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var fragments: Fragments {
+        get {
+          return Fragments(unsafeResultMap: resultMap)
+        }
+        set {
+          resultMap += newValue.resultMap
+        }
+      }
+
+      public struct Fragments {
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public var allTweetsFields: AllTweetsFields {
+          get {
+            return AllTweetsFields(unsafeResultMap: resultMap)
+          }
+          set {
+            resultMap += newValue.resultMap
+          }
+        }
+      }
+    }
+  }
+}
+
 public final class CancelTweetMutation: GraphQLMutation {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition =

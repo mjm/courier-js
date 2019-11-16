@@ -31,7 +31,7 @@
 		C9A7499E237853300046E924 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = C9A7499D237853300046E924 /* Apollo */; };
 		C9A749A0237853300046E924 /* ApolloSQLite in Frameworks */ = {isa = PBXBuildFile; productRef = C9A7499F237853300046E924 /* ApolloSQLite */; };
 		C9A749A7237854F00046E924 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749A5237854F00046E924 /* API.swift */; };
-		C9A749AB237856D00046E924 /* Apollo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749AA237856D00046E924 /* Apollo.swift */; };
+		C9A749AB237856D00046E924 /* ApolloClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749AA237856D00046E924 /* ApolloClient.swift */; };
 		C9A749B12378AFB40046E924 /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A749AF2378AFB40046E924 /* Auth0.framework */; };
 		C9A749B22378AFB40046E924 /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A749B02378AFB40046E924 /* SimpleKeychain.framework */; };
 		C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */; };
@@ -81,10 +81,10 @@
 		C9A74982237852450046E924 /* CourierTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CourierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C9A74986237852450046E924 /* CourierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourierTests.swift; sourceTree = "<group>"; };
 		C9A74988237852450046E924 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C9A749A3237853D40046E924 /* Tweets.graphql */ = {isa = PBXFileReference; lastKnownFileType = text; path = Tweets.graphql; sourceTree = "<group>"; };
+		C9A749A3237853D40046E924 /* Tweets.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Tweets.graphql; sourceTree = "<group>"; tabWidth = 2; };
 		C9A749A5237854F00046E924 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		C9A749A6237854F00046E924 /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
-		C9A749AA237856D00046E924 /* Apollo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Apollo.swift; sourceTree = "<group>"; };
+		C9A749AA237856D00046E924 /* ApolloClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApolloClient.swift; sourceTree = "<group>"; };
 		C9A749AF2378AFB40046E924 /* Auth0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Auth0.framework; path = Carthage/Build/iOS/Auth0.framework; sourceTree = SOURCE_ROOT; };
 		C9A749B02378AFB40046E924 /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = SOURCE_ROOT; };
 		C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApolloClientDelegate.swift; sourceTree = "<group>"; };
@@ -218,7 +218,7 @@
 		C9A749A9237856C40046E924 /* Combine */ = {
 			isa = PBXGroup;
 			children = (
-				C9A749AA237856D00046E924 /* Apollo.swift */,
+				C9A749AA237856D00046E924 /* ApolloClient.swift */,
 				C9A749D0237A02A60046E924 /* ApplyingChanges.swift */,
 				C9A671B9237E4EA100EEE913 /* ControlEvent.swift */,
 				C9A671BB237E539200EEE913 /* SegmentedControl.swift */,
@@ -473,7 +473,7 @@
 				C9A749D6237A091E0046E924 /* CancelTweetAction.swift in Sources */,
 				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
 				C9A36B79237BC61C0069EED1 /* SplitViewModel.swift in Sources */,
-				C9A749AB237856D00046E924 /* Apollo.swift in Sources */,
+				C9A749AB237856D00046E924 /* ApolloClient.swift in Sources */,
 				C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */,
 				C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */,
 				C9A749CB2379D1260046E924 /* TweetCellViewModel.swift in Sources */,
