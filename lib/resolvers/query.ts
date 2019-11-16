@@ -18,6 +18,11 @@ export const Query: QueryResolvers = {
     return await tweets.paged(args)
   },
 
+  async tweet(_parent, { id }, { loaders, user }) {
+    await user.verify()
+    return await loaders.tweets.load(id)
+  },
+
   async allEvents(_parent, args, { events }) {
     return await events.paged(args)
   },

@@ -243,6 +243,7 @@ export type Query = {
   allSubscribedFeeds: SubscribedFeedConnection
   subscribedFeed?: Maybe<SubscribedFeed>
   allTweets: TweetConnection
+  tweet?: Maybe<Tweet>
   allEvents: EventConnection
   microformats?: Maybe<MicroformatPage>
 }
@@ -264,6 +265,10 @@ export type QueryAllTweetsArgs = {
   last?: Maybe<Scalars["Int"]>
   before?: Maybe<Scalars["Cursor"]>
   after?: Maybe<Scalars["Cursor"]>
+}
+
+export type QueryTweetArgs = {
+  id: Scalars["ID"]
 }
 
 export type QueryAllEventsArgs = {

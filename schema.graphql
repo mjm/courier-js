@@ -21,6 +21,8 @@ type Query {
     after: Cursor
   ): TweetConnection!
 
+  tweet(id: ID!): Tweet
+
   allEvents(
     first: Int
     last: Int
