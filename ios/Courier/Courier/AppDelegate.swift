@@ -10,6 +10,7 @@ import Auth0
 import Events
 import UIKit
 import UserActions
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -24,6 +25,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         notificationsEvent.startTimer(.registerTime)
         application.registerForRemoteNotifications()
+
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { authorized, error in
+            var event = EventBuilder()
+            event[.authorized] = authorized
+            event.error = error
+            event.send("requested notification permission")
+        }
 
         return true
     }

@@ -12,6 +12,7 @@ extension Event.Key {
     // remote notifications keys
     static let registerTime: Event.Key = "register_ms"
     static let tokenLength: Event.Key = "token_length"
+    static let authorized: Event.Key = "authorized"
 
     // tweet keys
     static let tweetId: Event.Key = "tweet_id"
