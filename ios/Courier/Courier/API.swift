@@ -3,6 +3,23 @@
 import Apollo
 import Foundation
 
+public struct AddDeviceInput: GraphQLMapConvertible {
+  public var graphQLMap: GraphQLMap
+
+  public init(token: String) {
+    graphQLMap = ["token": token]
+  }
+
+  public var token: String {
+    get {
+      return graphQLMap["token"] as! String
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "token")
+    }
+  }
+}
+
 public struct CancelTweetInput: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -189,6 +206,135 @@ public enum TweetAction: RawRepresentable, Equatable, Hashable, CaseIterable, Ap
       .tweet,
       .retweet,
     ]
+  }
+}
+
+public final class RegisterDeviceMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    mutation RegisterDevice($input: AddDeviceInput!) {
+      addDevice(input: $input) {
+        __typename
+        deviceToken {
+          __typename
+          id
+        }
+      }
+    }
+    """
+
+  public let operationName = "RegisterDevice"
+
+  public var input: AddDeviceInput
+
+  public init(input: AddDeviceInput) {
+    self.input = input
+  }
+
+  public var variables: GraphQLMap? {
+    return ["input": input]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Mutation"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("addDevice", arguments: ["input": GraphQLVariable("input")], type: .nonNull(.object(AddDevice.selections))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(addDevice: AddDevice) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "addDevice": addDevice.resultMap])
+    }
+
+    public var addDevice: AddDevice {
+      get {
+        return AddDevice(unsafeResultMap: resultMap["addDevice"]! as! ResultMap)
+      }
+      set {
+        resultMap.updateValue(newValue.resultMap, forKey: "addDevice")
+      }
+    }
+
+    public struct AddDevice: GraphQLSelectionSet {
+      public static let possibleTypes = ["AddDevicePayload"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("deviceToken", type: .nonNull(.object(DeviceToken.selections))),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(deviceToken: DeviceToken) {
+        self.init(unsafeResultMap: ["__typename": "AddDevicePayload", "deviceToken": deviceToken.resultMap])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var deviceToken: DeviceToken {
+        get {
+          return DeviceToken(unsafeResultMap: resultMap["deviceToken"]! as! ResultMap)
+        }
+        set {
+          resultMap.updateValue(newValue.resultMap, forKey: "deviceToken")
+        }
+      }
+
+      public struct DeviceToken: GraphQLSelectionSet {
+        public static let possibleTypes = ["DeviceToken"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+        ]
+
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public init(id: GraphQLID) {
+          self.init(unsafeResultMap: ["__typename": "DeviceToken", "id": id])
+        }
+
+        public var __typename: String {
+          get {
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var id: GraphQLID {
+          get {
+            return resultMap["id"]! as! GraphQLID
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "id")
+          }
+        }
+      }
+    }
   }
 }
 

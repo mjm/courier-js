@@ -1,0 +1,7 @@
+mutation RegisterDevice($input: AddDeviceInput!) {
+  addDevice(input: $input) {
+    deviceToken {
+      id
+    }
+  }
+}
