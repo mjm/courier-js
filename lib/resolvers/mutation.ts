@@ -52,4 +52,8 @@ export const Mutation: MutationResolvers = {
     await billing.cancel()
     return { user: await user.getUserInfo() }
   },
+
+  async addDevice(_, { input }, { notifications }) {
+    return { deviceToken: await notifications.addDevice(input) }
+  },
 }

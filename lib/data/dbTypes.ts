@@ -25,6 +25,20 @@ export interface feed_subscriptions {
 
 }
 
+export namespace device_tokensFields {
+    export type id = number;
+    export type user_id = string;
+    export type token = string;
+
+}
+
+export interface device_tokens {
+    id: device_tokensFields.id;
+    user_id: device_tokensFields.user_id;
+    token: device_tokensFields.token;
+
+}
+
 export namespace eventsFields {
     export type id = number;
     export type user_id = string | null;

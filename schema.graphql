@@ -48,6 +48,8 @@ type Mutation {
   cancelSubscription(
     input: CancelSubscriptionInput!
   ): CancelSubscriptionPayload!
+
+  addDevice(input: AddDeviceInput!): AddDevicePayload!
 }
 
 type PageInfo {
@@ -330,4 +332,17 @@ enum EventType {
 type MicroformatPage {
   authorizationEndpoint: String
   tokenEndpoint: String
+}
+
+type DeviceToken {
+  id: ID!
+  token: String!
+}
+
+input AddDeviceInput {
+  token: String!
+}
+
+type AddDevicePayload {
+  deviceToken: DeviceToken!
 }

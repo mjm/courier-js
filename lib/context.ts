@@ -20,6 +20,7 @@ import { parse as parseCookies } from "cookie"
 import { IncomingMessage } from "http"
 import BillingEventService from "./services/billing_event_service"
 import PublishService from "./services/publish_service"
+import NotificationService from "./services/notification_service"
 
 const container = new Container({
   autoBindInjectable: true,
@@ -70,6 +71,7 @@ export class CourierContext {
   billing: BillingService
   billingEvents: BillingEventService
   publish: PublishService
+  notifications: NotificationService
 
   static async createForRequest(req: IncomingMessage): Promise<CourierContext> {
     const child = container.createChild()
@@ -91,6 +93,7 @@ export class CourierContext {
     billing: BillingService,
     billingEvents: BillingEventService,
     publish: PublishService,
+    notifications: NotificationService,
     feedLoader: FeedLoader,
     subscribedFeedLoader: SubscribedFeedLoader,
     postLoader: PostLoader,
@@ -106,6 +109,7 @@ export class CourierContext {
     this.billing = billing
     this.billingEvents = billingEvents
     this.publish = publish
+    this.notifications = notifications
 
     this.loaders = {
       feeds: feedLoader,

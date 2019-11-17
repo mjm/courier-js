@@ -14,6 +14,14 @@ export type Scalars = {
   Cursor: any
 }
 
+export type AddDeviceInput = {
+  token: Scalars["String"]
+}
+
+export type AddDevicePayload = {
+  deviceToken: DeviceToken
+}
+
 export type AddFeedInput = {
   url: Scalars["String"]
 }
@@ -56,6 +64,11 @@ export type DeleteFeedInput = {
 
 export type DeleteFeedPayload = {
   id: Scalars["ID"]
+}
+
+export type DeviceToken = {
+  id: Scalars["ID"]
+  token: Scalars["String"]
 }
 
 export type EditTweetInput = {
@@ -153,6 +166,7 @@ export type Mutation = {
   editTweet: EditTweetPayload
   subscribe: SubscribePayload
   cancelSubscription: CancelSubscriptionPayload
+  addDevice: AddDevicePayload
 }
 
 export type MutationAddFeedArgs = {
@@ -193,6 +207,10 @@ export type MutationSubscribeArgs = {
 
 export type MutationCancelSubscriptionArgs = {
   input: CancelSubscriptionInput
+}
+
+export type MutationAddDeviceArgs = {
+  input: AddDeviceInput
 }
 
 export type PageInfo = {

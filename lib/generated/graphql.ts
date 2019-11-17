@@ -16,6 +16,14 @@ export type Scalars = {
   Cursor: string
 }
 
+export type AddDeviceInput = {
+  token: Scalars["String"]
+}
+
+export type AddDevicePayload = {
+  deviceToken: DeviceToken
+}
+
 export type AddFeedInput = {
   url: Scalars["String"]
 }
@@ -58,6 +66,11 @@ export type DeleteFeedInput = {
 
 export type DeleteFeedPayload = {
   id: Scalars["ID"]
+}
+
+export type DeviceToken = {
+  id: Scalars["ID"]
+  token: Scalars["String"]
 }
 
 export type EditTweetInput = {
@@ -155,6 +168,7 @@ export type Mutation = {
   editTweet: EditTweetPayload
   subscribe: SubscribePayload
   cancelSubscription: CancelSubscriptionPayload
+  addDevice: AddDevicePayload
 }
 
 export type MutationAddFeedArgs = {
@@ -195,6 +209,10 @@ export type MutationSubscribeArgs = {
 
 export type MutationCancelSubscriptionArgs = {
   input: CancelSubscriptionInput
+}
+
+export type MutationAddDeviceArgs = {
+  input: AddDeviceInput
 }
 
 export type PageInfo = {
@@ -550,8 +568,18 @@ export type ResolversTypes = {
   CancelSubscriptionPayload: Omit<CancelSubscriptionPayload, "user"> & {
     user: ResolversTypes["User"]
   }
+  AddDeviceInput: AddDeviceInput
+  AddDevicePayload: AddDevicePayload
+  DeviceToken: DeviceToken
   FeedConnection: Pager<types.Feed>
   FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
+}
+
+export type AddDevicePayloadResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["AddDevicePayload"]
+> = {
+  deviceToken?: Resolver<ResolversTypes["DeviceToken"], ParentType, ContextType>
 }
 
 export type AddFeedPayloadResolvers<
@@ -616,6 +644,14 @@ export type DeleteFeedPayloadResolvers<
   ParentType = ResolversTypes["DeleteFeedPayload"]
 > = {
   id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>
+}
+
+export type DeviceTokenResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["DeviceToken"]
+> = {
+  id?: Resolver<ResolversTypes["ID"], ParentType, ContextType>
+  token?: Resolver<ResolversTypes["String"], ParentType, ContextType>
 }
 
 export type EditTweetPayloadResolvers<
@@ -780,6 +816,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     MutationCancelSubscriptionArgs
+  >
+  addDevice?: Resolver<
+    ResolversTypes["AddDevicePayload"],
+    ParentType,
+    ContextType,
+    MutationAddDeviceArgs
   >
 }
 
@@ -1042,6 +1084,7 @@ export type UserSubscriptionResolvers<
 }
 
 export type Resolvers<ContextType = CourierContext> = {
+  AddDevicePayload?: AddDevicePayloadResolvers<ContextType>
   AddFeedPayload?: AddFeedPayloadResolvers<ContextType>
   CancelSubscriptionPayload?: CancelSubscriptionPayloadResolvers<ContextType>
   CancelTweetPayload?: CancelTweetPayloadResolvers<ContextType>
@@ -1050,6 +1093,7 @@ export type Resolvers<ContextType = CourierContext> = {
   Customer?: CustomerResolvers<ContextType>
   DateTime?: GraphQLScalarType
   DeleteFeedPayload?: DeleteFeedPayloadResolvers<ContextType>
+  DeviceToken?: DeviceTokenResolvers<ContextType>
   EditTweetPayload?: EditTweetPayloadResolvers<ContextType>
   Event?: EventResolvers<ContextType>
   EventConnection?: EventConnectionResolvers<ContextType>

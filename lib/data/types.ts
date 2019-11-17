@@ -204,3 +204,15 @@ export interface NewEventInput {
   eventType: EventType
   parameters: Object
 }
+
+export type DeviceTokenId = string
+
+export interface DeviceToken {
+  id: DeviceTokenId
+  userId: UserId
+  token: string
+}
+
+export interface NewDeviceTokenInput {
+  token: string
+}
