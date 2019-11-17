@@ -18,7 +18,8 @@
     "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM",
     "STRIPE_SECRET_KEY": "@courier-prod-stripe-secret-key",
     "AUTH_ENCRYPT_KEY": "@courier-prod-auth-encrypt-key",
-    "APNS_CERTIFICATE": "@courier-dev-push-cert"
+    "APNS_CERTIFICATE": "courier-push-prod.p12",
+    "APNS_PASSPHRASE": "@courier-prod-push-passphrase"
   },
   "build": {
     "env": {
