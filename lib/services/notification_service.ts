@@ -24,16 +24,6 @@ class NotificationService {
       return
     }
 
-    /*
-      A new tweet is ready to post
-
-      My tweet body here
-    */
-
-    /*
-      A new tweet will be automatically posted soon
-    */
-
     await this.push.deliver(tokens, {
       title: {
         key: tweet.postAfter

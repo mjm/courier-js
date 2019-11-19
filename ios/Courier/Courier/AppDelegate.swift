@@ -6,6 +6,7 @@
 //  Copyright © 2019 Matt Moriarity. All rights reserved.
 //
 
+import Apollo
 import Auth0
 import Events
 import UIKit
@@ -26,7 +27,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         notificationsEvent.startTimer(.registerTime)
         application.registerForRemoteNotifications()
 
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { authorized, error in
+        let userNotifications = UNUserNotificationCenter.current()
+        userNotifications.delegate = self
+        userNotifications.setNotificationCategories(NotificationCategory.all)
+        userNotifications.requestAuthorization(options: [.alert, .badge, .sound]) { authorized, error in
             var event = EventBuilder()
             event[.authorized] = authorized
             event.error = error
@@ -79,5 +83,47 @@ extension AppDelegate: UserActionPresenter {
 
     func dismiss(animated flag: Bool, completion: (() -> Void)?) {
         rootViewController?.dismiss(animated: flag, completion: completion)
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        let tweetId = userInfo["tweetId"] as? String
+
+        switch NotificationAction(rawValue: response.actionIdentifier) {
+        case .postTweetNow:
+            withTweet(id: tweetId) { tweet in
+                self.actionRunner.perform(tweet.postAction).ignoreError().handle(receiveCompletion: { _ in
+                    completionHandler()
+                }, receiveValue: {})
+            }
+        case .editTweet:
+            // TODO figure this one out
+            NSLog("editing tweet \(tweetId!)")
+            completionHandler()
+        case .cancelTweet:
+            withTweet(id: tweetId) { tweet in
+                self.actionRunner.perform(tweet.cancelAction).ignoreError().handle(receiveCompletion: { _ in
+                    completionHandler()
+                }, receiveValue: {})
+            }
+        default:
+            completionHandler()
+            return
+        }
+
+    }
+
+    private func withTweet(id: GraphQLID?, _ body: @escaping (AllTweetsFields) -> Void) {
+        guard let id = id else { return }
+
+        ApolloClient.main.fetch(query: GetTweetQuery(id: id), cachePolicy: .fetchIgnoringCacheData) { result in
+            do {
+                if let tweet = try result.get().data?.tweet?.fragments.allTweetsFields {
+                    body(tweet)
+                }
+            } catch {}
+        }
     }
 }

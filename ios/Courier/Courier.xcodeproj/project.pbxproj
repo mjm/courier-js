@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
 		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
+		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
 		C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B6E237BAED30069EED1 /* Endpoint.swift */; };
 		C9A36B71237BC0380069EED1 /* UncancelTweetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */; };
 		C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B73237BC2DE0069EED1 /* TweetDetailViewModel.swift */; };
@@ -66,6 +67,7 @@
 		C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterDeviceAction.swift; sourceTree = "<group>"; };
 		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
 		C95C6F6C238243F7006063A2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		C95C6F702383BCB9006063A2 /* NotificationCategories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCategories.swift; sourceTree = "<group>"; };
 		C9A36B6E237BAED30069EED1 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncancelTweetAction.swift; sourceTree = "<group>"; };
 		C9A36B73237BC2DE0069EED1 /* TweetDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetDetailViewModel.swift; sourceTree = "<group>"; };
@@ -134,6 +136,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C95C6F6E2383BC9B006063A2 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				C95C6F6F2383BCA6006063A2 /* Actions */,
+				C95C6F702383BCB9006063A2 /* NotificationCategories.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		C95C6F6F2383BCA6006063A2 /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */,
+			);
+			path = Actions;
+			sourceTree = "<group>";
+		};
 		C9A36B72237BC2CF0069EED1 /* Tweet Detail */ = {
 			isa = PBXGroup;
 			children = (
@@ -187,6 +206,7 @@
 				C9A749B92378BB900046E924 /* API */,
 				C9A749A9237856C40046E924 /* Combine */,
 				C9A749A2237853B70046E924 /* Queries */,
+				C95C6F6E2383BC9B006063A2 /* Notifications */,
 				C9A749BE237907BC0046E924 /* Login */,
 				C9A36B77237BC60D0069EED1 /* Split View */,
 				C9A749C4237911670046E924 /* Tweets */,
@@ -268,7 +288,6 @@
 			children = (
 				C9A749C0237907DF0046E924 /* LoginAction.swift */,
 				C9A749C223790D710046E924 /* LogoutAction.swift */,
-				C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */,
 			);
 			path = Actions;
 			sourceTree = "<group>";
@@ -485,6 +504,7 @@
 				C9A671B4237D1FDE00EEE913 /* TweetBodyCellViewModel.swift in Sources */,
 				C9A749D6237A091E0046E924 /* CancelTweetAction.swift in Sources */,
 				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
+				C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */,
 				C9A36B79237BC61C0069EED1 /* SplitViewModel.swift in Sources */,
 				C9A749AB237856D00046E924 /* ApolloClient.swift in Sources */,
 				C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */,
