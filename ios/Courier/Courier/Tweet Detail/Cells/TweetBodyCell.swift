@@ -16,6 +16,7 @@ final class TweetBodyCell: CombinableTableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.backgroundColor = .clear
         textView.font = .preferredFont(forTextStyle: .body)
         textView.isScrollEnabled = false
         textView.delegate = self
