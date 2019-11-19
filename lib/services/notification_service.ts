@@ -43,6 +43,7 @@ class NotificationService {
       body: tweet.body,
       topic: appBundleId,
       threadId: tweet.id,
+      category: "IMPORTED_TWEET",
       appData: {
         tweetId: tweet.id,
       },
@@ -62,6 +63,7 @@ class NotificationService {
       body: tweet.body,
       topic: appBundleId,
       threadId: tweet.id,
+      category: "POSTED_TWEET",
       appData: {
         tweetId: tweet.id,
       },
