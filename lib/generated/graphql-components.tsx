@@ -167,6 +167,7 @@ export type Mutation = {
   subscribe: SubscribePayload
   cancelSubscription: CancelSubscriptionPayload
   addDevice: AddDevicePayload
+  sendTestNotification: SendTestNotificationPayload
 }
 
 export type MutationAddFeedArgs = {
@@ -211,6 +212,10 @@ export type MutationCancelSubscriptionArgs = {
 
 export type MutationAddDeviceArgs = {
   input: AddDeviceInput
+}
+
+export type MutationSendTestNotificationArgs = {
+  input: SendTestNotificationInput
 }
 
 export type PageInfo = {
@@ -308,6 +313,15 @@ export type RefreshFeedPayload = {
   feed: Feed
 }
 
+export type SendTestNotificationInput = {
+  tweetId: Scalars["ID"]
+  type?: Maybe<TestNotificationType>
+}
+
+export type SendTestNotificationPayload = {
+  placeholder?: Maybe<Scalars["String"]>
+}
+
 export type SetFeedOptionsInput = {
   id: Scalars["ID"]
   autopost?: Maybe<Scalars["Boolean"]>
@@ -349,6 +363,11 @@ export enum SubscriptionStatus {
   Canceled = "CANCELED",
   Expired = "EXPIRED",
   Inactive = "INACTIVE",
+}
+
+export enum TestNotificationType {
+  Imported = "IMPORTED",
+  Posted = "POSTED",
 }
 
 export type Tweet = {

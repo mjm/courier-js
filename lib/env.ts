@@ -12,6 +12,11 @@ class Environment {
   stripeKey: string
   monthlyPlanId: string
   authEncryptKey: Buffer
+  apns: {
+    environment: string
+    certificate: string
+    passphrase: string
+  }
 
   constructor() {
     this.authDomain = requireEnv("AUTH_DOMAIN")
@@ -24,6 +29,11 @@ class Environment {
     this.stripeKey = requireEnv("STRIPE_SECRET_KEY")
     this.monthlyPlanId = requireEnv("MONTHLY_PLAN_ID")
     this.authEncryptKey = Buffer.from(requireEnv("AUTH_ENCRYPT_KEY"), "base64")
+    this.apns = {
+      environment: requireEnv("APNS_ENVIRONMENT"),
+      certificate: requireEnv("APNS_CERTIFICATE"),
+      passphrase: requireEnv("APNS_PASSPHRASE"),
+    }
   }
 }
 

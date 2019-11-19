@@ -1,4 +1,4 @@
-import { MutationResolvers } from "../generated/graphql"
+import { MutationResolvers, TestNotificationType } from "../generated/graphql"
 
 export const Mutation: MutationResolvers = {
   async addFeed(_, { input }, { feeds }) {
@@ -55,5 +55,20 @@ export const Mutation: MutationResolvers = {
 
   async addDevice(_, { input }, { notifications }) {
     return { deviceToken: await notifications.addDevice(input) }
+  },
+
+  async sendTestNotification(_, { input }, { loaders, notifications, user }) {
+    const tweet = await loaders.tweets.load(input.tweetId)
+    if (!tweet) {
+      throw new Error("Tweet could not be found")
+    }
+
+    const userId = await user.requireUserId()
+    if (input.type === TestNotificationType.Imported) {
+      await notifications.sendTweetImported(userId, tweet)
+    } else {
+      await notifications.sendTweetPosted(userId, tweet)
+    }
+    return {}
   },
 }

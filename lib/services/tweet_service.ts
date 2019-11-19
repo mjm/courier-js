@@ -12,6 +12,7 @@ import * as keys from "../key"
 import EventService from "./event_service"
 import BillingService from "./billing_service"
 import PublishService from "./publish_service"
+import NotificationService from "./notification_service"
 
 export interface PostQueuedResult {
   succeeded: number
@@ -28,7 +29,8 @@ class TweetService {
     private twitter: TwitterService,
     private events: EventService,
     private billing: BillingService,
-    private publish: PublishService
+    private publish: PublishService,
+    private notifications: NotificationService
   ) {}
 
   async paged(options: TweetPagingOptions = {}): Promise<Pager<Tweet, any>> {
@@ -119,9 +121,7 @@ class TweetService {
 
         if (!(await this.billing.isUserSubscribed(feed.userId))) {
           console.log(
-            `User ${feed.userId} is not currently subscribed. Removing tweet ${
-              tweet.id
-            } from queue.`
+            `User ${feed.userId} is not currently subscribed. Removing tweet ${tweet.id} from queue.`
           )
           await this.tweets.dequeue(tweet.id)
           continue
@@ -157,6 +157,8 @@ class TweetService {
       // just refetch the tweet and return that as if we did it here.
       return (await this.tweetLoader.reload(tweet.id))!
     }
+
+    await this.notifications.sendTweetPosted(userId, tweet)
 
     this.tweetLoader.replace(updatedTweet.id, updatedTweet)
     return updatedTweet

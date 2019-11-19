@@ -50,6 +50,9 @@ type Mutation {
   ): CancelSubscriptionPayload!
 
   addDevice(input: AddDeviceInput!): AddDevicePayload!
+  sendTestNotification(
+    input: SendTestNotificationInput!
+  ): SendTestNotificationPayload!
 }
 
 type PageInfo {
@@ -345,4 +348,18 @@ input AddDeviceInput {
 
 type AddDevicePayload {
   deviceToken: DeviceToken!
+}
+
+enum TestNotificationType {
+  IMPORTED
+  POSTED
+}
+
+input SendTestNotificationInput {
+  tweetId: ID!
+  type: TestNotificationType
+}
+
+type SendTestNotificationPayload {
+  placeholder: String
 }

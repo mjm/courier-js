@@ -18,6 +18,7 @@
     "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM",
     "STRIPE_SECRET_KEY": "@courier-prod-stripe-secret-key",
     "AUTH_ENCRYPT_KEY": "@courier-prod-auth-encrypt-key",
+    "APNS_ENVIRONMENT": "production",
     "APNS_CERTIFICATE": "courier-push-prod.p12",
     "APNS_PASSPHRASE": "@courier-prod-push-passphrase"
   },
@@ -26,7 +27,8 @@
       "CLIENT_ID": "@courier-prod-frontend-client-id",
       "AUTH_DOMAIN": "@courier-prod-auth-domain",
       "API_IDENTIFIER": "https://courier.blog/api/",
-      "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM"
+      "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM",
+      "APNS_CERTIFICATE": "courier-push-prod.p12"
     }
   }
 }

@@ -23,6 +23,18 @@ module.exports = withCSS(
       // https://github.com/felixge/node-formidable/issues/337
       config.plugins.push(new webpack.DefinePlugin({ "global.GENTLY": false }))
 
+      config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(
+          /courier-push\.p12$/,
+          resource => {
+            resource.request = resource.request.replace(
+              /courier-push\.p12$/,
+              process.env.APNS_CERTIFICATE
+            )
+          }
+        )
+      )
+
       config.module.rules.push({
         test: /\.graphql$/,
         exclude: /node_modules/,

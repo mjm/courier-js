@@ -18,6 +18,7 @@ import FeedSubscriptionRepository, {
 import { translate } from "html-to-tweets"
 import TweetRepository, { TweetLoader } from "../repositories/tweet_repository"
 import { injectable } from "inversify"
+import NotificationService from "./notification_service"
 
 @injectable()
 class ImportService {
@@ -27,7 +28,8 @@ class ImportService {
     private tweets: TweetRepository,
     private subscribedFeedLoader: SubscribedFeedLoader,
     private postLoader: PostLoader,
-    private tweetLoader: TweetLoader
+    private tweetLoader: TweetLoader,
+    private notifications: NotificationService
   ) {}
 
   async importPosts(
@@ -169,6 +171,11 @@ class ImportService {
                 action: "retweet",
                 retweetID: tweet.tweetID,
               }
+        )
+
+        await this.notifications.sendTweetImported(
+          feedSubscription.userId,
+          newTweet
         )
 
         this.tweetLoader.prime(newTweet.id, newTweet)

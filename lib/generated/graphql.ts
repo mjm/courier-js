@@ -169,6 +169,7 @@ export type Mutation = {
   subscribe: SubscribePayload
   cancelSubscription: CancelSubscriptionPayload
   addDevice: AddDevicePayload
+  sendTestNotification: SendTestNotificationPayload
 }
 
 export type MutationAddFeedArgs = {
@@ -213,6 +214,10 @@ export type MutationCancelSubscriptionArgs = {
 
 export type MutationAddDeviceArgs = {
   input: AddDeviceInput
+}
+
+export type MutationSendTestNotificationArgs = {
+  input: SendTestNotificationInput
 }
 
 export type PageInfo = {
@@ -310,6 +315,15 @@ export type RefreshFeedPayload = {
   feed: Feed
 }
 
+export type SendTestNotificationInput = {
+  tweetId: Scalars["ID"]
+  type?: Maybe<TestNotificationType>
+}
+
+export type SendTestNotificationPayload = {
+  placeholder?: Maybe<Scalars["String"]>
+}
+
 export type SetFeedOptionsInput = {
   id: Scalars["ID"]
   autopost?: Maybe<Scalars["Boolean"]>
@@ -351,6 +365,11 @@ export enum SubscriptionStatus {
   Canceled = "CANCELED",
   Expired = "EXPIRED",
   Inactive = "INACTIVE",
+}
+
+export enum TestNotificationType {
+  Imported = "IMPORTED",
+  Posted = "POSTED",
 }
 
 export type Tweet = {
@@ -571,6 +590,9 @@ export type ResolversTypes = {
   AddDeviceInput: AddDeviceInput
   AddDevicePayload: AddDevicePayload
   DeviceToken: DeviceToken
+  SendTestNotificationInput: SendTestNotificationInput
+  TestNotificationType: TestNotificationType
+  SendTestNotificationPayload: SendTestNotificationPayload
   FeedConnection: Pager<types.Feed>
   FeedEdge: Omit<FeedEdge, "node"> & { node: ResolversTypes["Feed"] }
 }
@@ -823,6 +845,12 @@ export type MutationResolvers<
     ContextType,
     MutationAddDeviceArgs
   >
+  sendTestNotification?: Resolver<
+    ResolversTypes["SendTestNotificationPayload"],
+    ParentType,
+    ContextType,
+    MutationSendTestNotificationArgs
+  >
 }
 
 export type PageInfoResolvers<
@@ -937,6 +965,17 @@ export type RefreshFeedPayloadResolvers<
   ParentType = ResolversTypes["RefreshFeedPayload"]
 > = {
   feed?: Resolver<ResolversTypes["Feed"], ParentType, ContextType>
+}
+
+export type SendTestNotificationPayloadResolvers<
+  ContextType = CourierContext,
+  ParentType = ResolversTypes["SendTestNotificationPayload"]
+> = {
+  placeholder?: Resolver<
+    Maybe<ResolversTypes["String"]>,
+    ParentType,
+    ContextType
+  >
 }
 
 export type SetFeedOptionsPayloadResolvers<
@@ -1110,6 +1149,9 @@ export type Resolvers<ContextType = CourierContext> = {
   PostTweetPayload?: PostTweetPayloadResolvers<ContextType>
   Query?: QueryResolvers<ContextType>
   RefreshFeedPayload?: RefreshFeedPayloadResolvers<ContextType>
+  SendTestNotificationPayload?: SendTestNotificationPayloadResolvers<
+    ContextType
+  >
   SetFeedOptionsPayload?: SetFeedOptionsPayloadResolvers<ContextType>
   SubscribedFeed?: SubscribedFeedResolvers<ContextType>
   SubscribedFeedConnection?: SubscribedFeedConnectionResolvers<ContextType>
