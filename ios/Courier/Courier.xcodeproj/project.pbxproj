@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C95009C72384F5F100A36E64 /* LinkLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009C62384F5F100A36E64 /* LinkLabel.swift */; };
 		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
 		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
 		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
@@ -63,6 +64,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C95009C62384F5F100A36E64 /* LinkLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkLabel.swift; sourceTree = "<group>"; };
 		C95C6F6423808190006063A2 /* Courier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier.entitlements; sourceTree = "<group>"; };
 		C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterDeviceAction.swift; sourceTree = "<group>"; };
 		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
@@ -136,6 +138,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C95009C52384F5E400A36E64 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				C95009C62384F5F100A36E64 /* LinkLabel.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 		C95C6F6E2383BC9B006063A2 /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
@@ -203,6 +213,7 @@
 			isa = PBXGroup;
 			children = (
 				C95C6F6423808190006063A2 /* Courier.entitlements */,
+				C95009C52384F5E400A36E64 /* UI */,
 				C9A749B92378BB900046E924 /* API */,
 				C9A749A9237856C40046E924 /* Combine */,
 				C9A749A2237853B70046E924 /* Queries */,
@@ -509,6 +520,7 @@
 				C9A749AB237856D00046E924 /* ApolloClient.swift in Sources */,
 				C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */,
 				C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */,
+				C95009C72384F5F100A36E64 /* LinkLabel.swift in Sources */,
 				C9A749CB2379D1260046E924 /* TweetCellViewModel.swift in Sources */,
 				C9A671B6237D220900EEE913 /* TweetBodyCell.swift in Sources */,
 				C9A749CF2379D7400046E924 /* TweetCell.swift in Sources */,

@@ -10,7 +10,7 @@ import CombinableUI
 import UIKit
 
 final class TweetCell: CombinableTableViewCell {
-    private let bodyLabel = NoInsetTextView()
+    private let bodyLabel = LinkLabel()
     private let statusLabel = UILabel()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -30,11 +30,8 @@ final class TweetCell: CombinableTableViewCell {
         ])
 
         bodyLabel.font = .preferredFont(forTextStyle: .body)
-        bodyLabel.backgroundColor = .clear
-        bodyLabel.isEditable = false
-//        bodyLabel.isSelectable = false
-        bodyLabel.isScrollEnabled = false
-        bodyLabel.dataDetectorTypes = .link
+        bodyLabel.lineBreakMode = .byWordWrapping
+        bodyLabel.numberOfLines = 0
         stackView.addArrangedSubview(bodyLabel)
 
         statusLabel.font = .preferredFont(forTextStyle: .caption1)
@@ -80,18 +77,10 @@ final class TweetCell: CombinableTableViewCell {
             status == .canceled ? .secondarySystemBackground : .systemBackground
         }.assign(to: \.backgroundColor, on: self, weak: true).store(in: &cancellables)
 
-        let textColor = model.status.map { status -> UIColor? in
+        let textColor = model.status.map { status -> UIColor in
             status == .canceled ? .secondaryLabel : .label
         }
-        textColor.assign(to: \.textColor, on: bodyLabel).store(in: &cancellables)
-        textColor.assign(to: \.textColor, on: statusLabel).store(in: &cancellables)
-    }
-}
-
-private class NoInsetTextView: UITextView {
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        textContainerInset = UIEdgeInsets.zero
-        textContainer.lineFragmentPadding = 0
+        textColor.assign(to: \.foregroundColor, on: bodyLabel).store(in: &cancellables)
+        textColor.optionally().assign(to: \.textColor, on: statusLabel).store(in: &cancellables)
     }
 }
