@@ -14,9 +14,15 @@ import Foundation
 extension ApolloClientProtocol {
     func publisher<Query: GraphQLQuery>(
         query: Query,
-        cachePolicy: CachePolicy = .returnCacheDataAndFetch
+        cachePolicy: CachePolicy = .returnCacheDataAndFetch,
+        pollInterval: TimeInterval? = nil
     ) -> WatchQueryPublisher<Query> {
-        WatchQueryPublisher(client: self, query: query, cachePolicy: cachePolicy)
+        WatchQueryPublisher(
+            client: self,
+            query: query,
+            cachePolicy: cachePolicy,
+            pollInterval: pollInterval
+        )
     }
 
     func publisher<Mutation: GraphQLMutation>(
@@ -42,11 +48,13 @@ struct WatchQueryPublisher<Query: GraphQLQuery>: Publisher {
     let client: ApolloClientProtocol
     let query: Query
     let cachePolicy: CachePolicy
+    let pollInterval: TimeInterval?
 
-    init(client: ApolloClientProtocol, query: Query, cachePolicy: CachePolicy) {
+    init(client: ApolloClientProtocol, query: Query, cachePolicy: CachePolicy, pollInterval: TimeInterval?) {
         self.client = client
         self.query = query
         self.cachePolicy = cachePolicy
+        self.pollInterval = pollInterval
     }
 
     func receive<S>(subscriber: S) where S : Subscriber, Failure == S.Failure, Output == S.Input {
@@ -54,7 +62,8 @@ struct WatchQueryPublisher<Query: GraphQLQuery>: Publisher {
             downstream: subscriber,
             client: client,
             query: query,
-            cachePolicy: cachePolicy
+            cachePolicy: cachePolicy,
+            pollInterval: pollInterval
         )
         subscriber.receive(subscription: inner)
     }
@@ -67,12 +76,14 @@ extension WatchQueryPublisher {
         var watcher: GraphQLQueryWatcher<Query>!
 
         var didLoginSubscription: AnyCancellable?
+        var pollSubscription: AnyCancellable?
 
         init(
             downstream: Downstream,
             client: ApolloClientProtocol,
             query: Query,
-            cachePolicy: CachePolicy
+            cachePolicy: CachePolicy,
+            pollInterval: TimeInterval?
         ) {
             self.downstream = downstream
             watcher = client.watch(query: query, cachePolicy: cachePolicy, queue: .main) { [weak self] result in
@@ -87,6 +98,12 @@ extension WatchQueryPublisher {
             didLoginSubscription = NotificationCenter.default.publisher(for: .didLogIn).sink { [watcher] note in
                 watcher?.refetch()
             }
+
+            if let pollInterval = pollInterval {
+                pollSubscription = Timer.publish(every: pollInterval, on: .main, in: .common).autoconnect().sink { [watcher] _ in
+                    watcher?.refetch()
+                }
+            }
         }
 
         func request(_ demand: Subscribers.Demand) {
@@ -96,6 +113,7 @@ extension WatchQueryPublisher {
         func cancel() {
             watcher.cancel()
             didLoginSubscription?.cancel()
+            pollSubscription?.cancel()
         }
     }
 }

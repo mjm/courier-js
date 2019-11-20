@@ -56,13 +56,13 @@ final class TweetsViewModel: ViewModel {
     }
 
     var upcomingTweets: AnyPublisher<[AllTweetsFields], Never> {
-        apolloClient.publisher(query: UpcomingTweetsQuery()).map { result in
+        apolloClient.publisher(query: UpcomingTweetsQuery(), pollInterval: 60).map { result in
             result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
         }.ignoreError().eraseToAnyPublisher()
     }
 
     var pastTweets: AnyPublisher<[AllTweetsFields], Never> {
-        apolloClient.publisher(query: PastTweetsQuery()).map { result in
+        apolloClient.publisher(query: PastTweetsQuery(), pollInterval: 60).map { result in
             result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
         }.ignoreError().eraseToAnyPublisher()
     }
