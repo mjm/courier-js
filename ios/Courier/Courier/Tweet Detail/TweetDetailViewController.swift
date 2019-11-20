@@ -67,15 +67,42 @@ final class TweetDetailViewController: UITableViewController {
     @objc func saveTweet() {
         viewModel.saveAction?.perform()
     }
+
+    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let item = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+
+        switch item {
+        case .body: return nil
+        case .action: return indexPath
+        }
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let item = dataSource.itemIdentifier(for: indexPath) else {
+            return
+        }
+
+        switch item {
+        case .action(let model):
+            model.action?.perform()
+            tableView.deselectRow(at: indexPath, animated: true)
+        default:
+            return
+        }
+    }
 }
 
 extension TweetDetailViewModel.Item: BindableCell {
     enum Identifier: String, CellIdentifier, CaseIterable {
         case body
+        case action
 
         var cellType: RegisteredCellType<UITableViewCell> {
             switch self {
             case .body: return .class(TweetBodyCell.self)
+            case .action: return .class(TweetActionCell.self)
             }
         }
     }
@@ -83,6 +110,7 @@ extension TweetDetailViewModel.Item: BindableCell {
     var cellIdentifier: Identifier {
         switch self {
         case .body: return .body
+        case .action: return .action
         }
     }
 
@@ -90,6 +118,8 @@ extension TweetDetailViewModel.Item: BindableCell {
         switch self {
         case .body(let model):
             (cell as! TweetBodyCell).bind(to: model)
+        case .action(let model):
+            (cell as! TweetActionCell).bind(to: model)
         }
     }
 }

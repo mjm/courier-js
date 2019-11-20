@@ -16,4 +16,6 @@ extension Event.Key {
 
     // tweet keys
     static let tweetId: Event.Key = "tweet_id"
+
+    static let url: Event.Key = "url"
 }

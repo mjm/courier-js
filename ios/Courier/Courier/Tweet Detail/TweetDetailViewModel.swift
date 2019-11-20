@@ -14,10 +14,12 @@ import UserActions
 final class TweetDetailViewModel: ViewModel {
     enum Section {
         case content
+        case actions
     }
 
     enum Item: Hashable {
         case body(TweetBodyCellViewModel)
+        case action(TweetActionCellViewModel)
     }
 
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
@@ -26,12 +28,17 @@ final class TweetDetailViewModel: ViewModel {
     @Published private(set) var tweet: AllTweetsFields?
 
     var bodyViewModel = TweetBodyCellViewModel()
+    var viewPostViewModel: TweetActionCellViewModel!
 
     private var tweetSubscription: AnyCancellable?
 
     init(tweetId: GraphQLID? = nil, client: ApolloClient = .main) {
         self.tweetId = tweetId
         super.init(client: client)
+
+        viewPostViewModel = TweetActionCellViewModel { [actionRunner] tweet in
+            tweet.viewPostAction?.bind(to: actionRunner, title: NSLocalizedString("View Original Post", comment: ""))
+        }
 
         $tweetId.removeDuplicates().sink { [weak self] tweetId in
             guard let self = self else { return }
@@ -50,6 +57,7 @@ final class TweetDetailViewModel: ViewModel {
         }.store(in: &cancellables)
 
         $tweet.removeDuplicates { $0?.id == $1?.id }.map { $0?.body }.assign(to: \.body, on: bodyViewModel).store(in: &cancellables)
+        $tweet.assign(to: \.tweet, on: viewPostViewModel).store(in: &cancellables)
     }
 
     var status: AnyPublisher<TweetStatus?, Never> {
@@ -57,12 +65,15 @@ final class TweetDetailViewModel: ViewModel {
     }
 
     var snapshot: AnyPublisher<Snapshot, Never> {
-        $tweet.combineLatest(bodyViewModel.$body) { [bodyViewModel] tweet, _ in
+        $tweet.combineLatest(bodyViewModel.$body) { [bodyViewModel, viewPostViewModel] tweet, _ in
             var snapshot = Snapshot()
 
             if tweet != nil {
                 snapshot.appendSections([.content])
                 snapshot.appendItems([.body(bodyViewModel)])
+
+                snapshot.appendSections([.actions])
+                snapshot.appendItems([.action(viewPostViewModel!)])
             }
 
             return snapshot
