@@ -52,8 +52,8 @@ final class TweetDetailViewModel: ViewModel {
         $tweet.removeDuplicates { $0?.id == $1?.id }.map { $0?.body }.assign(to: \.body, on: bodyViewModel).store(in: &cancellables)
     }
 
-    var title: AnyPublisher<String?, Never> {
-        $tweet.map { ($0?.body.prefix(20)).flatMap(String.init) }.eraseToAnyPublisher()
+    var status: AnyPublisher<TweetStatus?, Never> {
+        $tweet.map { $0?.status }.eraseToAnyPublisher()
     }
 
     var snapshot: AnyPublisher<Snapshot, Never> {

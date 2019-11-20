@@ -42,7 +42,14 @@ final class TweetDetailViewController: UITableViewController {
 
         viewModel.presenter = self
 
-        viewModel.title.assign(to: \.title, on: navigationItem).store(in: &cancellables)
+        viewModel.status.map { status in
+            switch status {
+            case .draft: return NSLocalizedString("Draft Tweet", comment: "")
+            case .canceled: return NSLocalizedString("Canceled Tweet", comment: "")
+            case .posted: return NSLocalizedString("Posted Tweet", comment: "")
+            default: return nil
+            }
+        }.assign(to: \.title, on: navigationItem).store(in: &cancellables)
 
         dataSource = DataSource(tableView)
             .bound(to: viewModel.snapshot, animate: $animate, on: RunLoop.main)
