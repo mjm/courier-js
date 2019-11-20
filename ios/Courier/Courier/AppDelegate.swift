@@ -99,8 +99,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 }, receiveValue: {})
             }
         case .editTweet:
-            // TODO figure this one out
-            NSLog("editing tweet \(tweetId!)")
+            editTweet(id: tweetId)
             completionHandler()
         case .cancelTweet:
             withTweet(id: tweetId) { tweet in
@@ -109,10 +108,26 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 }, receiveValue: {})
             }
         default:
+            if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
+                editTweet(id: tweetId)
+            }
+
             completionHandler()
             return
         }
 
+    }
+
+    private func editTweet(id: GraphQLID?) {
+        guard let splitViewController = rootViewController as? SplitViewController else {
+            NSLog("Couldn't get split view controller")
+            return
+        }
+
+        splitViewController.viewModel.selection = id
+        if splitViewController.detailNavController.parent != splitViewController.masterNavController {
+            splitViewController.showDetailViewController(splitViewController.detailNavController, sender: self)
+        }
     }
 
     private func withTweet(id: GraphQLID?, _ body: @escaping (AllTweetsFields) -> Void) {
