@@ -9,6 +9,7 @@
 import Apollo
 import Combinable
 import Dispatch
+import Foundation
 
 extension ApolloClientProtocol {
     func publisher<Query: GraphQLQuery>(
@@ -65,6 +66,8 @@ extension WatchQueryPublisher {
         let downstream: Downstream
         var watcher: GraphQLQueryWatcher<Query>!
 
+        var didLoginSubscription: AnyCancellable?
+
         init(
             downstream: Downstream,
             client: ApolloClientProtocol,
@@ -81,6 +84,9 @@ extension WatchQueryPublisher {
                     self.cancel()
                 }
             }
+            didLoginSubscription = NotificationCenter.default.publisher(for: .didLogIn).sink { [watcher] note in
+                watcher?.refetch()
+            }
         }
 
         func request(_ demand: Subscribers.Demand) {
@@ -89,6 +95,7 @@ extension WatchQueryPublisher {
 
         func cancel() {
             watcher.cancel()
+            didLoginSubscription?.cancel()
         }
     }
 }

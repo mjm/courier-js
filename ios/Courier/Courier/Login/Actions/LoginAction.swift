@@ -10,6 +10,10 @@ import Auth0
 import Combinable
 import UserActions
 
+extension Notification.Name {
+    static let didLogIn = Notification.Name("CourierDidLogIn")
+}
+
 struct LoginAction: ReactiveUserAction {
     typealias ResultType = Credentials
 
@@ -38,6 +42,7 @@ struct LoginAction: ReactiveUserAction {
                 throw Error.storeCredentialsFailed
             }
 
+            NotificationCenter.default.post(name: .didLogIn, object: nil)
             return credentials
         }.eraseToAnyPublisher()
     }
