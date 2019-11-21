@@ -3170,10 +3170,43 @@
               }
             },
             "defaultValue": null
+          },
+          {
+            "name": "environment",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "NotificationEnvironment",
+              "ofType": null
+            },
+            "defaultValue": null
           }
         ],
         "interfaces": null,
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "NotificationEnvironment",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "PRODUCTION",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SANDBOX",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {

@@ -20,7 +20,12 @@ struct RegisterDeviceAction: ReactiveUserAction {
     func publisher(context: UserActions.Context<RegisterDeviceAction>) -> AnyPublisher<(), Error> {
         let tokenString = token.base64EncodedString()
 
-        let input = AddDeviceInput(token: tokenString)
+        var input = AddDeviceInput(token: tokenString)
+        #if DEBUG
+        input.environment = .sandbox
+        #else
+        input.environment = .production
+        #endif
         return context.apolloClient.publisher(mutation: RegisterDeviceMutation(input: input))
             .map { _ in }
             .eraseToAnyPublisher()

@@ -6,8 +6,8 @@ import Foundation
 public struct AddDeviceInput: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
-  public init(token: String) {
-    graphQLMap = ["token": token]
+  public init(token: String, environment: Swift.Optional<NotificationEnvironment?> = nil) {
+    graphQLMap = ["token": token, "environment": environment]
   }
 
   public var token: String {
@@ -17,6 +17,55 @@ public struct AddDeviceInput: GraphQLMapConvertible {
     set {
       graphQLMap.updateValue(newValue, forKey: "token")
     }
+  }
+
+  public var environment: Swift.Optional<NotificationEnvironment?> {
+    get {
+      return graphQLMap["environment"] as? Swift.Optional<NotificationEnvironment?> ?? Swift.Optional<NotificationEnvironment?>.none
+    }
+    set {
+      graphQLMap.updateValue(newValue, forKey: "environment")
+    }
+  }
+}
+
+public enum NotificationEnvironment: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case production
+  case sandbox
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "PRODUCTION": self = .production
+      case "SANDBOX": self = .sandbox
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .production: return "PRODUCTION"
+      case .sandbox: return "SANDBOX"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: NotificationEnvironment, rhs: NotificationEnvironment) -> Bool {
+    switch (lhs, rhs) {
+      case (.production, .production): return true
+      case (.sandbox, .sandbox): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [NotificationEnvironment] {
+    return [
+      .production,
+      .sandbox,
+    ]
   }
 }
 
