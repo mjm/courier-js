@@ -12,7 +12,7 @@ import Events
 import Foundation
 import UserActions
 
-struct CancelTweetAction: ReactiveUserAction {
+struct CancelTweetAction: MutationUserAction {
     let tweet: AllTweetsFields
 
     var undoActionName: String? { nil }
@@ -22,14 +22,11 @@ struct CancelTweetAction: ReactiveUserAction {
         tweet.status == .draft
     }
 
-    func publisher(context: UserActions.Context<Self>) -> AnyPublisher<(), Error> {
+    func mutation(context: UserActions.Context<CancelTweetAction>) -> CancelTweetMutation {
         Event.current[.tweetId] = tweet.id
 
         let input = CancelTweetInput(id: tweet.id)
-        return context.apolloClient
-            .publisher(mutation: CancelTweetMutation(input: input))
-            .map { _ in () }
-            .eraseToAnyPublisher()
+        return CancelTweetMutation(input: input)
     }
 }
 

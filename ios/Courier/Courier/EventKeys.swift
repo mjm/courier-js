@@ -13,6 +13,7 @@ extension Event.Key {
     static let registerTime: Event.Key = "register_ms"
     static let tokenLength: Event.Key = "token_length"
     static let authorized: Event.Key = "authorized"
+    static let environment: Event.Key = "environment"
 
     // tweet keys
     static let tweetId: Event.Key = "tweet_id"

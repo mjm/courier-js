@@ -12,7 +12,7 @@ import Events
 import Foundation
 import UserActions
 
-struct UncancelTweetAction: ReactiveUserAction {
+struct UncancelTweetAction: MutationUserAction {
     let tweet: AllTweetsFields
 
     var undoActionName: String? { nil }
@@ -22,14 +22,11 @@ struct UncancelTweetAction: ReactiveUserAction {
         tweet.status == .canceled
     }
 
-    func publisher(context: UserActions.Context<Self>) -> AnyPublisher<(), Error> {
+    func mutation(context: UserActions.Context<Self>) -> UncancelTweetMutation {
         Event.current[.tweetId] = tweet.id
 
         let input = UncancelTweetInput(id: tweet.id)
-        return context.apolloClient
-            .publisher(mutation: UncancelTweetMutation(input: input))
-            .map { _ in () }
-            .eraseToAnyPublisher()
+        return UncancelTweetMutation(input: input)
     }
 }
 

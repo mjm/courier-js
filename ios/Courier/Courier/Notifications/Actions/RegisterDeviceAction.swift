@@ -8,16 +8,17 @@
 
 import Apollo
 import Combinable
+import Events
 import Foundation
 import UserActions
 
-struct RegisterDeviceAction: ReactiveUserAction {
+struct RegisterDeviceAction: MutationUserAction {
     let token: Data
 
     var undoActionName: String? { nil }
     var displayName: String? { "Register for Notifications" }
 
-    func publisher(context: UserActions.Context<RegisterDeviceAction>) -> AnyPublisher<(), Error> {
+    func mutation(context: UserActions.Context<RegisterDeviceAction>) -> RegisterDeviceMutation {
         let tokenString = token.base64EncodedString()
 
         var input = AddDeviceInput(token: tokenString)
@@ -26,8 +27,11 @@ struct RegisterDeviceAction: ReactiveUserAction {
         #else
         input.environment = .production
         #endif
-        return context.apolloClient.publisher(mutation: RegisterDeviceMutation(input: input))
-            .map { _ in }
-            .eraseToAnyPublisher()
+
+        Event.current[.environment] = input.environment!
+
+        return RegisterDeviceMutation(input: input)
     }
 }
+
+extension NotificationEnvironment: Encodable {}
