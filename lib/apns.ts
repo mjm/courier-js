@@ -61,28 +61,31 @@ interface NotificationAlertPayload {
   "loc-args"?: string[]
 }
 
+export interface Device {
+  token: string
+  environment: "SANDBOX" | "PRODUCTION"
+}
+
 @injectable()
 class PushNotificationProvider {
-  private _session?: http2.ClientHttp2Session
-
   constructor(private env: Environment) {}
 
-  async deliver(tokens: string[], note: Notification): Promise<void> {
+  async deliver(devices: Device[], note: Notification): Promise<void> {
     const serializedPayload = JSON.stringify(this.createPayload(note))
     await Promise.all(
-      tokens.map(token => this.deliverSingle(token, note, serializedPayload))
+      devices.map(device => this.deliverSingle(device, note, serializedPayload))
     )
   }
 
   private async deliverSingle(
-    token: string,
+    device: Device,
     note: Notification,
     payload: string
   ): Promise<void> {
-    const headers = this.createHeaders(token, note)
+    const headers = this.createHeaders(device, note)
 
     return new Promise((resolve, reject) => {
-      const req = this.session.request(headers)
+      const req = this.getSession(device.environment).request(headers)
 
       const chunks: string[] = []
 
@@ -105,12 +108,12 @@ class PushNotificationProvider {
   }
 
   private createHeaders(
-    token: string,
+    device: Device,
     note: Notification
   ): http2.OutgoingHttpHeaders {
     const headers: http2.OutgoingHttpHeaders = {
       [HTTP2_HEADER_METHOD]: "POST",
-      [HTTP2_HEADER_PATH]: `/3/device/${token}`,
+      [HTTP2_HEADER_PATH]: `/3/device/${device.token}`,
       "apns-topic": note.topic,
       "apns-push-type": note.pushType || "alert",
     }
@@ -184,24 +187,29 @@ class PushNotificationProvider {
     return payload
   }
 
-  private get session(): http2.ClientHttp2Session {
-    if (this._session) {
-      return this._session
+  private sessions: Partial<
+    Record<Device["environment"], http2.ClientHttp2Session>
+  > = {}
+
+  private getSession(env: Device["environment"]): http2.ClientHttp2Session {
+    let session = this.sessions[env]
+    if (session) {
+      return session
     }
 
-    const session = http2.connect(this.apnsUrl, {
+    session = http2.connect(this.getApnsUrl(env), {
       pfx: pushCert,
       passphrase: this.env.apns.passphrase,
     })
     session.on("error", err => {
       console.error(err)
     })
-    this._session = session
+    this.sessions[env] = session
     return session
   }
 
-  private get apnsUrl(): string {
-    return this.env.apns.environment === "development"
+  private getApnsUrl(env: Device["environment"]): string {
+    return env === "SANDBOX"
       ? "https://api.sandbox.push.apple.com:443"
       : "https://api.push.apple.com:443"
   }

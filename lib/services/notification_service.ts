@@ -2,7 +2,7 @@ import { injectable, inject } from "inversify"
 import DeviceTokenRepository from "../repositories/device_token_repository"
 import { NewDeviceTokenInput, UserId, DeviceToken, Tweet } from "../data/types"
 import * as keys from "../key"
-import PushNotificationProvider from "../apns"
+import PushNotificationProvider, { Device } from "../apns"
 
 const appBundleId = "com.mattmoriarity.Courier"
 
@@ -60,11 +60,12 @@ class NotificationService {
     })
   }
 
-  private async getUserDevices(userId: UserId): Promise<string[]> {
+  private async getUserDevices(userId: UserId): Promise<Device[]> {
     const deviceTokens = await this.deviceTokens.findAllByUser(userId)
-    return deviceTokens.map(token =>
-      Buffer.from(token.token, "base64").toString("hex")
-    )
+    return deviceTokens.map(token => ({
+      token: Buffer.from(token.token, "base64").toString("hex"),
+      environment: token.environment,
+    }))
   }
 }
 

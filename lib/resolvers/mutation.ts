@@ -54,7 +54,13 @@ export const Mutation: MutationResolvers = {
   },
 
   async addDevice(_, { input }, { notifications }) {
-    return { deviceToken: await notifications.addDevice(input) }
+    const { environment, ...rest } = input
+    return {
+      deviceToken: await notifications.addDevice({
+        environment: environment || "SANDBOX",
+        ...rest,
+      }),
+    }
   },
 
   async sendTestNotification(_, { input }, { loaders, notifications, user }) {

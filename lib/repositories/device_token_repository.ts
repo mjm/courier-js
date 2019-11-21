@@ -1,7 +1,12 @@
 import { injectable, inject } from "inversify"
 import { DB } from "../key"
 import { sql, DatabasePoolType } from "../db"
-import { NewDeviceTokenInput, DeviceToken, UserId } from "../data/types"
+import {
+  NewDeviceTokenInput,
+  DeviceToken,
+  UserId,
+  DeviceTokenEnvironment,
+} from "../data/types"
 import * as table from "../data/dbTypes"
 
 @injectable()
@@ -23,10 +28,11 @@ class DeviceTokenRepository {
     input: NewDeviceTokenInput
   ): Promise<DeviceToken> {
     const row = await this.db.one(sql<table.device_tokens>`
-      INSERT INTO device_tokens (user_id, token)
-      VALUES (${userId}, ${input.token})
+      INSERT INTO device_tokens (user_id, token, environment)
+      VALUES (${userId}, ${input.token}, ${input.environment})
       ON CONFLICT (user_id, token)
-      DO UPDATE SET updated_at = CURRENT_TIMESTAMP
+      DO UPDATE SET environment = ${input.environment},
+                    updated_at = CURRENT_TIMESTAMP
       RETURNING *
     `)
 
@@ -37,6 +43,7 @@ class DeviceTokenRepository {
     return {
       id: row.id.toString(),
       userId: row.user_id,
+      environment: row.environment as DeviceTokenEnvironment,
       token: row.token,
     }
   }

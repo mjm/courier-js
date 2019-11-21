@@ -16,6 +16,7 @@ export type Scalars = {
 
 export type AddDeviceInput = {
   token: Scalars["String"]
+  environment?: Maybe<NotificationEnvironment>
 }
 
 export type AddDevicePayload = {
@@ -216,6 +217,11 @@ export type MutationAddDeviceArgs = {
 
 export type MutationSendTestNotificationArgs = {
   input: SendTestNotificationInput
+}
+
+export enum NotificationEnvironment {
+  Production = "PRODUCTION",
+  Sandbox = "SANDBOX",
 }
 
 export type PageInfo = {

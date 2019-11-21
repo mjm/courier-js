@@ -342,8 +342,14 @@ type DeviceToken {
   token: String!
 }
 
+enum NotificationEnvironment {
+  PRODUCTION
+  SANDBOX
+}
+
 input AddDeviceInput {
   token: String!
+  environment: NotificationEnvironment
 }
 
 type AddDevicePayload {

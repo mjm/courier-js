@@ -29,6 +29,9 @@ export namespace device_tokensFields {
     export type id = number;
     export type user_id = string;
     export type token = string;
+    export type created_at = Date;
+    export type updated_at = Date;
+    export type environment = string;
 
 }
 
@@ -36,6 +39,9 @@ export interface device_tokens {
     id: device_tokensFields.id;
     user_id: device_tokensFields.user_id;
     token: device_tokensFields.token;
+    created_at: device_tokensFields.created_at;
+    updated_at: device_tokensFields.updated_at;
+    environment: device_tokensFields.environment;
 
 }
 

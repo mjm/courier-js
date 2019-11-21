@@ -207,12 +207,16 @@ export interface NewEventInput {
 
 export type DeviceTokenId = string
 
+export type DeviceTokenEnvironment = "SANDBOX" | "PRODUCTION"
+
 export interface DeviceToken {
   id: DeviceTokenId
   userId: UserId
   token: string
+  environment: DeviceTokenEnvironment
 }
 
 export interface NewDeviceTokenInput {
   token: string
+  environment: DeviceTokenEnvironment
 }
