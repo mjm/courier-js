@@ -26,6 +26,8 @@ final class TweetsViewModel: ViewModel {
     @Published var selectedSection: Section = .upcoming
     @Published var selection: Item?
 
+    @Published var refreshingSections = Set<Section>()
+
     override init(client: ApolloClient = .main) {
         super.init(client: client)
 
@@ -36,6 +38,13 @@ final class TweetsViewModel: ViewModel {
         $pastTweetViewModels.applyingChanges(from: pastTweets, keyPath: \.tweet) { [actionRunner] tweet in
             Item(tweet: tweet, actionRunner: actionRunner)
         }.assign(to: \.pastTweetViewModels, on: self, weak: true).store(in: &cancellables)
+
+        upcomingTweets.sink { [weak self] _ in
+            self?.refreshingSections.remove(.upcoming)
+        }.store(in: &cancellables)
+        pastTweets.sink { [weak self] _ in
+            self?.refreshingSections.remove(.past)
+        }.store(in: &cancellables)
     }
 
     var snapshot: AnyPublisher<Snapshot, Never> {
@@ -56,13 +65,21 @@ final class TweetsViewModel: ViewModel {
     }
 
     var upcomingTweets: AnyPublisher<[AllTweetsFields], Never> {
-        apolloClient.publisher(query: UpcomingTweetsQuery(), pollInterval: 60).map { result in
+        apolloClient.publisher(
+            query: UpcomingTweetsQuery(),
+            pollInterval: 60,
+            refresh: startRefreshingSection(.upcoming)
+        ).map { result in
             result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
         }.ignoreError().eraseToAnyPublisher()
     }
 
     var pastTweets: AnyPublisher<[AllTweetsFields], Never> {
-        apolloClient.publisher(query: PastTweetsQuery(), pollInterval: 60).map { result in
+        apolloClient.publisher(
+            query: PastTweetsQuery(),
+            pollInterval: 60,
+            refresh: startRefreshingSection(.past)
+        ).map { result in
             result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
         }.ignoreError().eraseToAnyPublisher()
     }
@@ -71,6 +88,25 @@ final class TweetsViewModel: ViewModel {
         $upcomingTweetViewModels.combineLatest($pastTweetViewModels) { upcoming, past in
             upcoming + past
         }.eraseToAnyPublisher()
+    }
+
+    private func startRefreshingSection(_ section: Section) -> AnyPublisher<(), Never> {
+        $refreshingSections
+            .map { $0.contains(section) }
+            .removeDuplicates()
+            .filter { $0 }
+            .map { _ in }
+            .eraseToAnyPublisher()
+    }
+
+    var isRefreshingCurrentSection: AnyPublisher<Bool, Never> {
+        $selectedSection.combineLatest($refreshingSections) { section, refreshingSections in
+            refreshingSections.contains(section)
+        }.removeDuplicates().eraseToAnyPublisher()
+    }
+
+    func refreshCurrentSection() {
+        refreshingSections.insert(selectedSection)
     }
 
     func showSettings() {

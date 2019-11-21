@@ -45,6 +45,8 @@ final class TweetsViewController: UITableViewController {
 
         settingsButtonItem.target = self
 
+        refreshControl = UIRefreshControl()
+
         viewModel.presenter = self
 
         dataSource = DataSource(tableView)
@@ -64,6 +66,18 @@ final class TweetsViewController: UITableViewController {
                 self?.animate = true
             }
             .store(in: &cancellables)
+
+        refreshControl!.valueDidChange.sink { [viewModel] _ in
+            viewModel.refreshCurrentSection()
+        }.store(in: &cancellables)
+
+        viewModel.isRefreshingCurrentSection.sink { [refreshControl] isRefreshing in
+            if isRefreshing {
+                refreshControl?.beginRefreshing()
+            } else {
+                refreshControl?.endRefreshing()
+            }
+        }.store(in: &cancellables)
     }
 
     override func viewWillAppear(_ animated: Bool) {

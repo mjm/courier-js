@@ -17,11 +17,22 @@ extension ApolloClientProtocol {
         cachePolicy: CachePolicy = .returnCacheDataAndFetch,
         pollInterval: TimeInterval? = nil
     ) -> WatchQueryPublisher<Query> {
+        publisher(query: query, cachePolicy: cachePolicy, pollInterval: pollInterval, refresh: Empty())
+    }
+
+    func publisher<Query: GraphQLQuery, Refresh: Publisher>(
+        query: Query,
+        cachePolicy: CachePolicy = .returnCacheDataAndFetch,
+        pollInterval: TimeInterval? = nil,
+        refresh: Refresh
+    ) -> WatchQueryPublisher<Query>
+    where Refresh.Output == (), Refresh.Failure == Never {
         WatchQueryPublisher(
             client: self,
             query: query,
             cachePolicy: cachePolicy,
-            pollInterval: pollInterval
+            pollInterval: pollInterval,
+            refresh: refresh.eraseToAnyPublisher()
         )
     }
 
@@ -49,12 +60,20 @@ struct WatchQueryPublisher<Query: GraphQLQuery>: Publisher {
     let query: Query
     let cachePolicy: CachePolicy
     let pollInterval: TimeInterval?
+    let refresh: AnyPublisher<(), Never>
 
-    init(client: ApolloClientProtocol, query: Query, cachePolicy: CachePolicy, pollInterval: TimeInterval?) {
+    init(
+        client: ApolloClientProtocol,
+        query: Query,
+        cachePolicy: CachePolicy,
+        pollInterval: TimeInterval?,
+        refresh: AnyPublisher<(), Never>
+    ) {
         self.client = client
         self.query = query
         self.cachePolicy = cachePolicy
         self.pollInterval = pollInterval
+        self.refresh = refresh
     }
 
     func receive<S>(subscriber: S) where S : Subscriber, Failure == S.Failure, Output == S.Input {
@@ -63,7 +82,8 @@ struct WatchQueryPublisher<Query: GraphQLQuery>: Publisher {
             client: client,
             query: query,
             cachePolicy: cachePolicy,
-            pollInterval: pollInterval
+            pollInterval: pollInterval,
+            refresh: refresh
         )
         subscriber.receive(subscription: inner)
     }
@@ -75,15 +95,15 @@ extension WatchQueryPublisher {
         let downstream: Downstream
         var watcher: GraphQLQueryWatcher<Query>!
 
-        var didLoginSubscription: AnyCancellable?
-        var pollSubscription: AnyCancellable?
+        var cancellables = Set<AnyCancellable>()
 
         init(
             downstream: Downstream,
             client: ApolloClientProtocol,
             query: Query,
             cachePolicy: CachePolicy,
-            pollInterval: TimeInterval?
+            pollInterval: TimeInterval?,
+            refresh: AnyPublisher<(), Never>
         ) {
             self.downstream = downstream
             watcher = client.watch(query: query, cachePolicy: cachePolicy, queue: .main) { [weak self] result in
@@ -95,15 +115,19 @@ extension WatchQueryPublisher {
                     self.cancel()
                 }
             }
-            didLoginSubscription = NotificationCenter.default.publisher(for: .didLogIn).sink { [watcher] note in
+            NotificationCenter.default.publisher(for: .didLogIn).sink { [watcher] note in
                 watcher?.refetch()
-            }
+            }.store(in: &cancellables)
 
             if let pollInterval = pollInterval {
-                pollSubscription = Timer.publish(every: pollInterval, on: .main, in: .common).autoconnect().sink { [watcher] _ in
+                Timer.publish(every: pollInterval, on: .main, in: .common).autoconnect().sink { [watcher] _ in
                     watcher?.refetch()
-                }
+                }.store(in: &cancellables)
             }
+
+            refresh.sink { [watcher] _ in
+                watcher?.refetch()
+            }.store(in: &cancellables)
         }
 
         func request(_ demand: Subscribers.Demand) {
@@ -112,8 +136,7 @@ extension WatchQueryPublisher {
 
         func cancel() {
             watcher.cancel()
-            didLoginSubscription?.cancel()
-            pollSubscription?.cancel()
+            cancellables.removeAll()
         }
     }
 }
