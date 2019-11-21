@@ -11,6 +11,12 @@
 		C95009CA2385026100A36E64 /* ViewLinkAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009C92385026100A36E64 /* ViewLinkAction.swift */; };
 		C95009CC2385039700A36E64 /* TweetActionCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009CB2385039700A36E64 /* TweetActionCellViewModel.swift */; };
 		C95009CE238506F300A36E64 /* TweetActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009CD238506F300A36E64 /* TweetActionCell.swift */; };
+		C95009D22386188900A36E64 /* UserDefault.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009D12386188900A36E64 /* UserDefault.swift */; };
+		C95009D423861E0400A36E64 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009D323861E0400A36E64 /* SettingsViewModel.swift */; };
+		C95009D623861EA700A36E64 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009D523861EA700A36E64 /* SettingsViewController.swift */; };
+		C95009D92386204F00A36E64 /* EnvironmentCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009D82386204F00A36E64 /* EnvironmentCellViewModel.swift */; };
+		C95009DB2386229B00A36E64 /* EnvironmentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009DA2386229B00A36E64 /* EnvironmentCell.swift */; };
+		C95009DE2386287500A36E64 /* ShowSettingsAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009DD2386287500A36E64 /* ShowSettingsAction.swift */; };
 		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
 		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
 		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
@@ -71,6 +77,12 @@
 		C95009C92385026100A36E64 /* ViewLinkAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewLinkAction.swift; sourceTree = "<group>"; };
 		C95009CB2385039700A36E64 /* TweetActionCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetActionCellViewModel.swift; sourceTree = "<group>"; };
 		C95009CD238506F300A36E64 /* TweetActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetActionCell.swift; sourceTree = "<group>"; };
+		C95009D12386188900A36E64 /* UserDefault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefault.swift; sourceTree = "<group>"; };
+		C95009D323861E0400A36E64 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
+		C95009D523861EA700A36E64 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		C95009D82386204F00A36E64 /* EnvironmentCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentCellViewModel.swift; sourceTree = "<group>"; };
+		C95009DA2386229B00A36E64 /* EnvironmentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentCell.swift; sourceTree = "<group>"; };
+		C95009DD2386287500A36E64 /* ShowSettingsAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowSettingsAction.swift; sourceTree = "<group>"; };
 		C95C6F6423808190006063A2 /* Courier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier.entitlements; sourceTree = "<group>"; };
 		C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterDeviceAction.swift; sourceTree = "<group>"; };
 		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
@@ -160,6 +172,35 @@
 			path = Actions;
 			sourceTree = "<group>";
 		};
+		C95009D02386187500A36E64 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				C95009DC2386283E00A36E64 /* Actions */,
+				C95009D72386204100A36E64 /* Cells */,
+				C95009D12386188900A36E64 /* UserDefault.swift */,
+				C95009D323861E0400A36E64 /* SettingsViewModel.swift */,
+				C95009D523861EA700A36E64 /* SettingsViewController.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		C95009D72386204100A36E64 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				C95009D82386204F00A36E64 /* EnvironmentCellViewModel.swift */,
+				C95009DA2386229B00A36E64 /* EnvironmentCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		C95009DC2386283E00A36E64 /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				C95009DD2386287500A36E64 /* ShowSettingsAction.swift */,
+			);
+			path = Actions;
+			sourceTree = "<group>";
+		};
 		C95C6F6E2383BC9B006063A2 /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
@@ -239,6 +280,7 @@
 				C9A36B77237BC60D0069EED1 /* Split View */,
 				C9A749C4237911670046E924 /* Tweets */,
 				C9A36B72237BC2CF0069EED1 /* Tweet Detail */,
+				C95009D02386187500A36E64 /* Settings */,
 				C9A7496D237852430046E924 /* AppDelegate.swift */,
 				C9A7496F237852430046E924 /* SceneDelegate.swift */,
 				C9A749C72379CEA90046E924 /* ViewModel.swift */,
@@ -518,6 +560,7 @@
 				C9A7496E237852430046E924 /* AppDelegate.swift in Sources */,
 				C9A671BC237E539200EEE913 /* SegmentedControl.swift in Sources */,
 				C9A36B71237BC0380069EED1 /* UncancelTweetAction.swift in Sources */,
+				C95009D623861EA700A36E64 /* SettingsViewController.swift in Sources */,
 				C9A749C323790D710046E924 /* LogoutAction.swift in Sources */,
 				C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */,
 				C9A671B8237E3EDB00EEE913 /* PostTweetAction.swift in Sources */,
@@ -526,11 +569,14 @@
 				C9A749CD2379D3450046E924 /* TweetsViewController.swift in Sources */,
 				C95009CA2385026100A36E64 /* ViewLinkAction.swift in Sources */,
 				C9A749D3237A03CF0046E924 /* Tweet.swift in Sources */,
+				C95009D423861E0400A36E64 /* SettingsViewModel.swift in Sources */,
 				C9A74970237852430046E924 /* SceneDelegate.swift in Sources */,
 				C9A749D1237A02A60046E924 /* ApplyingChanges.swift in Sources */,
 				C9A36B7B237BC6240069EED1 /* SplitViewController.swift in Sources */,
+				C95009D92386204F00A36E64 /* EnvironmentCellViewModel.swift in Sources */,
 				C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */,
 				C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */,
+				C95009DE2386287500A36E64 /* ShowSettingsAction.swift in Sources */,
 				C9A671B4237D1FDE00EEE913 /* TweetBodyCellViewModel.swift in Sources */,
 				C9A749D6237A091E0046E924 /* CancelTweetAction.swift in Sources */,
 				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
@@ -539,12 +585,14 @@
 				C9A749AB237856D00046E924 /* ApolloClient.swift in Sources */,
 				C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */,
 				C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */,
+				C95009DB2386229B00A36E64 /* EnvironmentCell.swift in Sources */,
 				C95009C72384F5F100A36E64 /* LinkLabel.swift in Sources */,
 				C9A749CB2379D1260046E924 /* TweetCellViewModel.swift in Sources */,
 				C9A671B6237D220900EEE913 /* TweetBodyCell.swift in Sources */,
 				C9A749CF2379D7400046E924 /* TweetCell.swift in Sources */,
 				C9A749C82379CEA90046E924 /* ViewModel.swift in Sources */,
 				C95009CE238506F300A36E64 /* TweetActionCell.swift in Sources */,
+				C95009D22386188900A36E64 /* UserDefault.swift in Sources */,
 				C9A671BE237E564D00EEE913 /* SaveTweetAction.swift in Sources */,
 				C9A749A7237854F00046E924 /* API.swift in Sources */,
 				C9A749D8237A0B410046E924 /* EventKeys.swift in Sources */,

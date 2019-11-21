@@ -36,5 +36,10 @@ struct Endpoint {
         domain: "courier-prod.auth0.com"
     )
 
-    static let current: Endpoint = .staging
+    @UserDefault(\.environment)
+    static var environment: String
+
+    static let current: Endpoint = {
+        environment == "production" ? .production : .staging
+    }()
 }

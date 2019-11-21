@@ -30,10 +30,20 @@ final class TweetsViewController: UITableViewController {
         NSLocalizedString("Past Tweets", comment: ""),
     ])
 
+    private let settingsButtonItem = UIBarButtonItem(
+        image: UIImage(systemName: "gear"),
+        style: .plain,
+        target: self,
+        action: #selector(showSettings)
+    )
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
         navigationItem.titleView = sectionChooser
+        navigationItem.leftBarButtonItems = [settingsButtonItem]
+
+        settingsButtonItem.target = self
 
         viewModel.presenter = self
 
@@ -66,6 +76,10 @@ final class TweetsViewController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         animate = true
+    }
+
+    @objc func showSettings() {
+        viewModel.showSettings()
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

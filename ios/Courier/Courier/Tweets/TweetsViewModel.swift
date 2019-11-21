@@ -72,4 +72,8 @@ final class TweetsViewModel: ViewModel {
             upcoming + past
         }.eraseToAnyPublisher()
     }
+
+    func showSettings() {
+        actionRunner.perform(ShowSettingsAction())
+    }
 }
