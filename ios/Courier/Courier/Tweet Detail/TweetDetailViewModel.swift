@@ -29,6 +29,7 @@ final class TweetDetailViewModel: ViewModel {
 
     var bodyViewModel = TweetBodyCellViewModel()
     var viewPostViewModel: TweetActionCellViewModel!
+    var viewTweetViewModel: TweetActionCellViewModel!
 
     private var tweetSubscription: AnyCancellable?
 
@@ -38,6 +39,10 @@ final class TweetDetailViewModel: ViewModel {
 
         viewPostViewModel = TweetActionCellViewModel { [actionRunner] tweet in
             tweet.viewPostAction?.bind(to: actionRunner, title: NSLocalizedString("View Original Post", comment: ""))
+        }
+
+        viewTweetViewModel = TweetActionCellViewModel { [actionRunner] tweet in
+            tweet.viewTweetAction?.bind(to: actionRunner, title: NSLocalizedString("View on Twitter", comment: ""))
         }
 
         $tweetId.removeDuplicates().sink { [weak self] tweetId in
@@ -58,6 +63,7 @@ final class TweetDetailViewModel: ViewModel {
 
         $tweet.removeDuplicates { $0?.id == $1?.id }.map { $0?.body }.assign(to: \.body, on: bodyViewModel).store(in: &cancellables)
         $tweet.assign(to: \.tweet, on: viewPostViewModel).store(in: &cancellables)
+        $tweet.assign(to: \.tweet, on: viewTweetViewModel).store(in: &cancellables)
     }
 
     var status: AnyPublisher<TweetStatus?, Never> {
@@ -65,15 +71,19 @@ final class TweetDetailViewModel: ViewModel {
     }
 
     var snapshot: AnyPublisher<Snapshot, Never> {
-        $tweet.combineLatest(bodyViewModel.$body) { [bodyViewModel, viewPostViewModel] tweet, _ in
+        $tweet.combineLatest(bodyViewModel.$body) { [weak self] tweet, _ in
             var snapshot = Snapshot()
+            guard let self = self else { return snapshot }
 
-            if tweet != nil {
+            if let tweet = tweet {
                 snapshot.appendSections([.content])
-                snapshot.appendItems([.body(bodyViewModel)])
+                snapshot.appendItems([.body(self.bodyViewModel)])
 
                 snapshot.appendSections([.actions])
-                snapshot.appendItems([.action(viewPostViewModel!)])
+                snapshot.appendItems([.action(self.viewPostViewModel)])
+                if !(tweet.postedTweetId?.isEmpty ?? true) {
+                    snapshot.appendItems([.action(self.viewTweetViewModel)])
+                }
             }
 
             return snapshot

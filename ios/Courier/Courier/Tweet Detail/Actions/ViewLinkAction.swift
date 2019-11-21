@@ -28,4 +28,10 @@ extension AllTweetsFields {
     var viewPostAction: ViewLinkAction? {
         URL(string: post.url).flatMap(ViewLinkAction.init(url:))
     }
+
+    var viewTweetAction: ViewLinkAction? {
+        postedTweetId.flatMap { tweetId in
+            URL(string: "https://twitter.com/username/status/\(tweetId)")
+        }.flatMap(ViewLinkAction.init(url:))
+    }
 }
