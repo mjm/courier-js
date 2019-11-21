@@ -12,6 +12,10 @@ import Foundation
 extension UserDefaults {
     class DefaultValues {
         @objc let environment = "production"
+
+        fileprivate func register<T>(_ keyPath: KeyPath<DefaultValues, T>, on suite: UserDefaults) {
+            suite.register(defaults: [keyPath.asString: self[keyPath: keyPath]])
+        }
     }
 
     static let defaults = DefaultValues()
@@ -31,6 +35,8 @@ struct UserDefault<T> {
     init(_ key: KeyPath<UserDefaults.DefaultValues, T>, suite: UserDefaults = .standard) {
         self.key = key
         self.suite = suite
+
+        UserDefaults.defaults.register(key, on: suite)
     }
 
     var wrappedValue: T {
