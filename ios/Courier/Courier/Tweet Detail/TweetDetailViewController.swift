@@ -74,8 +74,12 @@ final class TweetDetailViewController: UITableViewController {
         }
 
         switch item {
-        case .action: return indexPath
-        case .body, .timestamp: return nil
+        case .timestamp(let model, _):
+            return model.hasAction ? indexPath : nil
+        case .action:
+            return indexPath
+        default:
+            return nil
         }
     }
 
@@ -85,6 +89,9 @@ final class TweetDetailViewController: UITableViewController {
         }
 
         switch item {
+        case .timestamp(let model, _):
+            model.action?.perform()
+            tableView.deselectRow(at: indexPath, animated: true)
         case .action(let model):
             model.action?.perform()
             tableView.deselectRow(at: indexPath, animated: true)

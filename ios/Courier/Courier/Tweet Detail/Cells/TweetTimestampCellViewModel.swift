@@ -8,6 +8,7 @@
 
 import Combinable
 import Foundation
+import UserActions
 
 private let dateFormatter: ISO8601DateFormatter = {
     let formatter = ISO8601DateFormatter()
@@ -17,11 +18,23 @@ private let dateFormatter: ISO8601DateFormatter = {
 
 final class TweetTimestampCellViewModel {
     @Published var tweet: AllTweetsFields?
+    @Published private(set) var action: BoundUserAction<Void>?
 
     let keyPath: KeyPath<AllTweetsFields, String?>
+    let hasAction: Bool
 
-    init(keyPath: KeyPath<AllTweetsFields, String?>) {
+    private var cancellables = Set<AnyCancellable>()
+
+    init(
+        keyPath: KeyPath<AllTweetsFields, String?>,
+        actionCreator: ((AllTweetsFields) -> BoundUserAction<Void>?)?
+    ) {
         self.keyPath = keyPath
+        self.hasAction = actionCreator != nil
+
+        if let actionCreator = actionCreator {
+            $tweet.map { $0.flatMap(actionCreator) }.assign(to: \.action, on: self, weak: true).store(in: &cancellables)
+        }
     }
 
     var date: AnyPublisher<Date?, Never> {

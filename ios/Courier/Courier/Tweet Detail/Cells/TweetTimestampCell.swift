@@ -27,6 +27,7 @@ final class TweetTimestampCell: CombinableTableViewCell {
     }
 
     func bind(to model: TweetTimestampCellViewModel, label: String) {
+        accessoryType = model.hasAction ? .disclosureIndicator : .none
         textLabel!.text = label
 
         let currentTime = Timer.publish(every: 10, on: .main, in: .common).autoconnect().prepend(Date())
@@ -36,6 +37,6 @@ final class TweetTimestampCell: CombinableTableViewCell {
             } else {
                 return nil
             }
-        }.assign(to: \.text, on: detailTextLabel!).store(in: &cancellables)
+        }.removeDuplicates().assign(to: \.text, on: detailTextLabel!).store(in: &cancellables)
     }
 }

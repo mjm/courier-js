@@ -15,6 +15,7 @@ struct ViewLinkAction: SyncUserAction {
     let url: URL
 
     var undoActionName: String? { nil }
+    var displayName: String? { NSLocalizedString("View Link", comment: "") }
 
     func perform(_ context: UserActions.Context<ViewLinkAction>) throws {
         Event.current[.url] = url
