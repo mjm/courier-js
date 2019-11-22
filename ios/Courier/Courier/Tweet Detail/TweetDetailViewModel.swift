@@ -62,7 +62,7 @@ final class TweetDetailViewModel: ViewModel {
                 .assign(to: \.tweet, on: self, weak: true)
         }.store(in: &cancellables)
 
-        $tweet.removeDuplicates { $0?.id == $1?.id }.map { $0?.body }.assign(to: \.body, on: bodyViewModel).store(in: &cancellables)
+        $tweet.assign(to: \.tweet, on: bodyViewModel).store(in: &cancellables)
         $tweet.assign(to: \.tweet, on: viewPostViewModel).store(in: &cancellables)
         $tweet.assign(to: \.tweet, on: viewTweetViewModel).store(in: &cancellables)
     }
