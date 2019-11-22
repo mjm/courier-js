@@ -51,9 +51,56 @@ extension ApolloClientProtocol {
     }
 }
 
+enum QueryState<Data> {
+    case loading
+    case loaded(Data)
+
+    var isLoading: Bool {
+        if case .loading = self {
+            return true
+        }
+        return false
+    }
+
+    func map<Output>(_ transform: (Data) throws -> Output) rethrows -> QueryState<Output> {
+        switch self {
+        case .loading: return .loading
+        case .loaded(let data): return try .loaded(transform(data))
+        }
+    }
+}
+
+extension QueryState where Data: Collection {
+    var isEmpty: Bool {
+        if case .loaded(let items) = self {
+            return items.isEmpty
+        }
+        return false
+    }
+}
+
+extension Publisher {
+    func queryMap<Data, Out>(
+        _ transform: @escaping (Data) -> Out
+    ) -> AnyPublisher<QueryState<Out>, Failure> where Output == QueryState<Data> {
+        map { state in
+            state.map(transform)
+        }.eraseToAnyPublisher()
+    }
+
+    func ignoreLoading<Data>() -> AnyPublisher<Data, Failure> where Output == QueryState<Data> {
+        compactMap { state in
+            if case .loaded(let data) = state {
+                return data
+            }
+            return nil
+        }.eraseToAnyPublisher()
+    }
+}
+
 struct WatchQueryPublisher<Query: GraphQLQuery>: Publisher {
 
-    typealias Output = GraphQLResult<Query.Data>
+    typealias Output = QueryState<Query.Data>
     typealias Failure = Error
 
     let client: ApolloClientProtocol
@@ -97,6 +144,9 @@ extension WatchQueryPublisher {
 
         var cancellables = Set<AnyCancellable>()
 
+        var demand: Subscribers.Demand = .none
+        var current: Output? = .loading
+
         init(
             downstream: Downstream,
             client: ApolloClientProtocol,
@@ -109,7 +159,10 @@ extension WatchQueryPublisher {
             watcher = client.watch(query: query, cachePolicy: cachePolicy, queue: .main) { [weak self] result in
                 guard let self = self else { return }
                 do {
-                    _ = try self.downstream.receive(result.get())
+                    if let data = try result.get().data {
+                        self.current = .loaded(data)
+                        self.fulfillDemand()
+                    }
                 } catch {
                     self.downstream.receive(completion: .failure(error))
                     self.cancel()
@@ -133,12 +186,22 @@ extension WatchQueryPublisher {
         }
 
         func request(_ demand: Subscribers.Demand) {
-            // ignore
+            self.demand += demand
+            fulfillDemand()
         }
 
         func cancel() {
             watcher.cancel()
             cancellables.removeAll()
+        }
+
+        private func fulfillDemand() {
+            if demand > .none, let current = current {
+                demand += downstream.receive(current)
+                demand -= 1
+
+                self.current = nil
+            }
         }
     }
 }

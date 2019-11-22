@@ -37,6 +37,8 @@ final class TweetsViewController: UITableViewController {
         action: #selector(showSettings)
     )
 
+    private let contentStateView = ContentStateView()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -47,11 +49,35 @@ final class TweetsViewController: UITableViewController {
 
         refreshControl = UIRefreshControl()
 
+        contentStateView.emptyImage = UIImage(systemName: "paperplane.fill")
+
+        tableView.backgroundView = contentStateView
+        NSLayoutConstraint.activate([
+            contentStateView.leadingAnchor.constraint(
+                equalTo: tableView.safeAreaLayoutGuide.leadingAnchor),
+            contentStateView.trailingAnchor.constraint(
+                equalTo: tableView.safeAreaLayoutGuide.trailingAnchor),
+            contentStateView.topAnchor.constraint(equalTo: tableView.safeAreaLayoutGuide.topAnchor),
+            contentStateView.bottomAnchor.constraint(
+                equalTo: tableView.safeAreaLayoutGuide.bottomAnchor),
+        ])
+
         viewModel.presenter = self
 
         dataSource = DataSource(tableView)
             .editable()
             .bound(to: viewModel.snapshot, animate: $animate)
+
+        viewModel.isLoading.combineLatest(viewModel.isEmpty).sink { [weak self] (loading, empty) in
+            self?.updateBackgroundView(loading: loading, empty: empty)
+        }.store(in: &cancellables)
+
+        viewModel.$selectedSection.map { section in
+            switch section {
+            case .upcoming: return NSLocalizedString("You don't have any upcoming tweets.", comment: "")
+            case .past: return NSLocalizedString("You haven't posted or canceled any tweets.", comment: "")
+            }
+        }.optionally().assign(to: \.emptyText, on: contentStateView).store(in: &cancellables)
 
         viewModel.$selectedSection
             .map(\.rawValue)
@@ -94,6 +120,19 @@ final class TweetsViewController: UITableViewController {
 
     @objc func showSettings() {
         viewModel.showSettings()
+    }
+
+    private func updateBackgroundView(loading: Bool, empty: Bool) {
+        if loading {
+            contentStateView.showLoading()
+            tableView.tableFooterView = UIView()
+        } else if empty {
+            contentStateView.showEmpty()
+            tableView.tableFooterView = UIView()
+        } else {
+            contentStateView.hide()
+            tableView.tableFooterView = nil
+        }
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

@@ -18,6 +18,7 @@
 		C95009DB2386229B00A36E64 /* EnvironmentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009DA2386229B00A36E64 /* EnvironmentCell.swift */; };
 		C95009DE2386287500A36E64 /* ShowSettingsAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009DD2386287500A36E64 /* ShowSettingsAction.swift */; };
 		C95009E02386651100A36E64 /* MutationUserAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009DF2386651100A36E64 /* MutationUserAction.swift */; };
+		C95009E2238793A400A36E64 /* ContentStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E1238793A400A36E64 /* ContentStateView.swift */; };
 		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
 		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
 		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
@@ -85,6 +86,7 @@
 		C95009DA2386229B00A36E64 /* EnvironmentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentCell.swift; sourceTree = "<group>"; };
 		C95009DD2386287500A36E64 /* ShowSettingsAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowSettingsAction.swift; sourceTree = "<group>"; };
 		C95009DF2386651100A36E64 /* MutationUserAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutationUserAction.swift; sourceTree = "<group>"; };
+		C95009E1238793A400A36E64 /* ContentStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentStateView.swift; sourceTree = "<group>"; };
 		C95C6F6423808190006063A2 /* Courier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier.entitlements; sourceTree = "<group>"; };
 		C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterDeviceAction.swift; sourceTree = "<group>"; };
 		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
@@ -162,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				C95009C62384F5F100A36E64 /* LinkLabel.swift */,
+				C95009E1238793A400A36E64 /* ContentStateView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -578,6 +581,7 @@
 				C9A36B7B237BC6240069EED1 /* SplitViewController.swift in Sources */,
 				C95009D92386204F00A36E64 /* EnvironmentCellViewModel.swift in Sources */,
 				C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */,
+				C95009E2238793A400A36E64 /* ContentStateView.swift in Sources */,
 				C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */,
 				C95009DE2386287500A36E64 /* ShowSettingsAction.swift in Sources */,
 				C9A671B4237D1FDE00EEE913 /* TweetBodyCellViewModel.swift in Sources */,

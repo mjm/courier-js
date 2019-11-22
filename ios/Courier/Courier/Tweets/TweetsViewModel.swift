@@ -31,11 +31,11 @@ final class TweetsViewModel: ViewModel {
     override init(client: ApolloClient = .main) {
         super.init(client: client)
 
-        $upcomingTweetViewModels.applyingChanges(from: upcomingTweets, keyPath: \.tweet) { [actionRunner] tweet in
+        $upcomingTweetViewModels.applyingChanges(from: upcomingTweets.ignoreLoading(), keyPath: \.tweet) { [actionRunner] tweet in
             Item(tweet: tweet, actionRunner: actionRunner)
         }.assign(to: \.upcomingTweetViewModels, on: self, weak: true).store(in: &cancellables)
 
-        $pastTweetViewModels.applyingChanges(from: pastTweets, keyPath: \.tweet) { [actionRunner] tweet in
+        $pastTweetViewModels.applyingChanges(from: pastTweets.ignoreLoading(), keyPath: \.tweet) { [actionRunner] tweet in
             Item(tweet: tweet, actionRunner: actionRunner)
         }.assign(to: \.pastTweetViewModels, on: self, weak: true).store(in: &cancellables)
 
@@ -64,23 +64,45 @@ final class TweetsViewModel: ViewModel {
         }.eraseToAnyPublisher()
     }
 
-    var upcomingTweets: AnyPublisher<[AllTweetsFields], Never> {
+    var isLoading: AnyPublisher<Bool, Never> {
+        $selectedSection.combineLatest(upcomingTweets, pastTweets) { section, upcoming, past in
+            switch section {
+            case .upcoming:
+                return upcoming.isLoading
+            case .past:
+                return past.isLoading
+            }
+        }.removeDuplicates().eraseToAnyPublisher()
+    }
+
+    var isEmpty: AnyPublisher<Bool, Never> {
+        $selectedSection.combineLatest(upcomingTweets, pastTweets) { section, upcoming, past in
+            switch section {
+            case .upcoming:
+                return upcoming.isEmpty
+            case .past:
+                return past.isEmpty
+            }
+        }.removeDuplicates().eraseToAnyPublisher()
+    }
+
+    var upcomingTweets: AnyPublisher<QueryState<[AllTweetsFields]>, Never> {
         apolloClient.publisher(
             query: UpcomingTweetsQuery(),
             pollInterval: 60,
             refresh: startRefreshingSection(.upcoming)
-        ).map { result in
-            result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
+        ).queryMap { data in
+            data.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields }
         }.ignoreError().eraseToAnyPublisher()
     }
 
-    var pastTweets: AnyPublisher<[AllTweetsFields], Never> {
+    var pastTweets: AnyPublisher<QueryState<[AllTweetsFields]>, Never> {
         apolloClient.publisher(
             query: PastTweetsQuery(),
             pollInterval: 60,
             refresh: startRefreshingSection(.past)
-        ).map { result in
-            result.data?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
+        ).queryMap { data in
+            data.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields }
         }.ignoreError().eraseToAnyPublisher()
     }
 
