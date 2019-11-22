@@ -74,8 +74,8 @@ final class TweetDetailViewController: UITableViewController {
         }
 
         switch item {
-        case .body: return nil
         case .action: return indexPath
+        case .body, .timestamp: return nil
         }
     }
 
@@ -98,11 +98,13 @@ extension TweetDetailViewModel.Item: BindableCell {
     enum Identifier: String, CellIdentifier, CaseIterable {
         case body
         case action
+        case timestamp
 
         var cellType: RegisteredCellType<UITableViewCell> {
             switch self {
             case .body: return .class(TweetBodyCell.self)
             case .action: return .class(TweetActionCell.self)
+            case .timestamp: return .class(TweetTimestampCell.self)
             }
         }
     }
@@ -111,6 +113,7 @@ extension TweetDetailViewModel.Item: BindableCell {
         switch self {
         case .body: return .body
         case .action: return .action
+        case .timestamp: return .timestamp
         }
     }
 
@@ -120,6 +123,8 @@ extension TweetDetailViewModel.Item: BindableCell {
             (cell as! TweetBodyCell).bind(to: model)
         case .action(let model):
             (cell as! TweetActionCell).bind(to: model)
+        case .timestamp(let model, let label):
+            (cell as! TweetTimestampCell).bind(to: model, label: label)
         }
     }
 }

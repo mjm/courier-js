@@ -19,6 +19,8 @@
 		C95009DE2386287500A36E64 /* ShowSettingsAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009DD2386287500A36E64 /* ShowSettingsAction.swift */; };
 		C95009E02386651100A36E64 /* MutationUserAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009DF2386651100A36E64 /* MutationUserAction.swift */; };
 		C95009E2238793A400A36E64 /* ContentStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E1238793A400A36E64 /* ContentStateView.swift */; };
+		C95009E423879F7F00A36E64 /* TweetTimestampCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E323879F7F00A36E64 /* TweetTimestampCellViewModel.swift */; };
+		C95009E62387A2EA00A36E64 /* TweetTimestampCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E52387A2EA00A36E64 /* TweetTimestampCell.swift */; };
 		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
 		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
 		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
@@ -87,6 +89,8 @@
 		C95009DD2386287500A36E64 /* ShowSettingsAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowSettingsAction.swift; sourceTree = "<group>"; };
 		C95009DF2386651100A36E64 /* MutationUserAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutationUserAction.swift; sourceTree = "<group>"; };
 		C95009E1238793A400A36E64 /* ContentStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentStateView.swift; sourceTree = "<group>"; };
+		C95009E323879F7F00A36E64 /* TweetTimestampCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTimestampCellViewModel.swift; sourceTree = "<group>"; };
+		C95009E52387A2EA00A36E64 /* TweetTimestampCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTimestampCell.swift; sourceTree = "<group>"; };
 		C95C6F6423808190006063A2 /* Courier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier.entitlements; sourceTree = "<group>"; };
 		C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterDeviceAction.swift; sourceTree = "<group>"; };
 		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
@@ -250,6 +254,8 @@
 				C95009CD238506F300A36E64 /* TweetActionCell.swift */,
 				C9A671B3237D1FDE00EEE913 /* TweetBodyCellViewModel.swift */,
 				C9A671B5237D220900EEE913 /* TweetBodyCell.swift */,
+				C95009E323879F7F00A36E64 /* TweetTimestampCellViewModel.swift */,
+				C95009E52387A2EA00A36E64 /* TweetTimestampCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -571,6 +577,7 @@
 				C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */,
 				C9A671B8237E3EDB00EEE913 /* PostTweetAction.swift in Sources */,
 				C9A671BA237E4EA100EEE913 /* ControlEvent.swift in Sources */,
+				C95009E62387A2EA00A36E64 /* TweetTimestampCell.swift in Sources */,
 				C9A749C1237907DF0046E924 /* LoginAction.swift in Sources */,
 				C9A749CD2379D3450046E924 /* TweetsViewController.swift in Sources */,
 				C95009CA2385026100A36E64 /* ViewLinkAction.swift in Sources */,
@@ -604,6 +611,7 @@
 				C9A671BE237E564D00EEE913 /* SaveTweetAction.swift in Sources */,
 				C9A749A7237854F00046E924 /* API.swift in Sources */,
 				C9A749D8237A0B410046E924 /* EventKeys.swift in Sources */,
+				C95009E423879F7F00A36E64 /* TweetTimestampCellViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,12 +14,14 @@ import UserActions
 final class TweetDetailViewModel: ViewModel {
     enum Section {
         case content
-        case actions
+        case published
+        case tweeted
     }
 
     enum Item: Hashable {
         case body(TweetBodyCellViewModel)
         case action(TweetActionCellViewModel)
+        case timestamp(TweetTimestampCellViewModel, String)
     }
 
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
@@ -27,8 +29,10 @@ final class TweetDetailViewModel: ViewModel {
     @Published var tweetId: GraphQLID?
     @Published private(set) var tweet: AllTweetsFields?
 
-    var bodyViewModel = TweetBodyCellViewModel()
+    let bodyViewModel = TweetBodyCellViewModel()
+    let postTimeViewModel = TweetTimestampCellViewModel(keyPath: \.post.publishedAt)
     var viewPostViewModel: TweetActionCellViewModel!
+    let tweetTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postedAt)
     var viewTweetViewModel: TweetActionCellViewModel!
 
     private var tweetSubscription: AnyCancellable?
@@ -63,7 +67,9 @@ final class TweetDetailViewModel: ViewModel {
         }.store(in: &cancellables)
 
         $tweet.assign(to: \.tweet, on: bodyViewModel).store(in: &cancellables)
+        $tweet.assign(to: \.tweet, on: postTimeViewModel).store(in: &cancellables)
         $tweet.assign(to: \.tweet, on: viewPostViewModel).store(in: &cancellables)
+        $tweet.assign(to: \.tweet, on: tweetTimeViewModel).store(in: &cancellables)
         $tweet.assign(to: \.tweet, on: viewTweetViewModel).store(in: &cancellables)
     }
 
@@ -80,10 +86,18 @@ final class TweetDetailViewModel: ViewModel {
                 snapshot.appendSections([.content])
                 snapshot.appendItems([.body(self.bodyViewModel)])
 
-                snapshot.appendSections([.actions])
-                snapshot.appendItems([.action(self.viewPostViewModel)])
+                snapshot.appendSections([.published])
+                snapshot.appendItems([
+                    .timestamp(self.postTimeViewModel, NSLocalizedString("Published", comment: "")),
+                    .action(self.viewPostViewModel)
+                ])
+
                 if !(tweet.postedTweetId?.isEmpty ?? true) {
-                    snapshot.appendItems([.action(self.viewTweetViewModel)])
+                    snapshot.appendSections([.tweeted])
+                    snapshot.appendItems([
+                        .timestamp(self.tweetTimeViewModel, NSLocalizedString("Tweeted", comment: "")),
+                        .action(self.viewTweetViewModel),
+                    ])
                 }
             }
 
