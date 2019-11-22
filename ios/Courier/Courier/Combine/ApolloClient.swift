@@ -115,17 +115,19 @@ extension WatchQueryPublisher {
                     self.cancel()
                 }
             }
-            NotificationCenter.default.publisher(for: .didLogIn).sink { [watcher] note in
-                watcher?.refetch()
-            }.store(in: &cancellables)
 
+            var refresher = refresh
+                .merge(with: NotificationCenter.default.publisher(for: .didLogIn).map { _ in })
+                .eraseToAnyPublisher()
             if let pollInterval = pollInterval {
-                Timer.publish(every: pollInterval, on: .main, in: .common).autoconnect().sink { [watcher] _ in
-                    watcher?.refetch()
-                }.store(in: &cancellables)
+                refresher = refresher.merge(with:
+                    Timer.publish(every: pollInterval, on: .main, in: .common)
+                        .autoconnect()
+                        .map { _ in }
+                ).eraseToAnyPublisher()
             }
 
-            refresh.sink { [watcher] _ in
+            refresher.sink { [watcher] in
                 watcher?.refetch()
             }.store(in: &cancellables)
         }
