@@ -10,6 +10,10 @@ import Auth0
 import Combinable
 import UserActions
 
+extension Notification.Name {
+    static let didLogOut = Notification.Name("CourierDidLogOut")
+}
+
 struct LogoutAction: ReactiveUserAction {
     var undoActionName: String? { nil }
 
@@ -17,7 +21,11 @@ struct LogoutAction: ReactiveUserAction {
         Future<(), Error> { promise in
             Endpoint.current.webAuth
                 .clearSession(federated: false) { result in
+
                     _ = CredentialsManager.shared.clear()
+                    NotificationCenter.default.post(name: .didLogOut, object: nil)
+                    context.apolloClient.store.clearCache()
+
                     promise(.success(()))
                 }
         }.eraseToAnyPublisher()

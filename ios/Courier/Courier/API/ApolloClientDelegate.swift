@@ -9,6 +9,7 @@
 import Apollo
 import ApolloSQLite
 import Auth0
+import Combinable
 import Events
 import Foundation
 
@@ -58,11 +59,17 @@ final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNet
     let credentialsManager: CredentialsManager
 
     private var credentials: Credentials?
+    private var cancellables = Set<AnyCancellable>()
 
     init(credentialsManager: CredentialsManager) {
         self.credentialsManager = credentialsManager
 
         getCredentials()
+
+        // clear out cached credentials when the user logs out
+        NotificationCenter.default.publisher(for: .didLogOut).sink { [weak self] _ in
+            self?.credentials = nil
+        }.store(in: &cancellables)
     }
 
     func networkTransport(_ networkTransport: HTTPNetworkTransport, shouldSend request: URLRequest) -> Bool {
@@ -82,15 +89,13 @@ final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNet
 
     func networkTransport(_ networkTransport: HTTPNetworkTransport, receivedGraphQLErrors errors: [GraphQLError], retryHandler: @escaping (Bool) -> Void) {
         print("Got GraphQL errors: \(errors)")
-        let isUnauthenticated = errors.contains { ($0.extensions?["code"] as? String) == "UNAUTHENTICATED" }
-        if isUnauthenticated {
+        let unauthenticated = errors.first { ($0.extensions?["code"] as? String) == "UNAUTHENTICATED" }
+        if unauthenticated != nil {
             getCredentials { error in
                 if error == nil {
                     retryHandler(true)
                 } else {
-                    self.retryQueue.asyncAfter(deadline: .now() + .seconds(30)) {
-                        retryHandler(true)
-                    }
+                    retryHandler(false)
                 }
             }
         } else {
@@ -107,5 +112,11 @@ final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNet
                 completion(nil)
             }
         }
+    }
+}
+
+extension GraphQLError {
+    var path: [String]? {
+        return self["path"] as? [String]
     }
 }

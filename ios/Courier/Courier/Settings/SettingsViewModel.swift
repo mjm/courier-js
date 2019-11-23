@@ -18,11 +18,13 @@ final class SettingsViewModel: ViewModel {
     enum Item: Hashable {
         case user(UserCellViewModel)
         case environment(EnvironmentCellViewModel)
+        case logout
+        case login
     }
 
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
 
-    @Published private(set) var userState: QueryState<UserInfo?> = .loaded(nil)
+    @Published private(set) var userState: QueryState<UserInfo?> = .loading
 
     var userViewModel = UserCellViewModel()
     var environmentViewModel = EnvironmentCellViewModel()
@@ -35,15 +37,21 @@ final class SettingsViewModel: ViewModel {
     }
 
     var snapshot: AnyPublisher<Snapshot, Never> {
-        userInfo.map { [weak self] user in
+        $userState.map { [weak self] userState in
             var snapshot = Snapshot()
             guard let self = self else { return snapshot }
 
             snapshot.appendSections([.account])
-            snapshot.appendItems([
-                .user(self.userViewModel),
-                .environment(self.environmentViewModel),
-            ], toSection: .account)
+            var accountItems: [Item] = [.environment(self.environmentViewModel)]
+            switch userState {
+            case .loaded(nil):
+                accountItems.append(.login)
+            case .loaded:
+                accountItems.insert(.user(self.userViewModel), at: 0)
+                accountItems.append(.logout)
+            default: break
+            }
+            snapshot.appendItems(accountItems, toSection: .account)
 
             return snapshot
         }.eraseToAnyPublisher()
@@ -54,5 +62,13 @@ final class SettingsViewModel: ViewModel {
             .queryMap { $0.currentUser?.fragments.userInfo }
             .ignoreError()
             .eraseToAnyPublisher()
+    }
+
+    func logout() {
+        actionRunner.perform(LogoutAction())
+    }
+
+    func login() {
+        actionRunner.perform(LoginAction())
     }
 }

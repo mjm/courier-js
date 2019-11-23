@@ -27,6 +27,7 @@
 		C95009EE2389A9CB00A36E64 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009ED2389A9CB00A36E64 /* UserCell.swift */; };
 		C95009F02389AB5200A36E64 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009EF2389AB5200A36E64 /* UIView.swift */; };
 		C95009F22389AF4200A36E64 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009F12389AF4200A36E64 /* UIImage.swift */; };
+		C95009F62389B60000A36E64 /* SettingsActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009F52389B60000A36E64 /* SettingsActionCell.swift */; };
 		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
 		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
 		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
@@ -103,6 +104,7 @@
 		C95009ED2389A9CB00A36E64 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		C95009EF2389AB5200A36E64 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		C95009F12389AF4200A36E64 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
+		C95009F52389B60000A36E64 /* SettingsActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsActionCell.swift; sourceTree = "<group>"; };
 		C95C6F6423808190006063A2 /* Courier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier.entitlements; sourceTree = "<group>"; };
 		C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterDeviceAction.swift; sourceTree = "<group>"; };
 		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
@@ -213,6 +215,7 @@
 				C95009DA2386229B00A36E64 /* EnvironmentCell.swift */,
 				C95009EB2389A42300A36E64 /* UserCellViewModel.swift */,
 				C95009ED2389A9CB00A36E64 /* UserCell.swift */,
+				C95009F52389B60000A36E64 /* SettingsActionCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -619,6 +622,7 @@
 				C9A671B4237D1FDE00EEE913 /* TweetBodyCellViewModel.swift in Sources */,
 				C9A749D6237A091E0046E924 /* CancelTweetAction.swift in Sources */,
 				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
+				C95009F62389B60000A36E64 /* SettingsActionCell.swift in Sources */,
 				C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */,
 				C9A36B79237BC61C0069EED1 /* SplitViewModel.swift in Sources */,
 				C9A749AB237856D00046E924 /* ApolloClient.swift in Sources */,

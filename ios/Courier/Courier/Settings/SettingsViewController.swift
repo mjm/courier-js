@@ -50,7 +50,7 @@ final class SettingsViewController: UITableViewController {
         }
 
         switch item {
-        case .environment: return indexPath
+        case .environment, .logout, .login: return indexPath
         case .user: return nil
         }
     }
@@ -60,10 +60,15 @@ final class SettingsViewController: UITableViewController {
             return
         }
 
+        tableView.deselectRow(at: indexPath, animated: true)
+
         switch item {
         case .environment(let model):
             model.toggle()
-            tableView.deselectRow(at: indexPath, animated: true)
+        case .logout:
+            viewModel.logout()
+        case .login:
+            viewModel.login()
         default: return
         }
     }
@@ -73,11 +78,13 @@ extension SettingsViewModel.Item: BindableCell {
     enum Identifier: String, CellIdentifier, CaseIterable {
         case user
         case environment
+        case action
 
         var cellType: RegisteredCellType<UITableViewCell> {
             switch self {
             case .user: return .class(UserCell.self)
             case .environment: return .class(EnvironmentCell.self)
+            case .action: return .class(SettingsActionCell.self)
             }
         }
     }
@@ -86,6 +93,7 @@ extension SettingsViewModel.Item: BindableCell {
         switch self {
         case .user: return .user
         case .environment: return .environment
+        case .logout, .login: return .action
         }
     }
 
@@ -95,6 +103,12 @@ extension SettingsViewModel.Item: BindableCell {
             (cell as! UserCell).bind(to: model)
         case .environment(let model):
             (cell as! EnvironmentCell).bind(to: model)
+        case .logout:
+            let cell = cell as! SettingsActionCell
+            cell.actionLabel = NSLocalizedString("Sign Out", comment: "")
+        case .login:
+            let cell = cell as! SettingsActionCell
+            cell.actionLabel = NSLocalizedString("Sign In", comment: "")
         }
     }
 }
