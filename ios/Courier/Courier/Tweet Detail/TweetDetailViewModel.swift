@@ -107,6 +107,10 @@ final class TweetDetailViewModel: ViewModel {
         }.eraseToAnyPublisher()
     }
 
+    var isLoading: AnyPublisher<Bool, Never> {
+        $tweetState.map { $0.isLoading }.eraseToAnyPublisher()
+    }
+
     var canSave: AnyPublisher<Bool, Never> {
         tweet.combineLatest(bodyViewModel.$body) { tweet, newBody in
             guard let tweet = tweet else { return false }

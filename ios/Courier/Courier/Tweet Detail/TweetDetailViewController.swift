@@ -30,6 +30,8 @@ final class TweetDetailViewController: UITableViewController {
                                                  target: self,
                                                  action: #selector(saveTweet))
 
+    private let contentStateView = ContentStateView()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -39,6 +41,8 @@ final class TweetDetailViewController: UITableViewController {
         navigationItem.rightBarButtonItems = [
             saveButtonItem
         ]
+
+        contentStateView.apply(to: tableView)
 
         viewModel.presenter = self
 
@@ -60,7 +64,19 @@ final class TweetDetailViewController: UITableViewController {
             dataSource!.apply(currentSnapshot, animatingDifferences: true)
         }.store(in: &cancellables)
 
+        viewModel.isLoading.sink { [weak self] loading in
+            self?.updateContentState(loading: loading)
+        }.store(in: &cancellables)
+
         viewModel.canSave.assign(to: \.isEnabled, on: saveButtonItem).store(in: &cancellables)
+    }
+
+    private func updateContentState(loading: Bool) {
+        if loading {
+            contentStateView.showLoading()
+        } else {
+            contentStateView.hide()
+        }
     }
 
     @objc func saveTweet() {

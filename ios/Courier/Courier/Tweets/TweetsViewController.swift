@@ -50,17 +50,7 @@ final class TweetsViewController: UITableViewController {
         refreshControl = UIRefreshControl()
 
         contentStateView.emptyImage = UIImage(systemName: "paperplane.fill")
-
-        tableView.backgroundView = contentStateView
-        NSLayoutConstraint.activate([
-            contentStateView.leadingAnchor.constraint(
-                equalTo: tableView.safeAreaLayoutGuide.leadingAnchor),
-            contentStateView.trailingAnchor.constraint(
-                equalTo: tableView.safeAreaLayoutGuide.trailingAnchor),
-            contentStateView.topAnchor.constraint(equalTo: tableView.safeAreaLayoutGuide.topAnchor),
-            contentStateView.bottomAnchor.constraint(
-                equalTo: tableView.safeAreaLayoutGuide.bottomAnchor),
-        ])
+        contentStateView.apply(to: tableView)
 
         viewModel.presenter = self
 
@@ -69,7 +59,7 @@ final class TweetsViewController: UITableViewController {
             .bound(to: viewModel.snapshot, animate: $animate)
 
         viewModel.isLoading.combineLatest(viewModel.isEmpty).sink { [weak self] (loading, empty) in
-            self?.updateBackgroundView(loading: loading, empty: empty)
+            self?.updateContentState(loading: loading, empty: empty)
         }.store(in: &cancellables)
 
         viewModel.$selection.combineLatest(viewModel.$selectedSection) { model, _ in model }.sink { [weak self] model in
@@ -132,7 +122,7 @@ final class TweetsViewController: UITableViewController {
         viewModel.showSettings()
     }
 
-    private func updateBackgroundView(loading: Bool, empty: Bool) {
+    private func updateContentState(loading: Bool, empty: Bool) {
         if loading {
             contentStateView.showLoading()
             tableView.tableFooterView = UIView()

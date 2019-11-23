@@ -86,4 +86,17 @@ final class ContentStateView: UIView {
     func hide() {
         isHidden = true
     }
+
+    func apply(to tableView: UITableView) {
+        tableView.backgroundView = self
+        NSLayoutConstraint.activate([
+            self.leadingAnchor.constraint(
+                equalTo: tableView.safeAreaLayoutGuide.leadingAnchor),
+            self.trailingAnchor.constraint(
+                equalTo: tableView.safeAreaLayoutGuide.trailingAnchor),
+            self.topAnchor.constraint(equalTo: tableView.safeAreaLayoutGuide.topAnchor),
+            self.bottomAnchor.constraint(
+                equalTo: tableView.safeAreaLayoutGuide.bottomAnchor),
+        ])
+    }
 }
