@@ -30,9 +30,7 @@ final class TweetDetailViewModel: ViewModel {
 
     let bodyViewModel = TweetBodyCellViewModel()
     var postTimeViewModel: TweetTimestampCellViewModel!
-//    var viewPostViewModel: TweetActionCellViewModel!
     var tweetTimeViewModel: TweetTimestampCellViewModel!
-//    var viewTweetViewModel: TweetActionCellViewModel!
 
     private var tweetSubscription: AnyCancellable?
 
@@ -40,21 +38,13 @@ final class TweetDetailViewModel: ViewModel {
         self.tweetId = tweetId
         super.init(client: client)
 
-        postTimeViewModel = TweetTimestampCellViewModel(keyPath: \.post.publishedAt) { [actionRunner] tweet in
+        postTimeViewModel = TweetTimestampCellViewModel(keyPath: \.post.publishedAt, mode: .past) { [actionRunner] tweet in
             tweet.viewPostAction?.bind(to: actionRunner)
         }
 
-        tweetTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postedAt) { [actionRunner] tweet in
+        tweetTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postedAt, mode: .past) { [actionRunner] tweet in
             tweet.viewTweetAction?.bind(to: actionRunner)
         }
-
-//        viewPostViewModel = TweetActionCellViewModel { [actionRunner] tweet in
-//            tweet.viewPostAction?.bind(to: actionRunner, title: NSLocalizedString("View Original Post", comment: ""))
-//        }
-//
-//        viewTweetViewModel = TweetActionCellViewModel { [actionRunner] tweet in
-//            tweet.viewTweetAction?.bind(to: actionRunner, title: NSLocalizedString("View on Twitter", comment: ""))
-//        }
 
         $tweetId.removeDuplicates().sink { [weak self] tweetId in
             guard let self = self else { return }
@@ -75,9 +65,7 @@ final class TweetDetailViewModel: ViewModel {
 
         $tweet.assign(to: \.tweet, on: bodyViewModel).store(in: &cancellables)
         $tweet.assign(to: \.tweet, on: postTimeViewModel).store(in: &cancellables)
-//        $tweet.assign(to: \.tweet, on: viewPostViewModel).store(in: &cancellables)
         $tweet.assign(to: \.tweet, on: tweetTimeViewModel).store(in: &cancellables)
-//        $tweet.assign(to: \.tweet, on: viewTweetViewModel).store(in: &cancellables)
     }
 
     var status: AnyPublisher<TweetStatus?, Never> {
