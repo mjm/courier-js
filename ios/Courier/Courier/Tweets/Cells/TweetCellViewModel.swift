@@ -39,6 +39,12 @@ final class TweetCellViewModel {
         }.eraseToAnyPublisher()
     }
 
+    var postAfter: AnyPublisher<Date?, Never> {
+        $tweet.map(\.postAfter).removeDuplicates().map { [dateFormatter] dateString in
+            dateString.flatMap { dateFormatter.date(from: $0) }
+        }.eraseToAnyPublisher()
+    }
+
     var cancelAction: BoundUserAction<Void>? {
         let action = tweet.cancelAction
         return action.canPerform ? action.bind(to: actionRunner, options: .destructive) : nil

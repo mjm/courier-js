@@ -29,6 +29,7 @@ final class TweetDetailViewModel: ViewModel {
     @Published private(set) var tweet: AllTweetsFields?
 
     let bodyViewModel = TweetBodyCellViewModel()
+    var autopostTimeViewModel: TweetTimestampCellViewModel!
     var postTimeViewModel: TweetTimestampCellViewModel!
     var tweetTimeViewModel: TweetTimestampCellViewModel!
 
@@ -37,6 +38,8 @@ final class TweetDetailViewModel: ViewModel {
     init(tweetId: GraphQLID? = nil, client: ApolloClient = .main) {
         self.tweetId = tweetId
         super.init(client: client)
+
+        autopostTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postAfter, mode: .future)
 
         postTimeViewModel = TweetTimestampCellViewModel(keyPath: \.post.publishedAt, mode: .past) { [actionRunner] tweet in
             tweet.viewPostAction?.bind(to: actionRunner)
@@ -64,6 +67,7 @@ final class TweetDetailViewModel: ViewModel {
         }.store(in: &cancellables)
 
         $tweet.assign(to: \.tweet, on: bodyViewModel).store(in: &cancellables)
+        $tweet.assign(to: \.tweet, on: autopostTimeViewModel).store(in: &cancellables)
         $tweet.assign(to: \.tweet, on: postTimeViewModel).store(in: &cancellables)
         $tweet.assign(to: \.tweet, on: tweetTimeViewModel).store(in: &cancellables)
     }
@@ -82,6 +86,11 @@ final class TweetDetailViewModel: ViewModel {
                 snapshot.appendItems([.body(self.bodyViewModel)])
 
                 snapshot.appendSections([.timestamps])
+
+                if tweet.postAfter != nil {
+                    snapshot.appendItems([.timestamp(self.autopostTimeViewModel, NSLocalizedString("Autoposting", comment: ""))])
+                }
+
                 snapshot.appendItems([.timestamp(self.postTimeViewModel, NSLocalizedString("Published", comment: ""))])
 
                 if !(tweet.postedTweetId?.isEmpty ?? true) {

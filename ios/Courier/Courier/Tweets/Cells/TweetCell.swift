@@ -54,8 +54,8 @@ final class TweetCell: CombinableTableViewCell {
         model.body.optionally().assign(to: \.text, on: bodyLabel).store(in: &cancellables)
 
         let currentTime = Timer.publish(every: 10, on: .main, in: .common).autoconnect().prepend(Date())
-        let statusText = model.status.combineLatest(model.postedAt, currentTime).map { [relativeDateFormatter] input -> String? in
-            let (status, postedAt, currentTime) = input
+        let statusText = model.status.combineLatest(model.postedAt, model.postAfter, currentTime).map { [relativeDateFormatter] input -> String? in
+            let (status, postedAt, postAfter, currentTime) = input
 
             switch status {
             case .canceled: return NSLocalizedString("Canceled", comment: "")
@@ -65,6 +65,13 @@ final class TweetCell: CombinableTableViewCell {
                     return String(format: NSLocalizedString("Posted %@", comment: ""), dateString)
                 } else {
                     return NSLocalizedString("Posted", comment: "")
+                }
+            case .draft:
+                if let postAfter = postAfter {
+                    let dateString = relativeDateFormatter.localizedString(for: postAfter, relativeTo: currentTime)
+                    return String(format: NSLocalizedString("Will post %@", comment: ""), dateString)
+                } else {
+                    return nil
                 }
             default: return nil
             }
