@@ -34,6 +34,8 @@ final class SplitViewController: UISplitViewController {
 
         detailViewController.navigationItem.leftBarButtonItem = displayModeButtonItem
         detailViewController.navigationItem.leftItemsSupplementBackButton = true
+
+        preferredDisplayMode = .allVisible
     }
 
     required init?(coder: NSCoder) {
