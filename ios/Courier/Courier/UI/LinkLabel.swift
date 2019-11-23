@@ -90,6 +90,12 @@ class LinkLabel: UILabel, UIGestureRecognizerDelegate {
         textContainer.size = bounds.size
     }
 
+    override func tintColorDidChange() {
+        super.tintColorDidChange()
+
+        updateAttributedText(text)
+    }
+
     private func updateAttributedText(_ text: String?) {
         guard let text = text else {
             attributedText = nil
@@ -99,8 +105,7 @@ class LinkLabel: UILabel, UIGestureRecognizerDelegate {
         let attributed = NSMutableAttributedString(string: text, attributes: [.foregroundColor: foregroundColor])
         for range in linkRanges {
             attributed.addAttributes([
-                .foregroundColor: UIColor.link,
-                .underlineStyle: true as NSNumber,
+                .foregroundColor: tintColor!,
             ], range: range)
         }
 
