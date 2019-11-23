@@ -7,16 +7,36 @@
 //
 
 import Apollo
+import ApolloSQLite
 import Auth0
+import Events
 import Foundation
 
 extension ApolloClient {
     static let main: ApolloClient = {
-        let delegate = ApolloClientDelegate(credentialsManager: .shared)
-        let transport = HTTPNetworkTransport(url: Endpoint.current.url.appendingPathComponent("/graphql"), delegate: delegate)
+        var event = EventBuilder()
 
-        // TODO: make this an on-disk cache
-        let store = ApolloStore(cache: InMemoryNormalizedCache())
+        let delegate = ApolloClientDelegate(credentialsManager: .shared)
+        let apiURL = Endpoint.current.url.appendingPathComponent("/graphql")
+        event[.apiURL] = apiURL
+
+        let transport = HTTPNetworkTransport(url: apiURL, delegate: delegate)
+
+        let cache: NormalizedCache
+        do {
+            let cachesURL = try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            let cacheURL = cachesURL.appendingPathComponent("ApolloCache.db")
+            event[.cacheURL] = cacheURL
+
+            cache = try SQLiteNormalizedCache(fileURL: cacheURL)
+            event[.cacheType] = "sqlite"
+        } catch {
+            event.error = error
+            cache = InMemoryNormalizedCache()
+            event[.cacheType] = "in-memory"
+        }
+
+        let store = ApolloStore(cache: cache)
         store.cacheKeyForObject = { obj in
             if let typename = obj["__typename"] as? String, let id = obj["id"] as? String {
                 return "\(typename)__\(id)"
@@ -25,19 +45,10 @@ extension ApolloClient {
             return nil
         }
 
-        store.withinReadWriteTransaction({ t in
-            var upcomingData = try UpcomingTweetsQuery.Data(allTweets: .init(jsonObject: [:]))
-            upcomingData.allTweets.fragments.tweetConnectionFields = try TweetConnectionFields(tweets: AllTweetsFields.fakeUpcomingTweets)
+        let client = ApolloClient(networkTransport: transport, store: store)
+        event.send("create apollo client")
 
-            try t.write(data: upcomingData, forQuery: UpcomingTweetsQuery())
-
-            var pastData = try PastTweetsQuery.Data(allTweets: .init(jsonObject: [:]))
-            pastData.allTweets.fragments.tweetConnectionFields = try TweetConnectionFields(tweets: AllTweetsFields.fakePastTweets)
-
-            try t.write(data: pastData, forQuery: PastTweetsQuery())
-        })
-
-        return ApolloClient(networkTransport: transport, store: store)
+        return client
     }()
 }
 

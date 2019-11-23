@@ -9,6 +9,11 @@
 import Events
 
 extension Event.Key {
+    // apollo keys
+    static let cacheURL: Event.Key = "cache_url"
+    static let cacheType: Event.Key = "cache_type"
+    static let apiURL: Event.Key = "api_url"
+
     // remote notifications keys
     static let registerTime: Event.Key = "register_ms"
     static let tokenLength: Event.Key = "token_length"
