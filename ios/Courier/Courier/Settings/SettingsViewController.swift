@@ -44,6 +44,17 @@ final class SettingsViewController: UITableViewController {
         navigationController?.dismiss(animated: true)
     }
 
+    override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let item = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+
+        switch item {
+        case .environment: return indexPath
+        case .user: return nil
+        }
+    }
+
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let item = dataSource.itemIdentifier(for: indexPath) else {
             return
@@ -53,16 +64,19 @@ final class SettingsViewController: UITableViewController {
         case .environment(let model):
             model.toggle()
             tableView.deselectRow(at: indexPath, animated: true)
+        default: return
         }
     }
 }
 
 extension SettingsViewModel.Item: BindableCell {
     enum Identifier: String, CellIdentifier, CaseIterable {
+        case user
         case environment
 
         var cellType: RegisteredCellType<UITableViewCell> {
             switch self {
+            case .user: return .class(UserCell.self)
             case .environment: return .class(EnvironmentCell.self)
             }
         }
@@ -70,12 +84,15 @@ extension SettingsViewModel.Item: BindableCell {
 
     var cellIdentifier: Identifier {
         switch self {
+        case .user: return .user
         case .environment: return .environment
         }
     }
 
     func bind(to cell: UITableViewCell) {
         switch self {
+        case .user(let model):
+            (cell as! UserCell).bind(to: model)
         case .environment(let model):
             (cell as! EnvironmentCell).bind(to: model)
         }

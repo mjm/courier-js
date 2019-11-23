@@ -22,6 +22,11 @@
 		C95009E423879F7F00A36E64 /* TweetTimestampCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E323879F7F00A36E64 /* TweetTimestampCellViewModel.swift */; };
 		C95009E62387A2EA00A36E64 /* TweetTimestampCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E52387A2EA00A36E64 /* TweetTimestampCell.swift */; };
 		C95009E82388F52900A36E64 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E72388F52900A36E64 /* Store.swift */; };
+		C95009EA2389925200A36E64 /* User.graphql in Resources */ = {isa = PBXBuildFile; fileRef = C95009E92389925200A36E64 /* User.graphql */; };
+		C95009EC2389A42300A36E64 /* UserCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009EB2389A42300A36E64 /* UserCellViewModel.swift */; };
+		C95009EE2389A9CB00A36E64 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009ED2389A9CB00A36E64 /* UserCell.swift */; };
+		C95009F02389AB5200A36E64 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009EF2389AB5200A36E64 /* UIView.swift */; };
+		C95009F22389AF4200A36E64 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009F12389AF4200A36E64 /* UIImage.swift */; };
 		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
 		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
 		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
@@ -93,6 +98,11 @@
 		C95009E323879F7F00A36E64 /* TweetTimestampCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTimestampCellViewModel.swift; sourceTree = "<group>"; };
 		C95009E52387A2EA00A36E64 /* TweetTimestampCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTimestampCell.swift; sourceTree = "<group>"; };
 		C95009E72388F52900A36E64 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
+		C95009E92389925200A36E64 /* User.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = User.graphql; sourceTree = "<group>"; tabWidth = 2; };
+		C95009EB2389A42300A36E64 /* UserCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCellViewModel.swift; sourceTree = "<group>"; };
+		C95009ED2389A9CB00A36E64 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
+		C95009EF2389AB5200A36E64 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
+		C95009F12389AF4200A36E64 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		C95C6F6423808190006063A2 /* Courier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier.entitlements; sourceTree = "<group>"; };
 		C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterDeviceAction.swift; sourceTree = "<group>"; };
 		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
@@ -171,6 +181,7 @@
 			children = (
 				C95009C62384F5F100A36E64 /* LinkLabel.swift */,
 				C95009E1238793A400A36E64 /* ContentStateView.swift */,
+				C95009EF2389AB5200A36E64 /* UIView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -200,6 +211,8 @@
 			children = (
 				C95009D82386204F00A36E64 /* EnvironmentCellViewModel.swift */,
 				C95009DA2386229B00A36E64 /* EnvironmentCell.swift */,
+				C95009EB2389A42300A36E64 /* UserCellViewModel.swift */,
+				C95009ED2389A9CB00A36E64 /* UserCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -323,6 +336,7 @@
 			children = (
 				C95C6F672381FD10006063A2 /* Notifications.graphql */,
 				C9A749A3237853D40046E924 /* Tweets.graphql */,
+				C95009E92389925200A36E64 /* User.graphql */,
 			);
 			path = Queries;
 			sourceTree = "<group>";
@@ -334,6 +348,7 @@
 				C9A749D0237A02A60046E924 /* ApplyingChanges.swift */,
 				C9A671B9237E4EA100EEE913 /* ControlEvent.swift */,
 				C9A671BB237E539200EEE913 /* SegmentedControl.swift */,
+				C95009F12389AF4200A36E64 /* UIImage.swift */,
 			);
 			path = Combine;
 			sourceTree = "<group>";
@@ -505,6 +520,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C95009EA2389925200A36E64 /* User.graphql in Resources */,
 				C9A7497C237852450046E924 /* LaunchScreen.storyboard in Resources */,
 				C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */,
 				C9A74979237852450046E924 /* Assets.xcassets in Resources */,
@@ -531,6 +547,7 @@
 			inputPaths = (
 				"$(SRCROOT)/Courier/Queries/Tweets.graphql",
 				"$(SRCROOT)/Courier/Queries/Notifications.graphql",
+				"$(SRCROOT)/Courier/Queries/User.graphql",
 			);
 			name = "Generate Apollo GraphQL API";
 			outputFileListPaths = (
@@ -540,7 +557,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Go to the build root and search up the chain to find the Derived Data Path where the source packages are checked out.\nDERIVED_DATA_CANDIDATE=\"${BUILD_ROOT}\"\n\nwhile ! [ -d \"${DERIVED_DATA_CANDIDATE}/SourcePackages\" ]; do\n  if [ \"${DERIVED_DATA_CANDIDATE}\" = / ]; then\n    echo >&2 \"error: Unable to locate SourcePackages directory from BUILD_ROOT: '${BUILD_ROOT}'\"\n    exit 1\n  fi\n\n  DERIVED_DATA_CANDIDATE=\"$(dirname \"${DERIVED_DATA_CANDIDATE}\")\"\ndone\n\n# Grab a reference to the directory where scripts are checked out\nSCRIPT_PATH=\"${DERIVED_DATA_CANDIDATE}/SourcePackages/checkouts/apollo-ios/scripts\"\n\nif [ -z \"${SCRIPT_PATH}\" ]; then\n    echo >&2 \"error: Couldn't find the CLI script in your checked out SPM packages; make sure to add the framework to your project.\"\n    exit 1\nfi\n\ncd \"${SRCROOT}/${TARGET_NAME}\"\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh schema:download --endpoint=https://courier.blog/graphql schema.json\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/*.graphql --localSchemaFile=\"schema.json\" API.swift\n";
+			shellScript = "# Go to the build root and search up the chain to find the Derived Data Path where the source packages are checked out.\nDERIVED_DATA_CANDIDATE=\"${BUILD_ROOT}\"\n\nwhile ! [ -d \"${DERIVED_DATA_CANDIDATE}/SourcePackages\" ]; do\n  if [ \"${DERIVED_DATA_CANDIDATE}\" = / ]; then\n    echo >&2 \"error: Unable to locate SourcePackages directory from BUILD_ROOT: '${BUILD_ROOT}'\"\n    exit 1\n  fi\n\n  DERIVED_DATA_CANDIDATE=\"$(dirname \"${DERIVED_DATA_CANDIDATE}\")\"\ndone\n\n# Grab a reference to the directory where scripts are checked out\nSCRIPT_PATH=\"${DERIVED_DATA_CANDIDATE}/SourcePackages/checkouts/apollo-ios/scripts\"\n\nif [ -z \"${SCRIPT_PATH}\" ]; then\n    echo >&2 \"error: Couldn't find the CLI script in your checked out SPM packages; make sure to add the framework to your project.\"\n    exit 1\nfi\n\ncd \"${SRCROOT}/${TARGET_NAME}\"\n# \"${SCRIPT_PATH}\"/run-bundled-codegen.sh schema:download --endpoint=https://courier.blog/graphql schema.json\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/*.graphql --localSchemaFile=\"schema.json\" API.swift\n";
 		};
 		C9A749B32378B0060046E924 /* Copy Carthage Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -571,13 +588,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				C95009CC2385039700A36E64 /* TweetActionCellViewModel.swift in Sources */,
+				C95009F22389AF4200A36E64 /* UIImage.swift in Sources */,
 				C9A36B76237BC4070069EED1 /* TweetDetailViewController.swift in Sources */,
 				C9A7496E237852430046E924 /* AppDelegate.swift in Sources */,
+				C95009F02389AB5200A36E64 /* UIView.swift in Sources */,
 				C9A671BC237E539200EEE913 /* SegmentedControl.swift in Sources */,
 				C9A36B71237BC0380069EED1 /* UncancelTweetAction.swift in Sources */,
 				C95009E82388F52900A36E64 /* Store.swift in Sources */,
 				C95009D623861EA700A36E64 /* SettingsViewController.swift in Sources */,
 				C9A749C323790D710046E924 /* LogoutAction.swift in Sources */,
+				C95009EE2389A9CB00A36E64 /* UserCell.swift in Sources */,
 				C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */,
 				C9A671B8237E3EDB00EEE913 /* PostTweetAction.swift in Sources */,
 				C9A671BA237E4EA100EEE913 /* ControlEvent.swift in Sources */,
@@ -591,6 +611,7 @@
 				C9A749D1237A02A60046E924 /* ApplyingChanges.swift in Sources */,
 				C9A36B7B237BC6240069EED1 /* SplitViewController.swift in Sources */,
 				C95009D92386204F00A36E64 /* EnvironmentCellViewModel.swift in Sources */,
+				C95009EC2389A42300A36E64 /* UserCellViewModel.swift in Sources */,
 				C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */,
 				C95009E2238793A400A36E64 /* ContentStateView.swift in Sources */,
 				C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */,

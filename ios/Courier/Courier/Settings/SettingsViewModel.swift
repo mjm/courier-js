@@ -16,27 +16,43 @@ final class SettingsViewModel: ViewModel {
     }
 
     enum Item: Hashable {
+        case user(UserCellViewModel)
         case environment(EnvironmentCellViewModel)
     }
 
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
 
-    var accountItems: [Item]!
+    @Published private(set) var userState: QueryState<UserInfo?> = .loaded(nil)
+
+    var userViewModel = UserCellViewModel()
+    var environmentViewModel = EnvironmentCellViewModel()
 
     override init(client: ApolloClient = .main) {
         super.init(client: client)
 
-        accountItems = [
-            .environment(EnvironmentCellViewModel())
-        ]
+        userInfo.assign(to: \.userState, on: self, weak: true).store(in: &cancellables)
+        $userState.ignoreLoading().assign(to: \.user, on: userViewModel).store(in: &cancellables)
     }
 
     var snapshot: AnyPublisher<Snapshot, Never> {
-        var snapshot = Snapshot()
+        userInfo.map { [weak self] user in
+            var snapshot = Snapshot()
+            guard let self = self else { return snapshot }
 
-        snapshot.appendSections([.account])
-        snapshot.appendItems(accountItems, toSection: .account)
+            snapshot.appendSections([.account])
+            snapshot.appendItems([
+                .user(self.userViewModel),
+                .environment(self.environmentViewModel),
+            ], toSection: .account)
 
-        return Just(snapshot).eraseToAnyPublisher()
+            return snapshot
+        }.eraseToAnyPublisher()
+    }
+
+    private var userInfo: AnyPublisher<QueryState<UserInfo?>, Never> {
+        apolloClient.publisher(query: CurrentUserQuery())
+            .queryMap { $0.currentUser?.fragments.userInfo }
+            .ignoreError()
+            .eraseToAnyPublisher()
     }
 }

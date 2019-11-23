@@ -1,0 +1,24 @@
+query CurrentUser {
+  currentUser {
+    ...userInfo
+  }
+}
+
+fragment userInfo on User {
+  name
+  nickname
+  picture
+  customer {
+    creditCard {
+      brand
+      lastFour
+      expirationMonth
+      expirationYear
+    }
+  }
+  subscription {
+    status
+    periodEnd
+  }
+  subscriptionStatusOverride
+}

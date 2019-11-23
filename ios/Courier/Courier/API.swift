@@ -258,6 +258,56 @@ public enum TweetAction: RawRepresentable, Equatable, Hashable, CaseIterable, Ap
   }
 }
 
+public enum SubscriptionStatus: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
+  public typealias RawValue = String
+  case active
+  case canceled
+  case expired
+  case inactive
+  /// Auto generated constant for unknown enum values
+  case __unknown(RawValue)
+
+  public init?(rawValue: RawValue) {
+    switch rawValue {
+      case "ACTIVE": self = .active
+      case "CANCELED": self = .canceled
+      case "EXPIRED": self = .expired
+      case "INACTIVE": self = .inactive
+      default: self = .__unknown(rawValue)
+    }
+  }
+
+  public var rawValue: RawValue {
+    switch self {
+      case .active: return "ACTIVE"
+      case .canceled: return "CANCELED"
+      case .expired: return "EXPIRED"
+      case .inactive: return "INACTIVE"
+      case .__unknown(let value): return value
+    }
+  }
+
+  public static func == (lhs: SubscriptionStatus, rhs: SubscriptionStatus) -> Bool {
+    switch (lhs, rhs) {
+      case (.active, .active): return true
+      case (.canceled, .canceled): return true
+      case (.expired, .expired): return true
+      case (.inactive, .inactive): return true
+      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
+      default: return false
+    }
+  }
+
+  public static var allCases: [SubscriptionStatus] {
+    return [
+      .active,
+      .canceled,
+      .expired,
+      .inactive,
+    ]
+  }
+}
+
 public final class RegisterDeviceMutation: GraphQLMutation {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition =
@@ -1314,6 +1364,103 @@ public final class EditTweetMutation: GraphQLMutation {
   }
 }
 
+public final class CurrentUserQuery: GraphQLQuery {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    query CurrentUser {
+      currentUser {
+        __typename
+        ...userInfo
+      }
+    }
+    """
+
+  public let operationName = "CurrentUser"
+
+  public var queryDocument: String { return operationDefinition.appending(UserInfo.fragmentDefinition) }
+
+  public init() {
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Query"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("currentUser", type: .object(CurrentUser.selections)),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(currentUser: CurrentUser? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "currentUser": currentUser.flatMap { (value: CurrentUser) -> ResultMap in value.resultMap }])
+    }
+
+    public var currentUser: CurrentUser? {
+      get {
+        return (resultMap["currentUser"] as? ResultMap).flatMap { CurrentUser(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "currentUser")
+      }
+    }
+
+    public struct CurrentUser: GraphQLSelectionSet {
+      public static let possibleTypes = ["User"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLFragmentSpread(UserInfo.self),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var fragments: Fragments {
+        get {
+          return Fragments(unsafeResultMap: resultMap)
+        }
+        set {
+          resultMap += newValue.resultMap
+        }
+      }
+
+      public struct Fragments {
+        public private(set) var resultMap: ResultMap
+
+        public init(unsafeResultMap: ResultMap) {
+          self.resultMap = unsafeResultMap
+        }
+
+        public var userInfo: UserInfo {
+          get {
+            return UserInfo(unsafeResultMap: resultMap)
+          }
+          set {
+            resultMap += newValue.resultMap
+          }
+        }
+      }
+    }
+  }
+}
+
 public struct TweetConnectionFields: GraphQLFragment {
   /// The raw GraphQL definition of this fragment.
   public static let fragmentDefinition =
@@ -1699,6 +1846,271 @@ public struct AllTweetsFields: GraphQLFragment {
       }
       set {
         resultMap.updateValue(newValue, forKey: "modifiedAt")
+      }
+    }
+  }
+}
+
+public struct UserInfo: GraphQLFragment {
+  /// The raw GraphQL definition of this fragment.
+  public static let fragmentDefinition =
+    """
+    fragment userInfo on User {
+      __typename
+      name
+      nickname
+      picture
+      customer {
+        __typename
+        creditCard {
+          __typename
+          brand
+          lastFour
+          expirationMonth
+          expirationYear
+        }
+      }
+      subscription {
+        __typename
+        status
+        periodEnd
+      }
+      subscriptionStatusOverride
+    }
+    """
+
+  public static let possibleTypes = ["User"]
+
+  public static let selections: [GraphQLSelection] = [
+    GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+    GraphQLField("name", type: .nonNull(.scalar(String.self))),
+    GraphQLField("nickname", type: .nonNull(.scalar(String.self))),
+    GraphQLField("picture", type: .nonNull(.scalar(String.self))),
+    GraphQLField("customer", type: .object(Customer.selections)),
+    GraphQLField("subscription", type: .object(Subscription.selections)),
+    GraphQLField("subscriptionStatusOverride", type: .scalar(SubscriptionStatus.self)),
+  ]
+
+  public private(set) var resultMap: ResultMap
+
+  public init(unsafeResultMap: ResultMap) {
+    self.resultMap = unsafeResultMap
+  }
+
+  public init(name: String, nickname: String, picture: String, customer: Customer? = nil, subscription: Subscription? = nil, subscriptionStatusOverride: SubscriptionStatus? = nil) {
+    self.init(unsafeResultMap: ["__typename": "User", "name": name, "nickname": nickname, "picture": picture, "customer": customer.flatMap { (value: Customer) -> ResultMap in value.resultMap }, "subscription": subscription.flatMap { (value: Subscription) -> ResultMap in value.resultMap }, "subscriptionStatusOverride": subscriptionStatusOverride])
+  }
+
+  public var __typename: String {
+    get {
+      return resultMap["__typename"]! as! String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "__typename")
+    }
+  }
+
+  public var name: String {
+    get {
+      return resultMap["name"]! as! String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "name")
+    }
+  }
+
+  public var nickname: String {
+    get {
+      return resultMap["nickname"]! as! String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "nickname")
+    }
+  }
+
+  public var picture: String {
+    get {
+      return resultMap["picture"]! as! String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "picture")
+    }
+  }
+
+  public var customer: Customer? {
+    get {
+      return (resultMap["customer"] as? ResultMap).flatMap { Customer(unsafeResultMap: $0) }
+    }
+    set {
+      resultMap.updateValue(newValue?.resultMap, forKey: "customer")
+    }
+  }
+
+  public var subscription: Subscription? {
+    get {
+      return (resultMap["subscription"] as? ResultMap).flatMap { Subscription(unsafeResultMap: $0) }
+    }
+    set {
+      resultMap.updateValue(newValue?.resultMap, forKey: "subscription")
+    }
+  }
+
+  public var subscriptionStatusOverride: SubscriptionStatus? {
+    get {
+      return resultMap["subscriptionStatusOverride"] as? SubscriptionStatus
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "subscriptionStatusOverride")
+    }
+  }
+
+  public struct Customer: GraphQLSelectionSet {
+    public static let possibleTypes = ["Customer"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+      GraphQLField("creditCard", type: .object(CreditCard.selections)),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(creditCard: CreditCard? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Customer", "creditCard": creditCard.flatMap { (value: CreditCard) -> ResultMap in value.resultMap }])
+    }
+
+    public var __typename: String {
+      get {
+        return resultMap["__typename"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "__typename")
+      }
+    }
+
+    public var creditCard: CreditCard? {
+      get {
+        return (resultMap["creditCard"] as? ResultMap).flatMap { CreditCard(unsafeResultMap: $0) }
+      }
+      set {
+        resultMap.updateValue(newValue?.resultMap, forKey: "creditCard")
+      }
+    }
+
+    public struct CreditCard: GraphQLSelectionSet {
+      public static let possibleTypes = ["CreditCard"]
+
+      public static let selections: [GraphQLSelection] = [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("brand", type: .nonNull(.scalar(String.self))),
+        GraphQLField("lastFour", type: .nonNull(.scalar(String.self))),
+        GraphQLField("expirationMonth", type: .nonNull(.scalar(Int.self))),
+        GraphQLField("expirationYear", type: .nonNull(.scalar(Int.self))),
+      ]
+
+      public private(set) var resultMap: ResultMap
+
+      public init(unsafeResultMap: ResultMap) {
+        self.resultMap = unsafeResultMap
+      }
+
+      public init(brand: String, lastFour: String, expirationMonth: Int, expirationYear: Int) {
+        self.init(unsafeResultMap: ["__typename": "CreditCard", "brand": brand, "lastFour": lastFour, "expirationMonth": expirationMonth, "expirationYear": expirationYear])
+      }
+
+      public var __typename: String {
+        get {
+          return resultMap["__typename"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "__typename")
+        }
+      }
+
+      public var brand: String {
+        get {
+          return resultMap["brand"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "brand")
+        }
+      }
+
+      public var lastFour: String {
+        get {
+          return resultMap["lastFour"]! as! String
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "lastFour")
+        }
+      }
+
+      public var expirationMonth: Int {
+        get {
+          return resultMap["expirationMonth"]! as! Int
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "expirationMonth")
+        }
+      }
+
+      public var expirationYear: Int {
+        get {
+          return resultMap["expirationYear"]! as! Int
+        }
+        set {
+          resultMap.updateValue(newValue, forKey: "expirationYear")
+        }
+      }
+    }
+  }
+
+  public struct Subscription: GraphQLSelectionSet {
+    public static let possibleTypes = ["UserSubscription"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+      GraphQLField("status", type: .nonNull(.scalar(SubscriptionStatus.self))),
+      GraphQLField("periodEnd", type: .nonNull(.scalar(String.self))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(status: SubscriptionStatus, periodEnd: String) {
+      self.init(unsafeResultMap: ["__typename": "UserSubscription", "status": status, "periodEnd": periodEnd])
+    }
+
+    public var __typename: String {
+      get {
+        return resultMap["__typename"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "__typename")
+      }
+    }
+
+    public var status: SubscriptionStatus {
+      get {
+        return resultMap["status"]! as! SubscriptionStatus
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "status")
+      }
+    }
+
+    public var periodEnd: String {
+      get {
+        return resultMap["periodEnd"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "periodEnd")
       }
     }
   }
