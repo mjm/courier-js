@@ -127,6 +127,11 @@ final class TweetsViewModel: ViewModel {
         }.removeDuplicates().eraseToAnyPublisher()
     }
 
+    func item(for id: GraphQLID) -> Item? {
+        upcomingTweetViewModels.first { $0.tweet.id == id }
+            ?? pastTweetViewModels.first { $0.tweet.id == id }
+    }
+
     func refreshCurrentSection() {
         refreshingSections.insert(selectedSection)
     }

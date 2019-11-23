@@ -72,6 +72,16 @@ final class TweetsViewController: UITableViewController {
             self?.updateBackgroundView(loading: loading, empty: empty)
         }.store(in: &cancellables)
 
+        viewModel.$selection.combineLatest(viewModel.$selectedSection) { model, _ in model }.sink { [weak self] model in
+            guard let self = self else { return }
+
+            if let model = model, let indexPath = self.dataSource.indexPath(for: model) {
+                self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+            } else if let indexPath = self.tableView.indexPathForSelectedRow {
+                self.tableView.deselectRow(at: indexPath, animated: false)
+            }
+        }.store(in: &cancellables)
+
         viewModel.$selectedSection.map { section in
             switch section {
             case .upcoming: return NSLocalizedString("You don't have any upcoming tweets.", comment: "")
@@ -140,10 +150,7 @@ final class TweetsViewController: UITableViewController {
             return
         }
 
-        viewModel.selection = model
-        if let detailViewController = (splitViewController as? SplitViewController)?.detailNavController {
-            self.splitViewController?.showDetailViewController(detailViewController, sender: self)
-        }
+        selectAndShow(model)
     }
 
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -173,6 +180,47 @@ final class TweetsViewController: UITableViewController {
         post.backgroundColor = .systemGreen
 
         return UISwipeActionsConfiguration(actions: [post])
+    }
+
+    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let model = dataSource.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+
+        return UIContextMenuConfiguration(identifier: model.tweet.id as NSString, previewProvider: nil) { _ in
+            var actions = [UIMenuElement]()
+
+            if let cancel = model.cancelAction {
+                actions.append(cancel.menuAction(image: UIImage(systemName: "nosign")))
+            }
+
+            if let uncancel = model.uncancelAction {
+                actions.append(uncancel.menuAction(image: UIImage(systemName: "arrowshape.turn.up.left")))
+            }
+
+            if let post = model.postAction {
+                actions.append(post.menuAction(image: UIImage(systemName: "text.bubble")))
+            }
+
+            return UIMenu(title: "", children: actions)
+        }
+    }
+
+    override func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        guard let id = configuration.identifier as? String, let model = viewModel.item(for: id) else {
+            return
+        }
+
+        animator.addAnimations {
+            self.selectAndShow(model)
+        }
+    }
+
+    private func selectAndShow(_ model: TweetsViewModel.Item) {
+        viewModel.selection = model
+        if let detailViewController = (splitViewController as? SplitViewController)?.detailNavController {
+            self.splitViewController?.showDetailViewController(detailViewController, sender: self)
+        }
     }
 }
 
