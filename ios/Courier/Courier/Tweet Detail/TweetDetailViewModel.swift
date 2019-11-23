@@ -26,7 +26,7 @@ final class TweetDetailViewModel: ViewModel {
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
 
     @Published var tweetId: GraphQLID?
-    @Published private(set) var tweet: AllTweetsFields?
+    @Published private(set) var tweetState: QueryState<AllTweetsFields?> = .loaded(nil)
 
     let bodyViewModel = TweetBodyCellViewModel()
     var autopostTimeViewModel: TweetTimestampCellViewModel!
@@ -52,34 +52,39 @@ final class TweetDetailViewModel: ViewModel {
         $tweetId.removeDuplicates().sink { [weak self] tweetId in
             guard let self = self else { return }
 
-            // clear out stale data
-            self.tweet = nil
-
             guard let tweetId = tweetId else {
+                self.tweetState = .loaded(nil)
                 return
             }
 
             self.tweetSubscription = self.apolloClient.publisher(query: GetTweetQuery(id: tweetId))
-                .ignoreLoading()
+                .queryMap { data in data.tweet?.fragments.allTweetsFields }
                 .ignoreError()
-                .map { data in data.tweet?.fragments.allTweetsFields }
-                .assign(to: \.tweet, on: self, weak: true)
+                .assign(to: \.tweetState, on: self, weak: true)
         }.store(in: &cancellables)
 
-        $tweet.assign(to: \.tweet, on: bodyViewModel).store(in: &cancellables)
-        $tweet.assign(to: \.tweet, on: autopostTimeViewModel).store(in: &cancellables)
-        $tweet.assign(to: \.tweet, on: postTimeViewModel).store(in: &cancellables)
-        $tweet.assign(to: \.tweet, on: tweetTimeViewModel).store(in: &cancellables)
+        tweet.assign(to: \.tweet, on: bodyViewModel).store(in: &cancellables)
+        tweet.assign(to: \.tweet, on: autopostTimeViewModel).store(in: &cancellables)
+        tweet.assign(to: \.tweet, on: postTimeViewModel).store(in: &cancellables)
+        tweet.assign(to: \.tweet, on: tweetTimeViewModel).store(in: &cancellables)
+    }
+
+    var tweet: AnyPublisher<AllTweetsFields?, Never> {
+        $tweetState.ignoreLoading()
     }
 
     var status: AnyPublisher<TweetStatus?, Never> {
-        $tweet.map { $0?.status }.eraseToAnyPublisher()
+        tweet.map { $0?.status }.eraseToAnyPublisher()
+    }
+
+    var draftBody: AnyPublisher<String?, Never> {
+        bodyViewModel.$body.eraseToAnyPublisher()
     }
 
     var snapshot: AnyPublisher<Snapshot, Never> {
-        $tweet.combineLatest(bodyViewModel.$body) { [weak self] tweet, _ in
+        $tweetState.map { [weak self] tweetState in
             var snapshot = Snapshot()
-            guard let self = self else { return snapshot }
+            guard let self = self, case .loaded(let tweet) = tweetState else { return snapshot }
 
             if let tweet = tweet {
                 snapshot.appendSections([.content])
@@ -103,7 +108,7 @@ final class TweetDetailViewModel: ViewModel {
     }
 
     var canSave: AnyPublisher<Bool, Never> {
-        $tweet.combineLatest(bodyViewModel.$body) { tweet, newBody in
+        tweet.combineLatest(bodyViewModel.$body) { tweet, newBody in
             guard let tweet = tweet else { return false }
 
             return tweet.status == .draft && tweet.body != newBody
@@ -111,7 +116,7 @@ final class TweetDetailViewModel: ViewModel {
     }
 
     var saveAction: BoundUserAction<Void>? {
-        guard let existingTweet = tweet else { return nil }
+        guard case let .loaded(existingTweet?) = tweetState else { return nil }
 
         var tweet = existingTweet
         if let newBody = bodyViewModel.body {

@@ -52,16 +52,15 @@ final class TweetDetailViewController: UITableViewController {
         }.assign(to: \.title, on: navigationItem).store(in: &cancellables)
 
         dataSource = DataSource(tableView)
-            .bound(to: viewModel.snapshot, animate: $animate, on: RunLoop.main)
+            .bound(to: viewModel.snapshot, animate: Just(false), on: RunLoop.main)
+
+        // trigger animated updates when typing in the text view
+        viewModel.draftBody.sink { [dataSource] _ in
+            let currentSnapshot = dataSource!.snapshot()
+            dataSource!.apply(currentSnapshot, animatingDifferences: true)
+        }.store(in: &cancellables)
 
         viewModel.canSave.assign(to: \.isEnabled, on: saveButtonItem).store(in: &cancellables)
-    }
-
-    @Published private var animate = false
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        animate = true
     }
 
     @objc func saveTweet() {
