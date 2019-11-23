@@ -10,14 +10,14 @@ import CombinableUI
 import UIKit
 
 final class TweetCell: CombinableTableViewCell {
-    private let bodyLabel = LinkLabel()
-    private let statusLabel = UILabel()
+    private let bodyLabel = LinkLabel().usingAutoLayout()
+    private let imagesView = ImageGridView().usingAutoLayout()
+    private let statusLabel = UILabel().usingAutoLayout()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        let stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+        let stackView = UIStackView().usingAutoLayout()
         stackView.axis = .vertical
         stackView.spacing = 8
 
@@ -33,6 +33,8 @@ final class TweetCell: CombinableTableViewCell {
         bodyLabel.lineBreakMode = .byWordWrapping
         bodyLabel.numberOfLines = 0
         stackView.addArrangedSubview(bodyLabel)
+
+        stackView.addArrangedSubview(imagesView)
 
         statusLabel.font = .preferredFont(forTextStyle: .caption1)
         stackView.addArrangedSubview(statusLabel)
@@ -52,6 +54,7 @@ final class TweetCell: CombinableTableViewCell {
 
     func bind(to model: TweetCellViewModel) {
         model.body.optionally().assign(to: \.text, on: bodyLabel).store(in: &cancellables)
+        model.body.map { $0.isEmpty }.assign(to: \.isHidden, on: bodyLabel).store(in: &cancellables)
 
         let currentTime = Timer.publish(every: 10, on: .main, in: .common).autoconnect().prepend(Date())
         let statusText = model.status.combineLatest(model.postedAt, model.postAfter, currentTime).map { [relativeDateFormatter] input -> String? in
@@ -89,5 +92,14 @@ final class TweetCell: CombinableTableViewCell {
         }
         textColor.assign(to: \.foregroundColor, on: bodyLabel).store(in: &cancellables)
         textColor.optionally().assign(to: \.textColor, on: statusLabel).store(in: &cancellables)
+
+        model.images.assign(to: \.images, on: imagesView).store(in: &cancellables)
+        model.images.map { $0.isEmpty }.assign(to: \.isHidden, on: imagesView).store(in: &cancellables)
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        imagesView.images = []
     }
 }

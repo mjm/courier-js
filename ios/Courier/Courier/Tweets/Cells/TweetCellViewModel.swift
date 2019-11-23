@@ -8,6 +8,7 @@
 
 import Combinable
 import Foundation
+import UIKit
 import UserActions
 
 final class TweetCellViewModel {
@@ -21,6 +22,14 @@ final class TweetCellViewModel {
 
     var body: AnyPublisher<String, Never> {
         $tweet.map(\.body).removeDuplicates().eraseToAnyPublisher()
+    }
+
+    var images: AnyPublisher<[UIImage?], Never> {
+        $tweet.map(\.mediaUrLs).map { urlStrings in
+            urlStrings.compactMap(URL.init(string:))
+        }.all { url in
+            UIImage.publisher(url: url).ignoreError()
+        }.eraseToAnyPublisher()
     }
 
     var status: AnyPublisher<TweetStatus, Never> {
