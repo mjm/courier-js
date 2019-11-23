@@ -39,13 +39,13 @@ final class TweetDetailViewModel: ViewModel {
         self.tweetId = tweetId
         super.init(client: client)
 
-        autopostTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postAfter, mode: .future)
+        autopostTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postAfterDate)
 
-        postTimeViewModel = TweetTimestampCellViewModel(keyPath: \.post.publishedAt, mode: .past) { [actionRunner] tweet in
+        postTimeViewModel = TweetTimestampCellViewModel(keyPath: \.post.publishedAtDate) { [actionRunner] tweet in
             tweet.viewPostAction?.bind(to: actionRunner)
         }
 
-        tweetTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postedAt, mode: .past) { [actionRunner] tweet in
+        tweetTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postedAtDate) { [actionRunner] tweet in
             tweet.viewTweetAction?.bind(to: actionRunner)
         }
 
