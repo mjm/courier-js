@@ -65,10 +65,12 @@ final class TweetsViewController: UITableViewController {
         viewModel.$selection.combineLatest(viewModel.$selectedSection) { model, _ in model }.sink { [weak self] model in
             guard let self = self else { return }
 
-            if let model = model, let indexPath = self.dataSource.indexPath(for: model) {
-                self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
-            } else if let indexPath = self.tableView.indexPathForSelectedRow {
-                self.tableView.deselectRow(at: indexPath, animated: false)
+            if !self.splitViewController!.isCollapsed {
+                if let model = model, let indexPath = self.dataSource.indexPath(for: model) {
+                    self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+                } else if let indexPath = self.tableView.indexPathForSelectedRow {
+                    self.tableView.deselectRow(at: indexPath, animated: false)
+                }
             }
         }.store(in: &cancellables)
 
