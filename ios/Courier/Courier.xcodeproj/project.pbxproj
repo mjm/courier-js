@@ -21,6 +21,7 @@
 		C95009E2238793A400A36E64 /* ContentStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E1238793A400A36E64 /* ContentStateView.swift */; };
 		C95009E423879F7F00A36E64 /* TweetTimestampCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E323879F7F00A36E64 /* TweetTimestampCellViewModel.swift */; };
 		C95009E62387A2EA00A36E64 /* TweetTimestampCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E52387A2EA00A36E64 /* TweetTimestampCell.swift */; };
+		C95009E82388F52900A36E64 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E72388F52900A36E64 /* Store.swift */; };
 		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
 		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
 		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
@@ -91,6 +92,7 @@
 		C95009E1238793A400A36E64 /* ContentStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentStateView.swift; sourceTree = "<group>"; };
 		C95009E323879F7F00A36E64 /* TweetTimestampCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTimestampCellViewModel.swift; sourceTree = "<group>"; };
 		C95009E52387A2EA00A36E64 /* TweetTimestampCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTimestampCell.swift; sourceTree = "<group>"; };
+		C95009E72388F52900A36E64 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		C95C6F6423808190006063A2 /* Courier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier.entitlements; sourceTree = "<group>"; };
 		C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterDeviceAction.swift; sourceTree = "<group>"; };
 		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
@@ -352,6 +354,7 @@
 				C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */,
 				C9A36B6E237BAED30069EED1 /* Endpoint.swift */,
 				C9A749D2237A03CF0046E924 /* Tweet.swift */,
+				C95009E72388F52900A36E64 /* Store.swift */,
 				C95009DF2386651100A36E64 /* MutationUserAction.swift */,
 			);
 			path = API;
@@ -572,6 +575,7 @@
 				C9A7496E237852430046E924 /* AppDelegate.swift in Sources */,
 				C9A671BC237E539200EEE913 /* SegmentedControl.swift in Sources */,
 				C9A36B71237BC0380069EED1 /* UncancelTweetAction.swift in Sources */,
+				C95009E82388F52900A36E64 /* Store.swift in Sources */,
 				C95009D623861EA700A36E64 /* SettingsViewController.swift in Sources */,
 				C9A749C323790D710046E924 /* LogoutAction.swift in Sources */,
 				C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */,

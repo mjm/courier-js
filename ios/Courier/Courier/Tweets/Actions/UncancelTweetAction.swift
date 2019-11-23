@@ -28,6 +28,10 @@ struct UncancelTweetAction: MutationUserAction {
         let input = UncancelTweetInput(id: tweet.id)
         return UncancelTweetMutation(input: input)
     }
+
+    func transform(context: UserActions.Context<UncancelTweetAction>, data: UncancelTweetMutation.Data) {
+        context.apolloClient.store.moveTweet(id: data.uncancelTweet.tweet.id, from: \.past, to: \.upcoming)
+    }
 }
 
 extension AllTweetsFields {

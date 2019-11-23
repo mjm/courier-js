@@ -28,6 +28,10 @@ struct PostTweetAction: MutationUserAction {
         let input = PostTweetInput(id: tweet.id, body: tweet.body, mediaUrLs: tweet.mediaUrLs)
         return PostTweetMutation(input: input)
     }
+
+    func transform(context: UserActions.Context<PostTweetAction>, data: PostTweetMutation.Data) {
+        context.apolloClient.store.moveTweet(id: data.postTweet.tweet.id, from: \.upcoming, to: \.past)
+    }
 }
 
 extension AllTweetsFields {

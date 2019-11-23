@@ -6,6 +6,8 @@
 //  Copyright © 2019 Matt Moriarity. All rights reserved.
 //
 
+import Foundation
+
 extension AllTweetsFields: Identifiable {
 }
 
@@ -31,5 +33,42 @@ extension TweetConnectionFields {
             pageInfo: .init(hasPreviousPage: false),
             totalCount: tweets.count
         )
+    }
+}
+
+protocol TweetListData {
+    var tweetConnectionFields: TweetConnectionFields { get set }
+}
+
+extension TweetListData {
+    var nodes: [TweetConnectionFields.Node] {
+        get { tweetConnectionFields.nodes }
+        set { tweetConnectionFields.nodes = newValue }
+    }
+}
+
+extension UpcomingTweetsQuery.Data: TweetListData {
+    var tweetConnectionFields: TweetConnectionFields {
+        get { allTweets.fragments.tweetConnectionFields }
+        set { allTweets.fragments.tweetConnectionFields = newValue }
+    }
+}
+
+extension PastTweetsQuery.Data: TweetListData {
+    var tweetConnectionFields: TweetConnectionFields {
+        get { allTweets.fragments.tweetConnectionFields }
+        set { allTweets.fragments.tweetConnectionFields = newValue }
+    }
+}
+
+private let dateFormatter: ISO8601DateFormatter = {
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions.insert(.withFractionalSeconds)
+    return formatter
+}()
+
+extension AllTweetsFields.Post {
+    var publishedAtDate: Date? {
+        publishedAt.flatMap { dateFormatter.date(from: $0) }
     }
 }

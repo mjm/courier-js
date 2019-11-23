@@ -15,25 +15,25 @@ protocol MutationUserAction: ReactiveUserAction {
 
     func mutation(context: UserActions.Context<Self>) -> Mutation
 
-    func transform(data: Mutation.Data) -> ResultType
+    func transform(context: UserActions.Context<Self>, data: Mutation.Data) -> ResultType
 }
 
 extension MutationUserAction {
     func publisher(context: UserActions.Context<Self>) -> AnyPublisher<ResultType, Error> {
         context.apolloClient.publisher(mutation: mutation(context: context))
-            .map(transform)
+            .map { self.transform(context: context, data: $0) }
             .eraseToAnyPublisher()
     }
 }
 
 extension MutationUserAction where Mutation.Data == ResultType {
-    func transform(data: Mutation.Data) -> ResultType {
+    func transform(context: UserActions.Context<Self>, data: Mutation.Data) -> ResultType {
         return data
     }
 }
 
 extension MutationUserAction where ResultType == Void {
-    func transform(data: Mutation.Data) -> () {
+    func transform(context: UserActions.Context<Self>, data: Mutation.Data) -> () {
         return ()
     }
 }
