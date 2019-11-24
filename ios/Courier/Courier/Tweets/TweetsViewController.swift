@@ -62,7 +62,7 @@ final class TweetsViewController: UITableViewController {
             self?.updateContentState(loading: loading, empty: empty)
         }.store(in: &cancellables)
 
-        viewModel.$selection.combineLatest(viewModel.$selectedSection) { model, _ in model }.sink { [weak self] model in
+        viewModel.selectedItem.combineLatest(viewModel.$selectedSection) { model, _ in model }.sink { [weak self] model in
             guard let self = self else { return }
 
             if !self.splitViewController!.isCollapsed {
@@ -209,7 +209,7 @@ final class TweetsViewController: UITableViewController {
     }
 
     private func selectAndShow(_ model: TweetsViewModel.Item) {
-        viewModel.selection = model
+        viewModel.selection = model.tweet.id
         if let detailViewController = (splitViewController as? SplitViewController)?.detailNavController {
             self.splitViewController?.showDetailViewController(detailViewController, sender: self)
         }

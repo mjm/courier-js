@@ -27,14 +27,14 @@ final class SplitViewModel: ViewModel {
 
     private func bindMaster() {
         masterViewModel.$selection
-            .map { $0?.tweet.id }
             .removeDuplicates()
             .assign(to: \.selection, on: self, weak: true)
             .store(in: &cancellables)
 
-        $selection.combineLatest(masterViewModel.allTweetModels) { selection, tweetModels in
-            selection.flatMap { tweetId in tweetModels.first { $0.tweet.id == tweetId } }
-        }.assign(to: \.selection, on: masterViewModel).store(in: &cancellables)
+        $selection
+            .removeDuplicates()
+            .assign(to: \.selection, on: masterViewModel)
+            .store(in: &cancellables)
     }
 
     private func bindDetail() {

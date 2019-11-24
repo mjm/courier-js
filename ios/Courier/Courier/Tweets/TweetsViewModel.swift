@@ -24,7 +24,7 @@ final class TweetsViewModel: ViewModel {
     @Published private(set) var pastTweetViewModels: [Item] = []
 
     @Published var selectedSection: Section = .upcoming
-    @Published var selection: Item?
+    @Published var selection: GraphQLID?
 
     @Published var refreshingSections = Set<Section>()
 
@@ -109,6 +109,12 @@ final class TweetsViewModel: ViewModel {
     var allTweetModels: AnyPublisher<[TweetCellViewModel], Never> {
         $upcomingTweetViewModels.combineLatest($pastTweetViewModels) { upcoming, past in
             upcoming + past
+        }.eraseToAnyPublisher()
+    }
+
+    var selectedItem: AnyPublisher<Item?, Never> {
+        $selection.combineLatest(allTweetModels) { selection, models in
+            models.first { $0.tweet.id == selection }
         }.eraseToAnyPublisher()
     }
 
