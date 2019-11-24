@@ -38,10 +38,6 @@ final class TweetDetailViewController: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.keyboardDismissMode = .interactive
 
-        navigationItem.rightBarButtonItems = [
-            saveButtonItem
-        ]
-
         contentStateView.apply(to: tableView)
 
         viewModel.presenter = self
@@ -68,6 +64,9 @@ final class TweetDetailViewController: UITableViewController {
             self?.updateContentState(loading: loading)
         }.store(in: &cancellables)
 
+        viewModel.showSaveButton.map { [saveButtonItem] showSave in
+            showSave ? [saveButtonItem] : []
+        }.assign(to: \.rightBarButtonItems, on: navigationItem).store(in: &cancellables)
         viewModel.canSave.assign(to: \.isEnabled, on: saveButtonItem).store(in: &cancellables)
     }
 

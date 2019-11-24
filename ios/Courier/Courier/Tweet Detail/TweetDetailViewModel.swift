@@ -165,6 +165,10 @@ final class TweetDetailViewModel: ViewModel {
         }.eraseToAnyPublisher()
     }
 
+    var showSaveButton: AnyPublisher<Bool, Never> {
+        tweet.map { $0?.status == .draft }.eraseToAnyPublisher()
+    }
+
     var saveAction: BoundUserAction<Void>? {
         guard case let .loaded(existingTweet?) = tweetState else { return nil }
 
