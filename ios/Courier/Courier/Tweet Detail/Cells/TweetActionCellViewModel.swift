@@ -10,7 +10,7 @@ import Combinable
 import UIKit
 import UserActions
 
-final class TweetActionCellViewModel {
+final class TweetActionCellViewModel: TweetViewModel {
     @Published var tweet: AllTweetsFields?
     @Published var action: BoundUserAction<Void>?
 

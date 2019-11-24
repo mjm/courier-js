@@ -9,7 +9,7 @@
 import Combinable
 import UIKit
 
-final class TweetBodyCellViewModel {
+final class TweetBodyCellViewModel: TweetViewModel {
     @Published var tweet: AllTweetsFields?
     @Published var body: String?
 

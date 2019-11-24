@@ -10,7 +10,7 @@ import Combinable
 import Foundation
 import UserActions
 
-final class TweetTimestampCellViewModel {
+final class TweetTimestampCellViewModel: TweetViewModel {
     @Published var tweet: AllTweetsFields?
     @Published private(set) var action: BoundUserAction<Void>?
 

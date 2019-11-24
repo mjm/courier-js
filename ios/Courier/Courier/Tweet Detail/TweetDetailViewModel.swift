@@ -15,6 +15,7 @@ final class TweetDetailViewModel: ViewModel {
     enum Section {
         case content
         case timestamps
+        case actions
     }
 
     enum Item: Hashable {
@@ -33,21 +34,17 @@ final class TweetDetailViewModel: ViewModel {
     var postTimeViewModel: TweetTimestampCellViewModel!
     var tweetTimeViewModel: TweetTimestampCellViewModel!
 
+    var cancelActionModel: TweetActionCellViewModel!
+    var uncancelActionModel: TweetActionCellViewModel!
+    var postActionModel: TweetActionCellViewModel!
+
     private var tweetSubscription: AnyCancellable?
 
     init(tweetId: GraphQLID? = nil, client: ApolloClient = .main) {
         self.tweetId = tweetId
         super.init(client: client)
 
-        autopostTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postAfterDate)
-
-        postTimeViewModel = TweetTimestampCellViewModel(keyPath: \.post.publishedAtDate) { [actionRunner] tweet in
-            tweet.viewPostAction?.bind(to: actionRunner)
-        }
-
-        tweetTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postedAtDate) { [actionRunner] tweet in
-            tweet.viewTweetAction?.bind(to: actionRunner)
-        }
+        createChildViewModels()
 
         $tweetId.removeDuplicates().sink { [weak self] tweetId in
             guard let self = self else { return }
@@ -63,10 +60,43 @@ final class TweetDetailViewModel: ViewModel {
                 .assign(to: \.tweetState, on: self, weak: true)
         }.store(in: &cancellables)
 
-        tweet.assign(to: \.tweet, on: bodyViewModel).store(in: &cancellables)
-        tweet.assign(to: \.tweet, on: autopostTimeViewModel).store(in: &cancellables)
-        tweet.assign(to: \.tweet, on: postTimeViewModel).store(in: &cancellables)
-        tweet.assign(to: \.tweet, on: tweetTimeViewModel).store(in: &cancellables)
+        for model in allTweetViewModels {
+            tweet.assign(to: \.tweet, on: model).store(in: &cancellables)
+        }
+    }
+
+    private func createChildViewModels() {
+        let runner = actionRunner
+
+        autopostTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postAfterDate)
+        postTimeViewModel = TweetTimestampCellViewModel(keyPath: \.post.publishedAtDate) { tweet in
+            tweet.viewPostAction?.bind(to: runner)
+        }
+        tweetTimeViewModel = TweetTimestampCellViewModel(keyPath: \.postedAtDate) { tweet in
+            tweet.viewTweetAction?.bind(to: runner)
+        }
+
+        cancelActionModel = TweetActionCellViewModel { tweet in
+            tweet.cancelAction.bind(to: runner)
+        }
+        uncancelActionModel = TweetActionCellViewModel { tweet in
+            tweet.uncancelAction.bind(to: runner)
+        }
+        postActionModel = TweetActionCellViewModel { tweet in
+            tweet.postAction.bind(to: runner)
+        }
+    }
+
+    private var allTweetViewModels: [TweetViewModel] {
+        [
+            bodyViewModel,
+            autopostTimeViewModel,
+            postTimeViewModel,
+            tweetTimeViewModel,
+            cancelActionModel,
+            uncancelActionModel,
+            postActionModel,
+        ]
     }
 
     var tweet: AnyPublisher<AllTweetsFields?, Never> {
@@ -101,6 +131,22 @@ final class TweetDetailViewModel: ViewModel {
                 if !(tweet.postedTweetId?.isEmpty ?? true) {
                     snapshot.appendItems([.timestamp(self.tweetTimeViewModel, NSLocalizedString("Tweeted", comment: ""))])
                 }
+
+                var actions = [Item]()
+                if tweet.cancelAction.canPerform {
+                    actions.append(.action(self.cancelActionModel))
+                }
+                if tweet.uncancelAction.canPerform {
+                    actions.append(.action(self.uncancelActionModel))
+                }
+                if tweet.postAction.canPerform {
+                    actions.append(.action(self.postActionModel))
+                }
+
+                if !actions.isEmpty {
+                    snapshot.appendSections([.actions])
+                    snapshot.appendItems(actions)
+                }
             }
 
             return snapshot
@@ -129,4 +175,8 @@ final class TweetDetailViewModel: ViewModel {
 
         return tweet.saveAction.bind(to: actionRunner)
     }
+}
+
+protocol TweetViewModel: class {
+    var tweet: AllTweetsFields? { get set }
 }
