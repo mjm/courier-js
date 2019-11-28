@@ -86,25 +86,25 @@ final class TweetsViewModel: ViewModel {
         }.removeDuplicates().eraseToAnyPublisher()
     }
 
-    var upcomingTweets: AnyPublisher<QueryState<[AllTweetsFields]>, Never> {
+    lazy var upcomingTweets: AnyPublisher<QueryState<[AllTweetsFields]>, Never> = {
         apolloClient.publisher(
             query: UpcomingTweetsQuery(),
             pollInterval: 60,
             refresh: startRefreshingSection(.upcoming)
         ).queryMap { data in
             data.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields }
-        }.ignoreError().eraseToAnyPublisher()
-    }
+        }.ignoreError().multicast(subject: CurrentValueSubject(.loading)).autoconnect().eraseToAnyPublisher()
+    }()
 
-    var pastTweets: AnyPublisher<QueryState<[AllTweetsFields]>, Never> {
+    lazy var pastTweets: AnyPublisher<QueryState<[AllTweetsFields]>, Never> = {
         apolloClient.publisher(
             query: PastTweetsQuery(),
             pollInterval: 60,
             refresh: startRefreshingSection(.past)
         ).queryMap { data in
             data.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields }
-        }.ignoreError().eraseToAnyPublisher()
-    }
+        }.ignoreError().multicast(subject: CurrentValueSubject(.loading)).autoconnect().eraseToAnyPublisher()
+    }()
 
     var allTweetModels: AnyPublisher<[TweetCellViewModel], Never> {
         $upcomingTweetViewModels.combineLatest($pastTweetViewModels) { upcoming, past in

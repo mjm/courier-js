@@ -9,6 +9,7 @@
 import Apollo
 import Combinable
 import Dispatch
+import Events
 import Foundation
 
 extension ApolloClientProtocol {
@@ -147,6 +148,18 @@ extension WatchQueryPublisher {
         var demand: Subscribers.Demand = .none
         var current: Output? = .loading
 
+        var eventTemplate = EventBuilder()
+        var event = EventBuilder()
+        var isFetching = true {
+            didSet {
+                if !oldValue && isFetching {
+                    event.startTimer(.fetchTime)
+                } else if oldValue && !isFetching {
+                    event.stopTimer(.fetchTime)
+                }
+            }
+        }
+
         init(
             downstream: Downstream,
             client: ApolloClientProtocol,
@@ -156,14 +169,31 @@ extension WatchQueryPublisher {
             refresh: AnyPublisher<(), Never>
         ) {
             self.downstream = downstream
+            self.eventTemplate[.query] = String(describing: query)
+            self.eventTemplate[.cachePolicy] = String(describing: cachePolicy)
+            self.event = eventTemplate
+
+            event[.fetchType] = "initial"
+            event.startTimer(.fetchTime)
             watcher = client.watch(query: query, cachePolicy: cachePolicy, queue: .main) { [weak self] result in
                 guard let self = self else { return }
+
+                self.isFetching = false
                 do {
-                    if let data = try result.get().data {
+                    let result = try result.get()
+                    if let data = result.data {
                         self.current = .loaded(data)
                         self.fulfillDemand()
                     }
+                    if let error = result.errors?.first {
+                        self.event.error = error
+                    }
+
+                    self.sendEvent()
                 } catch {
+                    self.event.error = error
+                    self.sendEvent()
+
                     self.downstream.receive(completion: .failure(error))
                     self.cancel()
                 }
@@ -180,8 +210,12 @@ extension WatchQueryPublisher {
                 ).eraseToAnyPublisher()
             }
 
-            refresher.sink { [watcher] in
-                watcher?.refetch()
+            refresher.sink { [weak self] in
+                guard let self = self else { return }
+
+                self.event[.fetchType] = "refetch"
+                self.isFetching = true
+                self.watcher.refetch()
             }.store(in: &cancellables)
         }
 
@@ -202,6 +236,11 @@ extension WatchQueryPublisher {
 
                 self.current = nil
             }
+        }
+
+        private func sendEvent() {
+            event.send("fetched query")
+            event = eventTemplate
         }
     }
 }

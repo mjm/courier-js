@@ -13,6 +13,10 @@ extension Event.Key {
     static let cacheURL: Event.Key = "cache_url"
     static let cacheType: Event.Key = "cache_type"
     static let apiURL: Event.Key = "api_url"
+    static let query: Event.Key = "query"
+    static let fetchTime: Event.Key = "fetch_ms"
+    static let cachePolicy: Event.Key = "cache_policy"
+    static let fetchType: Event.Key = "fetch_type"
 
     // remote notifications keys
     static let registerTime: Event.Key = "register_ms"
