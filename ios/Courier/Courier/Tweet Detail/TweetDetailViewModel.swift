@@ -158,7 +158,7 @@ final class TweetDetailViewModel: ViewModel {
     }
 
     var canSave: AnyPublisher<Bool, Never> {
-        tweet.combineLatest(bodyViewModel.$body) { tweet, newBody in
+        tweet.combineLatest(draftBody) { tweet, newBody in
             guard let tweet = tweet else { return false }
 
             return tweet.status == .draft && tweet.body != newBody
