@@ -19,7 +19,7 @@ class EventRepository {
       `,
       totalQuery: sql`SELECT COUNT(*) FROM events WHERE user_id = ${userId}`,
       variables: options,
-      orderColumn: "created_at",
+      orderBy: { column: "created_at", direction: "DESC" },
       makeEdge(row) {
         return {
           cursor: row.created_at.toISOString(),

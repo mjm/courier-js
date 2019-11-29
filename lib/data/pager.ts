@@ -15,10 +15,15 @@ interface CountResult {
   count: number
 }
 
+interface OrderBy {
+  column: string
+  direction: "ASC" | "DESC"
+}
+
 export interface PagerOptions<ResultType, RowType = any> {
   db: DatabasePoolType
   query: SqlSqlTokenType<RowType>
-  orderColumn: string
+  orderBy: OrderBy
   totalQuery: SqlSqlTokenType<CountResult>
   variables: PagingOptions
   makeEdge: MakeEdgeFn<ResultType, RowType>
@@ -28,44 +33,44 @@ export interface PagerOptions<ResultType, RowType = any> {
 export class Pager<ResultType, RowType = any> {
   private db: DatabasePoolType
   private query: SqlSqlTokenType<RowType>
-  private orderColumn: string
+  private orderBy: OrderBy
   private totalQuery: SqlSqlTokenType<CountResult>
   private makeEdge: MakeEdgeFn<ResultType, RowType>
 
   private limit: number
-  private direction: "ASC" | "DESC"
+  private isReversed: boolean
   private cursor: PrimitiveValueExpressionType | undefined
   private results: Promise<PagerEdge<ResultType>[]>
 
   constructor({
     db,
     query,
-    orderColumn,
+    orderBy,
     totalQuery,
     variables,
     makeEdge,
     getCursorValue,
   }: PagerOptions<ResultType, RowType>) {
+    this.isReversed = false
+
     if ("first" in variables) {
       this.limit = variables.first
-      this.direction = "ASC"
       this.cursor = variables.after
         ? getCursorValue(variables.after)
         : undefined
     } else if ("last" in variables) {
       this.limit = variables.last
-      this.direction = "DESC"
+      this.isReversed = true
       this.cursor = variables.before
         ? getCursorValue(variables.before)
         : undefined
     } else {
       this.limit = 100
-      this.direction = "ASC"
     }
 
     this.db = db
     this.query = query
-    this.orderColumn = orderColumn
+    this.orderBy = orderBy
     this.totalQuery = totalQuery
     this.makeEdge = makeEdge
 
@@ -87,10 +92,10 @@ export class Pager<ResultType, RowType = any> {
 
     const edges = await this.results
     const hasMore = edges.length > this.limit
-    if (this.direction === "ASC") {
-      result.hasNextPage = hasMore
-    } else {
+    if (this.isReversed) {
       result.hasPreviousPage = hasMore
+    } else {
+      result.hasNextPage = hasMore
     }
 
     if (!edges.length) {
@@ -110,7 +115,12 @@ export class Pager<ResultType, RowType = any> {
 
   async edges(): Promise<PagerEdge<ResultType>[]> {
     const results = await this.results
-    return results.slice(0, this.limit)
+    const limitedResults = results.slice(0, this.limit)
+    if (this.isReversed) {
+      return limitedResults.reverse()
+    } else {
+      return limitedResults
+    }
   }
 
   private async fetchResults(): Promise<PagerEdge<ResultType>[]> {
@@ -121,13 +131,17 @@ export class Pager<ResultType, RowType = any> {
   }
 
   private buildQuery(): SqlSqlTokenType<RowType> {
-    const orderColumn = sql.identifier([this.orderColumn])
+    const orderColumn = sql.identifier([this.orderBy.column])
+    let actualDirection = this.orderBy.direction
+    if (this.isReversed) {
+      actualDirection = actualDirection === "ASC" ? "DESC" : "ASC"
+    }
 
     let filter: ValueExpressionType = sql.raw("")
     if (this.cursor) {
       const condition = sql.comparisonPredicate(
         orderColumn,
-        this.direction === "ASC" ? ">" : "<",
+        actualDirection === "ASC" ? ">" : "<",
         this.cursor
       )
       filter = sql`${this.whereJoiner} ${condition}`
@@ -136,7 +150,7 @@ export class Pager<ResultType, RowType = any> {
     return sql`
       ${this.query}
       ${filter}
-      ORDER BY ${orderColumn} ${sql.raw(this.direction)}
+      ORDER BY ${orderColumn} ${sql.raw(actualDirection)}
       LIMIT ${this.limit + 1}
     `
   }

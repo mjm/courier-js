@@ -33,7 +33,7 @@ class FeedSubscriptionRepository {
             ON feed_subscriptions.feed_id = feeds.id
          WHERE user_id = ${userId}
            AND discarded_at IS NULL`,
-      orderColumn: "url",
+      orderBy: { column: "url", direction: "ASC" },
       totalQuery: sql`
         SELECT COUNT(*) FROM feed_subscriptions WHERE user_id = ${userId}`,
       variables: options,
