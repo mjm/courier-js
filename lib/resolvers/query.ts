@@ -5,6 +5,10 @@ export const Query: QueryResolvers = {
     return await user.getUserInfo()
   },
 
+  async viewer(_parent, _args, { user }) {
+    return await user.getUserInfo()
+  },
+
   async allSubscribedFeeds(_parent, args, { feeds }) {
     return await feeds.paged(args)
   },

@@ -269,6 +269,7 @@ export type PostTweetPayload = {
 
 export type Query = {
   currentUser?: Maybe<User>
+  viewer?: Maybe<User>
   allSubscribedFeeds: SubscribedFeedConnection
   subscribedFeed?: Maybe<SubscribedFeed>
   allTweets: TweetConnection
@@ -434,6 +435,15 @@ export type User = {
   subscription?: Maybe<UserSubscription>
   subscriptionStatusOverride?: Maybe<SubscriptionStatus>
   micropubSites: Array<Scalars["String"]>
+  allTweets: TweetConnection
+}
+
+export type UserAllTweetsArgs = {
+  filter?: Maybe<TweetFilter>
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
 }
 
 export type UserSubscription = {

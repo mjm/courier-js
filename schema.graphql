@@ -3,6 +3,7 @@ scalar DateTime
 
 type Query {
   currentUser: User
+  viewer: User
 
   allSubscribedFeeds(
     first: Int
@@ -70,6 +71,14 @@ type User {
   subscription: UserSubscription
   subscriptionStatusOverride: SubscriptionStatus
   micropubSites: [String!]!
+
+  allTweets(
+    filter: TweetFilter
+    first: Int
+    last: Int
+    before: Cursor
+    after: Cursor
+  ): TweetConnection!
 }
 
 type Customer {

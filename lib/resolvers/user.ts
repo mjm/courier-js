@@ -38,6 +38,10 @@ export const User: UserResolvers = {
   micropubSites({ micropub_sites }) {
     return micropub_sites
   },
+
+  async allTweets(_parent, args, { tweets }) {
+    return await tweets.paged(args)
+  },
 }
 
 export const Customer: CustomerResolvers = {
