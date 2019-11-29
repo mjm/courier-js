@@ -41,7 +41,7 @@ fragment TweetCard_tweet on Tweet {
 }
 
 fragment TweetList_tweets_2ixgHQ on User {
-  allTweets(filter: PAST, last: 10) {
+  allTweets(filter: PAST, first: 10) {
     edges {
       node {
         id
@@ -52,14 +52,14 @@ fragment TweetList_tweets_2ixgHQ on User {
     }
     totalCount
     pageInfo {
-      hasPreviousPage
-      startCursor
+      endCursor
+      hasNextPage
     }
   }
 }
 
 fragment TweetList_tweets_30lx3F on User {
-  allTweets(filter: UPCOMING, last: 10) {
+  allTweets(filter: UPCOMING, first: 10) {
     edges {
       node {
         id
@@ -70,8 +70,8 @@ fragment TweetList_tweets_30lx3F on User {
     }
     totalCount
     pageInfo {
-      hasPreviousPage
-      startCursor
+      endCursor
+      hasNextPage
     }
   }
 }
@@ -102,7 +102,7 @@ v1 = {
 },
 v2 = {
   "kind": "Literal",
-  "name": "last",
+  "name": "first",
   "value": 10
 },
 v3 = [
@@ -228,14 +228,14 @@ v4 = [
       {
         "kind": "ScalarField",
         "alias": null,
-        "name": "hasPreviousPage",
+        "name": "endCursor",
         "args": null,
         "storageKey": null
       },
       {
         "kind": "ScalarField",
         "alias": null,
-        "name": "startCursor",
+        "name": "hasNextPage",
         "args": null,
         "storageKey": null
       }
@@ -314,7 +314,7 @@ return {
             "kind": "LinkedField",
             "alias": null,
             "name": "allTweets",
-            "storageKey": "allTweets(filter:\"UPCOMING\",last:10)",
+            "storageKey": "allTweets(filter:\"UPCOMING\",first:10)",
             "args": (v3/*: any*/),
             "concreteType": "TweetConnection",
             "plural": false,
@@ -344,7 +344,7 @@ return {
             "kind": "LinkedField",
             "alias": null,
             "name": "allTweets",
-            "storageKey": "allTweets(filter:\"PAST\",last:10)",
+            "storageKey": "allTweets(filter:\"PAST\",first:10)",
             "args": (v6/*: any*/),
             "concreteType": "TweetConnection",
             "plural": false,
@@ -367,7 +367,7 @@ return {
     "operationKind": "query",
     "name": "tweetsQuery",
     "id": null,
-    "text": "query tweetsQuery {\n  upcoming: viewer {\n    ...TweetList_tweets_30lx3F\n  }\n  past: viewer {\n    ...TweetList_tweets_2ixgHQ\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment TweetCard_tweet on Tweet {\n  status\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n}\n\nfragment TweetList_tweets_2ixgHQ on User {\n  allTweets(filter: PAST, last: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n}\n\nfragment TweetList_tweets_30lx3F on User {\n  allTweets(filter: UPCOMING, last: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  id\n  body\n  mediaURLs\n  status\n  action\n  postAfter\n  postedAt\n  postedTweetID\n  retweetID\n}\n",
+    "text": "query tweetsQuery {\n  upcoming: viewer {\n    ...TweetList_tweets_30lx3F\n  }\n  past: viewer {\n    ...TweetList_tweets_2ixgHQ\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment TweetCard_tweet on Tweet {\n  status\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n}\n\nfragment TweetList_tweets_2ixgHQ on User {\n  allTweets(filter: PAST, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment TweetList_tweets_30lx3F on User {\n  allTweets(filter: UPCOMING, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  id\n  body\n  mediaURLs\n  status\n  action\n  postAfter\n  postedAt\n  postedTweetID\n  retweetID\n}\n",
     "metadata": {}
   }
 };

@@ -50,7 +50,7 @@ class TweetRepository {
             ON tweets.feed_subscription_id = feed_subscriptions.id
          WHERE feed_subscriptions.user_id = ${userId}
            ${filterCondition}`,
-      orderColumn: "published_at",
+      orderBy: { column: "published_at", direction: "DESC" },
       totalQuery: sql`
         SELECT COUNT(*)
           FROM tweets

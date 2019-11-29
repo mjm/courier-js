@@ -31,7 +31,7 @@ const node: ReaderFragment = {
       {
         "count": "count",
         "cursor": "cursor",
-        "direction": "backward",
+        "direction": "forward",
         "path": [
           "allTweets"
         ]
@@ -141,14 +141,14 @@ const node: ReaderFragment = {
             {
               "kind": "ScalarField",
               "alias": null,
-              "name": "hasPreviousPage",
+              "name": "endCursor",
               "args": null,
               "storageKey": null
             },
             {
               "kind": "ScalarField",
               "alias": null,
-              "name": "startCursor",
+              "name": "hasNextPage",
               "args": null,
               "storageKey": null
             }
@@ -158,5 +158,5 @@ const node: ReaderFragment = {
     }
   ]
 };
-(node as any).hash = '38cb128b6137f479003ecfee105ccb30';
+(node as any).hash = 'f52d42aca0c08e9d484dee891cdf5414';
 export default node;

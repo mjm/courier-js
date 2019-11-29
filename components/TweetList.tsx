@@ -20,7 +20,9 @@ interface Props {
   relay: RelayPaginationProp
 }
 
-const TweetList = ({ title, tweets, relay }: Props) => {
+const TweetList = ({ title, tweets, relay: { hasMore, loadMore } }: Props) => {
+  const [isLoading, setLoading] = React.useState(false)
+
   const { edges, totalCount } = tweets.allTweets
   if (!edges.length) {
     return (
@@ -48,13 +50,18 @@ const TweetList = ({ title, tweets, relay }: Props) => {
           {edges.map(edge => (
             <TweetCard key={edge.node.id} tweet={edge.node} />
           ))}
-          {relay.hasMore() && (
+          {hasMore() && (
             <Flex justifyContent="center">
               <Button
                 size="medium"
                 icon={faAngleDoubleDown}
-                spin={relay.isLoading()}
-                onClick={() => relay.loadMore(10)}
+                spin={isLoading}
+                onClick={() => {
+                  setLoading(true)
+                  loadMore(10, () => {
+                    setLoading(false)
+                  })
+                }}
               >
                 Show More…
               </Button>
@@ -76,7 +83,7 @@ export default createPaginationContainer(
           count: { type: "Int", defaultValue: 10 }
           cursor: { type: "Cursor" }
         ) {
-        allTweets(filter: $filter, last: $count, before: $cursor)
+        allTweets(filter: $filter, first: $count, after: $cursor)
           @connection(key: "TweetList_allTweets") {
           edges {
             node {
@@ -90,7 +97,7 @@ export default createPaginationContainer(
     `,
   },
   {
-    direction: "backward",
+    direction: "forward",
     getVariables(_props, { count, cursor }, fragmentVariables) {
       return {
         count,

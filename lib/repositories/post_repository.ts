@@ -25,7 +25,7 @@ class PostRepository {
     return new Pager({
       db: this.db,
       query: sql`SELECT * FROM posts WHERE feed_id = ${feedId}`,
-      orderColumn: "published_at",
+      orderBy: { column: "published_at", direction: "DESC" },
       totalQuery: sql`SELECT COUNT(*) FROM posts WHERE feed_id = ${feedId}`,
       variables: options,
       makeEdge(row) {

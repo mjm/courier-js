@@ -44,7 +44,7 @@ fragment TweetCard_tweet on Tweet {
 }
 
 fragment TweetList_tweets_3KQYpM on User {
-  allTweets(filter: $filter, last: $count, before: $cursor) {
+  allTweets(filter: $filter, first: $count, after: $cursor) {
     edges {
       node {
         id
@@ -55,8 +55,8 @@ fragment TweetList_tweets_3KQYpM on User {
     }
     totalCount
     pageInfo {
-      hasPreviousPage
-      startCursor
+      endCursor
+      hasNextPage
     }
   }
 }
@@ -103,13 +103,13 @@ v1 = {
 v2 = [
   {
     "kind": "Variable",
-    "name": "before",
+    "name": "after",
     "variableName": "cursor"
   },
   (v1/*: any*/),
   {
     "kind": "Variable",
-    "name": "last",
+    "name": "first",
     "variableName": "count"
   }
 ];
@@ -293,14 +293,14 @@ return {
                   {
                     "kind": "ScalarField",
                     "alias": null,
-                    "name": "hasPreviousPage",
+                    "name": "endCursor",
                     "args": null,
                     "storageKey": null
                   },
                   {
                     "kind": "ScalarField",
                     "alias": null,
-                    "name": "startCursor",
+                    "name": "hasNextPage",
                     "args": null,
                     "storageKey": null
                   }
@@ -327,7 +327,7 @@ return {
     "operationKind": "query",
     "name": "TweetListPaginationQuery",
     "id": null,
-    "text": "query TweetListPaginationQuery(\n  $filter: TweetFilter\n  $count: Int!\n  $cursor: Cursor\n) {\n  viewer {\n    ...TweetList_tweets_3KQYpM\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment TweetCard_tweet on Tweet {\n  status\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n}\n\nfragment TweetList_tweets_3KQYpM on User {\n  allTweets(filter: $filter, last: $count, before: $cursor) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      hasPreviousPage\n      startCursor\n    }\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  id\n  body\n  mediaURLs\n  status\n  action\n  postAfter\n  postedAt\n  postedTweetID\n  retweetID\n}\n",
+    "text": "query TweetListPaginationQuery(\n  $filter: TweetFilter\n  $count: Int!\n  $cursor: Cursor\n) {\n  viewer {\n    ...TweetList_tweets_3KQYpM\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment TweetCard_tweet on Tweet {\n  status\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n}\n\nfragment TweetList_tweets_3KQYpM on User {\n  allTweets(filter: $filter, first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  id\n  body\n  mediaURLs\n  status\n  action\n  postAfter\n  postedAt\n  postedTweetID\n  retweetID\n}\n",
     "metadata": {}
   }
 };
