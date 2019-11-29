@@ -136,6 +136,7 @@ input AddFeedInput {
 
 type AddFeedPayload {
   feed: SubscribedFeed!
+  feedEdge: SubscribedFeedEdge!
 }
 
 input RefreshFeedInput {

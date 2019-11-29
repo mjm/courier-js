@@ -39,7 +39,7 @@ function withData<P>(
             : null
         }
       >
-        <Page {...props} />
+        <Page {...props} environment={environmentRef.current} />
       </ReactRelayContext.Provider>
     )
   }

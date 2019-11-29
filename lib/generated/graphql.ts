@@ -1,5 +1,5 @@
 import * as types from "../data/types"
-import { Pager } from "../data/pager"
+import { Pager, PagerEdge } from "../data/pager"
 import Stripe from "stripe"
 import { MicroformatDocument } from "microformat-node"
 export type EnumMap<T extends string, U> = { [K in T]: U }
@@ -31,6 +31,7 @@ export type AddFeedInput = {
 
 export type AddFeedPayload = {
   feed: SubscribedFeed
+  feedEdge: SubscribedFeedEdge
 }
 
 export type CancelSubscriptionInput = {
@@ -556,9 +557,7 @@ export type ResolversTypes = {
   TweetAction: TweetAction
   TweetStatus: TweetStatus
   SubscribedFeedConnection: Pager<types.SubscribedFeed>
-  SubscribedFeedEdge: Omit<SubscribedFeedEdge, "node"> & {
-    node: ResolversTypes["SubscribedFeed"]
-  }
+  SubscribedFeedEdge: PagerEdge<types.SubscribedFeed>
   EventConnection: Pager<types.Event>
   EventEdge: Omit<EventEdge, "node"> & { node: ResolversTypes["Event"] }
   Event: types.Event
@@ -566,8 +565,9 @@ export type ResolversTypes = {
   MicroformatPage: MicroformatDocument
   Mutation: {}
   AddFeedInput: AddFeedInput
-  AddFeedPayload: Omit<AddFeedPayload, "feed"> & {
+  AddFeedPayload: Omit<AddFeedPayload, "feed" | "feedEdge"> & {
     feed: ResolversTypes["SubscribedFeed"]
+    feedEdge: ResolversTypes["SubscribedFeedEdge"]
   }
   RefreshFeedInput: RefreshFeedInput
   RefreshFeedPayload: Omit<RefreshFeedPayload, "feed"> & {
@@ -626,6 +626,11 @@ export type AddFeedPayloadResolvers<
   ParentType = ResolversTypes["AddFeedPayload"]
 > = {
   feed?: Resolver<ResolversTypes["SubscribedFeed"], ParentType, ContextType>
+  feedEdge?: Resolver<
+    ResolversTypes["SubscribedFeedEdge"],
+    ParentType,
+    ContextType
+  >
 }
 
 export type CancelSubscriptionPayloadResolvers<
