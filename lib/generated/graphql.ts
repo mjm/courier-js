@@ -271,6 +271,7 @@ export type PostTweetPayload = {
 
 export type Query = {
   currentUser?: Maybe<User>
+  viewer?: Maybe<User>
   allSubscribedFeeds: SubscribedFeedConnection
   subscribedFeed?: Maybe<SubscribedFeed>
   allTweets: TweetConnection
@@ -436,6 +437,15 @@ export type User = {
   subscription?: Maybe<UserSubscription>
   subscriptionStatusOverride?: Maybe<SubscriptionStatus>
   micropubSites: Array<Scalars["String"]>
+  allTweets: TweetConnection
+}
+
+export type UserAllTweetsArgs = {
+  filter?: Maybe<TweetFilter>
+  first?: Maybe<Scalars["Int"]>
+  last?: Maybe<Scalars["Int"]>
+  before?: Maybe<Scalars["Cursor"]>
+  after?: Maybe<Scalars["Cursor"]>
 }
 
 export type UserSubscription = {
@@ -530,25 +540,25 @@ export type ResolversTypes = {
   UserSubscription: Stripe.subscriptions.ISubscription
   SubscriptionStatus: SubscriptionStatus
   DateTime: Scalars["DateTime"]
+  TweetFilter: TweetFilter
   Cursor: Scalars["Cursor"]
-  SubscribedFeedConnection: Pager<types.SubscribedFeed>
-  SubscribedFeedEdge: Omit<SubscribedFeedEdge, "node"> & {
-    node: ResolversTypes["SubscribedFeed"]
-  }
-  SubscribedFeed: types.SubscribedFeed
+  TweetConnection: Pager<types.Tweet>
+  TweetEdge: Omit<TweetEdge, "node"> & { node: ResolversTypes["Tweet"] }
+  Tweet: types.Tweet
   ID: Scalars["ID"]
+  SubscribedFeed: types.SubscribedFeed
   Feed: types.Feed
   PostConnection: Pager<types.Post>
   PostEdge: Omit<PostEdge, "node"> & { node: ResolversTypes["Post"] }
   Post: types.Post
   PageInfo: PageInfo
   Boolean: Scalars["Boolean"]
-  TweetFilter: TweetFilter
-  TweetConnection: Pager<types.Tweet>
-  TweetEdge: Omit<TweetEdge, "node"> & { node: ResolversTypes["Tweet"] }
-  Tweet: types.Tweet
   TweetAction: TweetAction
   TweetStatus: TweetStatus
+  SubscribedFeedConnection: Pager<types.SubscribedFeed>
+  SubscribedFeedEdge: Omit<SubscribedFeedEdge, "node"> & {
+    node: ResolversTypes["SubscribedFeed"]
+  }
   EventConnection: Pager<types.Event>
   EventEdge: Omit<EventEdge, "node"> & { node: ResolversTypes["Event"] }
   Event: types.Event
@@ -929,6 +939,7 @@ export type QueryResolvers<
   ParentType = ResolversTypes["Query"]
 > = {
   currentUser?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>
+  viewer?: Resolver<Maybe<ResolversTypes["User"]>, ParentType, ContextType>
   allSubscribedFeeds?: Resolver<
     ResolversTypes["SubscribedFeedConnection"],
     ParentType,
@@ -1114,6 +1125,12 @@ export type UserResolvers<
     Array<ResolversTypes["String"]>,
     ParentType,
     ContextType
+  >
+  allTweets?: Resolver<
+    ResolversTypes["TweetConnection"],
+    ParentType,
+    ContextType,
+    UserAllTweetsArgs
   >
 }
 
