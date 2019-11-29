@@ -10,7 +10,7 @@ import {
   FeedSubscriptionId,
   UserId,
 } from "../data/types"
-import { Pager } from "../data/pager"
+import { Pager, PagerEdge } from "../data/pager"
 import { scrapeFeed, normalizeURL } from "scrape-feed"
 import { locateFeed } from "feed-locator"
 import ImportService from "./import_service"
@@ -86,7 +86,7 @@ class FeedService {
     return updatedFeed
   }
 
-  async subscribe(url: string): Promise<SubscribedFeed> {
+  async subscribe(url: string): Promise<PagerEdge<SubscribedFeed>> {
     const feedURL = await locateFeed(url)
 
     let feed = await this.feeds.findByURL(feedURL)
@@ -116,7 +116,7 @@ class FeedService {
     // to create those when we subscribe
     await this.importService.importRecentPosts(subscribedFeed.id)
 
-    return subscribedFeed
+    return await this.feedSubscriptions.getEdge(subscribedFeed.id)
   }
 
   async unsubscribe(id: FeedSubscriptionId): Promise<void> {

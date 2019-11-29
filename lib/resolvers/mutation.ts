@@ -2,7 +2,11 @@ import { MutationResolvers, TestNotificationType } from "../generated/graphql"
 
 export const Mutation: MutationResolvers = {
   async addFeed(_, { input }, { feeds }) {
-    return { feed: await feeds.subscribe(input.url) }
+    const edge = await feeds.subscribe(input.url)
+    return {
+      feed: edge.node,
+      feedEdge: edge,
+    }
   },
 
   async refreshFeed(_, { input }, { user, feeds }) {

@@ -7,7 +7,7 @@ import {
   FeedSubscriptionId,
   FeedId,
 } from "../data/types"
-import { Pager } from "../data/pager"
+import { Pager, PagerEdge } from "../data/pager"
 import { injectable, inject } from "inversify"
 import { LoaderQueryFn, QueryLoader } from "../data/loader"
 import * as keys from "../key"
@@ -35,16 +35,25 @@ class FeedSubscriptionRepository {
            AND discarded_at IS NULL`,
       orderBy: { column: "url", direction: "ASC" },
       totalQuery: sql`
-        SELECT COUNT(*) FROM feed_subscriptions WHERE user_id = ${userId}`,
+        SELECT COUNT(*) FROM feed_subscriptions WHERE user_id = ${userId} AND discarded_at IS NULL`,
       variables: options,
-      makeEdge(row) {
-        return {
-          node: FeedSubscriptionRepository.fromRow(row),
-          cursor: row.url,
-        }
-      },
+      makeEdge: FeedSubscriptionRepository.makeEdge,
       getCursorValue: val => val,
     })
+  }
+
+  async getEdge(id: FeedSubscriptionId): Promise<PagerEdge<SubscribedFeed>> {
+    const row = await this.db.one(sql<FeedSubscriptionRow>`
+      SELECT feed_subscriptions.*,
+             feeds.url
+        FROM feed_subscriptions
+        JOIN feeds
+          ON feed_subscriptions.feed_id = feeds.id
+       WHERE feed_subscriptions.id = ${id}
+         AND discarded_at IS NULL
+    `)
+
+    return FeedSubscriptionRepository.makeEdge(row)
   }
 
   async findAllByFeed(id: FeedId): Promise<SubscribedFeed[]> {
@@ -119,6 +128,13 @@ class FeedSubscriptionRepository {
       autopost,
       createdAt: created_at,
       updatedAt: updated_at,
+    }
+  }
+
+  static makeEdge(row: FeedSubscriptionRow): PagerEdge<SubscribedFeed> {
+    return {
+      node: FeedSubscriptionRepository.fromRow(row),
+      cursor: row.url,
     }
   }
 }
