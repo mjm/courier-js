@@ -6,7 +6,7 @@ import { ErrorContainer } from "./ErrorContainer"
 import { ErrorBox } from "./ErrorBox"
 import { Button } from "./Button"
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons"
-import { addFeed } from "../lib/mutations/AddFeed"
+import { addFeed } from "./mutations/AddFeed"
 import { FieldError } from "./FieldError"
 
 interface Props {

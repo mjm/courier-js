@@ -11,7 +11,7 @@ import { FeedRecentPostList_feed } from "../lib/__generated__/FeedRecentPostList
 import { useErrors } from "./ErrorContainer"
 import { Button } from "./Button"
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons"
-import { refreshFeed } from "../lib/mutations/RefreshFeed"
+import { refreshFeed } from "./mutations/RefreshFeed"
 import InfoField from "./InfoField"
 import InfoTable from "./InfoTable"
 

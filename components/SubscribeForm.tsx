@@ -23,7 +23,7 @@ import { ThemeContext } from "@emotion/core"
 import { ErrorBox } from "./ErrorBox"
 import { Button } from "./Button"
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons"
-import { subscribe } from "../lib/mutations/Subscribe"
+import { subscribe } from "./mutations/Subscribe"
 import { renewSession } from "../utils/auth0"
 import { FieldError } from "./FieldError"
 

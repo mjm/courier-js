@@ -11,7 +11,7 @@ import {
   Environment,
 } from "react-relay"
 import { SubscriptionInfoCard_user } from "../lib/__generated__/SubscriptionInfoCard_user.graphql"
-import { cancelSubscription } from "../lib/mutations/CancelSubscription"
+import { cancelSubscription } from "./mutations/CancelSubscription"
 import CreditCard from "./CreditCard"
 import SubscriptionStatus from "./SubscriptionStatus"
 import InfoField from "./InfoField"

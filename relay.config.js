@@ -1,12 +1,6 @@
 module.exports = {
-  src: ".",
+  src: "./components",
   schema: "./schema.graphql",
-  exclude: [
-    "**/.next/**",
-    "**/node_modules/**",
-    "**/__generated__/**",
-    "**/ios/**",
-  ],
   language: "typescript",
   artifactDirectory: "./lib/__generated__",
   customScalars: {
