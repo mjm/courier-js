@@ -1,12 +1,12 @@
 import React from "react"
 import { parseHash, setToken } from "../utils/auth0"
 import Router from "next/router"
-import { ErrorContainer, useErrors } from "../hooks/error"
+import { ErrorContainer, useErrors } from "../components/ErrorContainer"
 import withPublicPage from "../hocs/publicPage"
 import { NextPage } from "next"
 import Container from "../components/Container"
 import Head from "../components/head"
-import { ErrorBox } from "../components/error"
+import { ErrorBox } from "../components/ErrorBox"
 import Loading from "../components/loading"
 
 const LoggedIn: NextPage<{}> = () => {

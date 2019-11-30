@@ -11,7 +11,7 @@ import {
   faBan,
 } from "@fortawesome/free-solid-svg-icons"
 import { Flex } from "@rebass/emotion"
-import { ErrorBox } from "./error"
+import { ErrorBox } from "./ErrorBox"
 import { EditTweetForm_tweet } from "../lib/__generated__/EditTweetForm_tweet.graphql"
 import { editTweet } from "../lib/mutations/EditTweet"
 import { postTweet } from "../lib/mutations/PostTweet"

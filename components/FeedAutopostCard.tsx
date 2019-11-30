@@ -7,7 +7,7 @@ import {
 } from "react-relay"
 import { FeedAutopostCard_feed } from "../lib/__generated__/FeedAutopostCard_feed.graphql"
 import { Button } from "./button"
-import { useErrors } from "../hooks/error"
+import { useErrors } from "./ErrorContainer"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { setFeedOptions } from "../lib/mutations/SetFeedOptions"
 

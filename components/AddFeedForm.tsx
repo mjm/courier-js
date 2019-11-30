@@ -2,11 +2,12 @@ import styled from "@emotion/styled"
 import { Field, Formik, Form, ErrorMessage, FormikActions } from "formik"
 import * as yup from "yup"
 import { Environment } from "react-relay"
-import { ErrorContainer } from "../hooks/error"
-import { ErrorBox, FieldError } from "./error"
+import { ErrorContainer } from "./ErrorContainer"
+import { ErrorBox } from "./ErrorBox"
 import { Button } from "./button"
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons"
 import { addFeed } from "../lib/mutations/AddFeed"
+import { FieldError } from "./FieldError"
 
 interface Props {
   environment: Environment

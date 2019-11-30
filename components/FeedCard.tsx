@@ -9,7 +9,7 @@ import {
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons"
 import Moment from "react-moment"
-import URL from "./url"
+import URLText from "./URLText"
 import styled from "@emotion/styled"
 import Icon from "./icon"
 
@@ -26,7 +26,7 @@ const FeedCard: React.FC<Props> = ({ feed }) => {
       </CardHeader>
       <InfoLink href={feed.feed.homePageURL}>
         <InfoIcon icon={faHome} />
-        <URL>{feed.feed.homePageURL}</URL>
+        <URLText>{feed.feed.homePageURL}</URLText>
       </InfoLink>
       {feed.feed.refreshedAt && (
         <InfoRow>

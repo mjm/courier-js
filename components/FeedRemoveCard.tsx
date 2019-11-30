@@ -7,7 +7,7 @@ import {
   RelayProp,
 } from "react-relay"
 import { FeedRemoveCard_feed } from "../lib/__generated__/FeedRemoveCard_feed.graphql"
-import { ErrorContainer } from "../hooks/error"
+import { ErrorContainer } from "./ErrorContainer"
 import { Button } from "./button"
 import { faTrashAlt, faTimes } from "@fortawesome/free-solid-svg-icons"
 import {
@@ -15,7 +15,7 @@ import {
   AlertDialogLabel,
   AlertDialogDescription,
 } from "@reach/alert-dialog"
-import { ErrorBox } from "./error"
+import { ErrorBox } from "./ErrorBox"
 import Group from "./group"
 import Router from "next/router"
 import { deleteFeed } from "../lib/mutations/DeleteFeed"

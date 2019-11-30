@@ -20,11 +20,12 @@ import Group from "./group"
 import Card, { CardHeader } from "./card"
 import { Flex, Box } from "@rebass/emotion"
 import { ThemeContext } from "@emotion/core"
-import { FieldError, ErrorBox } from "./error"
+import { ErrorBox } from "./ErrorBox"
 import { Button } from "./button"
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons"
 import { subscribe } from "../lib/mutations/Subscribe"
 import { renewSession } from "../utils/auth0"
+import { FieldError } from "./FieldError"
 
 interface Props {
   user: SubscribeForm_user
