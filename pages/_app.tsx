@@ -5,6 +5,7 @@ import { renewSession, isAuthenticated } from "../utils/auth0"
 import { config } from "@fortawesome/fontawesome-svg-core"
 import * as theme from "../utils/theme"
 import { ThemeProvider } from "emotion-theming"
+import NProgress from "nprogress"
 
 config.autoAddCss = false
 
@@ -12,6 +13,13 @@ import "normalizecss/normalize.css"
 import "typeface-rubik"
 import "typeface-ibm-plex-sans"
 import "@fortawesome/fontawesome-svg-core/styles.css"
+
+Router.events.on("routeChangeStart", (url: string) => {
+  console.log(`Loading: ${url}`)
+  NProgress.start()
+})
+Router.events.on("routeChangeComplete", () => NProgress.done())
+Router.events.on("routeChangeError", () => NProgress.done())
 
 class MyApp extends App {
   state = {
