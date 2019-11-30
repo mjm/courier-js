@@ -1,5 +1,5 @@
 import React from "react"
-import withDefaultPage, { DefaultPageResult } from "./defaultPage"
+import withDefaultPage, { DefaultPageResult } from "./withDefaultPage"
 import Link from "next/link"
 import Loading from "../components/Loading"
 import Head from "../components/Head"

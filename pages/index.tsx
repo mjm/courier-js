@@ -1,7 +1,7 @@
 import React from "react"
 import Link from "next/link"
 import Head from "../components/Head"
-import withDefaultPage from "../hocs/defaultPage"
+import withDefaultPage from "../hocs/withDefaultPage"
 import Router from "next/router"
 import { Card, Text, Box, Heading } from "@rebass/emotion"
 import Group from "../components/Group"

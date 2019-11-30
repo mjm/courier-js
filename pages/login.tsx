@@ -1,5 +1,5 @@
 import React from "react"
-import withPublicPage from "../hocs/publicPage"
+import withPublicPage from "../hocs/withPublicPage"
 import { NextPage } from "next"
 import Head from "../components/Head"
 import Loading from "../components/Loading"

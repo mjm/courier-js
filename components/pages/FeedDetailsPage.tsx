@@ -1,6 +1,6 @@
 import { NextPage } from "next"
-import withData from "../../hocs/relay"
-import withSecurePage from "../../hocs/securePage"
+import withData from "../../hocs/withData"
+import withSecurePage from "../../hocs/withSecurePage"
 import { graphql } from "react-relay"
 import Container from "../Container"
 import { ErrorContainer } from "../ErrorContainer"
