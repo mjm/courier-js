@@ -8,6 +8,7 @@ import {
   RecordSource,
   fetchQuery,
   GraphQLTaggedNode,
+  OperationType,
 } from "relay-runtime"
 import { ReactRelayContext } from "react-relay"
 import fetch from "isomorphic-unfetch"
@@ -17,13 +18,17 @@ import { getToken } from "../utils/auth0"
 
 let relayEnvironment: Environment | null = null
 
-interface WithDataOptions {
+interface WithDataOptions<Props, Operation extends OperationType> {
   query?: GraphQLTaggedNode
+  getVariables?: (props: Props) => Operation["variables"]
 }
 
-function withData<P>(
-  Page: NextPage<P>,
-  options: WithDataOptions = {}
+function withData<
+  P extends Operation["response"],
+  Operation extends OperationType
+>(
+  Page: NextPage<P, any>,
+  options: WithDataOptions<P, Operation> = {}
 ): NextPage<P> {
   const dataPage: NextPage<any, any> = ({ queryRecords, ...props }) => {
     const environmentRef = React.useRef<Environment | null>(null)
@@ -56,8 +61,15 @@ function withData<P>(
     const environment = initEnvironment(ctx)
 
     if (options.query) {
-      const variables = {}
-      queryProps = await fetchQuery(environment, options.query, variables)
+      let variables = {}
+      if (options.getVariables) {
+        variables = options.getVariables(composedInitialProps)
+      }
+      queryProps = await fetchQuery<Operation>(
+        environment,
+        options.query,
+        variables
+      )
       queryRecords = environment
         .getStore()
         .getSource()
