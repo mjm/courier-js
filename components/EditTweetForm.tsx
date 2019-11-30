@@ -13,8 +13,8 @@ import {
 import { Flex } from "@rebass/emotion"
 import { ErrorBox } from "./ErrorBox"
 import { EditTweetForm_tweet } from "../lib/__generated__/EditTweetForm_tweet.graphql"
-import { editTweet } from "../lib/mutations/EditTweet"
-import { postTweet } from "../lib/mutations/PostTweet"
+import { editTweet } from "./mutations/EditTweet"
+import { postTweet } from "./mutations/PostTweet"
 
 interface Props {
   tweet: EditTweetForm_tweet

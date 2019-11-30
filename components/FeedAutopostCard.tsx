@@ -9,7 +9,7 @@ import { FeedAutopostCard_feed } from "../lib/__generated__/FeedAutopostCard_fee
 import { Button } from "./Button"
 import { useErrors } from "./ErrorContainer"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
-import { setFeedOptions } from "../lib/mutations/SetFeedOptions"
+import { setFeedOptions } from "./mutations/SetFeedOptions"
 
 interface Props {
   feed: FeedAutopostCard_feed

@@ -18,7 +18,7 @@ import {
 import { ErrorBox } from "./ErrorBox"
 import Group from "./Group"
 import Router from "next/router"
-import { deleteFeed } from "../lib/mutations/DeleteFeed"
+import { deleteFeed } from "./mutations/DeleteFeed"
 
 interface Props {
   feed: FeedRemoveCard_feed
