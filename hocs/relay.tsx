@@ -24,7 +24,7 @@ interface WithDataOptions<Props, Operation extends OperationType> {
 }
 
 function withData<
-  P extends Operation["response"],
+  P extends Operation["response"] & Object,
   Operation extends OperationType
 >(
   Page: NextPage<P, any>,
@@ -65,6 +65,7 @@ function withData<
       if (options.getVariables) {
         variables = options.getVariables(composedInitialProps)
       }
+
       queryProps = await fetchQuery<Operation>(
         environment,
         options.query,
