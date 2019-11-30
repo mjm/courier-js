@@ -109,6 +109,7 @@
   "devDependencies": {
     "@babel/core": "^7.7.4",
     "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.7.4",
     "@babel/plugin-proposal-optional-chaining": "^7.7.4",
     "@babel/plugin-transform-typescript": "^7.7.4",
     "@graphql-codegen/add": "^1.1.3",
