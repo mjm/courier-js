@@ -2,6 +2,7 @@
   "presets": ["next/babel", "@emotion/babel-preset-css-prop"],
   "plugins": [
     "relay",
+    "@babel/plugin-proposal-optional-chaining",
     "babel-plugin-transform-typescript-metadata",
     ["@babel/plugin-proposal-decorators", { "legacy": true }],
     ["@babel/plugin-proposal-class-properties", { "loose": true }]

@@ -107,9 +107,10 @@
     "yup": "^0.27.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.0",
+    "@babel/core": "^7.7.4",
     "@babel/plugin-proposal-decorators": "^7.4.4",
-    "@babel/plugin-transform-typescript": "^7.5.1",
+    "@babel/plugin-proposal-optional-chaining": "^7.7.4",
+    "@babel/plugin-transform-typescript": "^7.7.4",
     "@graphql-codegen/add": "^1.1.3",
     "@graphql-codegen/cli": "^1.4.1-alpha-adf605b8.96",
     "@graphql-codegen/typescript": "1.1.3",
