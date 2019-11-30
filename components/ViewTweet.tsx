@@ -22,6 +22,7 @@ import { uncancelTweet } from "../lib/mutations/UncancelTweet"
 import { useErrors } from "../hooks/error"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { postTweet } from "../lib/mutations/PostTweet"
+import { useSubscription } from "./SubscriptionProvider"
 
 mention(linkify)
 
@@ -33,8 +34,7 @@ interface Props {
 
 const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
   const { user } = useAuth()
-  const isSubscribed = true
-  // const { isSubscribed } = useSubscription()
+  const { isSubscribed } = useSubscription()
 
   return (
     <Group direction="column" spacing={3}>

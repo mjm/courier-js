@@ -45,11 +45,7 @@ export default function withSecurePage<T>(
       }
     }
 
-    return (
-      // <SubscriptionProvider>
-      <Page {...props} />
-      // </SubscriptionProvider>
-    )
+    return <Page {...props} />
   }
 
   if (Page.getInitialProps) {
