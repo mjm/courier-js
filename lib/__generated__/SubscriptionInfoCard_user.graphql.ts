@@ -6,10 +6,7 @@ export type SubscriptionStatus = "ACTIVE" | "CANCELED" | "EXPIRED" | "INACTIVE" 
 export type SubscriptionInfoCard_user = {
     readonly customer: {
         readonly creditCard: {
-            readonly brand: string;
-            readonly lastFour: string;
-            readonly expirationMonth: number;
-            readonly expirationYear: number;
+            readonly " $fragmentRefs": FragmentRefs<"CreditCard_card">;
         } | null;
     } | null;
     readonly subscription: {
@@ -17,6 +14,7 @@ export type SubscriptionInfoCard_user = {
         readonly periodEnd: any;
     } | null;
     readonly subscriptionStatusOverride: SubscriptionStatus | null;
+    readonly " $fragmentRefs": FragmentRefs<"SubscriptionStatus_user">;
     readonly " $refType": "SubscriptionInfoCard_user";
 };
 export type SubscriptionInfoCard_user$data = SubscriptionInfoCard_user;
@@ -53,32 +51,9 @@ const node: ReaderFragment = {
           "plural": false,
           "selections": [
             {
-              "kind": "ScalarField",
-              "alias": null,
-              "name": "brand",
-              "args": null,
-              "storageKey": null
-            },
-            {
-              "kind": "ScalarField",
-              "alias": null,
-              "name": "lastFour",
-              "args": null,
-              "storageKey": null
-            },
-            {
-              "kind": "ScalarField",
-              "alias": null,
-              "name": "expirationMonth",
-              "args": null,
-              "storageKey": null
-            },
-            {
-              "kind": "ScalarField",
-              "alias": null,
-              "name": "expirationYear",
-              "args": null,
-              "storageKey": null
+              "kind": "FragmentSpread",
+              "name": "CreditCard_card",
+              "args": null
             }
           ]
         }
@@ -115,8 +90,13 @@ const node: ReaderFragment = {
       "name": "subscriptionStatusOverride",
       "args": null,
       "storageKey": null
+    },
+    {
+      "kind": "FragmentSpread",
+      "name": "SubscriptionStatus_user",
+      "args": null
     }
   ]
 };
-(node as any).hash = 'eb3ba43d7aee08817296bef3b7458aec';
+(node as any).hash = 'd308fc780bc21d3bd2a9ab6559be843a';
 export default node;
