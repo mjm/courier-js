@@ -2,21 +2,21 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type subscribeQueryVariables = {};
-export type subscribeQueryResponse = {
+export type SubscribePageQueryVariables = {};
+export type SubscribePageQueryResponse = {
     readonly currentUser: {
         readonly " $fragmentRefs": FragmentRefs<"SubscribeForm_user">;
     } | null;
 };
-export type subscribeQuery = {
-    readonly response: subscribeQueryResponse;
-    readonly variables: subscribeQueryVariables;
+export type SubscribePageQuery = {
+    readonly response: SubscribePageQueryResponse;
+    readonly variables: SubscribePageQueryVariables;
 };
 
 
 
 /*
-query subscribeQuery {
+query SubscribePageQuery {
   currentUser {
     ...SubscribeForm_user
   }
@@ -38,7 +38,7 @@ const node: ConcreteRequest = {
   "kind": "Request",
   "fragment": {
     "kind": "Fragment",
-    "name": "subscribeQuery",
+    "name": "SubscribePageQuery",
     "type": "Query",
     "metadata": null,
     "argumentDefinitions": [],
@@ -63,7 +63,7 @@ const node: ConcreteRequest = {
   },
   "operation": {
     "kind": "Operation",
-    "name": "subscribeQuery",
+    "name": "SubscribePageQuery",
     "argumentDefinitions": [],
     "selections": [
       {
@@ -131,11 +131,11 @@ const node: ConcreteRequest = {
   },
   "params": {
     "operationKind": "query",
-    "name": "subscribeQuery",
+    "name": "SubscribePageQuery",
     "id": null,
-    "text": "query subscribeQuery {\n  currentUser {\n    ...SubscribeForm_user\n  }\n}\n\nfragment SubscribeForm_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n      expirationMonth\n      expirationYear\n    }\n  }\n}\n",
+    "text": "query SubscribePageQuery {\n  currentUser {\n    ...SubscribeForm_user\n  }\n}\n\nfragment SubscribeForm_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n      expirationMonth\n      expirationYear\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
-(node as any).hash = '7e2baeab559fdb8b54791a5cbc337748';
+(node as any).hash = 'f17090d044b82984ceb593c5ed969aff';
 export default node;

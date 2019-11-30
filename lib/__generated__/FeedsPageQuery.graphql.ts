@@ -2,19 +2,19 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type feedsQueryVariables = {};
-export type feedsQueryResponse = {
+export type FeedsPageQueryVariables = {};
+export type FeedsPageQueryResponse = {
     readonly " $fragmentRefs": FragmentRefs<"FeedList_feeds">;
 };
-export type feedsQuery = {
-    readonly response: feedsQueryResponse;
-    readonly variables: feedsQueryVariables;
+export type FeedsPageQuery = {
+    readonly response: FeedsPageQueryResponse;
+    readonly variables: FeedsPageQueryVariables;
 };
 
 
 
 /*
-query feedsQuery {
+query FeedsPageQuery {
   ...FeedList_feeds
 }
 
@@ -68,7 +68,7 @@ return {
   "kind": "Request",
   "fragment": {
     "kind": "Fragment",
-    "name": "feedsQuery",
+    "name": "FeedsPageQuery",
     "type": "Query",
     "metadata": null,
     "argumentDefinitions": [],
@@ -82,7 +82,7 @@ return {
   },
   "operation": {
     "kind": "Operation",
-    "name": "feedsQuery",
+    "name": "FeedsPageQuery",
     "argumentDefinitions": [],
     "selections": [
       {
@@ -225,12 +225,12 @@ return {
   },
   "params": {
     "operationKind": "query",
-    "name": "feedsQuery",
+    "name": "FeedsPageQuery",
     "id": null,
-    "text": "query feedsQuery {\n  ...FeedList_feeds\n}\n\nfragment FeedCard_feed on SubscribedFeed {\n  id\n  feed {\n    id\n    url\n    title\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n\nfragment FeedList_feeds on Query {\n  allSubscribedFeeds(first: 20) {\n    edges {\n      node {\n        id\n        ...FeedCard_feed\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n",
+    "text": "query FeedsPageQuery {\n  ...FeedList_feeds\n}\n\nfragment FeedCard_feed on SubscribedFeed {\n  id\n  feed {\n    id\n    url\n    title\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n\nfragment FeedList_feeds on Query {\n  allSubscribedFeeds(first: 20) {\n    edges {\n      node {\n        id\n        ...FeedCard_feed\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = '83bbd43b4df499d96a96a38a8496ee14';
+(node as any).hash = '60a72d82d0844963e52425145f5988e0';
 export default node;

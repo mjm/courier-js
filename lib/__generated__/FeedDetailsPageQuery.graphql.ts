@@ -2,10 +2,10 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type IdQueryVariables = {
+export type FeedDetailsPageQueryVariables = {
     id: string;
 };
-export type IdQueryResponse = {
+export type FeedDetailsPageQueryResponse = {
     readonly subscribedFeed: {
         readonly " $fragmentRefs": FragmentRefs<"FeedDetails_feed">;
     } | null;
@@ -13,15 +13,15 @@ export type IdQueryResponse = {
         readonly " $fragmentRefs": FragmentRefs<"FeedDetails_user">;
     } | null;
 };
-export type IdQuery = {
-    readonly response: IdQueryResponse;
-    readonly variables: IdQueryVariables;
+export type FeedDetailsPageQuery = {
+    readonly response: FeedDetailsPageQueryResponse;
+    readonly variables: FeedDetailsPageQueryVariables;
 };
 
 
 
 /*
-query IdQuery(
+query FeedDetailsPageQuery(
   $id: ID!
 ) {
   subscribedFeed(id: $id) {
@@ -139,7 +139,7 @@ return {
   "kind": "Request",
   "fragment": {
     "kind": "Fragment",
-    "name": "IdQuery",
+    "name": "FeedDetailsPageQuery",
     "type": "Query",
     "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
@@ -180,7 +180,7 @@ return {
   },
   "operation": {
     "kind": "Operation",
-    "name": "IdQuery",
+    "name": "FeedDetailsPageQuery",
     "argumentDefinitions": (v0/*: any*/),
     "selections": [
       {
@@ -357,12 +357,12 @@ return {
   },
   "params": {
     "operationKind": "query",
-    "name": "IdQuery",
+    "name": "FeedDetailsPageQuery",
     "id": null,
-    "text": "query IdQuery(\n  $id: ID!\n) {\n  subscribedFeed(id: $id) {\n    ...FeedDetails_feed\n    id\n  }\n  currentUser {\n    ...FeedDetails_user\n  }\n}\n\nfragment FeedAutopostCard_feed on SubscribedFeed {\n  id\n  autopost\n}\n\nfragment FeedDetails_feed on SubscribedFeed {\n  id\n  feed {\n    title\n    ...FeedInfoCard_feed\n    ...FeedRecentPostList_feed\n    id\n  }\n  ...FeedAutopostCard_feed\n  ...FeedRemoveCard_feed\n}\n\nfragment FeedDetails_user on User {\n  ...FeedInfoCard_user\n}\n\nfragment FeedInfoCard_feed on Feed {\n  url\n  homePageURL\n  micropubEndpoint\n}\n\nfragment FeedInfoCard_user on User {\n  micropubSites\n}\n\nfragment FeedRecentPostList_feed on Feed {\n  id\n  refreshedAt\n  posts(first: 5) {\n    edges {\n      node {\n        id\n        url\n        title\n        htmlContent\n        publishedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment FeedRemoveCard_feed on SubscribedFeed {\n  id\n}\n",
+    "text": "query FeedDetailsPageQuery(\n  $id: ID!\n) {\n  subscribedFeed(id: $id) {\n    ...FeedDetails_feed\n    id\n  }\n  currentUser {\n    ...FeedDetails_user\n  }\n}\n\nfragment FeedAutopostCard_feed on SubscribedFeed {\n  id\n  autopost\n}\n\nfragment FeedDetails_feed on SubscribedFeed {\n  id\n  feed {\n    title\n    ...FeedInfoCard_feed\n    ...FeedRecentPostList_feed\n    id\n  }\n  ...FeedAutopostCard_feed\n  ...FeedRemoveCard_feed\n}\n\nfragment FeedDetails_user on User {\n  ...FeedInfoCard_user\n}\n\nfragment FeedInfoCard_feed on Feed {\n  url\n  homePageURL\n  micropubEndpoint\n}\n\nfragment FeedInfoCard_user on User {\n  micropubSites\n}\n\nfragment FeedRecentPostList_feed on Feed {\n  id\n  refreshedAt\n  posts(first: 5) {\n    edges {\n      node {\n        id\n        url\n        title\n        htmlContent\n        publishedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment FeedRemoveCard_feed on SubscribedFeed {\n  id\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = '9da01a2ff0a81fa41bb64cc0f4267ddc';
+(node as any).hash = 'd2c7cfdbc7c42336af9b6852ce05f070';
 export default node;
