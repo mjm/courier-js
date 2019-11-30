@@ -1,8 +1,5 @@
 import React from "react"
-import {
-  CreditCard as CreditCardData,
-  SubscriptionStatus as Status,
-} from "../lib/generated/graphql-components"
+import { CreditCard as CreditCardData } from "../lib/generated/graphql-components"
 import { Text } from "@rebass/emotion"
 import {
   faCcVisa,
@@ -21,6 +18,7 @@ import {
   faBan,
 } from "@fortawesome/free-solid-svg-icons"
 import Icon from "./icon"
+import { SubscriptionStatus as Status } from "../lib/__generated__/SubscriptionInfoCard_user.graphql"
 
 const creditCardsByBrand: { [key: string]: IconDefinition } = {
   Visa: faCcVisa,
@@ -66,7 +64,7 @@ export const SubscriptionStatus = ({
   ) : null
 
   switch (status) {
-    case Status.Active:
+    case "ACTIVE":
       return (
         <Text>
           <Icon icon={faCheckCircle} mr={1} color="primary.600" />
@@ -74,7 +72,7 @@ export const SubscriptionStatus = ({
           {override}
         </Text>
       )
-    case Status.Canceled:
+    case "CANCELED":
       return (
         <Text>
           <Icon icon={faTimesCircle} mr={1} color="gray.600" />
@@ -82,7 +80,7 @@ export const SubscriptionStatus = ({
           {override}
         </Text>
       )
-    case Status.Expired:
+    case "EXPIRED":
       return (
         <Text>
           <Icon icon={faCalendarTimes} mr={1} color="red.600" />
@@ -90,7 +88,7 @@ export const SubscriptionStatus = ({
           {override}
         </Text>
       )
-    case Status.Inactive:
+    case "INACTIVE":
       return (
         <Text>
           <Icon icon={faBan} mr={1} color="gray.600" />
