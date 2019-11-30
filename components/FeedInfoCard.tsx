@@ -1,6 +1,6 @@
 import Card from "./card"
 import { InfoField } from "./info"
-import URL from "./url"
+import URLText from "./URLText"
 import Icon from "./icon"
 import {
   faCheckCircle,
@@ -39,18 +39,18 @@ const FeedInfoCard: React.FC<Props> = ({
     <Card>
       <InfoField label="Feed URL">
         <a href={feed.url}>
-          <URL>{feed.url}</URL>
+          <URLText>{feed.url}</URLText>
         </a>
       </InfoField>
       <InfoField label="Home Page">
         <a href={feed.homePageURL}>
-          <URL>{feed.homePageURL}</URL>
+          <URLText>{feed.homePageURL}</URLText>
         </a>
       </InfoField>
       {feed.micropubEndpoint ? (
         <>
           <InfoField label="Micropub API">
-            <URL>
+            <URLText>
               {feed.micropubEndpoint}
               {isMicropubAuthenticated ? (
                 <Icon
@@ -67,7 +67,7 @@ const FeedInfoCard: React.FC<Props> = ({
                   title="You are not posting syndication links back to this site."
                 />
               )}
-            </URL>
+            </URLText>
           </InfoField>
           <MicropubAuthButton
             environment={environment}

@@ -1,9 +1,7 @@
 import React from "react"
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons"
 import { CardProps, Box, Text } from "@rebass/emotion"
-import Icon from "./icon"
 import Notice from "./notice"
-import { useErrors } from "../hooks/error"
+import { useErrors } from "./ErrorContainer"
 
 interface ErrorBoxProps extends CardProps {
   error?: Error
@@ -44,17 +42,5 @@ export const ErrorBox = ({ error, errors, ...props }: ErrorBoxProps) => {
         errors[0].message
       )}
     </Notice>
-  )
-}
-
-interface FieldErrorProps {
-  children?: React.ReactNode
-}
-export const FieldError = ({ children }: FieldErrorProps) => {
-  return (
-    <Box color="red.900" mb={3}>
-      <Icon mr={2} mt="2px" color="red.500" icon={faExclamationCircle} />
-      {children}
-    </Box>
   )
 }

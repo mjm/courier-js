@@ -9,7 +9,7 @@ import {
   RelayProp,
 } from "react-relay"
 import { FeedRecentPostList_feed } from "../lib/__generated__/FeedRecentPostList_feed.graphql"
-import { useErrors } from "../hooks/error"
+import { useErrors } from "./ErrorContainer"
 import { Button } from "./button"
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons"
 import { refreshFeed } from "../lib/mutations/RefreshFeed"
