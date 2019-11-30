@@ -1,6 +1,5 @@
 overwrite: true
 schema: "schema.graphql"
-documents: lib/query/*.graphql
 generates:
   lib/generated/graphql.ts:
     plugins:
@@ -33,12 +32,3 @@ generates:
         TweetConnection: Pager<types.Tweet>
         User: types.UserInfo
         UserSubscription: Stripe.subscriptions.ISubscription
-  # lib/generated/graphql-components.tsx:
-  #   plugins:
-  #     - "typescript"
-  #     - "typescript-operations"
-  #     - "typescript-react-apollo"
-  #   config:
-  #     withHooks: true
-  #     withComponent: false
-  #     withHOC: false

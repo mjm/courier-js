@@ -1,5 +1,4 @@
 import React from "react"
-import { CreditCard as CreditCardData } from "../lib/generated/graphql-components"
 import { Text } from "@rebass/emotion"
 import {
   faCcVisa,
@@ -19,6 +18,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import Icon from "./icon"
 import { SubscriptionStatus as Status } from "../lib/__generated__/SubscriptionInfoCard_user.graphql"
+
+interface CreditCardData {
+  brand: string
+  lastFour: string
+  expirationMonth: number
+  expirationYear: number
+}
 
 const creditCardsByBrand: { [key: string]: IconDefinition } = {
   Visa: faCcVisa,

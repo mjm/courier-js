@@ -1,6 +1,5 @@
 import React from "react"
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons"
-import { isApolloError } from "apollo-client"
 import { CardProps, Box, Text } from "@rebass/emotion"
 import Icon from "./icon"
 import Notice from "./notice"
@@ -22,11 +21,7 @@ export const ErrorBox = ({ error, errors, ...props }: ErrorBoxProps) => {
     errors = errors || []
 
     if (error) {
-      if (isApolloError(error)) {
-        errors = [...(errors || []), ...error.graphQLErrors]
-      } else {
-        errors = [...(errors || []), error]
-      }
+      errors = [...(errors || []), error]
     }
   }
 

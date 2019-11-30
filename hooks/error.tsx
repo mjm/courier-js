@@ -1,5 +1,4 @@
 import React from "react"
-import { isApolloError } from "apollo-client"
 
 interface ErrorState {
   errors: Error[]
@@ -24,11 +23,7 @@ const reducer: React.Reducer<{ errors: Error[] }, Action> = (
     case "setErrors":
       return { errors: action.errors }
     case "setError":
-      if (isApolloError(action.error)) {
-        return { errors: [...action.error.graphQLErrors] }
-      } else {
-        return { errors: [action.error] }
-      }
+      return { errors: [action.error] }
     case "clearErrors":
       return { errors: [] }
   }
