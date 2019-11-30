@@ -2,22 +2,22 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type accountQueryVariables = {};
-export type accountQueryResponse = {
+export type AccountPageQueryVariables = {};
+export type AccountPageQueryResponse = {
     readonly currentUser: {
         readonly " $fragmentRefs": FragmentRefs<"UserInfoCard_user" | "SubscriptionInfoCard_user">;
     } | null;
     readonly " $fragmentRefs": FragmentRefs<"RecentEventsCard_events">;
 };
-export type accountQuery = {
-    readonly response: accountQueryResponse;
-    readonly variables: accountQueryVariables;
+export type AccountPageQuery = {
+    readonly response: AccountPageQueryResponse;
+    readonly variables: AccountPageQueryVariables;
 };
 
 
 
 /*
-query accountQuery {
+query AccountPageQuery {
   currentUser {
     ...UserInfoCard_user
     ...SubscriptionInfoCard_user
@@ -110,7 +110,7 @@ return {
   "kind": "Request",
   "fragment": {
     "kind": "Fragment",
-    "name": "accountQuery",
+    "name": "AccountPageQuery",
     "type": "Query",
     "metadata": null,
     "argumentDefinitions": [],
@@ -145,7 +145,7 @@ return {
   },
   "operation": {
     "kind": "Operation",
-    "name": "accountQuery",
+    "name": "AccountPageQuery",
     "argumentDefinitions": [],
     "selections": [
       {
@@ -400,12 +400,12 @@ return {
   },
   "params": {
     "operationKind": "query",
-    "name": "accountQuery",
+    "name": "AccountPageQuery",
     "id": null,
-    "text": "query accountQuery {\n  currentUser {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment CreditCard_card on CreditCard {\n  brand\n  lastFour\n  expirationMonth\n  expirationYear\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 15) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      ...CreditCard_card\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n  ...SubscriptionStatus_user\n}\n\nfragment SubscriptionStatus_user on User {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n}\n",
+    "text": "query AccountPageQuery {\n  currentUser {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment CreditCard_card on CreditCard {\n  brand\n  lastFour\n  expirationMonth\n  expirationYear\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 15) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      ...CreditCard_card\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n  ...SubscriptionStatus_user\n}\n\nfragment SubscriptionStatus_user on User {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = '7dfb0c328d9db208cfa490166056a3e6';
+(node as any).hash = '0fd3d521a742f1e0209ec80183548ead';
 export default node;

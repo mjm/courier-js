@@ -2,8 +2,8 @@
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type tweetsQueryVariables = {};
-export type tweetsQueryResponse = {
+export type TweetsPageQueryVariables = {};
+export type TweetsPageQueryResponse = {
     readonly upcoming: {
         readonly " $fragmentRefs": FragmentRefs<"TweetList_tweets">;
     } | null;
@@ -14,15 +14,15 @@ export type tweetsQueryResponse = {
         readonly " $fragmentRefs": FragmentRefs<"SubscriptionProvider_user">;
     } | null;
 };
-export type tweetsQuery = {
-    readonly response: tweetsQueryResponse;
-    readonly variables: tweetsQueryVariables;
+export type TweetsPageQuery = {
+    readonly response: TweetsPageQueryResponse;
+    readonly variables: TweetsPageQueryVariables;
 };
 
 
 
 /*
-query tweetsQuery {
+query TweetsPageQuery {
   upcoming: viewer {
     ...TweetList_tweets_30lx3F
   }
@@ -267,7 +267,7 @@ return {
   "kind": "Request",
   "fragment": {
     "kind": "Fragment",
-    "name": "tweetsQuery",
+    "name": "TweetsPageQuery",
     "type": "Query",
     "metadata": null,
     "argumentDefinitions": [],
@@ -328,7 +328,7 @@ return {
   },
   "operation": {
     "kind": "Operation",
-    "name": "tweetsQuery",
+    "name": "TweetsPageQuery",
     "argumentDefinitions": [],
     "selections": [
       {
@@ -425,12 +425,12 @@ return {
   },
   "params": {
     "operationKind": "query",
-    "name": "tweetsQuery",
+    "name": "TweetsPageQuery",
     "id": null,
-    "text": "query tweetsQuery {\n  upcoming: viewer {\n    ...TweetList_tweets_30lx3F\n  }\n  past: viewer {\n    ...TweetList_tweets_2ixgHQ\n  }\n  currentUser {\n    ...SubscriptionProvider_user\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment SubscriptionProvider_user on User {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment TweetCard_tweet on Tweet {\n  status\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n}\n\nfragment TweetList_tweets_2ixgHQ on User {\n  allTweets(filter: PAST, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment TweetList_tweets_30lx3F on User {\n  allTweets(filter: UPCOMING, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  id\n  body\n  mediaURLs\n  status\n  action\n  postAfter\n  postedAt\n  postedTweetID\n  retweetID\n}\n",
+    "text": "query TweetsPageQuery {\n  upcoming: viewer {\n    ...TweetList_tweets_30lx3F\n  }\n  past: viewer {\n    ...TweetList_tweets_2ixgHQ\n  }\n  currentUser {\n    ...SubscriptionProvider_user\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment SubscriptionProvider_user on User {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment TweetCard_tweet on Tweet {\n  status\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n}\n\nfragment TweetList_tweets_2ixgHQ on User {\n  allTweets(filter: PAST, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment TweetList_tweets_30lx3F on User {\n  allTweets(filter: UPCOMING, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  id\n  body\n  mediaURLs\n  status\n  action\n  postAfter\n  postedAt\n  postedTweetID\n  retweetID\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = '6e670c46aa4dbd0a716a795ff32deea3';
+(node as any).hash = '8b9ec02ebc67519ede066f63e155da6f';
 export default node;
