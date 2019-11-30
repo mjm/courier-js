@@ -2,15 +2,16 @@ import React from "react"
 import { NextPage } from "next"
 import { StripeProvider, Elements } from "react-stripe-elements"
 import Container, { FlushContainer } from "../components/Container"
-import Head from "../components/head"
-import { PageHeader, PageDescription } from "../components/header"
-import Group from "../components/group"
-import { ContentCard, CardHeader } from "../components/card"
+import Head from "../components/Head"
+import Group from "../components/Group"
+import { ContentCard, CardHeader } from "../components/Card"
 import withData from "../hocs/relay"
 import withSecurePage from "../hocs/securePage"
 import { graphql } from "react-relay"
 import SubscribeForm from "../components/SubscribeForm"
 import { subscribeQueryResponse } from "../lib/__generated__/subscribeQuery.graphql"
+import PageHeader from "../components/PageHeader"
+import PageDescription from "../components/PageDescription"
 
 type Props = subscribeQueryResponse
 
@@ -28,6 +29,7 @@ const Subscribe: NextPage<Props> = ({ currentUser }) => {
     <StripeProvider stripe={stripe}>
       <Container>
         <Head title="Subscribe to Courier" stripe />
+
         <PageHeader>Subscribe</PageHeader>
         <PageDescription>
           To be able to post your tweets to Twitter, you'll need to subscribe to

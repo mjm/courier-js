@@ -2,7 +2,7 @@ import Link from "next/link"
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
 import { FeedCard_feed } from "../lib/__generated__/FeedCard_feed.graphql"
-import Card, { CardHeader } from "./card"
+import Card, { CardHeader } from "./Card"
 import {
   faHome,
   faHistory,
@@ -11,7 +11,7 @@ import {
 import Moment from "react-moment"
 import URLText from "./URLText"
 import styled from "@emotion/styled"
-import Icon from "./icon"
+import Icon from "./Icon"
 
 interface Props {
   feed: FeedCard_feed

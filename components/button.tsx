@@ -3,7 +3,7 @@ import styled from "@emotion/styled"
 import { space, SpaceProps, alignSelf, AlignSelfProps } from "styled-system"
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
-import Icon from "./icon"
+import Icon from "./Icon"
 
 type Size = "small" | "medium" | "large"
 

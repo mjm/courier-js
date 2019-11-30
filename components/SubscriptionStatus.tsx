@@ -1,7 +1,7 @@
 import { createFragmentContainer, graphql } from "react-relay"
 import { SubscriptionStatus_user } from "../lib/__generated__/SubscriptionStatus_user.graphql"
 import { Text } from "@rebass/emotion"
-import Icon from "./icon"
+import Icon from "./Icon"
 import {
   faCheckCircle,
   faTimesCircle,

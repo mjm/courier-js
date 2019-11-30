@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
-import Icon from "./icon"
+import Icon from "./Icon"
 
 interface Props {
   delay?: number

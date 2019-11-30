@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Card, Image, Flex } from "@rebass/emotion"
-import Icon from "./icon"
+import Icon from "./Icon"
 import { BodyStyles } from "./BodyStyles"
 import { DialogStyles } from "./DialogStyles"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"

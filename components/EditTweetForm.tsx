@@ -1,8 +1,8 @@
 import React from "react"
 import { createFragmentContainer, graphql, RelayProp } from "react-relay"
 import { Formik, FieldArray, Field, Form } from "formik"
-import Group from "./group"
-import { Button } from "./button"
+import Group from "./Group"
+import { Button } from "./Button"
 import {
   faPlus,
   faTrashAlt,

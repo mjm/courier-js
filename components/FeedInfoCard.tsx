@@ -1,7 +1,6 @@
-import Card from "./card"
-import { InfoField } from "./info"
+import Card from "./Card"
 import URLText from "./URLText"
-import Icon from "./icon"
+import Icon from "./Icon"
 import {
   faCheckCircle,
   faTimesCircle,
@@ -18,7 +17,8 @@ import { FeedInfoCard_feed } from "../lib/__generated__/FeedInfoCard_feed.graphq
 import { FeedInfoCard_user } from "../lib/__generated__/FeedInfoCard_user.graphql"
 import { FeedInfoCardEndpointsQuery } from "../lib/__generated__/FeedInfoCardEndpointsQuery.graphql"
 import { beginIndieAuth } from "../utils/indieauth"
-import { Button } from "./button"
+import { Button } from "./Button"
+import InfoField from "./InfoField"
 
 interface Props {
   feed: FeedInfoCard_feed

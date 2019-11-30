@@ -1,5 +1,5 @@
 import { Box } from "@rebass/emotion"
-import Icon from "./icon"
+import Icon from "./Icon"
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons"
 
 interface Props {

@@ -5,9 +5,9 @@ import { ErrorContainer, useErrors } from "../components/ErrorContainer"
 import withPublicPage from "../hocs/publicPage"
 import { NextPage } from "next"
 import Container from "../components/Container"
-import Head from "../components/head"
+import Head from "../components/Head"
 import { ErrorBox } from "../components/ErrorBox"
-import Loading from "../components/loading"
+import Loading from "../components/Loading"
 
 const LoggedIn: NextPage<{}> = () => {
   return (

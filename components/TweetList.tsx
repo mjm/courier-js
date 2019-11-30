@@ -5,14 +5,14 @@ import {
   RelayPaginationProp,
 } from "react-relay"
 import { TweetList_tweets } from "../lib/__generated__/TweetList_tweets.graphql"
-import { SectionHeader } from "./header"
 import { FlushContainer } from "./Container"
-import Card from "./card"
+import Card from "./Card"
 import { Text, Flex } from "@rebass/emotion"
-import Group from "./group"
-import { Button } from "./button"
+import Group from "./Group"
+import { Button } from "./Button"
 import TweetCard from "./TweetCard"
 import { faAngleDoubleDown } from "@fortawesome/free-solid-svg-icons"
+import SectionHeader from "./SectionHeader"
 
 interface Props {
   title: string

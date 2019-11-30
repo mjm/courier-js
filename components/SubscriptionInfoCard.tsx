@@ -1,9 +1,8 @@
 import { useRouter } from "next/router"
-import Card, { CardHeader } from "./card"
-import { InfoField } from "./info"
+import Card, { CardHeader } from "./Card"
 import Moment from "react-moment"
-import Group from "./group"
-import { Button } from "./button"
+import Group from "./Group"
+import { Button } from "./Button"
 import { faCreditCard, faTimesCircle } from "@fortawesome/free-solid-svg-icons"
 import {
   createFragmentContainer,
@@ -15,6 +14,7 @@ import { SubscriptionInfoCard_user } from "../lib/__generated__/SubscriptionInfo
 import { cancelSubscription } from "../lib/mutations/CancelSubscription"
 import CreditCard from "./CreditCard"
 import SubscriptionStatus from "./SubscriptionStatus"
+import InfoField from "./InfoField"
 
 interface Props {
   user: SubscriptionInfoCard_user

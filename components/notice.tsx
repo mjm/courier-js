@@ -5,7 +5,7 @@ import {
   faExclamationTriangle,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons"
-import Icon from "./icon"
+import Icon from "./Icon"
 
 const variants = {
   error: { color: "red", icon: faExclamationCircle },

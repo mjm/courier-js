@@ -1,11 +1,11 @@
 import { getToken } from "../utils/auth0"
-import Card from "./card"
-import { InfoField } from "./info"
-import Group from "./group"
-import { Button } from "./button"
+import Card from "./Card"
+import Group from "./Group"
+import { Button } from "./Button"
 import { faCopy } from "@fortawesome/free-solid-svg-icons"
 import { createFragmentContainer, graphql } from "react-relay"
 import { UserInfoCard_user } from "../lib/__generated__/UserInfoCard_user.graphql"
+import InfoField from "./InfoField"
 
 interface Props {
   user: UserInfoCard_user
