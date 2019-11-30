@@ -3,7 +3,7 @@ import withData from "../../hocs/relay"
 import withSecurePage from "../../hocs/securePage"
 import { graphql } from "react-relay"
 import { IdQueryResponse } from "../../lib/__generated__/IdQuery.graphql"
-import Container from "../../components/container"
+import Container from "../../components/Container"
 import { ErrorContainer } from "../../hooks/error"
 import FeedDetails from "../../components/FeedDetails"
 

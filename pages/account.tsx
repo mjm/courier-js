@@ -1,5 +1,5 @@
 import { NextPage } from "next"
-import Container, { FlushContainer } from "../components/container"
+import Container, { FlushContainer } from "../components/Container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import Group from "../components/group"

@@ -2,7 +2,7 @@ import React from "react"
 
 import { NextPage } from "next"
 import { graphql, Environment } from "react-relay"
-import Container from "../components/container"
+import Container from "../components/Container"
 import Head from "../components/head"
 import { PageDescription, PageHeader } from "../components/header"
 import withData from "../hocs/relay"
