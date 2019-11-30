@@ -1,19 +1,18 @@
 import React from "react"
 import withDefaultPage, { DefaultPageResult } from "./defaultPage"
 import Link from "next/link"
-import Loading from "../components/loading"
-import { PageHeader } from "../components/header"
-import Head from "../components/head"
+import Loading from "../components/Loading"
+import Head from "../components/Head"
 import {
   faSignInAlt,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons"
-import Icon from "../components/icon"
+import Icon from "../components/Icon"
 import { Text, Flex, Button } from "@rebass/emotion"
 import { NextPage } from "next"
-import { useAuth } from "../hooks/auth"
-// import { SubscriptionProvider } from "../hooks/subscription"
-import { PageCard } from "../components/card"
+import { useAuth } from "../components/AuthProvider"
+import { PageCard } from "../components/Card"
+import PageHeader from "../components/PageHeader"
 
 export default function withSecurePage<T>(
   Page: NextPage<T>

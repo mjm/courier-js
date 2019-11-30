@@ -1,16 +1,16 @@
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
 import { FeedDetails_feed } from "../lib/__generated__/FeedDetails_feed.graphql"
-import Head from "./head"
-import { PageHeader } from "./header"
+import Head from "./Head"
 import { FlushContainer } from "./Container"
-import Group from "./group"
+import Group from "./Group"
 import { ErrorBox } from "./ErrorBox"
 import { FeedDetails_user } from "../lib/__generated__/FeedDetails_user.graphql"
 import FeedInfoCard from "./FeedInfoCard"
 import FeedRecentPostList from "./FeedRecentPostList"
 import FeedAutopostCard from "./FeedAutopostCard"
 import FeedRemoveCard from "./FeedRemoveCard"
+import PageHeader from "./PageHeader"
 
 interface Props {
   feed: FeedDetails_feed

@@ -1,5 +1,4 @@
-import Card, { CardHeader } from "./card"
-import { InfoField, InfoTable } from "./info"
+import Card, { CardHeader } from "./Card"
 import Moment from "react-moment"
 import striptags from "striptags"
 import {
@@ -10,9 +9,11 @@ import {
 } from "react-relay"
 import { FeedRecentPostList_feed } from "../lib/__generated__/FeedRecentPostList_feed.graphql"
 import { useErrors } from "./ErrorContainer"
-import { Button } from "./button"
+import { Button } from "./Button"
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons"
 import { refreshFeed } from "../lib/mutations/RefreshFeed"
+import InfoField from "./InfoField"
+import InfoTable from "./InfoTable"
 
 interface Props {
   feed: FeedRecentPostList_feed

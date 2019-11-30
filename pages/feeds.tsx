@@ -3,13 +3,14 @@ import React from "react"
 import { NextPage } from "next"
 import { graphql, Environment } from "react-relay"
 import Container from "../components/Container"
-import Head from "../components/head"
-import { PageDescription, PageHeader } from "../components/header"
+import Head from "../components/Head"
 import withData from "../hocs/relay"
 import withSecurePage from "../hocs/securePage"
 import { feedsQueryResponse } from "../lib/__generated__/feedsQuery.graphql"
 import FeedList from "../components/FeedList"
 import AddFeedForm from "../components/AddFeedForm"
+import PageHeader from "../components/PageHeader"
+import PageDescription from "../components/PageDescription"
 
 type Props = feedsQueryResponse & {
   environment: Environment

@@ -1,6 +1,6 @@
 import React from "react"
 import { CardProps, Box, Text } from "@rebass/emotion"
-import Notice from "./notice"
+import Notice from "./Notice"
 import { useErrors } from "./ErrorContainer"
 
 interface ErrorBoxProps extends CardProps {

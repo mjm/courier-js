@@ -1,8 +1,8 @@
-import Card, { CardHeader } from "./card"
-import { InfoTable } from "./info"
+import Card, { CardHeader } from "./Card"
 import { createFragmentContainer, graphql } from "react-relay"
 import { RecentEventsCard_events } from "../lib/__generated__/RecentEventsCard_events.graphql"
 import EventTableRow from "./EventTableRow"
+import InfoTable from "./InfoTable"
 
 interface Props {
   events: RecentEventsCard_events

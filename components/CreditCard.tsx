@@ -7,7 +7,7 @@ import {
   faCcDinersClub,
   faCcJcb,
 } from "@fortawesome/free-brands-svg-icons"
-import Icon from "./icon"
+import Icon from "./Icon"
 import { Text } from "@rebass/emotion"
 import { createFragmentContainer, graphql } from "react-relay"
 import { CreditCard_card } from "../lib/__generated__/CreditCard_card.graphql"

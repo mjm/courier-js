@@ -1,11 +1,11 @@
 import React from "react"
 import Link from "next/link"
-import Head from "../components/head"
+import Head from "../components/Head"
 import withDefaultPage from "../hocs/defaultPage"
 import Router from "next/router"
 import { Card, Text, Box, Heading } from "@rebass/emotion"
-import Group from "../components/group"
-import { Button } from "../components/button"
+import Group from "../components/Group"
+import { Button } from "../components/Button"
 import { NextPage } from "next"
 
 const Home: NextPage<{}> = () => {

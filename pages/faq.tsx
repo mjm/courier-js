@@ -1,9 +1,9 @@
 import withPublicPage from "../hocs/publicPage"
 import Container, { FlushContainer } from "../components/Container"
-import Head from "../components/head"
-import { PageHeader } from "../components/header"
-import { ContentCard, CardHeader } from "../components/card"
+import Head from "../components/Head"
+import { ContentCard, CardHeader } from "../components/Card"
 import { NextPage } from "next"
+import PageHeader from "../components/PageHeader"
 
 const FAQ: NextPage<{}> = () => {
   return (

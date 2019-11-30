@@ -1,5 +1,5 @@
 import React from "react"
-import Card, { CardHeader } from "./card"
+import Card, { CardHeader } from "./Card"
 import {
   createFragmentContainer,
   graphql,
@@ -8,7 +8,7 @@ import {
 } from "react-relay"
 import { FeedRemoveCard_feed } from "../lib/__generated__/FeedRemoveCard_feed.graphql"
 import { ErrorContainer } from "./ErrorContainer"
-import { Button } from "./button"
+import { Button } from "./Button"
 import { faTrashAlt, faTimes } from "@fortawesome/free-solid-svg-icons"
 import {
   AlertDialog,
@@ -16,7 +16,7 @@ import {
   AlertDialogDescription,
 } from "@reach/alert-dialog"
 import { ErrorBox } from "./ErrorBox"
-import Group from "./group"
+import Group from "./Group"
 import Router from "next/router"
 import { deleteFeed } from "../lib/mutations/DeleteFeed"
 

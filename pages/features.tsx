@@ -1,9 +1,10 @@
 import withPublicPage from "../hocs/publicPage"
 import Container, { FlushContainer } from "../components/Container"
-import Head from "../components/head"
-import { PageHeader, PageDescription } from "../components/header"
-import { CardHeader, ContentCard } from "../components/card"
+import Head from "../components/Head"
+import { CardHeader, ContentCard } from "../components/Card"
 import { NextPage } from "next"
+import PageHeader from "../components/PageHeader"
+import PageDescription from "../components/PageDescription"
 
 const Features: NextPage<{}> = () => {
   return (

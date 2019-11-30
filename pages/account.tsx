@@ -1,9 +1,8 @@
 import { NextPage } from "next"
 import Container, { FlushContainer } from "../components/Container"
-import Head from "../components/head"
-import { PageHeader } from "../components/header"
-import Group from "../components/group"
-import { Button } from "../components/button"
+import Head from "../components/Head"
+import Group from "../components/Group"
+import { Button } from "../components/Button"
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons"
 import { logout } from "../utils/auth0"
 import withData from "../hocs/relay"
@@ -13,6 +12,7 @@ import UserInfoCard from "../components/UserInfoCard"
 import { accountQueryResponse } from "../lib/__generated__/accountQuery.graphql"
 import SubscriptionInfoCard from "../components/SubscriptionInfoCard"
 import RecentEventsCard from "../components/RecentEventsCard"
+import PageHeader from "../components/PageHeader"
 
 type Props = accountQueryResponse
 const Account: NextPage<Props> = props => {

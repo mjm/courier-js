@@ -1,4 +1,4 @@
-import Card, { CardHeader } from "./card"
+import Card, { CardHeader } from "./Card"
 import {
   createFragmentContainer,
   graphql,
@@ -6,7 +6,7 @@ import {
   RelayProp,
 } from "react-relay"
 import { FeedAutopostCard_feed } from "../lib/__generated__/FeedAutopostCard_feed.graphql"
-import { Button } from "./button"
+import { Button } from "./Button"
 import { useErrors } from "./ErrorContainer"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { setFeedOptions } from "../lib/mutations/SetFeedOptions"

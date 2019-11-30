@@ -1,10 +1,10 @@
 import Container, { FlushContainer } from "../components/Container"
-import Head from "../components/head"
-import { PageHeader } from "../components/header"
-import { ContentCard } from "../components/card"
+import Head from "../components/Head"
+import { ContentCard } from "../components/Card"
 import Link from "next/link"
 import withPublicPage from "../hocs/publicPage"
 import { NextPage } from "next"
+import PageHeader from "../components/PageHeader"
 
 const Pricing: NextPage<{}> = () => {
   return (
