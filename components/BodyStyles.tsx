@@ -9,7 +9,7 @@ const styles: InterpolationWithTheme<any> = theme => ({
   },
   body: {
     fontFamily: theme.fonts.body,
-    backgroundColor: "#f9ffff",
+    backgroundColor: "#DAE2EC",
   },
 })
 

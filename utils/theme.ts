@@ -38,6 +38,29 @@ export const lineHeights = {
 }
 
 export const colors = {
+  primary10: "#0C008C",
+  primary9: "#1D0EBE",
+  primary8: "#3525E6",
+  primary7: "#4D3DF7",
+  primary6: "#5D55FA",
+  primary5: "#7069FA",
+  primary4: "#8888FC",
+  primary3: "#A2A5FC",
+  primary2: "#C4C6FF",
+  primary1: "#E6E6FF",
+
+  neutral10: "#102A43",
+  neutral9: "#243B53",
+  neutral8: "#334E68",
+  neutral7: "#486581",
+  neutral6: "#627D98",
+  neutral5: "#829AB1",
+  neutral4: "#9FB3C8",
+  neutral3: "#BCCCDC",
+  neutral2: "#D9E2EC",
+  neutral1: "#F0F4F8",
+
+  // OLD COLORS
   // teal
   primary: {
     100: "#F0FFF4",
@@ -50,15 +73,6 @@ export const colors = {
     800: "#285E61",
     900: "#234E52",
   },
-  primary100: "#F0FFF4",
-  primary200: "#B2F5EA",
-  primary300: "#81E6D9",
-  primary400: "#4FD1C5",
-  primary500: "#38B2AC",
-  primary600: "#319795",
-  primary700: "#2C7A7B",
-  primary800: "#285E61",
-  primary900: "#234E52",
   gray: {
     100: "#F7FAFC",
     200: "#EDF2F7",
@@ -70,15 +84,6 @@ export const colors = {
     800: "#2D3748",
     900: "#1A202C",
   },
-  gray100: "#F7FAFC",
-  gray200: "#EDF2F7",
-  gray300: "#E2E8F0",
-  gray400: "#CBD5E0",
-  gray500: "#A0AEC0",
-  gray600: "#718096",
-  gray700: "#4A5568",
-  gray800: "#2D3748",
-  gray900: "#1A202C",
   red: {
     100: "#FFF5F5",
     200: "#FED7D7",
@@ -90,15 +95,6 @@ export const colors = {
     800: "#9B2C2C",
     900: "#742A2A",
   },
-  red100: "#FFF5F5",
-  red200: "#FED7D7",
-  red300: "#FEB2B2",
-  red400: "#FC8181",
-  red500: "#F56565",
-  red600: "#E53E3E",
-  red700: "#C53030",
-  red800: "#9B2C2C",
-  red900: "#742A2A",
   blue: {
     100: "#EBF8FF",
     200: "#BEE3F8",
@@ -110,15 +106,6 @@ export const colors = {
     800: "#2C5282",
     900: "#2A4365",
   },
-  blue100: "#EBF8FF",
-  blue200: "#BEE3F8",
-  blue300: "#90CDF4",
-  blue400: "#63B3ED",
-  blue500: "#4299E1",
-  blue600: "#3182CE",
-  blue700: "#2B6CB0",
-  blue800: "#2C5282",
-  blue900: "#2A4365",
   yellow: {
     100: "#FFFFF0",
     200: "#FEFCBF",
@@ -133,8 +120,8 @@ export const colors = {
 }
 
 export const shadow = {
-  sm: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
-  md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+  sm: "0 1px 2px rgba(0, 0, 0, 0.24), 0 1px 3px rgba(0, 0, 0, 0.12)",
+  md: "0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12)",
   lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
 }
 

@@ -40,18 +40,20 @@ const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
     <Group direction="column" spacing={3}>
       {tweet.action === "TWEET" ? (
         <>
-          <Linkify
-            tagName="div"
-            options={{
-              formatHref: {
-                mention: val => `https://twitter.com${val}`,
-              },
-              target: "_blank",
-            }}
-            css={{ whiteSpace: "pre-wrap" }}
-          >
-            <URLContainer>{tweet.body}</URLContainer>
-          </Linkify>
+          <TweetBody>
+            <Linkify
+              tagName="div"
+              options={{
+                formatHref: {
+                  mention: val => `https://twitter.com${val}`,
+                },
+                target: "_blank",
+              }}
+              css={{ whiteSpace: "pre-wrap" }}
+            >
+              <URLContainer>{tweet.body}</URLContainer>
+            </Linkify>
+          </TweetBody>
           {tweet.mediaURLs.length ? (
             <Flex mt={2} flexWrap="wrap">
               {tweet.mediaURLs.map(url => (
@@ -144,6 +146,10 @@ export default createFragmentContainer(ViewTweet, {
     }
   `,
 })
+
+const TweetBody = styled.div(({ theme }) => ({
+  padding: theme.space[3],
+}))
 
 const StatusText = styled.div(({ theme }) => ({
   fontSize: theme.fontSizes[1],
