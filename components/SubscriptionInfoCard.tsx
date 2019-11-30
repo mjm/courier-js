@@ -1,7 +1,6 @@
 import { useRouter } from "next/router"
 import Card, { CardHeader } from "./card"
 import { InfoField } from "./info"
-import { SubscriptionStatus, CreditCard } from "./payment"
 import Moment from "react-moment"
 import Group from "./group"
 import { Button } from "./button"
@@ -14,6 +13,8 @@ import {
 } from "react-relay"
 import { SubscriptionInfoCard_user } from "../lib/__generated__/SubscriptionInfoCard_user.graphql"
 import { cancelSubscription } from "../lib/mutations/CancelSubscription"
+import CreditCard from "./CreditCard"
+import SubscriptionStatus from "./SubscriptionStatus"
 
 interface Props {
   user: SubscriptionInfoCard_user
@@ -33,10 +34,7 @@ const SubscriptionInfoCard: React.FC<Props> = ({
       {subscription ? (
         <>
           <InfoField label="Status">
-            <SubscriptionStatus
-              status={subscriptionStatusOverride || subscription.status}
-              overridden={!!subscriptionStatusOverride}
-            />
+            <SubscriptionStatus user={user} />
           </InfoField>
           {subscription.status === "ACTIVE" ? (
             <InfoField label="Renews">
@@ -52,10 +50,7 @@ const SubscriptionInfoCard: React.FC<Props> = ({
         </>
       ) : (
         <InfoField label="Status">
-          <SubscriptionStatus
-            status={subscriptionStatusOverride || undefined}
-            overridden={!!subscriptionStatusOverride}
-          />
+          <SubscriptionStatus user={user} />
         </InfoField>
       )}
       {customer && customer.creditCard ? (
@@ -95,10 +90,7 @@ export default createFragmentContainer(SubscriptionInfoCard, {
     fragment SubscriptionInfoCard_user on User {
       customer {
         creditCard {
-          brand
-          lastFour
-          expirationMonth
-          expirationYear
+          ...CreditCard_card
         }
       }
       subscription {
@@ -106,6 +98,7 @@ export default createFragmentContainer(SubscriptionInfoCard, {
         periodEnd
       }
       subscriptionStatusOverride
+      ...SubscriptionStatus_user
     }
   `,
 })

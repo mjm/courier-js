@@ -25,6 +25,13 @@ query accountQuery {
   ...RecentEventsCard_events
 }
 
+fragment CreditCard_card on CreditCard {
+  brand
+  lastFour
+  expirationMonth
+  expirationYear
+}
+
 fragment EventTableRow_event on Event {
   id
   eventType
@@ -60,15 +67,20 @@ fragment RecentEventsCard_events on Query {
 fragment SubscriptionInfoCard_user on User {
   customer {
     creditCard {
-      brand
-      lastFour
-      expirationMonth
-      expirationYear
+      ...CreditCard_card
     }
   }
   subscription {
     status
     periodEnd
+  }
+  subscriptionStatusOverride
+  ...SubscriptionStatus_user
+}
+
+fragment SubscriptionStatus_user on User {
+  subscription {
+    status
   }
   subscriptionStatusOverride
 }
@@ -390,7 +402,7 @@ return {
     "operationKind": "query",
     "name": "accountQuery",
     "id": null,
-    "text": "query accountQuery {\n  currentUser {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 15) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n      expirationMonth\n      expirationYear\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n}\n",
+    "text": "query accountQuery {\n  currentUser {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment CreditCard_card on CreditCard {\n  brand\n  lastFour\n  expirationMonth\n  expirationYear\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 15) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      ...CreditCard_card\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n  ...SubscriptionStatus_user\n}\n\nfragment SubscriptionStatus_user on User {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n}\n",
     "metadata": {}
   }
 };
