@@ -14,8 +14,8 @@ import {
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Card, Image, Flex } from "@rebass/emotion"
 import Icon from "./icon"
-import { BodyStyles } from "./body"
-import { DialogStyles } from "./dialog"
+import { BodyStyles } from "./BodyStyles"
+import { DialogStyles } from "./DialogStyles"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 const NavLink = styled.a(({ theme }) => ({

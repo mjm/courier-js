@@ -1,5 +1,5 @@
 import withPublicPage from "../hocs/publicPage"
-import Container, { FlushContainer } from "../components/container"
+import Container, { FlushContainer } from "../components/Container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import { ContentCard, CardHeader } from "../components/card"

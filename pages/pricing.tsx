@@ -1,4 +1,4 @@
-import Container, { FlushContainer } from "../components/container"
+import Container, { FlushContainer } from "../components/Container"
 import Head from "../components/head"
 import { PageHeader } from "../components/header"
 import { ContentCard } from "../components/card"

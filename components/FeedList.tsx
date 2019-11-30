@@ -2,7 +2,7 @@ import React from "react"
 
 import { createPaginationContainer, graphql } from "react-relay"
 import { FeedList_feeds } from "../lib/__generated__/FeedList_feeds.graphql"
-import { FlushContainer } from "./container"
+import { FlushContainer } from "./Container"
 import Group from "./group"
 import FeedCard from "./FeedCard"
 

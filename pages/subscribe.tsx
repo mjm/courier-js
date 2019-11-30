@@ -1,7 +1,7 @@
 import React from "react"
 import { NextPage } from "next"
 import { StripeProvider, Elements } from "react-stripe-elements"
-import Container, { FlushContainer } from "../components/container"
+import Container, { FlushContainer } from "../components/Container"
 import Head from "../components/head"
 import { PageHeader, PageDescription } from "../components/header"
 import Group from "../components/group"

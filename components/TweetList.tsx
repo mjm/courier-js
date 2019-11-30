@@ -6,7 +6,7 @@ import {
 } from "react-relay"
 import { TweetList_tweets } from "../lib/__generated__/TweetList_tweets.graphql"
 import { SectionHeader } from "./header"
-import { FlushContainer } from "./container"
+import { FlushContainer } from "./Container"
 import Card from "./card"
 import { Text, Flex } from "@rebass/emotion"
 import Group from "./group"

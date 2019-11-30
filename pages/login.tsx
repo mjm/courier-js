@@ -4,7 +4,7 @@ import { NextPage } from "next"
 import Head from "../components/head"
 import Loading from "../components/loading"
 import { authorize } from "../utils/auth0"
-import Container from "../components/container"
+import Container from "../components/Container"
 
 const Login: NextPage<{}> = () => {
   React.useEffect(() => {
