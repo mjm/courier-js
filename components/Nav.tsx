@@ -17,10 +17,12 @@ import Icon from "./Icon"
 import { BodyStyles } from "./BodyStyles"
 import { DialogStyles } from "./DialogStyles"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { ThemeType } from "components/Styled"
+import { useRouter } from "next/router"
 
-const NavLink = styled.a(({ theme }) => ({
-  color: "white",
-  fontWeight: 500,
+const NavLink = styled.a<{ active?: boolean }>(({ active, theme }) => ({
+  color: active ? theme.colors.primary9 : theme.colors.neutral5,
+  fontWeight: theme.fontWeights.bold,
   textDecoration: "none",
   display: "inline-flex",
   alignItems: "center",
@@ -28,26 +30,26 @@ const NavLink = styled.a(({ theme }) => ({
   height: "100%",
   flexShrink: 0,
   ":hover": {
-    backgroundColor: theme.colors.primary[600],
+    color: theme.colors.primary7,
   },
   "@media (min-width: 640px)": {
-    padding: theme.space[3],
+    padding: `${theme.space[3]} ${theme.space[4]}`,
   },
 }))
 
 const BrandLink = styled(NavLink)(({ theme }) => ({
-  fontSize: theme.fontSizes[4],
+  color: theme.colors.primary9,
+  fontSize: theme.fontSizes[5],
   fontWeight: 700,
   fontFamily: theme.font.display,
 }))
 
 const ToggleButton = styled.button(({ theme }) => ({
   position: "absolute",
-  top: 8,
+  top: 10,
   right: 16,
   display: "inline-block",
-  backgroundColor: theme.colors.primary[700],
-  color: "white",
+  color: theme.colors.primary9,
   border: 0,
   outline: "none",
   [`@media (min-width: ${theme.breakpoints[0]})`]: {
@@ -66,7 +68,14 @@ const Nav = ({ user, isAuthenticating = false }: Props) => {
   const [menuVisible, setMenuVisible] = React.useState(false)
 
   return (
-    <Card as="nav" bg="primary.700" boxShadow="sm">
+    <Card
+      as="nav"
+      bg="white"
+      boxShadow="lg"
+      css={(theme: ThemeType) => ({
+        borderTop: `4px solid ${theme.colors.primary5}`,
+      })}
+    >
       <BodyStyles />
       <DialogStyles />
 
@@ -74,17 +83,14 @@ const Nav = ({ user, isAuthenticating = false }: Props) => {
         as="ul"
         alignItems={["stretch", "center"]}
         flexDirection={["column", "row"]}
-        my={0}
-        mx={[0, 3]}
+        m={0}
         px={2}
         css={{ listStyle: "none", lineHeight: "1.6em" }}
       >
         <ToggleButton onClick={() => setMenuVisible(v => !v)}>
           <FontAwesomeIcon icon={faBars} />
         </ToggleButton>
-        <NavItem brand href="/" icon={faPaperPlane}>
-          Courier
-        </NavItem>
+        <NavItem brand href="/" icon={faPaperPlane} />
         <li
           css={{
             flexGrow: 1,
@@ -101,6 +107,7 @@ const Nav = ({ user, isAuthenticating = false }: Props) => {
           >
             {user ? (
               <>
+                <li css={{ flexGrow: 1 }} />
                 <NavItem href="/tweets" icon={faTwitter}>
                   Tweets
                 </NavItem>
@@ -111,8 +118,8 @@ const Nav = ({ user, isAuthenticating = false }: Props) => {
                 <NavItem href="/account">
                   <Image
                     src={user.picture}
-                    width={20}
-                    height={20}
+                    width={24}
+                    height={24}
                     mr={2}
                     borderRadius="9999px"
                   />
@@ -121,6 +128,7 @@ const Nav = ({ user, isAuthenticating = false }: Props) => {
               </>
             ) : isAuthenticating ? null : (
               <>
+                <li css={{ flexGrow: 1 }} />
                 <NavItem href="/features" icon={faStar}>
                   Features
                 </NavItem>
@@ -148,16 +156,18 @@ export default Nav
 interface NavItemProps {
   href: string
   icon?: IconDefinition
-  children: React.ReactNode
+  children?: React.ReactNode
   brand?: boolean
 }
 const NavItem = ({ href, icon, children, brand = false }: NavItemProps) => {
   const LinkType = brand ? BrandLink : NavLink
+  const router = useRouter()
+
   return (
     <li>
       <Link href={href} passHref>
-        <LinkType>
-          {icon && <Icon mr={2} color="primary.100" icon={icon} />}
+        <LinkType active={router.pathname.startsWith(href)}>
+          {icon && <Icon mr={2} icon={icon} />}
           {children}
         </LinkType>
       </Link>

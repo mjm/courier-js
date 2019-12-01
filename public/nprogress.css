@@ -1,7 +1,7 @@
 /* Make clicks pass-through */
 #nprogress {
   pointer-events: none;
-  --bar-color: #f0fff4;
+  --bar-color: #1d0ebe;
 }
 
 #nprogress .bar {
@@ -13,7 +13,7 @@
   left: 0;
 
   width: 100%;
-  height: 2px;
+  height: 4px;
 }
 
 /* Fancy blur effect */
@@ -23,7 +23,7 @@
   right: 0px;
   width: 100px;
   height: 100%;
-  box-shadow: 0 0 10px var(--bar-color), 0 0 5px var(--bar-color);
+  /* box-shadow: 0 0 10px var(--bar-color), 0 0 5px var(--bar-color); */
   opacity: 1;
 
   -webkit-transform: rotate(3deg) translate(0px, -4px);
