@@ -1,3 +1,3 @@
-import SubscribePage from "../components/pages/SubscribePage"
+import SubscribePage from "@pages/SubscribePage"
 
 export default SubscribePage

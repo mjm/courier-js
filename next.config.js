@@ -1,3 +1,5 @@
+const path = require("path")
+
 const webpack = require("webpack")
 const withCSS = require("@zeit/next-css")
 const withFonts = require("next-fonts")
@@ -14,6 +16,13 @@ module.exports = withCSS(
     },
 
     webpack(config, options) {
+      config.resolve.modules.push(__dirname)
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        "@mutations": path.join(__dirname, "components/mutations"),
+        "@pages": path.join(__dirname, "components/pages"),
+      }
+
       config.node = {
         fs: "empty",
       }

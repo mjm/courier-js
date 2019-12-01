@@ -1,15 +1,15 @@
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
-import { ErrorContainer } from "./ErrorContainer"
-import { ErrorBox } from "./ErrorBox"
+import { ErrorContainer } from "components/ErrorContainer"
 import {
   TweetCard_tweet,
   TweetStatus,
-} from "../lib/__generated__/TweetCard_tweet.graphql"
-import EditTweetForm from "./EditTweetForm"
-import ViewTweet from "./ViewTweet"
-// import styled from "./Styled"
+} from "@generated/TweetCard_tweet.graphql"
+import EditTweetForm from "components/EditTweetForm"
+import ViewTweet from "components/ViewTweet"
+// import styled from "components/Styled"
 import styled from "@emotion/styled"
+import { ErrorBox } from "components/ErrorBox"
 
 interface Props {
   tweet: TweetCard_tweet

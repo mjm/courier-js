@@ -1,3 +1,3 @@
-import FeedsPage from "../components/pages/FeedsPage"
+import FeedsPage from "@pages/FeedsPage"
 
 export default FeedsPage
