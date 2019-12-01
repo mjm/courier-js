@@ -13,12 +13,12 @@ import mention from "linkifyjs/plugins/mention"
 import { URLContainer } from "./URLText"
 import { Flex, Box, Image } from "@rebass/emotion"
 import { useAuth } from "./AuthProvider"
-import { ViewTweet_tweet } from "../lib/__generated__/ViewTweet_tweet.graphql"
-import { cancelTweet } from "./mutations/CancelTweet"
-import { uncancelTweet } from "./mutations/UncancelTweet"
+import { ViewTweet_tweet } from "@generated/ViewTweet_tweet.graphql"
+import { cancelTweet } from "@mutations/CancelTweet"
+import { uncancelTweet } from "@mutations/UncancelTweet"
+import { postTweet } from "@mutations/PostTweet"
 import { TweetCardActions } from "./TweetCard"
 import { Button } from "./Buttons"
-import { postTweet } from "./mutations/PostTweet"
 import { useErrors } from "./ErrorContainer"
 import { useSubscription } from "./SubscriptionProvider"
 
@@ -86,10 +86,7 @@ const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
         />
       )}
       {tweet.status === "CANCELED" && (
-        <StatusText>
-          canceled.{" "}
-          <UncancelButton id={tweet.id} environment={relay.environment} />
-        </StatusText>
+        <CanceledActions tweet={tweet} environment={relay.environment} />
       )}
       {tweet.status === "POSTED" && (
         <StatusText>
@@ -200,21 +197,25 @@ const DraftActions: React.FC<DraftActionsProps> = ({
   )
 }
 
-interface ActionButtonProps {
-  id: string
+interface CanceledActionsProps {
+  tweet: ViewTweet_tweet
   environment: Environment
 }
 
-const UncancelButton: React.FC<ActionButtonProps> = ({ id, environment }) => {
+const CanceledActions: React.FC<CanceledActionsProps> = ({
+  tweet,
+  environment,
+}) => {
   return (
-    <a
-      href="#"
-      onClick={e => {
-        e.preventDefault()
-        uncancelTweet(environment, id)
-      }}
-    >
-      undo?
-    </a>
+    <TweetCardActions
+      left={
+        <Button
+          color="neutral"
+          onClick={() => uncancelTweet(environment, tweet.id)}
+        >
+          Restore draft
+        </Button>
+      }
+    />
   )
 }

@@ -36,6 +36,14 @@ const colors: Record<Color, ColorConfig> = {
     },
   },
   neutral: {
+    primary: {
+      background: "neutral6",
+      text: "neutral1",
+      hover: {
+        background: "neutral7",
+        text: "white",
+      },
+    },
     secondary: {
       border: "neutral4",
       text: "neutral8",

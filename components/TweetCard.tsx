@@ -20,8 +20,6 @@ const TweetCard: React.FC<Props> = ({ tweet }) => {
 
   const CardComponent = statusComponents[tweet.status]
 
-  // const appearance = tweet.status === "CANCELED" ? "canceled" : "normal"
-
   return (
     <ErrorContainer>
       <ErrorBox width={undefined} />
@@ -154,15 +152,23 @@ const DraftTweetCard = styled(TweetCardBase)(({ theme }) => ({
 }))
 
 const CanceledTweetCard = styled(TweetCardBase)(({ theme }) => ({
-  backgroundColor: theme.colors.neutral7,
-  color: theme.colors.neutral2,
+  backgroundColor: theme.colors.neutral3,
+  color: theme.colors.neutral9,
   a: {
-    color: theme.colors.primary2,
+    color: theme.colors.neutral10,
   },
+
   // @ts-ignore
   [TweetStatusBadge]: {
-    backgroundColor: theme.colors.neutral4,
-    color: theme.colors.neutral9,
+    backgroundColor: theme.colors.neutral6,
+    color: theme.colors.neutral1,
+  },
+
+  // @ts-ignore
+  [TweetCardActionsContainer]: {
+    backgroundColor: "transparent",
+    border: 0,
+    paddingTop: 0,
   },
 }))
 
