@@ -38,6 +38,9 @@ export const lineHeights = {
 }
 
 export const colors = {
+  white: "#FFFFFF",
+  transparent: "transparent",
+
   primary10: "#0C008C",
   primary9: "#1D0EBE",
   primary8: "#3525E6",
