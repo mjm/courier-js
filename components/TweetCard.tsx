@@ -2,19 +2,23 @@ import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
 import { ErrorContainer } from "./ErrorContainer"
 import { ErrorBox } from "./ErrorBox"
-import { TweetCard_tweet } from "../lib/__generated__/TweetCard_tweet.graphql"
+import {
+  TweetCard_tweet,
+  TweetStatus,
+} from "../lib/__generated__/TweetCard_tweet.graphql"
 import EditTweetForm from "./EditTweetForm"
 import ViewTweet from "./ViewTweet"
+// import styled from "./Styled"
 import styled from "@emotion/styled"
 
 interface Props {
   tweet: TweetCard_tweet
 }
 
-const TweetCard = ({ tweet }: Props) => {
+const TweetCard: React.FC<Props> = ({ tweet }) => {
   const [editing, setEditing] = React.useState(false)
 
-  const CardComponent = DraftTweetCard
+  const CardComponent = statusComponents[tweet.status]
 
   // const appearance = tweet.status === "CANCELED" ? "canceled" : "normal"
 
@@ -71,16 +75,6 @@ const TweetCardBanner = styled.div(({ theme }) => ({
   padding: `${theme.space[1]} ${theme.space[3]}`,
 }))
 
-const TweetCardBase = styled.article(({ theme }: any) => ({
-  borderRadius: "10px",
-  boxShadow: theme.shadow.md,
-  position: "relative",
-  color: theme.colors.neutral8,
-  lineHeight: theme.lineHeights.normal,
-  paddingTop: theme.space[3],
-  maxWidth: 500,
-}))
-
 interface TweetCardActionsProps {
   left?: React.ReactNode
   right?: React.ReactNode
@@ -93,15 +87,7 @@ export const TweetCardActions: React.FC<TweetCardActionsProps> = ({
   banner,
 }) => {
   return (
-    <div
-      css={theme => ({
-        backgroundColor: theme.colors.neutral1,
-        borderTop: `2px solid ${theme.colors.neutral2}`,
-        padding: theme.space[3],
-        borderRadius: "0 0 10px 10px",
-        marginTop: banner ? 12 : 0,
-      })}
-    >
+    <TweetCardActionsContainer css={{ marginTop: banner ? 12 : 0 }}>
       {banner && (
         <div
           css={() => ({
@@ -128,18 +114,37 @@ export const TweetCardActions: React.FC<TweetCardActionsProps> = ({
         )}
         {right && <div css={{ marginLeft: "auto" }}>{right}</div>}
       </div>
-    </div>
+    </TweetCardActionsContainer>
   )
 }
 
-const DraftTweetCard = styled(TweetCardBase)(({ theme }: any) => ({
+const TweetCardBase = styled.article(({ theme }) => ({
   backgroundColor: "white",
+  borderRadius: "10px",
+  boxShadow: theme.shadow.md,
+  position: "relative",
+  color: theme.colors.neutral8,
+  lineHeight: theme.lineHeights.normal,
+  paddingTop: theme.space[3],
+  maxWidth: 500,
   a: {
-    color: theme.colors.primary9,
     textDecoration: "none",
     "&:hover": {
       textDecoration: "underline",
     },
+  },
+}))
+
+const TweetCardActionsContainer = styled.div(({ theme }) => ({
+  backgroundColor: theme.colors.neutral1,
+  borderTop: `2px solid ${theme.colors.neutral2}`,
+  padding: theme.space[3],
+  borderRadius: "0 0 10px 10px",
+}))
+
+const DraftTweetCard = styled(TweetCardBase)(({ theme }) => ({
+  a: {
+    color: theme.colors.primary9,
   },
   // @ts-ignore
   [TweetStatusBadge]: {
@@ -147,3 +152,34 @@ const DraftTweetCard = styled(TweetCardBase)(({ theme }: any) => ({
     color: theme.colors.primary1,
   },
 }))
+
+const CanceledTweetCard = styled(TweetCardBase)(({ theme }) => ({
+  backgroundColor: theme.colors.neutral7,
+  color: theme.colors.neutral2,
+  a: {
+    color: theme.colors.primary2,
+  },
+  // @ts-ignore
+  [TweetStatusBadge]: {
+    backgroundColor: theme.colors.neutral4,
+    color: theme.colors.neutral9,
+  },
+}))
+
+const PostedTweetCard = styled(TweetCardBase)(({ theme }) => ({
+  a: {
+    color: theme.colors.secondary9,
+  },
+  // @ts-ignore
+  [TweetStatusBadge]: {
+    backgroundColor: theme.colors.secondary7,
+    color: theme.colors.secondary1,
+  },
+}))
+
+const statusComponents: Record<TweetStatus, React.ComponentType> = {
+  CANCELED: CanceledTweetCard,
+  DRAFT: DraftTweetCard,
+  POSTED: PostedTweetCard,
+  "%future added value": DraftTweetCard,
+}

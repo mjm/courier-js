@@ -1,13 +1,14 @@
-export const breakpoints = ["640px", "768px", "1024px", "1280px"]
+import styled, { CreateStyled } from "@emotion/styled"
+import { CSSProperties } from "react"
 
-export const font = {
+const breakpoints = ["640px", "768px", "1024px", "1280px"]
+
+const font = {
   display: "Rubik, Helvetica, sans-serif",
   body: '"IBM Plex Sans", Helvetica, sans-serif',
 }
 
-export const fonts = font
-
-export const fontSizes = [
+const fontSizes = [
   ".75rem",
   ".875rem",
   "1rem",
@@ -20,24 +21,24 @@ export const fontSizes = [
   "4rem",
 ]
 
-export const fontWeights = {
-  normal: "400",
-  medium: "500",
-  bold: "700",
+const fontWeights: Record<string, CSSProperties["fontWeight"]> = {
+  normal: 400,
+  medium: 500,
+  bold: 700,
 }
 
-export const letterSpacings = {
+const letterSpacings = {
   tight: "-0.025em",
   normal: "0",
 }
 
-export const lineHeights = {
+const lineHeights = {
   normal: "1.5",
   relaxed: "1.625",
   loose: "2",
 }
 
-export const colors = {
+const colors = {
   white: "#FFFFFF",
   transparent: "transparent",
 
@@ -51,6 +52,17 @@ export const colors = {
   primary3: "#A2A5FC",
   primary2: "#C4C6FF",
   primary1: "#E6E6FF",
+
+  secondary10: "#014D40",
+  secondary9: "#0C6B58",
+  secondary8: "#147D64",
+  secondary7: "#199473",
+  secondary6: "#27AB83",
+  secondary5: "#3EBD93",
+  secondary4: "#65D6AD",
+  secondary3: "#8EEDC7",
+  secondary2: "#C6F7E2",
+  secondary1: "#EFFCF6",
 
   neutral10: "#102A43",
   neutral9: "#243B53",
@@ -122,25 +134,23 @@ export const colors = {
   },
 }
 
-export const shadow = {
+const shadow = {
   sm: "0 1px 2px rgba(0, 0, 0, 0.24), 0 1px 3px rgba(0, 0, 0, 0.12)",
   md: "0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12)",
   lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
 }
 
-export const shadows = shadow
-
-export function spacing(multiplier: number): string {
+function spacing(multiplier: number): string {
   return `${multiplier * 0.25}rem`
 }
 
-export const space = ["0"].concat([1, 2, 4, 8, 16, 32, 64, 128].map(spacing))
+const space = ["0"].concat([1, 2, 4, 8, 16, 32, 64, 128].map(spacing))
 
-export const Heading = {
-  fontFamily: fonts.display,
+const Heading = {
+  fontFamily: font.display,
 }
 
-export const cards = {
+const cards = {
   normal: {
     backgroundColor: "white",
     borderTop: `3px solid ${colors.primary[500]}`,
@@ -151,3 +161,24 @@ export const cards = {
     borderTop: `3px solid ${colors.gray[400]}`,
   },
 }
+
+export const theme = {
+  breakpoints,
+  font,
+  fontSizes,
+  fontWeights,
+  letterSpacings,
+  lineHeights,
+  colors,
+  shadow,
+  spacing,
+  space,
+  Heading,
+  cards,
+
+  fonts: font,
+  shadows: shadow,
+}
+
+export type ThemeType = typeof theme
+export default styled as CreateStyled<ThemeType>

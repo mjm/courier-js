@@ -3,8 +3,8 @@ import { getUser, isAuthenticated } from "../utils/auth0"
 import Nav from "../components/Nav"
 import { NextPageContext, NextPage } from "next"
 import { ThemeProvider } from "emotion-theming"
-import * as theme from "../utils/theme"
 import { AuthProvider } from "../components/AuthProvider"
+import { theme } from "../components/Styled"
 
 type DefaultPageProps<T> = T & {
   user: any

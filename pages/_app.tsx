@@ -3,7 +3,6 @@ import App from "next/app"
 import Router from "next/router"
 import { renewSession, isAuthenticated } from "../utils/auth0"
 import { config } from "@fortawesome/fontawesome-svg-core"
-import * as theme from "../utils/theme"
 import { ThemeProvider } from "emotion-theming"
 import NProgress from "nprogress"
 
@@ -13,6 +12,7 @@ import "normalizecss/normalize.css"
 import "typeface-rubik"
 import "typeface-ibm-plex-sans"
 import "@fortawesome/fontawesome-svg-core/styles.css"
+import { theme } from "../components/Styled"
 
 Router.events.on("routeChangeStart", (url: string) => {
   console.log(`Loading: ${url}`)
