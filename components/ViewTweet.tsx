@@ -5,7 +5,6 @@ import {
   Environment,
   RelayProp,
 } from "react-relay"
-import styled from "@emotion/styled"
 import Moment from "react-moment"
 import Linkify from "linkifyjs/react"
 import * as linkify from "linkifyjs"
@@ -17,10 +16,12 @@ import { ViewTweet_tweet } from "@generated/ViewTweet_tweet.graphql"
 import { cancelTweet } from "@mutations/CancelTweet"
 import { uncancelTweet } from "@mutations/UncancelTweet"
 import { postTweet } from "@mutations/PostTweet"
-import { TweetCardActions } from "./TweetCard"
+import { TweetCardActions, TweetBody } from "components/TweetCard"
 import { Button } from "./Buttons"
 import { useErrors } from "./ErrorContainer"
 import { useSubscription } from "./SubscriptionProvider"
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons"
+import Icon from "components/Icon"
 
 mention(linkify)
 
@@ -30,9 +31,7 @@ interface Props {
   relay: RelayProp
 }
 
-const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
-  const { user } = useAuth()
-
+const ViewTweet = ({ tweet, onEdit, relay: { environment } }: Props) => {
   return (
     <>
       {tweet.action === "TWEET" ? (
@@ -79,25 +78,12 @@ const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
         </div>
       )}
       {tweet.status === "DRAFT" && (
-        <DraftActions
-          tweet={tweet}
-          environment={relay.environment}
-          onEdit={onEdit}
-        />
+        <DraftActions tweet={tweet} environment={environment} onEdit={onEdit} />
       )}
       {tweet.status === "CANCELED" && (
-        <CanceledActions tweet={tweet} environment={relay.environment} />
+        <CanceledActions tweet={tweet} environment={environment} />
       )}
-      {tweet.status === "POSTED" && (
-        <StatusText>
-          <a
-            href={`https://twitter.com/${user.nickname}/status/${tweet.postedTweetID}`}
-            target="_blank"
-          >
-            tweeted <Moment fromNow>{tweet.postedAt}</Moment>
-          </a>
-        </StatusText>
-      )}
+      {tweet.status === "POSTED" && <PostedActions tweet={tweet} />}
     </>
   )
 }
@@ -117,16 +103,6 @@ export default createFragmentContainer(ViewTweet, {
     }
   `,
 })
-
-const TweetBody = styled.div(({ theme }) => ({
-  padding: theme.space[3],
-}))
-
-const StatusText = styled.div(({ theme }) => ({
-  fontSize: theme.fontSizes[1],
-  fontStyle: "italic",
-  color: theme.colors.gray[600],
-}))
 
 interface DraftActionsProps {
   tweet: ViewTweet_tweet
@@ -214,6 +190,30 @@ const CanceledActions: React.FC<CanceledActionsProps> = ({
           onClick={() => uncancelTweet(environment, tweet.id)}
         >
           Restore draft
+        </Button>
+      }
+    />
+  )
+}
+
+interface PostedActionsProps {
+  tweet: ViewTweet_tweet
+}
+
+const PostedActions: React.FC<PostedActionsProps> = ({ tweet }) => {
+  const { user } = useAuth()
+
+  return (
+    <TweetCardActions
+      left={
+        <Button
+          color="secondary"
+          variant="tertiary"
+          href={`https://twitter.com/${user.nickname}/status/${tweet.postedTweetID}`}
+          target="_blank"
+        >
+          Posted <Moment fromNow>{tweet.postedAt}</Moment>{" "}
+          <Icon ml={1} icon={faExternalLinkAlt} />
         </Button>
       }
     />

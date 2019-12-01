@@ -116,6 +116,10 @@ export const TweetCardActions: React.FC<TweetCardActionsProps> = ({
   )
 }
 
+export const TweetBody = styled.div(({ theme }) => ({
+  padding: theme.space[3],
+}))
+
 const TweetCardBase = styled.article(({ theme }) => ({
   backgroundColor: "white",
   borderRadius: "10px",
@@ -125,10 +129,14 @@ const TweetCardBase = styled.article(({ theme }) => ({
   lineHeight: theme.lineHeights.normal,
   paddingTop: theme.space[3],
   maxWidth: 500,
-  a: {
-    textDecoration: "none",
-    "&:hover": {
-      textDecoration: "underline",
+
+  // @ts-ignore
+  [TweetBody]: {
+    a: {
+      textDecoration: "none",
+      "&:hover": {
+        textDecoration: "underline",
+      },
     },
   },
 }))
@@ -141,9 +149,13 @@ const TweetCardActionsContainer = styled.div(({ theme }) => ({
 }))
 
 const DraftTweetCard = styled(TweetCardBase)(({ theme }) => ({
-  a: {
-    color: theme.colors.primary9,
+  // @ts-ignore
+  [TweetBody]: {
+    a: {
+      color: theme.colors.primary9,
+    },
   },
+
   // @ts-ignore
   [TweetStatusBadge]: {
     backgroundColor: theme.colors.primary6,
@@ -154,8 +166,12 @@ const DraftTweetCard = styled(TweetCardBase)(({ theme }) => ({
 const CanceledTweetCard = styled(TweetCardBase)(({ theme }) => ({
   backgroundColor: theme.colors.neutral3,
   color: theme.colors.neutral9,
-  a: {
-    color: theme.colors.neutral10,
+
+  // @ts-ignore
+  [TweetBody]: {
+    a: {
+      color: theme.colors.neutral10,
+    },
   },
 
   // @ts-ignore
@@ -173,9 +189,13 @@ const CanceledTweetCard = styled(TweetCardBase)(({ theme }) => ({
 }))
 
 const PostedTweetCard = styled(TweetCardBase)(({ theme }) => ({
-  a: {
-    color: theme.colors.secondary9,
+  // @ts-ignore
+  [TweetBody]: {
+    a: {
+      color: theme.colors.secondary9,
+    },
   },
+
   // @ts-ignore
   [TweetStatusBadge]: {
     backgroundColor: theme.colors.secondary7,

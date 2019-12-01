@@ -1,7 +1,7 @@
 import { Interpolation, ObjectInterpolation } from "@emotion/core"
 import React from "react"
 
-type Color = "primary" | "neutral" | "disabled"
+type Color = "primary" | "secondary" | "neutral" | "disabled"
 type ButtonConfig<T> = T & { hover: T }
 
 interface PrimaryConfig {
@@ -32,6 +32,14 @@ const colors: Record<Color, ColorConfig> = {
       hover: {
         background: "primary7",
         text: "white",
+      },
+    },
+  },
+  secondary: {
+    tertiary: {
+      text: "secondary8",
+      hover: {
+        text: "secondary9",
       },
     },
   },
@@ -78,6 +86,7 @@ function baseButtonStyle(theme: any): Interpolation {
     fontSize: theme.fontSizes[1],
     fontWeight: theme.fontWeights.bold,
     padding: `${theme.space[1]} 0.75rem`,
+    textDecoration: "none",
   }
 }
 
@@ -155,6 +164,8 @@ function buttonStyle(
   } else if (variant === "tertiary") {
     const tertiaryConfig = variantConfig as ButtonConfig<TertiaryConfig>
     return {
+      paddingLeft: 0,
+      paddingRight: 0,
       ...tertiaryCss(theme, tertiaryConfig),
       "&:hover": tertiaryCss(theme, tertiaryConfig.hover),
     }
@@ -162,51 +173,81 @@ function buttonStyle(
 }
 
 type ButtonElementProps = React.ButtonHTMLAttributes<HTMLButtonElement>
+type AnchorElementProps = React.AnchorHTMLAttributes<HTMLAnchorElement>
 
 type OnClickAsync = (
   event: React.MouseEvent<HTMLButtonElement>
 ) => Promise<void>
 
-type Props = ButtonElementProps & {
+type ButtonProps = ButtonElementProps & {
   color: Color
   variant?: Variant
+
   onClickAsync?: OnClickAsync
 }
+type LinkProps = AnchorElementProps & {
+  color: Color
+  variant?: Variant
+}
 
-export const Button: React.FC<Props> = ({
-  color,
-  variant = "primary",
-  disabled,
-  onClick,
-  onClickAsync,
-  ...props
-}) => {
-  const [asyncSpin, setAsyncSpin] = React.useState(false)
-  // const useOnClickAsync = !!onClickAsync
-  if (onClickAsync) {
-    onClick = async e => {
-      setAsyncSpin(true)
-      try {
-        await onClickAsync(e)
-      } finally {
-        setAsyncSpin(false)
+type Props = ButtonProps | LinkProps
+
+function isLinkButton(props: ButtonProps | LinkProps): props is LinkProps {
+  return "href" in props
+}
+
+export const Button: React.FC<Props> = props => {
+  if (isLinkButton(props)) {
+    const { color, variant = "primary", ...rest } = props
+
+    return (
+      <a
+        css={theme => [
+          baseButtonStyle(theme),
+          variantStyle(theme, variant),
+          buttonStyle(theme, color, variant),
+        ]}
+        {...rest}
+      />
+    )
+  } else {
+    const {
+      color,
+      variant = "primary",
+      disabled,
+      onClick,
+      onClickAsync,
+      ...rest
+    } = props
+
+    const [asyncSpin, setAsyncSpin] = React.useState(false)
+    // const useOnClickAsync = !!onClickAsync
+    let realOnClick = onClick
+    if (onClickAsync) {
+      realOnClick = async e => {
+        setAsyncSpin(true)
+        try {
+          await onClickAsync(e)
+        } finally {
+          setAsyncSpin(false)
+        }
       }
     }
+
+    const isDisabled = disabled || asyncSpin
+
+    return (
+      <button
+        css={theme => [
+          baseButtonStyle(theme),
+          variantStyle(theme, variant),
+          buttonStyle(theme, isDisabled ? "disabled" : color, variant),
+        ]}
+        type="button"
+        disabled={isDisabled}
+        onClick={realOnClick}
+        {...rest}
+      />
+    )
   }
-
-  const isDisabled = disabled || asyncSpin
-
-  return (
-    <button
-      css={theme => [
-        baseButtonStyle(theme),
-        variantStyle(theme, variant),
-        buttonStyle(theme, isDisabled ? "disabled" : color, variant),
-      ]}
-      type="button"
-      disabled={isDisabled}
-      onClick={onClick}
-      {...props}
-    />
-  )
 }
