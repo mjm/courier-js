@@ -1,11 +1,11 @@
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
-import { ErrorContainer } from "./ErrorContainer"
-import { ErrorBox } from "./ErrorBox"
-import Card from "./Card"
-import { TweetCard_tweet } from "../lib/__generated__/TweetCard_tweet.graphql"
-import EditTweetForm from "./EditTweetForm"
-import ViewTweet from "./ViewTweet"
+import { ErrorContainer } from "components/ErrorContainer"
+import { ErrorBox } from "components/ErrorBox"
+import Card from "components/Card"
+import { TweetCard_tweet } from "@generated/TweetCard_tweet.graphql"
+import EditTweetForm from "components/EditTweetForm"
+import ViewTweet from "components/ViewTweet"
 
 interface Props {
   tweet: TweetCard_tweet

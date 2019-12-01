@@ -120,6 +120,7 @@
     "@types/react-relay": "^7.0.3",
     "@types/relay-runtime": "^6.0.11",
     "babel-plugin-emotion": "^10.0.13",
+    "babel-plugin-module-resolver": "^3.2.0",
     "babel-plugin-relay": "^7.1.0",
     "babel-plugin-transform-typescript-metadata": "^0.2.2",
     "buffer-loader": "^0.1.0",

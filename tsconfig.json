@@ -2,19 +2,17 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "types/*"
-      ]
+      "@generated/*": ["lib/__generated__/*"],
+      "@pages/*": ["components/pages/*"],
+      "@mutations/*": ["components/mutations/*"],
+      "*": ["*", "types/*"]
     },
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "jsx": "preserve",
-    "lib": [
-      "dom",
-      "es2017"
-    ],
+    "lib": ["dom", "es2017"],
     "module": "esnext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -26,22 +24,12 @@
     "sourceMap": true,
     "strict": true,
     "target": "esnext",
-    "types": [
-      "node",
-      "@emotion/core",
-      "reflect-metadata"
-    ],
+    "types": ["node", "@emotion/core", "reflect-metadata"],
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ]
+  "exclude": ["node_modules"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

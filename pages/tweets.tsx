@@ -1,3 +1,3 @@
-import TweetsPage from "../components/pages/TweetsPage"
+import TweetsPage from "@pages/TweetsPage"
 
 export default TweetsPage
