@@ -116,8 +116,34 @@ export const TweetCardActions: React.FC<TweetCardActionsProps> = ({
   )
 }
 
+type FigureElementProps = React.HTMLAttributes<HTMLElement>
+
+type TweetImageProps = FigureElementProps & {
+  url: string
+}
+export const TweetImage: React.FC<TweetImageProps> = ({ url, ...props }) => {
+  return (
+    <TweetImageFigure style={{ backgroundImage: `url(${url})` }} {...props} />
+  )
+}
+
 export const TweetBody = styled.div(({ theme }) => ({
   padding: theme.space[3],
+}))
+
+const TweetImageFigure = styled.figure(({ theme }) => ({
+  width: "50%",
+  paddingTop: "50%",
+  height: 0,
+  overflow: "hidden",
+  margin: `0 ${theme.space[2]}`,
+  boxShadow: "inset 0px 2px 4px rgba(0, 0, 0, 0.2)",
+  borderRadius: "0.5rem",
+  backgroundSize: "contain",
+  [`@media (min-width: ${theme.breakpoints[0]})`]: {
+    width: "25%",
+    paddingTop: "25%",
+  },
 }))
 
 const TweetCardBase = styled.article(({ theme }) => ({

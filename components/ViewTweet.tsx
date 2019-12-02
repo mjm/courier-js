@@ -10,13 +10,13 @@ import Linkify from "linkifyjs/react"
 import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
 import { URLContainer } from "./URLText"
-import { Flex, Box, Image } from "@rebass/emotion"
+import { Flex } from "@rebass/emotion"
 import { useAuth } from "./AuthProvider"
 import { ViewTweet_tweet } from "@generated/ViewTweet_tweet.graphql"
 import { cancelTweet } from "@mutations/CancelTweet"
 import { uncancelTweet } from "@mutations/UncancelTweet"
 import { postTweet } from "@mutations/PostTweet"
-import { TweetCardActions, TweetBody } from "components/TweetCard"
+import { TweetCardActions, TweetBody, TweetImage } from "components/TweetCard"
 import { Button } from "./Buttons"
 import { useErrors } from "./ErrorContainer"
 import { useSubscription } from "./SubscriptionProvider"
@@ -51,18 +51,9 @@ const ViewTweet = ({ tweet, onEdit, relay: { environment } }: Props) => {
             </Linkify>
           </TweetBody>
           {tweet.mediaURLs.length ? (
-            <Flex mt={2} flexWrap="wrap">
+            <Flex mb={3} px={2} flexWrap="wrap">
               {tweet.mediaURLs.map(url => (
-                <Box
-                  key={url}
-                  as="figure"
-                  width={[1 / 2, 1 / 4]}
-                  m={0}
-                  py={0}
-                  px={1}
-                >
-                  <Image width={1} borderRadius="1rem" src={url} />
-                </Box>
+                <TweetImage key={url} url={url} />
               ))}
             </Flex>
           ) : null}
