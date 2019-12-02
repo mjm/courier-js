@@ -1,42 +1,67 @@
 import React from "react"
 import { NextPage } from "next"
-import withData from "../../hocs/withData"
-import withSecurePage from "../../hocs/withSecurePage"
+import withData from "hocs/withData"
+import withSecurePage from "hocs/withSecurePage"
 import { graphql } from "react-relay"
-import Container from "../Container"
-import Head from "../Head"
-import TweetList from "../TweetList"
-import Loading from "../Loading"
-import SubscriptionProvider, { useSubscription } from "../SubscriptionProvider"
-import Notice from "../Notice"
-import PageHeader from "../PageHeader"
-import PageDescription from "../PageDescription"
-import { TweetsPageQueryResponse } from "../../lib/__generated__/TweetsPageQuery.graphql"
+import Head from "components/Head"
+import TweetList from "components/TweetList"
+import SubscriptionProvider, {
+  useSubscription,
+} from "components/SubscriptionProvider"
+import Notice from "components/Notice"
+import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
+import styled from "@emotion/styled"
 
 type Props = TweetsPageQueryResponse
 const TweetsPage: NextPage<Props> = ({ upcoming, past, currentUser }) => {
   return (
-    <Container>
+    <PageContainer>
+      <Head title="Your Tweets" />
       {currentUser && (
         <SubscriptionProvider user={currentUser}>
-          <Head title="Your Tweets" />
-
-          <PageHeader>Your Tweets</PageHeader>
-          <PageDescription>
-            These are the tweets Courier has translated from your feeds.
-          </PageDescription>
           <SubscribeBanner />
           {upcoming && past ? (
-            <>
-              <TweetList title="Upcoming Tweet" tweets={upcoming} />
-              <TweetList title="Past Tweet" tweets={past} />
-            </>
-          ) : (
-            <Loading />
-          )}
+            <ColumnsContainer>
+              <TweetList
+                emptyDescription={<>You don't have anymore tweets to review.</>}
+                description={count => (
+                  <>
+                    There{" "}
+                    {count === 1 ? (
+                      <>
+                        is <strong>1 draft tweet</strong>
+                      </>
+                    ) : (
+                      <>
+                        are <strong>{count} draft tweets</strong>
+                      </>
+                    )}{" "}
+                    awaiting your review.
+                  </>
+                )}
+                tweets={upcoming}
+              />
+              <ColumnSpacer />
+              <TweetList
+                emptyDescription={
+                  <>You haven't posted any tweets from Courier yet.</>
+                }
+                description={count => (
+                  <>
+                    You have{" "}
+                    <strong>
+                      {count} past tweet{count === 1 ? "" : "s"}
+                    </strong>{" "}
+                    that you've already reviewed.
+                  </>
+                )}
+                tweets={past}
+              />
+            </ColumnsContainer>
+          ) : null}
         </SubscriptionProvider>
       )}
-    </Container>
+    </PageContainer>
   )
 }
 
@@ -55,6 +80,24 @@ export default withData(withSecurePage(TweetsPage), {
     }
   `,
 })
+
+const PageContainer = styled.main(({ theme }) => ({
+  margin: "0 auto",
+  padding: `0 ${theme.space[3]}`,
+}))
+
+const ColumnsContainer = styled.div(({ theme }) => ({
+  margin: `${theme.space[4]} auto`,
+  maxWidth: 500,
+  display: "flex",
+  flexDirection: "column",
+  [`@media (min-width: 864px)`]: {
+    flexDirection: "row",
+    maxWidth: 1064,
+  },
+}))
+
+const ColumnSpacer = styled.div({ width: 64 })
 
 const SubscribeBanner = () => {
   const { isSubscribed } = useSubscription()

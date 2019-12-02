@@ -4,71 +4,66 @@ import {
   createPaginationContainer,
   RelayPaginationProp,
 } from "react-relay"
-import { TweetList_tweets } from "../lib/__generated__/TweetList_tweets.graphql"
-import { FlushContainer } from "./Container"
-import Card from "./Card"
-import { Text, Flex } from "@rebass/emotion"
+import { TweetList_tweets } from "@generated/TweetList_tweets.graphql"
+import { Flex } from "@rebass/emotion"
 import Group from "./Group"
 import { Button } from "./Button"
 import TweetCard from "./TweetCard"
 import { faAngleDoubleDown } from "@fortawesome/free-solid-svg-icons"
-import SectionHeader from "./SectionHeader"
 
 interface Props {
-  title: string
+  description: (count: number) => React.ReactNode
+  emptyDescription: React.ReactNode
   tweets: TweetList_tweets
   relay: RelayPaginationProp
 }
 
-const TweetList = ({ title, tweets, relay: { hasMore, loadMore } }: Props) => {
+const TweetList = ({
+  description,
+  emptyDescription,
+  tweets,
+  relay: { hasMore, loadMore },
+}: Props) => {
   const [isLoading, setLoading] = React.useState(false)
 
   const { edges, totalCount } = tweets.allTweets
-  if (!edges.length) {
-    return (
-      <div>
-        <SectionHeader>{title}s</SectionHeader>
-        <FlushContainer>
-          <Card mb={4}>
-            <Text textAlign="center">
-              You don't have any {title.toLowerCase()}s.
-            </Text>
-          </Card>
-        </FlushContainer>
-      </div>
-    )
-  }
 
   return (
     <div>
-      <SectionHeader>
-        {totalCount} {title}
-        {totalCount === 1 ? "" : "s"}
-      </SectionHeader>
-      <FlushContainer mb={4}>
-        <Group direction="column" spacing={3}>
-          {edges.map(edge => (
-            <TweetCard key={edge.node.id} tweet={edge.node} />
-          ))}
-          {hasMore() && (
-            <Flex justifyContent="center">
-              <Button
-                size="medium"
-                icon={faAngleDoubleDown}
-                spin={isLoading}
-                onClick={() => {
-                  setLoading(true)
-                  loadMore(10, () => {
-                    setLoading(false)
-                  })
-                }}
-              >
-                Show More…
-              </Button>
-            </Flex>
-          )}
-        </Group>
-      </FlushContainer>
+      <div
+        css={theme => ({
+          marginTop: theme.space[3],
+          marginBottom: theme.space[3],
+          color: theme.colors.neutral10,
+          strong: {
+            color: theme.colors.neutral9,
+          },
+        })}
+      >
+        {totalCount === 0 ? emptyDescription : description(totalCount)}
+      </div>
+      <Group direction="column" spacing={3}>
+        {edges.map(edge => (
+          <TweetCard key={edge.node.id} tweet={edge.node} />
+        ))}
+        {hasMore() && (
+          <Flex justifyContent="center">
+            <Button
+              size="medium"
+              icon={faAngleDoubleDown}
+              spin={isLoading}
+              onClick={() => {
+                setLoading(true)
+                loadMore(10, () => {
+                  setLoading(false)
+                })
+              }}
+            >
+              Show More…
+            </Button>
+          </Flex>
+        )}
+      </Group>
     </div>
   )
 }
