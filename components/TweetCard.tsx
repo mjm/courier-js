@@ -169,7 +169,7 @@ const TweetCardBase = styled.article(({ theme }) => ({
 
 const TweetCardActionsContainer = styled.div(({ theme }) => ({
   backgroundColor: theme.colors.neutral1,
-  borderTop: `2px solid ${theme.colors.neutral2}`,
+  boxShadow: "inset 0px 1px 4px rgba(0, 0, 0, 0.15)",
   padding: theme.space[3],
   borderRadius: "0 0 10px 10px",
 }))
@@ -209,7 +209,7 @@ const CanceledTweetCard = styled(TweetCardBase)(({ theme }) => ({
   // @ts-ignore
   [TweetCardActionsContainer]: {
     backgroundColor: "transparent",
-    border: 0,
+    boxShadow: "none",
     paddingTop: 0,
   },
 }))
