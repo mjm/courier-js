@@ -34,7 +34,7 @@ class TweetRepository {
     userId: UserId,
     { filter, ...variables }: TweetPagingOptions = {}
   ): Pager<Tweet, TweetRow> {
-    let filterCondition: ValueExpressionType = sql.raw("")
+    let filterCondition: ValueExpressionType = sql``
     if (filter) {
       const expr = sql.comparisonPredicate(
         sql.identifier(["tweets", "status"]),
@@ -108,7 +108,7 @@ class TweetRepository {
 
   async create(input: NewTweetInput): Promise<Tweet> {
     const postAfter = input.autopost
-      ? sql.raw("CURRENT_TIMESTAMP + interval '5 minutes'")
+      ? sql`CURRENT_TIMESTAMP + interval '5 minutes'`
       : null
 
     let row: table.tweets
@@ -162,7 +162,7 @@ class TweetRepository {
   async update(id: TweetId, input: UpdateTweetInput): Promise<Tweet | null> {
     const assignments: NamedAssignmentType = {
       body: input.body,
-      updated_at: sql.raw("CURRENT_TIMESTAMP"),
+      updated_at: sql`CURRENT_TIMESTAMP`,
     }
     if (input.action) {
       assignments.action = input.action

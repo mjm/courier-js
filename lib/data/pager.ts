@@ -2,7 +2,6 @@ import {
   SqlSqlTokenType,
   sql,
   DatabasePoolType,
-  RawSqlTokenType,
   PrimitiveValueExpressionType,
   ValueExpressionType,
 } from "../db"
@@ -123,7 +122,7 @@ export class Pager<ResultType, RowType = any> {
   private buildQuery(): SqlSqlTokenType<RowType> {
     const orderColumn = sql.identifier([this.orderColumn])
 
-    let filter: ValueExpressionType = sql.raw("")
+    let filter: ValueExpressionType = sql``
     if (this.cursor) {
       const condition = sql.comparisonPredicate(
         orderColumn,
@@ -133,17 +132,19 @@ export class Pager<ResultType, RowType = any> {
       filter = sql`${this.whereJoiner} ${condition}`
     }
 
+    const direction = this.direction === "ASC" ? sql`ASC` : sql`DESC`
+
     return sql`
       ${this.query}
       ${filter}
-      ORDER BY ${orderColumn} ${sql.raw(this.direction)}
+      ORDER BY ${orderColumn} ${direction}
       LIMIT ${this.limit + 1}
     `
   }
 
-  private get whereJoiner(): RawSqlTokenType {
+  private get whereJoiner(): ValueExpressionType {
     const sqlString = this.query.sql.toUpperCase()
-    return sql.raw(sqlString.includes("WHERE") ? "AND" : "WHERE")
+    return sqlString.includes("WHERE") ? sql`AND` : sql`WHERE`
   }
 }
 
