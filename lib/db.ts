@@ -33,7 +33,7 @@ function createLoggingInterceptor(): InterceptorType {
         values: query.values,
         rows: result.rowCount,
       })
-      return result
+      return null
     },
   }
 }
