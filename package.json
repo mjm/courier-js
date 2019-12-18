@@ -1,6 +1,9 @@
 {
   "name": "courier",
   "license": "MIT",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "auth:import:staging": "a0deploy import -c auth0.staging.json -i auth0/ -x $STAGING_AUTH_SECRET",
     "auth:import:prod": "a0deploy import -c auth0.prod.json -i auth0/ -x $PROD_AUTH_SECRET",
