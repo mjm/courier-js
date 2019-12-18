@@ -1,6 +1,9 @@
 {
   "name": "courier",
   "license": "MIT",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
     "auth:import:staging": "a0deploy import -c auth0.staging.json -i auth0/ -x $STAGING_AUTH_SECRET",
     "auth:import:prod": "a0deploy import -c auth0.prod.json -i auth0/ -x $PROD_AUTH_SECRET",
@@ -25,7 +28,6 @@
     "@fortawesome/free-solid-svg-icons": "^5.8.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "@graphql-codegen/introspection": "^1.1.3",
-    "@mmoriarity/slonik": "^16.19.4",
     "@reach/alert-dialog": "^0.2.8",
     "@rebass/emotion": "^3.1.1",
     "@types/auth0-js": "^9.10.2",
@@ -42,7 +44,7 @@
     "@types/react": "^16.8.15",
     "@types/react-stripe-elements": "^1.1.10",
     "@types/rebass": "^3.0.4",
-    "@types/slonik": "^16.16.1",
+    "@types/slonik": "^21.4.0",
     "@types/stripe": "^6.31.4",
     "@types/styled-jsx": "^2.2.8",
     "@types/styled-system": "^4.2.1",
@@ -91,7 +93,8 @@
     "react-stripe-elements": "^4.0.0",
     "reflect-metadata": "^0.1.13",
     "scrape-feed": "^1.1.0",
-    "slonik-interceptor-preset": "^1.2.0",
+    "slonik": "^21.4.1",
+    "slonik-interceptor-preset": "^1.2.9",
     "stripe": "^7.4.0",
     "striptags": "^3.1.1",
     "styled-system": "^4.2.4",

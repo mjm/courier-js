@@ -1,4 +1,4 @@
-import { createPool, InterceptorType } from "@mmoriarity/slonik"
+import { createPool, InterceptorType } from "slonik"
 import { createInterceptors } from "slonik-interceptor-preset"
 import moment from "moment"
 
@@ -23,7 +23,7 @@ const pool = createPool(process.env.DATABASE_URL || "", {
 })
 
 export default pool
-export * from "@mmoriarity/slonik"
+export * from "slonik"
 
 function createLoggingInterceptor(): InterceptorType {
   return {
@@ -33,7 +33,7 @@ function createLoggingInterceptor(): InterceptorType {
         values: query.values,
         rows: result.rowCount,
       })
-      return result
+      return null
     },
   }
 }
