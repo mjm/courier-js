@@ -1,4 +1,4 @@
-import { sql, DatabasePoolType, NamedAssignmentType } from "../db"
+import { sql, DatabasePoolType } from "../db"
 import * as table from "../data/dbTypes"
 import {
   PagingOptions,
@@ -74,18 +74,18 @@ class FeedSubscriptionRepository {
     id: FeedSubscriptionId,
     { autopost }: NullPartial<Pick<table.feed_subscriptions, "autopost">>
   ): Promise<SubscribedFeed> {
-    const options: NamedAssignmentType = {}
+    const updates = []
     if (autopost !== undefined && autopost !== null) {
-      options.autopost = autopost
+      updates.push(sql`autopost = ${autopost}`)
     }
 
-    if (Object.keys(options).length === 0) {
+    if (updates.length === 0) {
       throw new Error("no options provided to change")
     }
 
     const row = await this.db.one(sql<table.feed_subscriptions>`
       UPDATE feed_subscriptions
-         SET ${sql.assignmentList(options)},
+         SET ${sql.join(updates, sql`, `)},
              updated_at = CURRENT_TIMESTAMP
        WHERE id = ${id}
          AND user_id = ${userId}

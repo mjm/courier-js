@@ -124,11 +124,8 @@ export class Pager<ResultType, RowType = any> {
 
     let filter: ValueExpressionType = sql``
     if (this.cursor) {
-      const condition = sql.comparisonPredicate(
-        orderColumn,
-        this.direction === "ASC" ? ">" : "<",
-        this.cursor
-      )
+      const operator = this.direction === "ASC" ? sql`>` : sql`<`
+      const condition = sql`${orderColumn} ${operator} ${this.cursor}`
       filter = sql`${this.whereJoiner} ${condition}`
     }
 

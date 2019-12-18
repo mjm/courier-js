@@ -1,9 +1,4 @@
-import {
-  sql,
-  DatabasePoolType,
-  NamedAssignmentType,
-  ValueExpressionType,
-} from "../db"
+import { sql, DatabasePoolType, ValueExpressionType } from "../db"
 import * as table from "../data/dbTypes"
 import {
   UserId,
@@ -36,12 +31,11 @@ class TweetRepository {
   ): Pager<Tweet, TweetRow> {
     let filterCondition: ValueExpressionType = sql``
     if (filter) {
-      const expr = sql.comparisonPredicate(
-        sql.identifier(["tweets", "status"]),
-        filter === "UPCOMING" ? "=" : "<>",
-        "draft"
-      )
-      filterCondition = sql`AND ${expr}`
+      const operator = filter === "UPCOMING" ? sql`=` : sql`<>`
+      filterCondition = sql`AND ${sql.identifier([
+        "tweets",
+        "status",
+      ])} ${operator} ${"draft"}`
     }
 
     return new Pager({
@@ -160,23 +154,23 @@ class TweetRepository {
   }
 
   async update(id: TweetId, input: UpdateTweetInput): Promise<Tweet | null> {
-    const assignments: NamedAssignmentType = {
-      body: input.body,
-      updated_at: sql`CURRENT_TIMESTAMP`,
-    }
+    const assignments = [
+      sql`body = ${input.body}`,
+      sql`updated_at = CURRENT_TIMESTAMP`,
+    ]
     if (input.action) {
-      assignments.action = input.action
+      assignments.push(sql`action = ${input.action}`)
     }
     if (input.mediaURLs) {
-      assignments.media_urls = sql.array(input.mediaURLs, "text")
+      assignments.push(sql`media_urls = ${sql.array(input.mediaURLs, "text")}`)
     }
     if (input.retweetID !== undefined && input.retweetID !== null) {
-      assignments.retweet_id = input.retweetID
+      assignments.push(sql`retweet_id = ${input.retweetID}`)
     }
 
     const row = await this.db.maybeOne(sql<table.tweets>`
       UPDATE tweets
-         SET ${sql.assignmentList(assignments)}
+         SET ${sql.join(assignments, sql`, `)}
        WHERE id = ${id}
          AND status <> 'posted'
    RETURNING *
