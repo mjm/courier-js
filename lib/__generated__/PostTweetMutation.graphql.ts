@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* @relayHash 5fa463848f0bad9f6660e2c48c63313e */
 
 import { ConcreteRequest } from "relay-runtime";
 export type TweetStatus = "CANCELED" | "DRAFT" | "POSTED" | "%future added value";

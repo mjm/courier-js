@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* @relayHash 98507b0d8c05a74bd87ca07feaba489a */
 
 import { ConcreteRequest } from "relay-runtime";
 export type RefreshFeedInput = {

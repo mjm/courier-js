@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* @relayHash 97394c15d50bc5ab90ed1584dd419b3b */
 
 import { ConcreteRequest } from "relay-runtime";
 export type SubscriptionStatus = "ACTIVE" | "CANCELED" | "EXPIRED" | "INACTIVE" | "%future added value";

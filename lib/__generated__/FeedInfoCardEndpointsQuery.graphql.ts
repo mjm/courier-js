@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* @relayHash 5a7952b8e9b892844178f46954cb528f */
 
 import { ConcreteRequest } from "relay-runtime";
 export type FeedInfoCardEndpointsQueryVariables = {
