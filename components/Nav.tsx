@@ -18,7 +18,7 @@ import { BodyStyles } from "./BodyStyles"
 import { DialogStyles } from "./DialogStyles"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-const NavLink = styled.a(({ theme }) => ({
+const NavLink = styled.a(({ theme }: any) => ({
   color: "white",
   fontWeight: 500,
   textDecoration: "none",
@@ -35,13 +35,13 @@ const NavLink = styled.a(({ theme }) => ({
   },
 }))
 
-const BrandLink = styled(NavLink)(({ theme }) => ({
+const BrandLink = styled(NavLink)(({ theme }: any) => ({
   fontSize: theme.fontSizes[4],
   fontWeight: 700,
   fontFamily: theme.font.display,
 }))
 
-const ToggleButton = styled.button(({ theme }) => ({
+const ToggleButton = styled.button(({ theme }: any) => ({
   position: "absolute",
   top: 8,
   right: 16,

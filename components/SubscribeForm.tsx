@@ -172,7 +172,7 @@ export default createFragmentContainer(SubscribeForm, {
   `,
 })
 
-const TextField = styled(Field)(({ theme }) => ({
+const TextField = styled(Field)(({ theme }: any) => ({
   color: theme.colors.primary[800],
   backgroundColor: theme.colors.gray[100],
   border: 0,

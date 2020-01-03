@@ -252,9 +252,12 @@ class UserService {
     this.jwksClient.getSigningKey(header.kid, (err, key) => {
       if (err) {
         cb(err)
+      } else if ("publicKey" in key) {
+        cb(null, key.publicKey)
+      } else if ("rsaPublicKey" in key) {
+        cb(null, key.rsaPublicKey)
       } else {
-        const signingKey = key.publicKey || key.rsaPublicKey
-        cb(null, signingKey)
+        cb(new Error("unrecognized key type"))
       }
     })
   }

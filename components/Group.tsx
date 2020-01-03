@@ -16,7 +16,7 @@ const GroupInner = styled.div<GroupProps>`
   ${({ wrap }) => (wrap ? "flex-wrap: wrap;" : "")}
   ${alignItems}
 
-  ${({ spacing, theme }) => `
+  ${({ spacing, theme }: any) => `
   margin: -${theme.space[spacing - 1]};
   & > * {
     margin: ${theme.space[spacing - 1]};

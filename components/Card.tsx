@@ -9,7 +9,7 @@ import {
 type Props = CardProps & {
   appearance?: "normal" | "canceled"
 }
-const Card = styled(RCard)<Props>(({ theme }) => ({
+const Card = styled(RCard)<Props>(({ theme }: any) => ({
   borderBottomLeftRadius: theme.space[1],
   borderBottomRightRadius: theme.space[1],
   lineHeight: theme.lineHeights.normal,
@@ -28,7 +28,7 @@ export default Card
 
 export const CardHeader = styled(Heading)<HeadingProps>`
   a {
-    color: ${({ theme }) => theme.colors.primary[800]};
+    color: ${({ theme }: any) => theme.colors.primary[800]};
     text-decoration: none;
   }
 `
@@ -41,7 +41,7 @@ CardHeader.defaultProps = {
   color: "primary.800",
 }
 
-export const ContentCard = styled(Card)(({ theme }) => ({
+export const ContentCard = styled(Card)(({ theme }: any) => ({
   lineHeight: theme.lineHeights.relaxed,
   "p, ul": {
     marginTop: theme.space[2],

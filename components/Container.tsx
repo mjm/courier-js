@@ -4,7 +4,8 @@ import { maxWidth, MaxWidthProps } from "styled-system"
 
 const MaxWidthBox = styled(Box)<BoxProps & MaxWidthProps>(maxWidth)
 
-const Container = (props: BoxProps & MaxWidthProps) => (
+type Props = Omit<BoxProps & MaxWidthProps, "ref">
+const Container = (props: Props) => (
   <MaxWidthBox
     width={1}
     maxWidth={[null, 640, 768]}

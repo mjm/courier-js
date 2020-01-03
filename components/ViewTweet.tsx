@@ -145,7 +145,7 @@ export default createFragmentContainer(ViewTweet, {
   `,
 })
 
-const StatusText = styled.div(({ theme }) => ({
+const StatusText = styled.div(({ theme }: any) => ({
   fontSize: theme.fontSizes[1],
   fontStyle: "italic",
   color: theme.colors.gray[600],
