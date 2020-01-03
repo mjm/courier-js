@@ -442,7 +442,7 @@ public final class UpcomingTweetsQuery: GraphQLQuery {
   public let operationDefinition =
     """
     query UpcomingTweets($cursor: Cursor) {
-      allTweets(filter: UPCOMING, last: 10, before: $cursor) {
+      allTweets(filter: UPCOMING, first: 10, after: $cursor) {
         __typename
         ...tweetConnectionFields
       }
@@ -467,7 +467,7 @@ public final class UpcomingTweetsQuery: GraphQLQuery {
     public static let possibleTypes = ["Query"]
 
     public static let selections: [GraphQLSelection] = [
-      GraphQLField("allTweets", arguments: ["filter": "UPCOMING", "last": 10, "before": GraphQLVariable("cursor")], type: .nonNull(.object(AllTweet.selections))),
+      GraphQLField("allTweets", arguments: ["filter": "UPCOMING", "first": 10, "after": GraphQLVariable("cursor")], type: .nonNull(.object(AllTweet.selections))),
     ]
 
     public private(set) var resultMap: ResultMap
@@ -546,7 +546,7 @@ public final class PastTweetsQuery: GraphQLQuery {
   public let operationDefinition =
     """
     query PastTweets($cursor: Cursor) {
-      allTweets(filter: PAST, last: 10, before: $cursor) {
+      allTweets(filter: PAST, first: 10, after: $cursor) {
         __typename
         ...tweetConnectionFields
       }
@@ -571,7 +571,7 @@ public final class PastTweetsQuery: GraphQLQuery {
     public static let possibleTypes = ["Query"]
 
     public static let selections: [GraphQLSelection] = [
-      GraphQLField("allTweets", arguments: ["filter": "PAST", "last": 10, "before": GraphQLVariable("cursor")], type: .nonNull(.object(AllTweet.selections))),
+      GraphQLField("allTweets", arguments: ["filter": "PAST", "first": 10, "after": GraphQLVariable("cursor")], type: .nonNull(.object(AllTweet.selections))),
     ]
 
     public private(set) var resultMap: ResultMap
