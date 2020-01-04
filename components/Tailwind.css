@@ -3,5 +3,6 @@
 /* purgecss end ignore */
 
 @import "tailwindcss/components";
+@import "./Button.css";
 
 @import "tailwindcss/utilities";

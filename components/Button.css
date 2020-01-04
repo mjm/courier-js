@@ -1,0 +1,57 @@
+.btn {
+  @apply text-sm font-bold py-1 px-3 no-underline border-2;
+}
+
+.btn-first,
+.btn-second {
+  @apply rounded;
+}
+.btn-first:hover,
+.btn-second:hover {
+  @apply shadow;
+}
+.btn-second {
+  @apply bg-transparent;
+}
+.btn-third {
+  @apply bg-transparent border-transparent px-0;
+}
+
+.btn-first-primary {
+  @apply bg-primary-6 border-primary-6 text-primary-1;
+}
+.btn-first-primary:hover {
+  @apply bg-primary-7 border-primary-7 text-white;
+}
+
+.btn-first-neutral {
+  @apply bg-neutral-6 border-neutral-6 text-neutral-1;
+}
+.btn-first-neutral:hover {
+  @apply bg-neutral-7 border-neutral-7 text-white;
+}
+
+.btn-second-neutral {
+  @apply border-neutral-4 text-neutral-8;
+}
+.btn-second-neutral:hover {
+  @apply border-neutral-5 text-neutral-9;
+}
+
+.btn-third-neutral {
+  @apply text-neutral-7;
+}
+.btn-third-neutral:hover {
+  @apply text-neutral-9;
+}
+
+.btn-third-secondary {
+  @apply text-secondary-8;
+}
+.btn-third-secondary:hover {
+  @apply text-secondary-9;
+}
+
+.btn.btn-first:disabled {
+  @apply bg-neutral-3 border-neutral-3 text-neutral-6;
+}
