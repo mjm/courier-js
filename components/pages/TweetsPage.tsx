@@ -1,42 +1,45 @@
 import React from "react"
 import { NextPage } from "next"
-import withData from "../../hocs/withData"
-import withSecurePage from "../../hocs/withSecurePage"
+import withData from "hocs/withData"
+import withSecurePage from "hocs/withSecurePage"
 import { graphql } from "react-relay"
-import Container from "../Container"
-import Head from "../Head"
-import TweetList from "../TweetList"
-import Loading from "../Loading"
-import SubscriptionProvider, { useSubscription } from "../SubscriptionProvider"
-import Notice from "../Notice"
-import PageHeader from "../PageHeader"
-import PageDescription from "../PageDescription"
-import { TweetsPageQueryResponse } from "../../lib/__generated__/TweetsPageQuery.graphql"
+import Head from "components/Head"
+import TweetList from "components/TweetList"
+import Loading from "components/Loading"
+import SubscriptionProvider, {
+  useSubscription,
+} from "components/SubscriptionProvider"
+import Notice from "components/Notice"
+import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
 
 type Props = TweetsPageQueryResponse
 const TweetsPage: NextPage<Props> = ({ upcoming, past, currentUser }) => {
   return (
-    <Container>
+    <main className="my-0 mx-auto py-0 px-4">
+      <Head title="Your Tweets" />
       {currentUser && (
         <SubscriptionProvider user={currentUser}>
-          <Head title="Your Tweets" />
-
-          <PageHeader>Your Tweets</PageHeader>
-          <PageDescription>
-            These are the tweets Courier has translated from your feeds.
-          </PageDescription>
           <SubscribeBanner />
           {upcoming && past ? (
-            <>
-              <TweetList title="Upcoming Tweet" tweets={upcoming} />
-              <TweetList title="Past Tweet" tweets={past} />
-            </>
+            <div className="my-6 mx-auto max-w-lg md:max-w-6xl flex flex-col md:flex-row">
+              <TweetList
+                emptyDescription="You don't have anymore tweets to review."
+                description={upcomingDescription}
+                tweets={upcoming}
+              />
+              <div className="w-12" />
+              <TweetList
+                emptyDescription="You haven't posted any tweets from Courier yet."
+                description={pastDescription}
+                tweets={past}
+              />
+            </div>
           ) : (
             <Loading />
           )}
         </SubscriptionProvider>
       )}
-    </Container>
+    </main>
   )
 }
 
@@ -55,6 +58,36 @@ export default withData(withSecurePage(TweetsPage), {
     }
   `,
 })
+
+const upcomingDescription = (count: number): React.ReactNode => {
+  return (
+    <>
+      There{" "}
+      {count === 1 ? (
+        <>
+          is <strong className="text-neutral-9">1 draft tweet</strong>
+        </>
+      ) : (
+        <>
+          are <strong className="text-neutral-9">{count} draft tweets</strong>
+        </>
+      )}{" "}
+      awaiting your review.
+    </>
+  )
+}
+
+const pastDescription = (count: number): React.ReactNode => {
+  return (
+    <>
+      You have{" "}
+      <strong className="text-neutral-9">
+        {count} past tweet{count === 1 ? "" : "s"}
+      </strong>{" "}
+      that you've already reviewed.
+    </>
+  )
+}
 
 const SubscribeBanner = () => {
   const { isSubscribed } = useSubscription()

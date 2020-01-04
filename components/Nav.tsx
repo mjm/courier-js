@@ -12,7 +12,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import Icon from "components/Icon"
-import { BodyStyles } from "components/BodyStyles"
 import { DialogStyles } from "components/DialogStyles"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useRouter } from "next/router"
@@ -27,7 +26,6 @@ const Nav = ({ user, isAuthenticating = false }: Props) => {
 
   return (
     <nav className="bg-white shadow-lg border-primary-5 border-t-4">
-      <BodyStyles />
       <DialogStyles />
 
       <ul className="my-0 mx-0 px-2 leading-relaxed flex flex-col sm:flex-row items-stretch sm:items-center">

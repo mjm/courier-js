@@ -6,3 +6,7 @@
 @import "./Button.css";
 
 @import "tailwindcss/utilities";
+
+body {
+  @apply font-body bg-neutral-2;
+}
