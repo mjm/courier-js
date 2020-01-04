@@ -10,6 +10,7 @@ import NProgress from "nprogress"
 config.autoAddCss = false
 
 import "components/Tailwind.css"
+import "components/Progress.css"
 import "typeface-rubik"
 import "typeface-ibm-plex-sans"
 import "@fortawesome/fontawesome-svg-core/styles.css"
