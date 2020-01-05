@@ -63,7 +63,7 @@
     "dataloader": "^1.4.0",
     "emotion-theming": "^10.0.10",
     "feed-locator": "^1.0.0",
-    "formik": "^1.5.4",
+    "formik": "^2.1.1",
     "graphql-iso-date": "^3.6.1",
     "graphql-tag": "^2.10.1",
     "html-to-tweets": "^2.0.0",
