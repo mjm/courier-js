@@ -45,7 +45,7 @@ const TweetList = ({
                 })
               }}
             >
-              Show More…
+              Show more…
             </button>
           </div>
         )}

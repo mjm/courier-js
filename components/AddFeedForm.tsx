@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import { Field, Formik, Form, ErrorMessage, FormikActions } from "formik"
+import { Field, Formik, Form, ErrorMessage, FormikHelpers } from "formik"
 import * as yup from "yup"
 import { Environment } from "react-relay"
 import { ErrorContainer } from "./ErrorContainer"
@@ -19,7 +19,7 @@ const AddFeedForm: React.FC<Props> = ({ environment }) => {
       {({ setError }) => {
         const onSubmit = async (
           input: { url: string },
-          actions: FormikActions<{ url: string }>
+          actions: FormikHelpers<{ url: string }>
         ) => {
           try {
             await addFeed(environment, input.url)
