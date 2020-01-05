@@ -9,7 +9,6 @@ import Moment from "react-moment"
 import Linkify from "linkifyjs/react"
 import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
-import { Flex, Box, Image } from "@rebass/emotion"
 import {
   ViewTweet_tweet,
   TweetStatus,
@@ -38,38 +37,8 @@ const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
     <>
       {tweet.action === "TWEET" ? (
         <>
-          <div className="whitespace-pre-wrap p-4">
-            <Linkify
-              tagName="span"
-              options={{
-                className: `break-words no-underline hover:underline ${
-                  linkStyles[tweet.status]
-                }`,
-                formatHref: {
-                  mention: val => `https://twitter.com${val}`,
-                },
-                target: "_blank",
-              }}
-            >
-              {tweet.body}
-            </Linkify>
-          </div>
-          {tweet.mediaURLs.length ? (
-            <Flex mt={2} flexWrap="wrap">
-              {tweet.mediaURLs.map(url => (
-                <Box
-                  key={url}
-                  as="figure"
-                  width={[1 / 2, 1 / 4]}
-                  m={0}
-                  py={0}
-                  px={1}
-                >
-                  <Image width={1} borderRadius="1rem" src={url} />
-                </Box>
-              ))}
-            </Flex>
-          ) : null}
+          <TweetBody tweet={tweet} />
+          <TweetMedia tweet={tweet} />
         </>
       ) : (
         <div>
@@ -111,6 +80,43 @@ export default createFragmentContainer(ViewTweet, {
     }
   `,
 })
+
+const TweetBody: React.FC<{ tweet: ViewTweet_tweet }> = ({ tweet }) => {
+  return (
+    <div className="whitespace-pre-wrap p-4">
+      <Linkify
+        tagName="span"
+        options={{
+          className: `break-words no-underline hover:underline ${
+            linkStyles[tweet.status]
+          }`,
+          formatHref: {
+            mention: val => `https://twitter.com${val}`,
+          },
+          target: "_blank",
+        }}
+      >
+        {tweet.body}
+      </Linkify>
+    </div>
+  )
+}
+
+const TweetMedia: React.FC<{ tweet: ViewTweet_tweet }> = ({ tweet }) => {
+  if (!tweet.mediaURLs.length) {
+    return null
+  }
+
+  return (
+    <div className="mb-4 px-4 -mx-1 flex flex-row">
+      {tweet.mediaURLs.map(url => (
+        <figure className="m-0 py-0 px-1 w-1/4">
+          <img src={url} className="w-full rounded-lg" />
+        </figure>
+      ))}
+    </div>
+  )
+}
 
 const linkStyles: Record<TweetStatus, string> = {
   DRAFT: "text-primary-9",
