@@ -3,6 +3,7 @@ import React from "react"
 import { createPaginationContainer, graphql } from "react-relay"
 import { FeedList_feeds } from "@generated/FeedList_feeds.graphql"
 import FeedCard from "components/FeedCard"
+import Link from "next/link"
 
 interface Props {
   feeds: FeedList_feeds
@@ -40,11 +41,13 @@ const FeedList: React.FC<Props> = ({ feeds }) => {
             </div>
           ))}
           <div className="p-2 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4">
-            <button className="bg-neutral-3 rounded-lg shadow-md p-4 w-full h-full flex justify-center items-center">
-              <div className="m-auto font-medium text-neutral-9">
-                Watch a new feed…
-              </div>
-            </button>
+            <Link href="/feeds/new">
+              <a className="bg-neutral-3 rounded-lg shadow-md p-4 w-full h-full flex justify-center items-center">
+                <div className="m-auto font-medium text-neutral-9">
+                  Watch a new feed…
+                </div>
+              </a>
+            </Link>
           </div>
         </div>
       </div>
