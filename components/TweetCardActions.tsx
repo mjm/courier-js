@@ -21,8 +21,8 @@ const TweetCardActions: React.FC<Props> = ({
       }`}
     >
       {banner && (
-        <div className="mx-auto flex flex-col items-center">
-          <div className="bg-primary-1 text-primary-10 rounded-full uppercase text-xs font-bold shadow-sm inline-block py-1 px-4">
+        <div className="mx-auto -mt-8 mb-3 flex flex-col items-center py-1">
+          <div className="bg-primary-1 text-primary-10 rounded-full uppercase text-xs font-bold shadow inline-block py-1 px-4">
             {banner}
           </div>
         </div>

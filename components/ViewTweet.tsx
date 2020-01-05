@@ -5,7 +5,6 @@ import {
   Environment,
   RelayProp,
 } from "react-relay"
-import Group from "./Group"
 import Moment from "react-moment"
 import Linkify from "linkifyjs/react"
 import * as linkify from "linkifyjs"
@@ -14,12 +13,12 @@ import { Flex, Box, Image } from "@rebass/emotion"
 import {
   ViewTweet_tweet,
   TweetStatus,
-} from "../lib/__generated__/ViewTweet_tweet.graphql"
-import { cancelTweet } from "./mutations/CancelTweet"
-import { uncancelTweet } from "./mutations/UncancelTweet"
-import { useErrors } from "./ErrorContainer"
-import { postTweet } from "./mutations/PostTweet"
-import { useSubscription } from "./SubscriptionProvider"
+} from "@generated/ViewTweet_tweet.graphql"
+import { cancelTweet } from "@mutations/CancelTweet"
+import { uncancelTweet } from "@mutations/UncancelTweet"
+import { useErrors } from "components/ErrorContainer"
+import { postTweet } from "@mutations/PostTweet"
+import { useSubscription } from "components/SubscriptionProvider"
 import TweetCardActions from "components/TweetCardActions"
 import AsyncButton from "components/AsyncButton"
 import { useAuth } from "components/AuthProvider"
@@ -36,7 +35,7 @@ interface Props {
 
 const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
   return (
-    <Group direction="column" spacing={3}>
+    <>
       {tweet.action === "TWEET" ? (
         <>
           <div className="whitespace-pre-wrap p-4">
@@ -93,7 +92,7 @@ const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
         <CanceledActions tweet={tweet} environment={relay.environment} />
       )}
       {tweet.status === "POSTED" && <PostedActions tweet={tweet} />}
-    </Group>
+    </>
   )
 }
 
