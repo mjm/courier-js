@@ -1,7 +1,7 @@
 const purgecss = require("@fullhuman/postcss-purgecss")({
   content: ["./components/**/*.tsx", "./pages/**/*.tsx"],
   defaultExtractor: content => content.match(/[\w-/:]+(?<!:)/g) || [],
-  whitelistPatterns: [/^fa-/, /^svg-inline--fa$/],
+  whitelistPatterns: [/.fa-/, /.svg-inline--fa/],
 })
 
 module.exports = {
