@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 6d1bba7ed5d575c64149b1d28b3cfed4 */
+/* @relayHash 95cc006ab5f1bc9bbbc4a5fa2a909239 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -42,6 +42,7 @@ fragment FeedList_feeds on Query {
       }
       cursor
     }
+    totalCount
     pageInfo {
       endCursor
       hasNextPage
@@ -187,6 +188,13 @@ return {
             ]
           },
           {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "totalCount",
+            "args": null,
+            "storageKey": null
+          },
+          {
             "kind": "LinkedField",
             "alias": null,
             "name": "pageInfo",
@@ -228,7 +236,7 @@ return {
     "operationKind": "query",
     "name": "FeedsPageQuery",
     "id": null,
-    "text": "query FeedsPageQuery {\n  ...FeedList_feeds\n}\n\nfragment FeedCard_feed on SubscribedFeed {\n  id\n  feed {\n    id\n    url\n    title\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n\nfragment FeedList_feeds on Query {\n  allSubscribedFeeds(first: 20) {\n    edges {\n      node {\n        id\n        ...FeedCard_feed\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n",
+    "text": "query FeedsPageQuery {\n  ...FeedList_feeds\n}\n\nfragment FeedCard_feed on SubscribedFeed {\n  id\n  feed {\n    id\n    url\n    title\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n\nfragment FeedList_feeds on Query {\n  allSubscribedFeeds(first: 20) {\n    edges {\n      node {\n        id\n        ...FeedCard_feed\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
