@@ -7,7 +7,7 @@ import {
   Form,
   FieldProps,
   ErrorMessage,
-  FormikActions,
+  FormikHelpers,
 } from "formik"
 import * as yup from "yup"
 import {
@@ -40,7 +40,7 @@ const SubscribeForm = injectStripe<Props>(
 
     async function onSubmit(
       input: SubscribeData,
-      actions: FormikActions<SubscribeData>
+      actions: FormikHelpers<SubscribeData>
     ) {
       if (!stripe) {
         return
