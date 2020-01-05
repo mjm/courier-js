@@ -1,7 +1,6 @@
 /* Make clicks pass-through */
 #nprogress {
   pointer-events: none;
-  --bar-color: #1d0ebe;
 }
 
 #nprogress .bar {
