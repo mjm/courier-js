@@ -21,13 +21,12 @@ const TweetsPage: NextPage<Props> = ({ upcoming, past, currentUser }) => {
         <SubscriptionProvider user={currentUser}>
           <SubscribeBanner />
           {upcoming && past ? (
-            <div className="my-6 mx-auto max-w-lg md:max-w-6xl flex flex-col md:flex-row">
+            <div className="my-6 mx-auto lg:max-w-6xl flex flex-col lg:flex-row">
               <TweetList
                 emptyDescription="You don't have anymore tweets to review."
                 description={upcomingDescription}
                 tweets={upcoming}
               />
-              <div className="w-12" />
               <TweetList
                 emptyDescription="You haven't posted any tweets from Courier yet."
                 description={pastDescription}

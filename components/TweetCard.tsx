@@ -15,11 +15,14 @@ interface Props {
 
 const TweetCard = ({ tweet }: Props) => {
   const [editing, setEditing] = React.useState(false)
+  const statusClass = cardTypeStyles[tweet.status].container
 
   return (
     <ErrorContainer>
       <ErrorBox width={undefined} />
-      <CardContainer status={tweet.status}>
+      <article
+        className={`bg-white rounded-lg shadow-md relative text-neutral-8 leading-normal pt-4 ${statusClass}`}
+      >
         <div
           className={`absolute top-0 right-0 py-1 px-4 uppercase rounded-tr-lg rounded-bl-lg text-xs font-bold ${
             cardTypeStyles[tweet.status].badge
@@ -35,7 +38,7 @@ const TweetCard = ({ tweet }: Props) => {
         ) : (
           <ViewTweet tweet={tweet} onEdit={() => setEditing(true)} />
         )}
-      </CardContainer>
+      </article>
     </ErrorContainer>
   )
 }
@@ -49,22 +52,6 @@ export default createFragmentContainer(TweetCard, {
     }
   `,
 })
-
-interface CardContainerProps {
-  status: TweetStatus
-  children?: React.ReactNode
-}
-const CardContainer = ({ status, children }: CardContainerProps) => {
-  const statusClass = cardTypeStyles[status].container
-
-  return (
-    <article
-      className={`bg-white rounded-lg shadow-md relative text-neutral-8 leading-normal pt-4 max-w-lg ${statusClass}`}
-    >
-      {children}
-    </article>
-  )
-}
 
 interface CardTypeStyle {
   container: string

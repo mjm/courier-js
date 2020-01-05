@@ -25,7 +25,7 @@ const TweetList = ({
   const { edges, totalCount } = tweets.allTweets
 
   return (
-    <div>
+    <div className="flex-grow mx-auto lg:mx-6 max-w-lg min-w-sm">
       <div className="py-4 text-neutral-10">
         {totalCount === 0 ? emptyDescription : description(totalCount)}
       </div>
