@@ -67,16 +67,19 @@ const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
 
 export default createFragmentContainer(ViewTweet, {
   tweet: graphql`
-    fragment ViewTweet_tweet on Tweet {
-      id
+    fragment ViewTweet_tweet on TweetContent {
       body
       mediaURLs
-      status
       action
-      postAfter
-      postedAt
-      postedTweetID
       retweetID
+
+      ... on Tweet {
+        id
+        status
+        postAfter
+        postedAt
+        postedTweetID
+      }
     }
   `,
 })
@@ -88,7 +91,7 @@ const TweetBody: React.FC<{ tweet: ViewTweet_tweet }> = ({ tweet }) => {
         tagName="span"
         options={{
           className: `break-words no-underline hover:underline ${
-            linkStyles[tweet.status]
+            linkStyles[tweet.status || "DRAFT"]
           }`,
           formatHref: {
             mention: val => `https://twitter.com${val}`,
@@ -108,9 +111,9 @@ const TweetMedia: React.FC<{ tweet: ViewTweet_tweet }> = ({ tweet }) => {
   }
 
   return (
-    <div className="mb-4 px-4 -mx-1 flex flex-row">
-      {tweet.mediaURLs.map(url => (
-        <figure className="m-0 py-0 px-1 w-1/4">
+    <div className="pb-4 px-4 -mx-1 flex flex-row">
+      {tweet.mediaURLs.map((url, index) => (
+        <figure key={index} className="m-0 py-0 px-1 w-1/4">
           <img src={url} className="w-full rounded-lg" />
         </figure>
       ))}
@@ -168,7 +171,7 @@ const DraftActions: React.FC<DraftActionsProps> = ({
             className="btn btn-first btn-first-primary"
             onClick={async () => {
               try {
-                await postTweet(environment, { id: tweet.id })
+                await postTweet(environment, { id: tweet.id! })
               } catch (e) {
                 setError(e)
               }
@@ -187,7 +190,7 @@ const DraftActions: React.FC<DraftActionsProps> = ({
       right={
         <button
           className="btn btn-third btn-third-neutral"
-          onClick={() => cancelTweet(environment, tweet.id)}
+          onClick={() => cancelTweet(environment, tweet.id!)}
         >
           Don't post
         </button>
@@ -211,7 +214,7 @@ const CanceledActions: React.FC<CanceledActionsProps> = ({
       left={
         <button
           className="btn btn-first btn-first-neutral"
-          onClick={() => uncancelTweet(environment, tweet.id)}
+          onClick={() => uncancelTweet(environment, tweet.id!)}
         >
           Restore draft
         </button>

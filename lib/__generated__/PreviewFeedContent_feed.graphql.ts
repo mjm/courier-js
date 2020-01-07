@@ -2,15 +2,11 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type TweetAction = "RETWEET" | "TWEET" | "%future added value";
 export type PreviewFeedContent_feed = {
     readonly url: string;
     readonly title: string;
     readonly tweets: ReadonlyArray<{
-        readonly action: TweetAction;
-        readonly body: string;
-        readonly mediaURLs: ReadonlyArray<string>;
-        readonly retweetID: string;
+        readonly " $fragmentRefs": FragmentRefs<"TweetCard_tweet">;
     }>;
     readonly " $refType": "PreviewFeedContent_feed";
 };
@@ -53,36 +49,13 @@ const node: ReaderFragment = {
       "plural": true,
       "selections": [
         {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "action",
-          "args": null,
-          "storageKey": null
-        },
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "body",
-          "args": null,
-          "storageKey": null
-        },
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "mediaURLs",
-          "args": null,
-          "storageKey": null
-        },
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "retweetID",
-          "args": null,
-          "storageKey": null
+          "kind": "FragmentSpread",
+          "name": "TweetCard_tweet",
+          "args": null
         }
       ]
     }
   ]
 };
-(node as any).hash = '771c6059e258b33cd3bb01b08aa667b7';
+(node as any).hash = 'dd734b77513b29c475bf8f9e50bc6935';
 export default node;

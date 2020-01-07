@@ -15,7 +15,7 @@ interface Props {
 
 const TweetCard = ({ tweet }: Props) => {
   const [editing, setEditing] = React.useState(false)
-  const statusClass = cardTypeStyles[tweet.status].container
+  const statusClass = tweet.status ? cardTypeStyles[tweet.status].container : ""
 
   return (
     <ErrorContainer>
@@ -25,10 +25,10 @@ const TweetCard = ({ tweet }: Props) => {
       >
         <div
           className={`absolute top-0 right-0 py-1 px-4 uppercase rounded-tr-lg rounded-bl-lg text-xs font-bold ${
-            cardTypeStyles[tweet.status].badge
+            cardTypeStyles[tweet.status || "DRAFT"].badge
           }`}
         >
-          {tweet.status}
+          {tweet.status || "PREVIEW"}
         </div>
         {editing ? (
           <EditTweetForm
@@ -45,10 +45,13 @@ const TweetCard = ({ tweet }: Props) => {
 
 export default createFragmentContainer(TweetCard, {
   tweet: graphql`
-    fragment TweetCard_tweet on Tweet {
-      status
+    fragment TweetCard_tweet on TweetContent {
       ...EditTweetForm_tweet
       ...ViewTweet_tweet
+
+      ... on Tweet {
+        status
+      }
     }
   `,
 })

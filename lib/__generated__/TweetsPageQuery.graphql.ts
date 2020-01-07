@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 28cc89cdadff117b19f111a3e296c126 */
+/* @relayHash 179a1b8f678ef94eab8b7262752dc30f */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -48,10 +48,12 @@ fragment SubscriptionProvider_user on User {
   subscriptionStatusOverride
 }
 
-fragment TweetCard_tweet on Tweet {
-  status
+fragment TweetCard_tweet on TweetContent {
   ...EditTweetForm_tweet
   ...ViewTweet_tweet
+  ... on Tweet {
+    status
+  }
 }
 
 fragment TweetList_tweets_2ixgHQ on User {
@@ -90,16 +92,18 @@ fragment TweetList_tweets_30lx3F on User {
   }
 }
 
-fragment ViewTweet_tweet on Tweet {
-  id
+fragment ViewTweet_tweet on TweetContent {
   body
   mediaURLs
-  status
   action
-  postAfter
-  postedAt
-  postedTweetID
   retweetID
+  ... on Tweet {
+    id
+    status
+    postAfter
+    postedAt
+    postedTweetID
+  }
 }
 */
 
@@ -156,7 +160,6 @@ v5 = [
             "args": null,
             "storageKey": null
           },
-          (v4/*: any*/),
           {
             "kind": "ScalarField",
             "alias": null,
@@ -181,6 +184,14 @@ v5 = [
           {
             "kind": "ScalarField",
             "alias": null,
+            "name": "retweetID",
+            "args": null,
+            "storageKey": null
+          },
+          (v4/*: any*/),
+          {
+            "kind": "ScalarField",
+            "alias": null,
             "name": "postAfter",
             "args": null,
             "storageKey": null
@@ -196,13 +207,6 @@ v5 = [
             "kind": "ScalarField",
             "alias": null,
             "name": "postedTweetID",
-            "args": null,
-            "storageKey": null
-          },
-          {
-            "kind": "ScalarField",
-            "alias": null,
-            "name": "retweetID",
             "args": null,
             "storageKey": null
           },
@@ -428,7 +432,7 @@ return {
     "operationKind": "query",
     "name": "TweetsPageQuery",
     "id": null,
-    "text": "query TweetsPageQuery {\n  upcoming: viewer {\n    ...TweetList_tweets_30lx3F\n  }\n  past: viewer {\n    ...TweetList_tweets_2ixgHQ\n  }\n  currentUser {\n    ...SubscriptionProvider_user\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment SubscriptionProvider_user on User {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment TweetCard_tweet on Tweet {\n  status\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n}\n\nfragment TweetList_tweets_2ixgHQ on User {\n  allTweets(filter: PAST, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment TweetList_tweets_30lx3F on User {\n  allTweets(filter: UPCOMING, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  id\n  body\n  mediaURLs\n  status\n  action\n  postAfter\n  postedAt\n  postedTweetID\n  retweetID\n}\n",
+    "text": "query TweetsPageQuery {\n  upcoming: viewer {\n    ...TweetList_tweets_30lx3F\n  }\n  past: viewer {\n    ...TweetList_tweets_2ixgHQ\n  }\n  currentUser {\n    ...SubscriptionProvider_user\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment SubscriptionProvider_user on User {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment TweetCard_tweet on TweetContent {\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n  ... on Tweet {\n    status\n  }\n}\n\nfragment TweetList_tweets_2ixgHQ on User {\n  allTweets(filter: PAST, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment TweetList_tweets_30lx3F on User {\n  allTweets(filter: UPCOMING, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweet_tweet on TweetContent {\n  body\n  mediaURLs\n  action\n  retweetID\n  ... on Tweet {\n    id\n    status\n    postAfter\n    postedAt\n    postedTweetID\n  }\n}\n",
     "metadata": {}
   }
 };

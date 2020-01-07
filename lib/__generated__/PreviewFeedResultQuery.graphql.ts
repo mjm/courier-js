@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 4203d4ba10c8f7b35bc9567cc0d2599c */
+/* @relayHash c90b6dcb2d7ad438e406b80759984699 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -27,14 +27,39 @@ query PreviewFeedResultQuery(
   }
 }
 
+fragment EditTweetForm_tweet on Tweet {
+  id
+  body
+  mediaURLs
+}
+
 fragment PreviewFeedContent_feed on FeedPreview {
   url
   title
   tweets {
-    action
-    body
-    mediaURLs
-    retweetID
+    ...TweetCard_tweet
+  }
+}
+
+fragment TweetCard_tweet on TweetContent {
+  ...EditTweetForm_tweet
+  ...ViewTweet_tweet
+  ... on Tweet {
+    status
+  }
+}
+
+fragment ViewTweet_tweet on TweetContent {
+  body
+  mediaURLs
+  action
+  retweetID
+  ... on Tweet {
+    id
+    status
+    postAfter
+    postedAt
+    postedTweetID
   }
 }
 */
@@ -122,13 +147,6 @@ return {
               {
                 "kind": "ScalarField",
                 "alias": null,
-                "name": "action",
-                "args": null,
-                "storageKey": null
-              },
-              {
-                "kind": "ScalarField",
-                "alias": null,
                 "name": "body",
                 "args": null,
                 "storageKey": null
@@ -143,9 +161,57 @@ return {
               {
                 "kind": "ScalarField",
                 "alias": null,
+                "name": "action",
+                "args": null,
+                "storageKey": null
+              },
+              {
+                "kind": "ScalarField",
+                "alias": null,
                 "name": "retweetID",
                 "args": null,
                 "storageKey": null
+              },
+              {
+                "kind": "InlineFragment",
+                "type": "Tweet",
+                "selections": [
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "id",
+                    "args": null,
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "status",
+                    "args": null,
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "postAfter",
+                    "args": null,
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "postedAt",
+                    "args": null,
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "postedTweetID",
+                    "args": null,
+                    "storageKey": null
+                  }
+                ]
               }
             ]
           }
@@ -157,7 +223,7 @@ return {
     "operationKind": "query",
     "name": "PreviewFeedResultQuery",
     "id": null,
-    "text": "query PreviewFeedResultQuery(\n  $url: String!\n) {\n  feedPreview(url: $url) {\n    ...PreviewFeedContent_feed\n  }\n}\n\nfragment PreviewFeedContent_feed on FeedPreview {\n  url\n  title\n  tweets {\n    action\n    body\n    mediaURLs\n    retweetID\n  }\n}\n",
+    "text": "query PreviewFeedResultQuery(\n  $url: String!\n) {\n  feedPreview(url: $url) {\n    ...PreviewFeedContent_feed\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment PreviewFeedContent_feed on FeedPreview {\n  url\n  title\n  tweets {\n    ...TweetCard_tweet\n  }\n}\n\nfragment TweetCard_tweet on TweetContent {\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n  ... on Tweet {\n    status\n  }\n}\n\nfragment ViewTweet_tweet on TweetContent {\n  body\n  mediaURLs\n  action\n  retweetID\n  ... on Tweet {\n    id\n    status\n    postAfter\n    postedAt\n    postedTweetID\n  }\n}\n",
     "metadata": {}
   }
 };

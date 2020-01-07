@@ -210,7 +210,7 @@ type SubscribedFeedEdge {
   node: SubscribedFeed!
 }
 
-type Tweet {
+type Tweet implements TweetContent {
   id: ID!
   feed: SubscribedFeed!
   post: Post!
@@ -390,7 +390,14 @@ type FeedPreview {
   tweets: [TweetPreview!]!
 }
 
-type TweetPreview {
+type TweetPreview implements TweetContent {
+  action: TweetAction!
+  body: String!
+  mediaURLs: [String!]!
+  retweetID: String!
+}
+
+interface TweetContent {
   action: TweetAction!
   body: String!
   mediaURLs: [String!]!

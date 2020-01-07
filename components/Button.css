@@ -24,6 +24,13 @@
   @apply bg-primary-7 border-primary-7 text-white;
 }
 
+.btn-first-secondary {
+  @apply bg-secondary-6 border-secondary-6 text-secondary-1;
+}
+.btn-first-secondary:hover {
+  @apply bg-secondary-7 border-secondary-7 text-white;
+}
+
 .btn-first-neutral {
   @apply bg-neutral-6 border-neutral-6 text-neutral-1;
 }

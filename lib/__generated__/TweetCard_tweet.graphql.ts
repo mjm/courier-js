@@ -4,7 +4,7 @@ import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type TweetStatus = "CANCELED" | "DRAFT" | "POSTED" | "%future added value";
 export type TweetCard_tweet = {
-    readonly status: TweetStatus;
+    readonly status?: TweetStatus;
     readonly " $fragmentRefs": FragmentRefs<"EditTweetForm_tweet" | "ViewTweet_tweet">;
     readonly " $refType": "TweetCard_tweet";
 };
@@ -19,17 +19,10 @@ export type TweetCard_tweet$key = {
 const node: ReaderFragment = {
   "kind": "Fragment",
   "name": "TweetCard_tweet",
-  "type": "Tweet",
+  "type": "TweetContent",
   "metadata": null,
   "argumentDefinitions": [],
   "selections": [
-    {
-      "kind": "ScalarField",
-      "alias": null,
-      "name": "status",
-      "args": null,
-      "storageKey": null
-    },
     {
       "kind": "FragmentSpread",
       "name": "EditTweetForm_tweet",
@@ -39,8 +32,21 @@ const node: ReaderFragment = {
       "kind": "FragmentSpread",
       "name": "ViewTweet_tweet",
       "args": null
+    },
+    {
+      "kind": "InlineFragment",
+      "type": "Tweet",
+      "selections": [
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "name": "status",
+          "args": null,
+          "storageKey": null
+        }
+      ]
     }
   ]
 };
-(node as any).hash = '1f6401d667bec883f77d8d28eedfd46f';
+(node as any).hash = '5cb56989d6e2006377e69ed3e92a3f42';
 export default node;

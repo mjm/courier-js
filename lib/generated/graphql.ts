@@ -419,7 +419,7 @@ export enum TestNotificationType {
   Posted = 'POSTED'
 }
 
-export type Tweet = {
+export type Tweet = TweetContent & {
   id: Scalars['ID'],
   feed: SubscribedFeed,
   post: Post,
@@ -445,6 +445,13 @@ export type TweetConnection = {
   totalCount: Scalars['Int'],
 };
 
+export type TweetContent = {
+  action: TweetAction,
+  body: Scalars['String'],
+  mediaURLs: Array<Scalars['String']>,
+  retweetID: Scalars['String'],
+};
+
 export type TweetEdge = {
   cursor: Scalars['Cursor'],
   node: Tweet,
@@ -455,7 +462,7 @@ export enum TweetFilter {
   Past = 'PAST'
 }
 
-export type TweetPreview = {
+export type TweetPreview = TweetContent & {
   action: TweetAction,
   body: Scalars['String'],
   mediaURLs: Array<Scalars['String']>,
@@ -581,6 +588,8 @@ export type ResolversTypes = {
   TweetConnection: Pager<types.Tweet>,
   TweetEdge: Omit<TweetEdge, 'node'> & { node: ResolversTypes['Tweet'] },
   Tweet: types.Tweet,
+  TweetContent: TweetContent,
+  TweetAction: TweetAction,
   ID: Scalars['ID'],
   SubscribedFeed: types.SubscribedFeed,
   Feed: types.Feed,
@@ -589,7 +598,6 @@ export type ResolversTypes = {
   Post: types.Post,
   PageInfo: PageInfo,
   Boolean: Scalars['Boolean'],
-  TweetAction: TweetAction,
   TweetStatus: TweetStatus,
   SubscribedFeedConnection: Pager<types.SubscribedFeed>,
   SubscribedFeedEdge: PagerEdge<types.SubscribedFeed>,
@@ -858,6 +866,14 @@ export type TweetConnectionResolvers<ContextType = CourierContext, ParentType = 
   totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
 };
 
+export type TweetContentResolvers<ContextType = CourierContext, ParentType = ResolversTypes['TweetContent']> = {
+  __resolveType: TypeResolveFn<'Tweet' | 'TweetPreview', ParentType, ContextType>,
+  action?: Resolver<ResolversTypes['TweetAction'], ParentType, ContextType>,
+  body?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  mediaURLs?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>,
+  retweetID?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
 export type TweetEdgeResolvers<ContextType = CourierContext, ParentType = ResolversTypes['TweetEdge']> = {
   cursor?: Resolver<ResolversTypes['Cursor'], ParentType, ContextType>,
   node?: Resolver<ResolversTypes['Tweet'], ParentType, ContextType>,
@@ -926,6 +942,7 @@ export type Resolvers<ContextType = CourierContext> = {
   SubscribePayload?: SubscribePayloadResolvers<ContextType>,
   Tweet?: TweetResolvers<ContextType>,
   TweetConnection?: TweetConnectionResolvers<ContextType>,
+  TweetContent?: TweetContentResolvers,
   TweetEdge?: TweetEdgeResolvers<ContextType>,
   TweetPreview?: TweetPreviewResolvers<ContextType>,
   UncancelTweetPayload?: UncancelTweetPayloadResolvers<ContextType>,
