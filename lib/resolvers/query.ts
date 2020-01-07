@@ -34,4 +34,8 @@ export const Query: QueryResolvers = {
   async microformats(_parent, { url }, { publish }) {
     return await publish.getMicroformats(url)
   },
+
+  async feedPreview(_parent, { url }, { feeds }) {
+    return await feeds.preview(url)
+  },
 }

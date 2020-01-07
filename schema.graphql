@@ -32,6 +32,8 @@ type Query {
   ): EventConnection!
 
   microformats(url: String!): MicroformatPage
+
+  feedPreview(url: String!): FeedPreview
 }
 
 type Mutation {
@@ -378,4 +380,19 @@ input SendTestNotificationInput {
 
 type SendTestNotificationPayload {
   placeholder: String
+}
+
+type FeedPreview {
+  url: String!
+  title: String!
+  homePageURL: String!
+
+  tweets: [TweetPreview!]!
+}
+
+type TweetPreview {
+  action: TweetAction!
+  body: String!
+  mediaURLs: [String!]!
+  retweetID: String!
 }

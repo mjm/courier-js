@@ -7,6 +7,7 @@ import {
   PostId,
   FeedSubscriptionId,
   SubscribedFeed,
+  PreviewTweet,
 } from "../data/types"
 import { ScrapedEntry } from "scrape-feed"
 import { countBy, zip } from "lodash"
@@ -60,6 +61,37 @@ class ImportService {
         await this.createSubscriptionTweets(feed, post)
       })
     )
+  }
+
+  generatePreviewTweets(entries: ScrapedEntry[]): PreviewTweet[] {
+    let results: PreviewTweet[] = []
+
+    for (const entry of entries.slice(0, 5)) {
+      const tweets = translate({
+        url: entry.url,
+        title: entry.title,
+        html: entry.htmlContent,
+      })
+
+      const previews: PreviewTweet[] = tweets.map(t =>
+        t.action === "tweet"
+          ? {
+              action: "tweet",
+              body: t.body,
+              mediaURLs: t.mediaURLs,
+              retweetID: "",
+            }
+          : {
+              action: "retweet",
+              body: "",
+              mediaURLs: [],
+              retweetID: t.tweetID,
+            }
+      )
+      results = [...results, ...previews]
+    }
+
+    return results
   }
 
   private async importPost(

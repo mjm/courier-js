@@ -4,6 +4,7 @@ import withSecurePage from "hocs/withSecurePage"
 import Head from "components/Head"
 import PreviewFeedForm from "components/PreviewFeedForm"
 import PreviewFeedResult from "components/PreviewFeedResult"
+import withData from "hocs/withData"
 
 const NewFeedPage: React.FC = () => {
   const [url, setURL] = React.useState("")
@@ -18,4 +19,4 @@ const NewFeedPage: React.FC = () => {
   )
 }
 
-export default withSecurePage(NewFeedPage)
+export default withData(withSecurePage(NewFeedPage))

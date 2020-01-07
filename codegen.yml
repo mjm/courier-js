@@ -30,5 +30,6 @@ generates:
         SubscribedFeedConnection: Pager<types.SubscribedFeed>
         Tweet: types.Tweet
         TweetConnection: Pager<types.Tweet>
+        TweetPreview: types.PreviewTweet
         User: types.UserInfo
         UserSubscription: Stripe.subscriptions.ISubscription

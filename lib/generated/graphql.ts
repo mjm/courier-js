@@ -162,6 +162,13 @@ export type FeedEdge = {
   node: Feed,
 };
 
+export type FeedPreview = {
+  url: Scalars['String'],
+  title: Scalars['String'],
+  homePageURL: Scalars['String'],
+  tweets: Array<TweetPreview>,
+};
+
 export type MicroformatPage = {
   authorizationEndpoint?: Maybe<Scalars['String']>,
   tokenEndpoint?: Maybe<Scalars['String']>,
@@ -299,6 +306,7 @@ export type Query = {
   tweet?: Maybe<Tweet>,
   allEvents: EventConnection,
   microformats?: Maybe<MicroformatPage>,
+  feedPreview?: Maybe<FeedPreview>,
 };
 
 
@@ -338,6 +346,11 @@ export type QueryAllEventsArgs = {
 
 
 export type QueryMicroformatsArgs = {
+  url: Scalars['String']
+};
+
+
+export type QueryFeedPreviewArgs = {
   url: Scalars['String']
 };
 
@@ -441,6 +454,13 @@ export enum TweetFilter {
   Upcoming = 'UPCOMING',
   Past = 'PAST'
 }
+
+export type TweetPreview = {
+  action: TweetAction,
+  body: Scalars['String'],
+  mediaURLs: Array<Scalars['String']>,
+  retweetID: Scalars['String'],
+};
 
 export enum TweetStatus {
   Draft = 'DRAFT',
@@ -578,6 +598,8 @@ export type ResolversTypes = {
   Event: types.Event,
   EventType: EventType,
   MicroformatPage: MicroformatDocument,
+  FeedPreview: Omit<FeedPreview, 'tweets'> & { tweets: Array<ResolversTypes['TweetPreview']> },
+  TweetPreview: types.PreviewTweet,
   Mutation: {},
   AddFeedInput: AddFeedInput,
   AddFeedPayload: Omit<AddFeedPayload, 'feed' | 'feedEdge'> & { feed: ResolversTypes['SubscribedFeed'], feedEdge: ResolversTypes['SubscribedFeedEdge'] },
@@ -705,6 +727,13 @@ export type FeedEdgeResolvers<ContextType = CourierContext, ParentType = Resolve
   node?: Resolver<ResolversTypes['Feed'], ParentType, ContextType>,
 };
 
+export type FeedPreviewResolvers<ContextType = CourierContext, ParentType = ResolversTypes['FeedPreview']> = {
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  homePageURL?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  tweets?: Resolver<Array<ResolversTypes['TweetPreview']>, ParentType, ContextType>,
+};
+
 export type MicroformatPageResolvers<ContextType = CourierContext, ParentType = ResolversTypes['MicroformatPage']> = {
   authorizationEndpoint?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
   tokenEndpoint?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
@@ -771,6 +800,7 @@ export type QueryResolvers<ContextType = CourierContext, ParentType = ResolversT
   tweet?: Resolver<Maybe<ResolversTypes['Tweet']>, ParentType, ContextType, QueryTweetArgs>,
   allEvents?: Resolver<ResolversTypes['EventConnection'], ParentType, ContextType, QueryAllEventsArgs>,
   microformats?: Resolver<Maybe<ResolversTypes['MicroformatPage']>, ParentType, ContextType, QueryMicroformatsArgs>,
+  feedPreview?: Resolver<Maybe<ResolversTypes['FeedPreview']>, ParentType, ContextType, QueryFeedPreviewArgs>,
 };
 
 export type RefreshFeedPayloadResolvers<ContextType = CourierContext, ParentType = ResolversTypes['RefreshFeedPayload']> = {
@@ -833,6 +863,13 @@ export type TweetEdgeResolvers<ContextType = CourierContext, ParentType = Resolv
   node?: Resolver<ResolversTypes['Tweet'], ParentType, ContextType>,
 };
 
+export type TweetPreviewResolvers<ContextType = CourierContext, ParentType = ResolversTypes['TweetPreview']> = {
+  action?: Resolver<ResolversTypes['TweetAction'], ParentType, ContextType>,
+  body?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  mediaURLs?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>,
+  retweetID?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
 export type UncancelTweetPayloadResolvers<ContextType = CourierContext, ParentType = ResolversTypes['UncancelTweetPayload']> = {
   tweet?: Resolver<ResolversTypes['Tweet'], ParentType, ContextType>,
 };
@@ -871,6 +908,7 @@ export type Resolvers<ContextType = CourierContext> = {
   Feed?: FeedResolvers<ContextType>,
   FeedConnection?: FeedConnectionResolvers<ContextType>,
   FeedEdge?: FeedEdgeResolvers<ContextType>,
+  FeedPreview?: FeedPreviewResolvers<ContextType>,
   MicroformatPage?: MicroformatPageResolvers<ContextType>,
   Mutation?: MutationResolvers<ContextType>,
   PageInfo?: PageInfoResolvers<ContextType>,
@@ -889,6 +927,7 @@ export type Resolvers<ContextType = CourierContext> = {
   Tweet?: TweetResolvers<ContextType>,
   TweetConnection?: TweetConnectionResolvers<ContextType>,
   TweetEdge?: TweetEdgeResolvers<ContextType>,
+  TweetPreview?: TweetPreviewResolvers<ContextType>,
   UncancelTweetPayload?: UncancelTweetPayloadResolvers<ContextType>,
   User?: UserResolvers<ContextType>,
   UserSubscription?: UserSubscriptionResolvers<ContextType>,
