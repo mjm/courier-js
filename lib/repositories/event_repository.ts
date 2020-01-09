@@ -1,13 +1,14 @@
 import { sql, DatabasePoolType } from "../db"
 import { injectable, inject } from "inversify"
-import { DB } from "../key"
+import * as keys from "../key"
 import * as table from "../data/dbTypes"
 import { Event, UserId, NewEventInput, PagingOptions } from "../data/types"
 import { Pager } from "../data/pager"
+import { QueryLoader, LoaderQueryFn } from "lib/data/loader"
 
 @injectable()
 class EventRepository {
-  constructor(@inject(DB) private db: DatabasePoolType) {}
+  constructor(@inject(keys.DB) private db: DatabasePoolType) {}
 
   paged(userId: UserId, options: PagingOptions): Pager<Event, table.events> {
     return new Pager<Event, table.events>({
@@ -55,6 +56,28 @@ class EventRepository {
       createdAt: row.created_at,
     }
   }
+}
+
+@injectable()
+export class EventLoader extends QueryLoader<Event, table.events> {
+  constructor(
+    @inject(keys.DB) db: DatabasePoolType,
+    @inject(keys.UserId) private getUserId: () => Promise<UserId>
+  ) {
+    super(db)
+  }
+
+  query: LoaderQueryFn<table.events> = async cond => {
+    try {
+      const userId = await this.getUserId()
+      return sql`SELECT * FROM events WHERE user_id = ${userId} AND ${cond(
+        "events"
+      )}`
+    } catch (_e) {
+      return sql`SELECT * FROM events WHERE ${cond("events")}`
+    }
+  }
+  fromRow = EventRepository.fromRow
 }
 
 export default EventRepository

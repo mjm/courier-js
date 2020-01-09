@@ -77,7 +77,7 @@ export type DeleteFeedPayload = {
   id: Scalars['ID'],
 };
 
-export type DeviceToken = {
+export type DeviceToken = Node & {
   id: Scalars['ID'],
   token: Scalars['String'],
 };
@@ -92,7 +92,7 @@ export type EditTweetPayload = {
   tweet: Tweet,
 };
 
-export type Event = {
+export type Event = Node & {
   id: Scalars['ID'],
   eventType: EventType,
   createdAt: Scalars['DateTime'],
@@ -130,7 +130,7 @@ export enum EventType {
   SubscriptionExpire = 'SUBSCRIPTION_EXPIRE'
 }
 
-export type Feed = {
+export type Feed = Node & {
   id: Scalars['ID'],
   url: Scalars['String'],
   title: Scalars['String'],
@@ -249,6 +249,10 @@ export type MutationSendTestNotificationArgs = {
   input: SendTestNotificationInput
 };
 
+export type Node = {
+  id: Scalars['ID'],
+};
+
 export enum NotificationEnvironment {
   Production = 'PRODUCTION',
   Sandbox = 'SANDBOX'
@@ -261,7 +265,7 @@ export type PageInfo = {
   hasPreviousPage: Scalars['Boolean'],
 };
 
-export type Post = {
+export type Post = Node & {
   id: Scalars['ID'],
   feed: Feed,
   itemId: Scalars['String'],
@@ -300,6 +304,7 @@ export type PostTweetPayload = {
 export type Query = {
   currentUser?: Maybe<User>,
   viewer?: Maybe<User>,
+  node?: Maybe<Node>,
   allSubscribedFeeds: SubscribedFeedConnection,
   subscribedFeed?: Maybe<SubscribedFeed>,
   allTweets: TweetConnection,
@@ -307,6 +312,11 @@ export type Query = {
   allEvents: EventConnection,
   microformats?: Maybe<MicroformatPage>,
   feedPreview?: Maybe<FeedPreview>,
+};
+
+
+export type QueryNodeArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -380,7 +390,7 @@ export type SetFeedOptionsPayload = {
   feed: SubscribedFeed,
 };
 
-export type SubscribedFeed = {
+export type SubscribedFeed = Node & {
   id: Scalars['ID'],
   feed: Feed,
   autopost: Scalars['Boolean'],
@@ -419,7 +429,7 @@ export enum TestNotificationType {
   Posted = 'POSTED'
 }
 
-export type Tweet = TweetContent & {
+export type Tweet = Node & TweetContent & {
   id: Scalars['ID'],
   feed: SubscribedFeed,
   post: Post,
@@ -588,9 +598,10 @@ export type ResolversTypes = {
   TweetConnection: Pager<types.Tweet>,
   TweetEdge: Omit<TweetEdge, 'node'> & { node: ResolversTypes['Tweet'] },
   Tweet: types.Tweet,
+  Node: Node,
+  ID: Scalars['ID'],
   TweetContent: TweetContent,
   TweetAction: TweetAction,
-  ID: Scalars['ID'],
   SubscribedFeed: types.SubscribedFeed,
   Feed: types.Feed,
   PostConnection: Pager<types.Post>,
@@ -762,6 +773,11 @@ export type MutationResolvers<ContextType = CourierContext, ParentType = Resolve
   sendTestNotification?: Resolver<ResolversTypes['SendTestNotificationPayload'], ParentType, ContextType, MutationSendTestNotificationArgs>,
 };
 
+export type NodeResolvers<ContextType = CourierContext, ParentType = ResolversTypes['Node']> = {
+  __resolveType: TypeResolveFn<'Tweet' | 'SubscribedFeed' | 'Feed' | 'Post' | 'Event' | 'DeviceToken', ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+};
+
 export type PageInfoResolvers<ContextType = CourierContext, ParentType = ResolversTypes['PageInfo']> = {
   startCursor?: Resolver<Maybe<ResolversTypes['Cursor']>, ParentType, ContextType>,
   endCursor?: Resolver<Maybe<ResolversTypes['Cursor']>, ParentType, ContextType>,
@@ -802,6 +818,7 @@ export type PostTweetPayloadResolvers<ContextType = CourierContext, ParentType =
 export type QueryResolvers<ContextType = CourierContext, ParentType = ResolversTypes['Query']> = {
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
   viewer?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
+  node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, QueryNodeArgs>,
   allSubscribedFeeds?: Resolver<ResolversTypes['SubscribedFeedConnection'], ParentType, ContextType, QueryAllSubscribedFeedsArgs>,
   subscribedFeed?: Resolver<Maybe<ResolversTypes['SubscribedFeed']>, ParentType, ContextType, QuerySubscribedFeedArgs>,
   allTweets?: Resolver<ResolversTypes['TweetConnection'], ParentType, ContextType, QueryAllTweetsArgs>,
@@ -927,6 +944,7 @@ export type Resolvers<ContextType = CourierContext> = {
   FeedPreview?: FeedPreviewResolvers<ContextType>,
   MicroformatPage?: MicroformatPageResolvers<ContextType>,
   Mutation?: MutationResolvers<ContextType>,
+  Node?: NodeResolvers,
   PageInfo?: PageInfoResolvers<ContextType>,
   Post?: PostResolvers<ContextType>,
   PostConnection?: PostConnectionResolvers<ContextType>,

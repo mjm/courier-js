@@ -10,6 +10,26 @@ export const Query: QueryResolvers = {
     return await user.getUserInfo()
   },
 
+  async node(_parent, { id }, { loaders, user }) {
+    await user.verify()
+
+    const [prefix, theId] = fromExternalId(id)
+    switch (prefix) {
+      case IdPrefix.Tweet:
+        return await loaders.tweets.load(theId)
+      case IdPrefix.Post:
+        return await loaders.posts.load(theId)
+      case IdPrefix.Feed:
+        return await loaders.feeds.load(theId)
+      case IdPrefix.FeedSubscription:
+        return await loaders.subscribedFeeds.load(theId)
+      case IdPrefix.Event:
+        return await loaders.events.load(theId)
+      case IdPrefix.DeviceToken:
+        return await loaders.deviceTokens.load(theId)
+    }
+  },
+
   async allSubscribedFeeds(_parent, args, { feeds }) {
     return await feeds.paged(args)
   },

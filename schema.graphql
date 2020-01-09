@@ -5,6 +5,8 @@ type Query {
   currentUser: User
   viewer: User
 
+  node(id: ID!): Node
+
   allSubscribedFeeds(
     first: Int
     last: Int
@@ -56,6 +58,10 @@ type Mutation {
   sendTestNotification(
     input: SendTestNotificationInput!
   ): SendTestNotificationPayload!
+}
+
+interface Node {
+  id: ID!
 }
 
 type PageInfo {
@@ -119,7 +125,7 @@ type FeedEdge {
   node: Feed!
 }
 
-type Feed {
+type Feed implements Node {
   id: ID!
   url: String!
   title: String!
@@ -178,7 +184,7 @@ type PostEdge {
   node: Post!
 }
 
-type Post {
+type Post implements Node {
   id: ID!
   feed: Feed!
   itemId: String!
@@ -192,7 +198,7 @@ type Post {
   updatedAt: DateTime!
 }
 
-type SubscribedFeed {
+type SubscribedFeed implements Node {
   id: ID!
   feed: Feed!
   autopost: Boolean!
@@ -210,7 +216,7 @@ type SubscribedFeedEdge {
   node: SubscribedFeed!
 }
 
-type Tweet implements TweetContent {
+type Tweet implements Node & TweetContent {
   id: ID!
   feed: SubscribedFeed!
   post: Post!
@@ -317,7 +323,7 @@ type EventEdge {
   node: Event!
 }
 
-type Event {
+type Event implements Node {
   id: ID!
   eventType: EventType!
   createdAt: DateTime!
@@ -349,7 +355,7 @@ type MicroformatPage {
   tokenEndpoint: String
 }
 
-type DeviceToken {
+type DeviceToken implements Node {
   id: ID!
   token: String!
 }
