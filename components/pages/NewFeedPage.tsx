@@ -16,8 +16,8 @@ const NewFeedPage: React.FC<Props> = ({ environment }) => {
   const [url, setURL] = React.useState("")
 
   async function watchFeed() {
-    const feedId = await addFeed(environment, url)
-    Router.push("/feeds/[id]", `/feeds/${feedId}`)
+    await addFeed(environment, url)
+    Router.push("/feeds")
   }
 
   return (

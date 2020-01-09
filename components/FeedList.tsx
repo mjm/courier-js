@@ -10,6 +10,10 @@ interface Props {
 }
 
 const FeedList: React.FC<Props> = ({ feeds }) => {
+  if (!feeds.allSubscribedFeeds) {
+    return null
+  }
+
   const { edges, totalCount } = feeds.allSubscribedFeeds
 
   return (
