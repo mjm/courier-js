@@ -1,10 +1,14 @@
 import { graphql, Environment } from "react-relay"
 import { ROOT_ID } from "relay-runtime"
 import { commitMutationAsync } from "./commitMutationAsync"
+import { AddFeedMutation } from "@generated/AddFeedMutation.graphql"
 
 const mutation = graphql`
   mutation AddFeedMutation($input: AddFeedInput!) {
     addFeed(input: $input) {
+      feed {
+        id
+      }
       feedEdge {
         node {
           ...FeedCard_feed
@@ -18,9 +22,9 @@ const mutation = graphql`
 export async function addFeed(
   environment: Environment,
   url: string
-): Promise<void> {
+): Promise<string> {
   const variables = { input: { url } }
-  await commitMutationAsync(environment, {
+  const result = await commitMutationAsync<AddFeedMutation>(environment, {
     mutation,
     variables,
     configs: [
@@ -37,4 +41,5 @@ export async function addFeed(
       },
     ],
   })
+  return result.addFeed.feed.id
 }

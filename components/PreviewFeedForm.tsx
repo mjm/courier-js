@@ -1,11 +1,13 @@
 import React from "react"
 import { Formik, Form, Field } from "formik"
+import AsyncButton from "components/AsyncButton"
 
 interface Props {
   url: string
   onChange: (url: string) => void
+  onWatch: () => Promise<void>
 }
-const PreviewFeedForm: React.FC<Props> = ({ url, onChange }) => {
+const PreviewFeedForm: React.FC<Props> = ({ url, onChange, onWatch }) => {
   return (
     <Formik
       initialValues={{ url }}
@@ -26,13 +28,23 @@ const PreviewFeedForm: React.FC<Props> = ({ url, onChange }) => {
               placeholder="https://example.org"
               className="bg-transparent text-xl text-neutral-10 w-full p-3 focus:outline-none"
             />
-            <button
-              type="submit"
-              disabled={values.url === "" || isSubmitting}
-              className="btn btn-first btn-first-primary flex-shrink-0 m-2 outline-none"
-            >
-              Preview
-            </button>
+            {values.url !== "" && url === values.url ? (
+              <AsyncButton
+                type="button"
+                className="btn btn-first btn-first-secondary flex-shrink-0 m-2 outline-none"
+                onClick={async () => await onWatch()}
+              >
+                Watch
+              </AsyncButton>
+            ) : (
+              <button
+                type="submit"
+                disabled={values.url === "" || isSubmitting}
+                className="btn btn-first btn-first-primary flex-shrink-0 m-2 outline-none"
+              >
+                Preview
+              </button>
+            )}
           </div>
         </Form>
       )}

@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 4aad55528555dcc299180848d8e9372b */
+/* @relayHash 68b29a2c9dd3bcafdfebc2e371549adc */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -11,6 +11,9 @@ export type AddFeedMutationVariables = {
 };
 export type AddFeedMutationResponse = {
     readonly addFeed: {
+        readonly feed: {
+            readonly id: string;
+        };
         readonly feedEdge: {
             readonly node: {
                 readonly " $fragmentRefs": FragmentRefs<"FeedCard_feed">;
@@ -31,6 +34,9 @@ mutation AddFeedMutation(
   $input: AddFeedInput!
 ) {
   addFeed(input: $input) {
+    feed {
+      id
+    }
     feedEdge {
       node {
         ...FeedCard_feed
@@ -74,14 +80,26 @@ v1 = [
 v2 = {
   "kind": "ScalarField",
   "alias": null,
-  "name": "cursor",
+  "name": "id",
   "args": null,
   "storageKey": null
 },
 v3 = {
+  "kind": "LinkedField",
+  "alias": null,
+  "name": "feed",
+  "storageKey": null,
+  "args": null,
+  "concreteType": "SubscribedFeed",
+  "plural": false,
+  "selections": [
+    (v2/*: any*/)
+  ]
+},
+v4 = {
   "kind": "ScalarField",
   "alias": null,
-  "name": "id",
+  "name": "cursor",
   "args": null,
   "storageKey": null
 };
@@ -103,6 +121,7 @@ return {
         "concreteType": "AddFeedPayload",
         "plural": false,
         "selections": [
+          (v3/*: any*/),
           {
             "kind": "LinkedField",
             "alias": null,
@@ -128,7 +147,7 @@ return {
                   }
                 ]
               },
-              (v2/*: any*/)
+              (v4/*: any*/)
             ]
           }
         ]
@@ -149,6 +168,7 @@ return {
         "concreteType": "AddFeedPayload",
         "plural": false,
         "selections": [
+          (v3/*: any*/),
           {
             "kind": "LinkedField",
             "alias": null,
@@ -167,7 +187,7 @@ return {
                 "concreteType": "SubscribedFeed",
                 "plural": false,
                 "selections": [
-                  (v3/*: any*/),
+                  (v2/*: any*/),
                   {
                     "kind": "LinkedField",
                     "alias": null,
@@ -177,7 +197,7 @@ return {
                     "concreteType": "Feed",
                     "plural": false,
                     "selections": [
-                      (v3/*: any*/),
+                      (v2/*: any*/),
                       {
                         "kind": "ScalarField",
                         "alias": null,
@@ -224,7 +244,7 @@ return {
                   }
                 ]
               },
-              (v2/*: any*/)
+              (v4/*: any*/)
             ]
           }
         ]
@@ -235,10 +255,10 @@ return {
     "operationKind": "mutation",
     "name": "AddFeedMutation",
     "id": null,
-    "text": "mutation AddFeedMutation(\n  $input: AddFeedInput!\n) {\n  addFeed(input: $input) {\n    feedEdge {\n      node {\n        ...FeedCard_feed\n        id\n      }\n      cursor\n    }\n  }\n}\n\nfragment FeedCard_feed on SubscribedFeed {\n  id\n  feed {\n    id\n    url\n    title\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n",
+    "text": "mutation AddFeedMutation(\n  $input: AddFeedInput!\n) {\n  addFeed(input: $input) {\n    feed {\n      id\n    }\n    feedEdge {\n      node {\n        ...FeedCard_feed\n        id\n      }\n      cursor\n    }\n  }\n}\n\nfragment FeedCard_feed on SubscribedFeed {\n  id\n  feed {\n    id\n    url\n    title\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = 'a611ebbe38b6cfca200cc4fd0688c655';
+(node as any).hash = 'c1d6293c5de37bf3c544230b8dd2d1af';
 export default node;

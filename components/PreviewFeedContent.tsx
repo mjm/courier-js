@@ -2,11 +2,13 @@ import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
 import { PreviewFeedContent_feed } from "@generated/PreviewFeedContent_feed.graphql"
 import TweetCard from "components/TweetCard"
+import AsyncButton from "components/AsyncButton"
 
 interface Props {
   feed: PreviewFeedContent_feed
+  onWatch: () => Promise<void>
 }
-const PreviewFeedContent: React.FC<Props> = ({ feed }) => {
+const PreviewFeedContent: React.FC<Props> = ({ feed, onWatch }) => {
   return (
     <article className="my-8">
       <div className="mb-8">
@@ -25,6 +27,15 @@ const PreviewFeedContent: React.FC<Props> = ({ feed }) => {
             <TweetCard tweet={tweet} />
           </div>
         ))}
+      </div>
+      <div className="mt-6 flex justify-end">
+        <AsyncButton
+          type="button"
+          className="btn btn-first btn-first-secondary"
+          onClick={async () => await onWatch()}
+        >
+          Watch feed
+        </AsyncButton>
       </div>
     </article>
   )

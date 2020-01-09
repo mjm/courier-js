@@ -7,8 +7,9 @@ import PreviewFeedContent from "components/PreviewFeedContent"
 
 interface Props {
   url: string
+  onWatch: () => Promise<void>
 }
-const PreviewFeedResult: React.FC<Props> = ({ url }) => {
+const PreviewFeedResult: React.FC<Props> = ({ url, onWatch }) => {
   const relayContext = React.useContext(ReactRelayContext)
   if (!relayContext) {
     return null
@@ -38,7 +39,7 @@ const PreviewFeedResult: React.FC<Props> = ({ url }) => {
           return <Loading />
         }
 
-        return <PreviewFeedContent feed={props.feedPreview} />
+        return <PreviewFeedContent feed={props.feedPreview} onWatch={onWatch} />
       }}
     />
   )
