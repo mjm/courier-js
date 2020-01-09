@@ -1,4 +1,5 @@
 import { QueryResolvers } from "../generated/graphql"
+import { fromExternalId, IdPrefix } from "lib/data/id"
 
 export const Query: QueryResolvers = {
   async currentUser(_parent, _args, { user }) {
@@ -15,7 +16,9 @@ export const Query: QueryResolvers = {
 
   async subscribedFeed(_parent, { id }, { loaders, user }) {
     await user.verify()
-    return await loaders.subscribedFeeds.load(id)
+    return await loaders.subscribedFeeds.load(
+      fromExternalId(id, IdPrefix.FeedSubscription)
+    )
   },
 
   async allTweets(_parent, args, { tweets }) {
@@ -24,7 +27,7 @@ export const Query: QueryResolvers = {
 
   async tweet(_parent, { id }, { loaders, user }) {
     await user.verify()
-    return await loaders.tweets.load(id)
+    return await loaders.tweets.load(fromExternalId(id, IdPrefix.Tweet))
   },
 
   async allEvents(_parent, args, { events }) {

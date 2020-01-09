@@ -4,6 +4,7 @@ import {
   EnumMap,
 } from "../generated/graphql"
 import { EventType as EventTypeRepo } from "../data/types"
+import { toExternalId, IdPrefix } from "lib/data/id"
 
 export const EventType: EnumMap<EventTypeGQL, EventTypeRepo> = {
   FEED_REFRESH: "feed_refresh",
@@ -23,6 +24,10 @@ export const EventType: EnumMap<EventTypeGQL, EventTypeRepo> = {
 }
 
 export const Event: EventResolvers = {
+  id({ id }) {
+    return toExternalId(IdPrefix.Event, id)
+  },
+
   async feed(event, {}, { loaders }) {
     const params = event.parameters as any
     if (params.feedId) {
