@@ -25,7 +25,7 @@ const FeedDetails: React.FC<Props> = ({ feed, user }) => {
       <PageHeader mb={4}>{feed.feed.title}</PageHeader>
       <FlushContainer>
         <Group direction="column" spacing={3}>
-          <ErrorBox width={undefined} />
+          <ErrorBox />
           <FeedInfoCard feed={feed.feed} user={user} />
           <FeedRecentPostList feed={feed.feed} />
           <FeedAutopostCard feed={feed} />

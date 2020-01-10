@@ -91,7 +91,7 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({ id, environment }) => {
                 leastDestructiveRef={buttonRef}
                 onDismiss={closeDialog}
               >
-                <ErrorBox mb={3} />
+                <ErrorBox className="mb-4" />
 
                 <AlertDialogLabel>Are you sure?</AlertDialogLabel>
 
