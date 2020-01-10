@@ -25,7 +25,9 @@ const NewFeedPage: React.FC<Props> = ({ environment }) => {
       <Head title="Watch New Feed" />
 
       <PreviewFeedForm url={url} onChange={setURL} onWatch={watchFeed} />
-      <PreviewFeedResult url={url} onWatch={watchFeed} />
+      <div className="mt-4">
+        <PreviewFeedResult url={url} onWatch={watchFeed} />
+      </div>
     </main>
   )
 }

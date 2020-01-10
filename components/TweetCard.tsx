@@ -19,7 +19,7 @@ const TweetCard = ({ tweet }: Props) => {
 
   return (
     <ErrorContainer>
-      <ErrorBox width={undefined} />
+      <ErrorBox />
       <article
         className={`bg-white rounded-lg shadow-md relative text-neutral-8 leading-normal pt-4 ${statusClass}`}
       >

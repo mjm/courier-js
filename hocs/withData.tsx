@@ -107,7 +107,11 @@ function makeFetchQuery(ctx?: NextPageContext): FetchFunction {
         variables,
       }),
     })
-    return await response.json()
+    const json = await response.json()
+    if (json && json.errors) {
+      return { ...json, data: null }
+    }
+    return json
   }
 }
 

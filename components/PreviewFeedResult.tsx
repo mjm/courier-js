@@ -32,7 +32,12 @@ const PreviewFeedResult: React.FC<Props> = ({ url, onWatch }) => {
       variables={{ url }}
       render={({ error, props }) => {
         if (error) {
-          return <ErrorBox error={error} />
+          return (
+            <ErrorBox
+              title="There was an issue previewing the feed"
+              error={error}
+            />
+          )
         }
 
         if (!props || !props.feedPreview) {
