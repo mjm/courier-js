@@ -28,8 +28,9 @@ export const Mutation: MutationResolvers = {
   },
 
   async deleteFeed(_, { input }, { feeds }) {
-    await feeds.unsubscribe(input.id)
-    return { id: input.id }
+    const id = fromExternalId(input.id, IdPrefix.FeedSubscription)
+    await feeds.unsubscribe(id)
+    return { id }
   },
 
   async cancelTweet(_, { input }, { tweets }) {

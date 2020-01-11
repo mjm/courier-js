@@ -4,6 +4,8 @@
 
 @import "tailwindcss/components";
 @import "./Button.css";
+@import "@reach/dialog/styles.css";
+@import "./Dialog.css";
 
 @import "tailwindcss/utilities";
 

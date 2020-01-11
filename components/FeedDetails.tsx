@@ -6,6 +6,7 @@ import { ErrorBox } from "components/ErrorBox"
 import { FeedDetails_user } from "@generated/FeedDetails_user.graphql"
 import FeedInfoCard from "components/FeedInfoCard"
 import FeedRecentPostList from "components/FeedRecentPostList"
+import FeedRemoveButton from "components/FeedRemoveButton"
 
 interface Props {
   feed: FeedDetails_feed
@@ -28,6 +29,7 @@ const FeedDetails: React.FC<Props> = ({ feed, user }) => {
       <div className="w-full flex">
         <div className="w-64 flex-shrink-0 mr-6">
           <FeedInfoCard feed={feed} user={user} />
+          <FeedRemoveButton feed={feed} />
         </div>
         <div className="flex-grow">
           <ErrorBox className="mb-4" />
@@ -48,7 +50,7 @@ export default createFragmentContainer(FeedDetails, {
         ...FeedRecentPostList_feed
       }
       ...FeedInfoCard_feed
-      ...FeedRemoveCard_feed
+      ...FeedRemoveButton_feed
     }
   `,
   user: graphql`
