@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash fc606cd72b34156dbd1e88b15ba2cfdb */
+/* @relayHash f5669e1d65661eeae6fd1934697c2c92 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -57,6 +57,7 @@ fragment FeedDetails_user on User {
 }
 
 fragment FeedInfoCard_feed on SubscribedFeed {
+  id
   feed {
     id
     url
@@ -366,7 +367,7 @@ return {
     "operationKind": "query",
     "name": "FeedDetailsPageQuery",
     "id": null,
-    "text": "query FeedDetailsPageQuery(\n  $id: ID!\n) {\n  subscribedFeed(id: $id) {\n    ...FeedDetails_feed\n    id\n  }\n  currentUser {\n    ...FeedDetails_user\n  }\n}\n\nfragment FeedAutopostCard_feed on SubscribedFeed {\n  id\n  autopost\n}\n\nfragment FeedDetails_feed on SubscribedFeed {\n  id\n  feed {\n    title\n    url\n    ...FeedRecentPostList_feed\n    id\n  }\n  ...FeedInfoCard_feed\n  ...FeedAutopostCard_feed\n  ...FeedRemoveCard_feed\n}\n\nfragment FeedDetails_user on User {\n  ...FeedInfoCard_user\n}\n\nfragment FeedInfoCard_feed on SubscribedFeed {\n  feed {\n    id\n    url\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n\nfragment FeedInfoCard_user on User {\n  micropubSites\n}\n\nfragment FeedRecentPostList_feed on Feed {\n  id\n  refreshedAt\n  posts(first: 5) {\n    edges {\n      node {\n        id\n        url\n        title\n        htmlContent\n        publishedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment FeedRemoveCard_feed on SubscribedFeed {\n  id\n}\n",
+    "text": "query FeedDetailsPageQuery(\n  $id: ID!\n) {\n  subscribedFeed(id: $id) {\n    ...FeedDetails_feed\n    id\n  }\n  currentUser {\n    ...FeedDetails_user\n  }\n}\n\nfragment FeedAutopostCard_feed on SubscribedFeed {\n  id\n  autopost\n}\n\nfragment FeedDetails_feed on SubscribedFeed {\n  id\n  feed {\n    title\n    url\n    ...FeedRecentPostList_feed\n    id\n  }\n  ...FeedInfoCard_feed\n  ...FeedAutopostCard_feed\n  ...FeedRemoveCard_feed\n}\n\nfragment FeedDetails_user on User {\n  ...FeedInfoCard_user\n}\n\nfragment FeedInfoCard_feed on SubscribedFeed {\n  id\n  feed {\n    id\n    url\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n\nfragment FeedInfoCard_user on User {\n  micropubSites\n}\n\nfragment FeedRecentPostList_feed on Feed {\n  id\n  refreshedAt\n  posts(first: 5) {\n    edges {\n      node {\n        id\n        url\n        title\n        htmlContent\n        publishedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment FeedRemoveCard_feed on SubscribedFeed {\n  id\n}\n",
     "metadata": {}
   }
 };

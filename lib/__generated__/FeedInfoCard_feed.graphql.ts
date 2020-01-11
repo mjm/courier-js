@@ -3,6 +3,7 @@
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type FeedInfoCard_feed = {
+    readonly id: string;
     readonly feed: {
         readonly id: string;
         readonly url: string;
@@ -21,13 +22,22 @@ export type FeedInfoCard_feed$key = {
 
 
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "kind": "ScalarField",
+  "alias": null,
+  "name": "id",
+  "args": null,
+  "storageKey": null
+};
+return {
   "kind": "Fragment",
   "name": "FeedInfoCard_feed",
   "type": "SubscribedFeed",
   "metadata": null,
   "argumentDefinitions": [],
   "selections": [
+    (v0/*: any*/),
     {
       "kind": "LinkedField",
       "alias": null,
@@ -37,13 +47,7 @@ const node: ReaderFragment = {
       "concreteType": "Feed",
       "plural": false,
       "selections": [
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "id",
-          "args": null,
-          "storageKey": null
-        },
+        (v0/*: any*/),
         {
           "kind": "ScalarField",
           "alias": null,
@@ -83,5 +87,6 @@ const node: ReaderFragment = {
     }
   ]
 };
-(node as any).hash = '707e006720ebc8c4b4e733ac302b4d32';
+})();
+(node as any).hash = '071c96fd47c417942a2c25fd2f9dbc3a';
 export default node;

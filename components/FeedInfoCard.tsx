@@ -1,4 +1,3 @@
-import { faClone } from "@fortawesome/free-solid-svg-icons"
 import {
   createFragmentContainer,
   graphql,
@@ -10,11 +9,11 @@ import { FeedInfoCard_feed } from "@generated/FeedInfoCard_feed.graphql"
 import { FeedInfoCard_user } from "@generated/FeedInfoCard_user.graphql"
 import { FeedInfoCardEndpointsQuery } from "@generated/FeedInfoCardEndpointsQuery.graphql"
 import { beginIndieAuth } from "utils/indieauth"
-import { Button } from "./Button"
 import AsyncButton from "components/AsyncButton"
 import Moment from "react-moment"
 import { refreshFeed } from "@mutations/RefreshFeed"
 import { useErrors } from "components/ErrorContainer"
+import { setFeedOptions } from "@mutations/SetFeedOptions"
 
 interface Props {
   feed: FeedInfoCard_feed
@@ -27,63 +26,11 @@ const FeedInfoCard: React.FC<Props> = ({
   user,
   relay: { environment },
 }) => {
-  const { setError, clearErrors } = useErrors()
-  const isMicropubAuthenticated = user.micropubSites.includes(
-    feed.feed.homePageURL.replace(/\./g, "-")
-  )
-
   return (
     <div className="rounded-lg shadow-md bg-neutral-1 p-4">
-      <InfoSection
-        label={
-          <>
-            Checked{" "}
-            <span className="font-medium text-primary-9">
-              <Moment fromNow>{feed.feed.refreshedAt}</Moment>
-            </span>
-          </>
-        }
-        buttonLabel="Check now"
-        onClick={async () => {
-          try {
-            await refreshFeed(environment, feed.feed.id)
-            clearErrors()
-          } catch (e) {
-            setError(e)
-          }
-        }}
-      />
-      <InfoSection
-        className="mt-4"
-        label={
-          <>
-            Posting{" "}
-            <span className="font-medium text-primary-9">
-              {feed.autopost ? "every 5 minutes" : "manually"}
-            </span>
-          </>
-        }
-        buttonLabel={feed.autopost ? "Stop autoposting" : "Start autoposting"}
-        onClick={async () => {}}
-      />
-      {feed.feed.micropubEndpoint ? (
-        <InfoSection
-          className="mt-4"
-          label={
-            isMicropubAuthenticated ? (
-              <>Syndicating with Micropub</>
-            ) : (
-              <>Not syncidating with Micropub</>
-            )
-          }
-          buttonLabel={
-            isMicropubAuthenticated
-              ? "Update syndication"
-              : "Set up syndication"
-          }
-          onClick={async () => {}}
-        />
-      ) : null}
+      <LastCheckedSection feed={feed.feed} environment={environment} />
+      <AutopostSection feed={feed} environment={environment} />
+      <MicropubSection feed={feed.feed} user={user} environment={environment} />
     </div>
   )
 }
@@ -91,6 +38,7 @@ const FeedInfoCard: React.FC<Props> = ({
 export default createFragmentContainer(FeedInfoCard, {
   feed: graphql`
     fragment FeedInfoCard_feed on SubscribedFeed {
+      id
       feed {
         id
         url
@@ -108,19 +56,12 @@ export default createFragmentContainer(FeedInfoCard, {
   `,
 })
 
-interface InfoSectionProps {
+const InfoSection: React.FC<{
   className?: string
   label: React.ReactNode
   buttonLabel: string
   onClick: () => Promise<void>
-}
-
-const InfoSection: React.FC<InfoSectionProps> = ({
-  className,
-  label,
-  buttonLabel,
-  onClick,
-}) => {
+}> = ({ className, label, buttonLabel, onClick }) => {
   return (
     <div className={`${className || ""}`}>
       <div className="text-neutral-7 text-sm mb-2">{label}</div>
@@ -135,9 +76,70 @@ const InfoSection: React.FC<InfoSectionProps> = ({
   )
 }
 
-interface MicropubAuthButtonProps {
+const LastCheckedSection: React.FC<{
+  feed: FeedInfoCard_feed["feed"]
   environment: Environment
-  homePageURL: string
+}> = ({ feed, environment }) => {
+  const { setError, clearErrors } = useErrors()
+
+  async function onClick() {
+    try {
+      await refreshFeed(environment, feed.id)
+      clearErrors()
+    } catch (e) {
+      setError(e)
+    }
+  }
+
+  return (
+    <InfoSection
+      label={
+        <>
+          Checked{" "}
+          <span className="font-medium text-primary-9">
+            <Moment fromNow>{feed.refreshedAt}</Moment>
+          </span>
+        </>
+      }
+      buttonLabel="Check now"
+      onClick={onClick}
+    />
+  )
+}
+
+const AutopostSection: React.FC<{
+  feed: FeedInfoCard_feed
+  environment: Environment
+}> = ({ feed, environment }) => {
+  const { setError, clearErrors } = useErrors()
+
+  async function onClick() {
+    try {
+      await setFeedOptions(environment, {
+        id: feed.id,
+        autopost: !feed.autopost,
+      })
+      clearErrors()
+    } catch (err) {
+      setError(err)
+    }
+  }
+
+  return (
+    <InfoSection
+      className="mt-4"
+      label={
+        <>
+          Posting{" "}
+          <span className="font-medium text-primary-9">
+            {feed.autopost ? "every 5 minutes" : "manually"}
+          </span>
+        </>
+      }
+      buttonLabel={feed.autopost ? "Stop autoposting" : "Start autoposting"}
+      onClick={onClick}
+    />
+  )
 }
 
 const micropubQuery = graphql`
@@ -149,12 +151,21 @@ const micropubQuery = graphql`
   }
 `
 
-export const MicropubAuthButton: React.FC<MicropubAuthButtonProps> = ({
-  environment,
-  homePageURL,
-}) => {
+export const MicropubSection: React.FC<{
+  feed: FeedInfoCard_feed["feed"]
+  user: FeedInfoCard_user
+  environment: Environment
+}> = ({ feed, user, environment }) => {
+  if (!feed.micropubEndpoint) {
+    return null
+  }
+
+  const isMicropubAuthenticated = user.micropubSites.includes(
+    feed.homePageURL.replace(/\./g, "-")
+  )
+
   async function onClick() {
-    const variables = { url: homePageURL }
+    const variables = { url: feed.homePageURL }
     const { microformats } = await fetchQuery<FeedInfoCardEndpointsQuery>(
       environment,
       micropubQuery,
@@ -171,15 +182,26 @@ export const MicropubAuthButton: React.FC<MicropubAuthButtonProps> = ({
         endpoint: authorizationEndpoint,
         tokenEndpoint,
         redirectURI: "api/syndication-callback",
-        me: homePageURL,
+        me: feed.homePageURL,
         scopes: "update",
       })
     }
   }
 
   return (
-    <Button icon={faClone} mt={3} onClickAsync={onClick}>
-      Set Up Syndication
-    </Button>
+    <InfoSection
+      className="mt-4"
+      label={
+        isMicropubAuthenticated ? (
+          <>Syndicating with Micropub</>
+        ) : (
+          <>Not syncidating with Micropub</>
+        )
+      }
+      buttonLabel={
+        isMicropubAuthenticated ? "Update syndication" : "Set up syndication"
+      }
+      onClick={onClick}
+    />
   )
 }

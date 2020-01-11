@@ -19,7 +19,12 @@ export const Mutation: MutationResolvers = {
 
   async setFeedOptions(_, { input }, { feeds }) {
     const { id, ...options } = input
-    return { feed: await feeds.updateOptions(id, options) }
+    return {
+      feed: await feeds.updateOptions(
+        fromExternalId(id, IdPrefix.FeedSubscription),
+        options
+      ),
+    }
   },
 
   async deleteFeed(_, { input }, { feeds }) {
