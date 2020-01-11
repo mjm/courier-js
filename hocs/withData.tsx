@@ -15,6 +15,7 @@ import fetch from "isomorphic-unfetch"
 import { IncomingMessage } from "http"
 import { NextPageContext, NextPage } from "next"
 import { getToken } from "../utils/auth0"
+import Router from "next/router"
 
 let relayEnvironment: Environment | null = null
 
@@ -66,15 +67,34 @@ function withData<
         variables = options.getVariables(composedInitialProps)
       }
 
-      queryProps = await fetchQuery<Operation>(
-        environment,
-        options.query,
-        variables
-      )
-      queryRecords = environment
-        .getStore()
-        .getSource()
-        .toJSON()
+      try {
+        queryProps = await fetchQuery<Operation>(
+          environment,
+          options.query,
+          variables
+        )
+        queryRecords = environment
+          .getStore()
+          .getSource()
+          .toJSON()
+      } catch (err) {
+        if (err.name === "RelayNetwork") {
+          const inner = err.source.errors[0]
+          if (
+            inner &&
+            inner.extensions &&
+            inner.extensions.code === "UNAUTHENTICATED"
+          ) {
+            // redirect auth errors to the login page
+            if (ctx.res) {
+              ctx.res.writeHead(302, { Location: "/login" })
+              ctx.res.end()
+            } else {
+              Router.push("/login")
+            }
+          }
+        }
+      }
     }
 
     return {
