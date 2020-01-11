@@ -28,9 +28,15 @@ const FeedInfoCard: React.FC<Props> = ({
 }) => {
   return (
     <div className="rounded-lg shadow-md bg-neutral-1 p-4">
-      <LastCheckedSection feed={feed.feed} environment={environment} />
-      <AutopostSection feed={feed} environment={environment} />
-      <MicropubSection feed={feed.feed} user={user} environment={environment} />
+      <div className="flex flex-wrap -mx-4 -mb-4">
+        <LastCheckedSection feed={feed.feed} environment={environment} />
+        <AutopostSection feed={feed} environment={environment} />
+        <MicropubSection
+          feed={feed.feed}
+          user={user}
+          environment={environment}
+        />
+      </div>
     </div>
   )
 }
@@ -63,7 +69,7 @@ const InfoSection: React.FC<{
   onClick: () => Promise<void>
 }> = ({ className, label, buttonLabel, onClick }) => {
   return (
-    <div className={`${className || ""}`}>
+    <div className={`w-1/2 md:w-full px-4 mb-4 ${className || ""}`}>
       <div className="text-neutral-7 text-sm mb-2">{label}</div>
       <AsyncButton
         className="w-full btn btn-second border-neutral-4 text-neutral-8 font-medium"
@@ -127,7 +133,6 @@ const AutopostSection: React.FC<{
 
   return (
     <InfoSection
-      className="mt-4"
       label={
         <>
           Posting{" "}
@@ -190,7 +195,6 @@ export const MicropubSection: React.FC<{
 
   return (
     <InfoSection
-      className="mt-4"
       label={
         isMicropubAuthenticated ? (
           <>Syndicating with Micropub</>
