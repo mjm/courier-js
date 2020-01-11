@@ -48,7 +48,6 @@ export default createFragmentContainer(FeedDetails, {
         ...FeedRecentPostList_feed
       }
       ...FeedInfoCard_feed
-      ...FeedAutopostCard_feed
       ...FeedRemoveCard_feed
     }
   `,

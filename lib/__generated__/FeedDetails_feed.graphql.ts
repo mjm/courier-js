@@ -9,7 +9,7 @@ export type FeedDetails_feed = {
         readonly url: string;
         readonly " $fragmentRefs": FragmentRefs<"FeedRecentPostList_feed">;
     };
-    readonly " $fragmentRefs": FragmentRefs<"FeedInfoCard_feed" | "FeedAutopostCard_feed" | "FeedRemoveCard_feed">;
+    readonly " $fragmentRefs": FragmentRefs<"FeedInfoCard_feed" | "FeedRemoveCard_feed">;
     readonly " $refType": "FeedDetails_feed";
 };
 export type FeedDetails_feed$data = FeedDetails_feed;
@@ -71,15 +71,10 @@ const node: ReaderFragment = {
     },
     {
       "kind": "FragmentSpread",
-      "name": "FeedAutopostCard_feed",
-      "args": null
-    },
-    {
-      "kind": "FragmentSpread",
       "name": "FeedRemoveCard_feed",
       "args": null
     }
   ]
 };
-(node as any).hash = '2a82466b378c4cb40a7a4c7e9e04959a';
+(node as any).hash = '3dfe79cf14cc73cf8b393c29d82ea14b';
 export default node;
