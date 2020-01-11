@@ -6,9 +6,10 @@ export type FeedDetails_feed = {
     readonly id: string;
     readonly feed: {
         readonly title: string;
-        readonly " $fragmentRefs": FragmentRefs<"FeedInfoCard_feed" | "FeedRecentPostList_feed">;
+        readonly url: string;
+        readonly " $fragmentRefs": FragmentRefs<"FeedRecentPostList_feed">;
     };
-    readonly " $fragmentRefs": FragmentRefs<"FeedAutopostCard_feed" | "FeedRemoveCard_feed">;
+    readonly " $fragmentRefs": FragmentRefs<"FeedInfoCard_feed" | "FeedAutopostCard_feed" | "FeedRemoveCard_feed">;
     readonly " $refType": "FeedDetails_feed";
 };
 export type FeedDetails_feed$data = FeedDetails_feed;
@@ -50,9 +51,11 @@ const node: ReaderFragment = {
           "storageKey": null
         },
         {
-          "kind": "FragmentSpread",
-          "name": "FeedInfoCard_feed",
-          "args": null
+          "kind": "ScalarField",
+          "alias": null,
+          "name": "url",
+          "args": null,
+          "storageKey": null
         },
         {
           "kind": "FragmentSpread",
@@ -60,6 +63,11 @@ const node: ReaderFragment = {
           "args": null
         }
       ]
+    },
+    {
+      "kind": "FragmentSpread",
+      "name": "FeedInfoCard_feed",
+      "args": null
     },
     {
       "kind": "FragmentSpread",
@@ -73,5 +81,5 @@ const node: ReaderFragment = {
     }
   ]
 };
-(node as any).hash = '8c490d37ae428b453973f98563dae41d';
+(node as any).hash = '2a82466b378c4cb40a7a4c7e9e04959a';
 export default node;

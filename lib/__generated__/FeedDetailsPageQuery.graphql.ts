@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash e35bb4bb9805773aaaa0f92a4776fe36 */
+/* @relayHash fc606cd72b34156dbd1e88b15ba2cfdb */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -43,10 +43,11 @@ fragment FeedDetails_feed on SubscribedFeed {
   id
   feed {
     title
-    ...FeedInfoCard_feed
+    url
     ...FeedRecentPostList_feed
     id
   }
+  ...FeedInfoCard_feed
   ...FeedAutopostCard_feed
   ...FeedRemoveCard_feed
 }
@@ -55,10 +56,15 @@ fragment FeedDetails_user on User {
   ...FeedInfoCard_user
 }
 
-fragment FeedInfoCard_feed on Feed {
-  url
-  homePageURL
-  micropubEndpoint
+fragment FeedInfoCard_feed on SubscribedFeed {
+  feed {
+    id
+    url
+    homePageURL
+    micropubEndpoint
+    refreshedAt
+  }
+  autopost
 }
 
 fragment FeedInfoCard_user on User {
@@ -205,20 +211,6 @@ return {
             "selections": [
               (v3/*: any*/),
               (v4/*: any*/),
-              {
-                "kind": "ScalarField",
-                "alias": null,
-                "name": "homePageURL",
-                "args": null,
-                "storageKey": null
-              },
-              {
-                "kind": "ScalarField",
-                "alias": null,
-                "name": "micropubEndpoint",
-                "args": null,
-                "storageKey": null
-              },
               (v2/*: any*/),
               {
                 "kind": "ScalarField",
@@ -324,6 +316,20 @@ return {
                 "handle": "connection",
                 "key": "FeedRecentPostList_posts",
                 "filters": null
+              },
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "homePageURL",
+                "args": null,
+                "storageKey": null
+              },
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "micropubEndpoint",
+                "args": null,
+                "storageKey": null
               }
             ]
           },
@@ -360,7 +366,7 @@ return {
     "operationKind": "query",
     "name": "FeedDetailsPageQuery",
     "id": null,
-    "text": "query FeedDetailsPageQuery(\n  $id: ID!\n) {\n  subscribedFeed(id: $id) {\n    ...FeedDetails_feed\n    id\n  }\n  currentUser {\n    ...FeedDetails_user\n  }\n}\n\nfragment FeedAutopostCard_feed on SubscribedFeed {\n  id\n  autopost\n}\n\nfragment FeedDetails_feed on SubscribedFeed {\n  id\n  feed {\n    title\n    ...FeedInfoCard_feed\n    ...FeedRecentPostList_feed\n    id\n  }\n  ...FeedAutopostCard_feed\n  ...FeedRemoveCard_feed\n}\n\nfragment FeedDetails_user on User {\n  ...FeedInfoCard_user\n}\n\nfragment FeedInfoCard_feed on Feed {\n  url\n  homePageURL\n  micropubEndpoint\n}\n\nfragment FeedInfoCard_user on User {\n  micropubSites\n}\n\nfragment FeedRecentPostList_feed on Feed {\n  id\n  refreshedAt\n  posts(first: 5) {\n    edges {\n      node {\n        id\n        url\n        title\n        htmlContent\n        publishedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment FeedRemoveCard_feed on SubscribedFeed {\n  id\n}\n",
+    "text": "query FeedDetailsPageQuery(\n  $id: ID!\n) {\n  subscribedFeed(id: $id) {\n    ...FeedDetails_feed\n    id\n  }\n  currentUser {\n    ...FeedDetails_user\n  }\n}\n\nfragment FeedAutopostCard_feed on SubscribedFeed {\n  id\n  autopost\n}\n\nfragment FeedDetails_feed on SubscribedFeed {\n  id\n  feed {\n    title\n    url\n    ...FeedRecentPostList_feed\n    id\n  }\n  ...FeedInfoCard_feed\n  ...FeedAutopostCard_feed\n  ...FeedRemoveCard_feed\n}\n\nfragment FeedDetails_user on User {\n  ...FeedInfoCard_user\n}\n\nfragment FeedInfoCard_feed on SubscribedFeed {\n  feed {\n    id\n    url\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n\nfragment FeedInfoCard_user on User {\n  micropubSites\n}\n\nfragment FeedRecentPostList_feed on Feed {\n  id\n  refreshedAt\n  posts(first: 5) {\n    edges {\n      node {\n        id\n        url\n        title\n        htmlContent\n        publishedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment FeedRemoveCard_feed on SubscribedFeed {\n  id\n}\n",
     "metadata": {}
   }
 };

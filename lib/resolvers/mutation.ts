@@ -1,4 +1,5 @@
 import { MutationResolvers, TestNotificationType } from "../generated/graphql"
+import { fromExternalId, IdPrefix } from "lib/data/id"
 
 export const Mutation: MutationResolvers = {
   async addFeed(_, { input }, { feeds }) {
@@ -11,7 +12,9 @@ export const Mutation: MutationResolvers = {
 
   async refreshFeed(_, { input }, { user, feeds }) {
     await user.verify()
-    return { feed: await feeds.refresh(input.id) }
+    return {
+      feed: await feeds.refresh(fromExternalId(input.id, IdPrefix.Feed)),
+    }
   },
 
   async setFeedOptions(_, { input }, { feeds }) {

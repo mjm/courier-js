@@ -2,6 +2,11 @@ const fonts = ["IBM Plex Sans", "sans-serif"]
 
 module.exports = {
   theme: {
+    screens: {
+      sm: "640px",
+      md: "768px",
+      lg: "1024px",
+    },
     fontFamily: {
       display: fonts,
       body: fonts,
