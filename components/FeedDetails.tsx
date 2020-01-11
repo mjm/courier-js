@@ -15,7 +15,7 @@ interface Props {
 
 const FeedDetails: React.FC<Props> = ({ feed, user }) => {
   return (
-    <>
+    <div className="px-3">
       <Head title={`${feed.feed.title} - Feed Details`} />
 
       <div className="w-full flex justify-between items-baseline mb-4">
@@ -26,17 +26,17 @@ const FeedDetails: React.FC<Props> = ({ feed, user }) => {
         </div>
       </div>
 
-      <div className="w-full flex">
-        <div className="w-64 flex-shrink-0 mr-6">
+      <div className="flex flex-wrap -mx-3">
+        <div className="w-full md:w-1/3 flex-shrink-0 px-3">
           <FeedInfoCard feed={feed} user={user} />
           <FeedRemoveButton feed={feed} />
         </div>
-        <div className="flex-grow">
+        <div className="w-full md:w-2/3 px-3">
           <ErrorBox className="mb-4" />
           <FeedRecentPostList feed={feed.feed} />
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

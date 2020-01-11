@@ -1,66 +1,36 @@
-import Card, { CardHeader } from "./Card"
 import Moment from "react-moment"
 import striptags from "striptags"
-import {
-  createFragmentContainer,
-  graphql,
-  Environment,
-  RelayProp,
-} from "react-relay"
-import { FeedRecentPostList_feed } from "../lib/__generated__/FeedRecentPostList_feed.graphql"
-import { useErrors } from "./ErrorContainer"
-import { Button } from "./Button"
-import { faSyncAlt } from "@fortawesome/free-solid-svg-icons"
-import { refreshFeed } from "./mutations/RefreshFeed"
-import InfoField from "./InfoField"
-import InfoTable from "./InfoTable"
+import { createFragmentContainer, graphql } from "react-relay"
+import { FeedRecentPostList_feed } from "@generated/FeedRecentPostList_feed.graphql"
 
-interface Props {
+const FeedRecentPostList: React.FC<{
   feed: FeedRecentPostList_feed
-  relay: RelayProp
-}
-
-const FeedRecentPostList: React.FC<Props> = ({
-  feed,
-  relay: { environment },
-}) => {
+}> = ({ feed }) => {
   return (
-    <Card>
-      <CardHeader>Recent Posts</CardHeader>
-      <InfoField label="Last Checked">
-        <Moment fromNow>{feed.refreshedAt}</Moment>
-      </InfoField>
-      <InfoTable>
-        <colgroup>
-          <col />
-          <col css={{ width: "150px" }} />
-        </colgroup>
-        <tbody>
-          {feed.posts.edges.map(({ node }) => (
-            <tr key={node.id}>
-              <td>
-                <a href={node.url} target="_blank">
-                  {node.title || striptags(node.htmlContent)}
-                </a>
-              </td>
-              <td>
-                <Moment fromNow>{node.publishedAt}</Moment>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </InfoTable>
-      <RefreshButton environment={environment} id={feed.id} />
-    </Card>
+    <div className="bg-white rounded-lg shadow-md overflow-hidden w-full">
+      {feed.posts.edges.map(({ node }) => (
+        <a
+          key={node.id}
+          className={`p-4 flex items-baseline justify-stretch border-neutral-2 border-t first:border-0 group hover:bg-primary-1`}
+          href={node.url}
+          target="_blank"
+        >
+          <div className="flex-grow truncate text-neutral-10 group-hover:text-primary-10">
+            {node.title || striptags(node.htmlContent)}
+          </div>
+          <div className="flex-shrink-0 ml-4 text-sm text-neutral-8 group-hover:text-primary-9">
+            <Moment fromNow>{node.publishedAt}</Moment>
+          </div>
+        </a>
+      ))}
+    </div>
   )
 }
 
 export default createFragmentContainer(FeedRecentPostList, {
   feed: graphql`
     fragment FeedRecentPostList_feed on Feed {
-      id
-      refreshedAt
-      posts(first: 5) @connection(key: "FeedRecentPostList_posts") {
+      posts(first: 10) @connection(key: "FeedRecentPostList_posts") {
         edges {
           node {
             id
@@ -74,30 +44,3 @@ export default createFragmentContainer(FeedRecentPostList, {
     }
   `,
 })
-
-interface RefreshButtonProps {
-  id: string
-  environment: Environment
-}
-
-const RefreshButton: React.FC<RefreshButtonProps> = ({ id, environment }) => {
-  const { setError, clearErrors } = useErrors()
-
-  return (
-    <Button
-      mt={3}
-      icon={faSyncAlt}
-      useSameIconWhileSpinning
-      onClickAsync={async () => {
-        try {
-          await refreshFeed(environment, id)
-          clearErrors()
-        } catch (err) {
-          setError(err)
-        }
-      }}
-    >
-      Refresh
-    </Button>
-  )
-}

@@ -20,11 +20,11 @@ const FeedDetailsPage: NextPage<Props, any> = ({
   }
 
   return (
-    <div className="container mx-auto mt-8">
+    <main className="container mx-auto my-8">
       <ErrorContainer>
         <FeedDetails feed={subscribedFeed} user={currentUser} />
       </ErrorContainer>
-    </div>
+    </main>
   )
 }
 
