@@ -1,4 +1,4 @@
-const fonts = ["IBM Plex Sans", "sans-serif"]
+const fonts = ["Inter", "Helvetica Neue", "sans-serif"]
 
 module.exports = {
   theme: {
