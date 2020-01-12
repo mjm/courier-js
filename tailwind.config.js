@@ -12,6 +12,9 @@ module.exports = {
       body: fonts,
     },
     extend: {
+      maxWidth: {
+        text: "35em",
+      },
       colors: {
         primary: {
           "10": "#0C008C",
