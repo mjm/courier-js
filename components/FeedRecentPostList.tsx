@@ -16,7 +16,11 @@ const FeedRecentPostList: React.FC<{
           target="_blank"
         >
           <div className="flex-grow truncate text-neutral-10 group-hover:text-primary-10">
-            {node.title || striptags(node.htmlContent)}
+            {node.title ? (
+              <span className="font-medium">{node.title}</span>
+            ) : (
+              striptags(node.htmlContent)
+            )}
           </div>
           <div className="flex-shrink-0 ml-4 text-sm text-neutral-8 group-hover:text-primary-9">
             <Moment fromNow>{node.publishedAt}</Moment>
