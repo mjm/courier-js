@@ -34,25 +34,33 @@ export const Mutation: MutationResolvers = {
   },
 
   async cancelTweet(_, { input }, { tweets }) {
-    return { tweet: await tweets.cancel(input.id) }
+    const id = fromExternalId(input.id, IdPrefix.Tweet)
+    return { tweet: await tweets.cancel(id) }
   },
 
   async uncancelTweet(_, { input }, { tweets }) {
-    return { tweet: await tweets.uncancel(input.id) }
+    const id = fromExternalId(input.id, IdPrefix.Tweet)
+    return { tweet: await tweets.uncancel(id) }
   },
 
   async postTweet(_, { input }, { tweets }) {
-    const { id, body, mediaURLs } = input
+    const { body, mediaURLs } = input
+    const id = fromExternalId(input.id, IdPrefix.Tweet)
     if (body) {
-      await tweets.update(id, { body, mediaURLs: mediaURLs || undefined })
+      await tweets.update(id, {
+        body,
+        mediaURLs: mediaURLs || undefined,
+      })
     }
 
-    return { tweet: await tweets.post(input.id) }
+    return { tweet: await tweets.post(id) }
   },
 
   async editTweet(_, { input }, { tweets }) {
     const { id, ...changes } = input
-    return { tweet: await tweets.update(id, changes) }
+    return {
+      tweet: await tweets.update(fromExternalId(id, IdPrefix.Tweet), changes),
+    }
   },
 
   async subscribe(_, { input }, { billing, user }) {
@@ -77,7 +85,8 @@ export const Mutation: MutationResolvers = {
   },
 
   async sendTestNotification(_, { input }, { loaders, notifications, user }) {
-    const tweet = await loaders.tweets.load(input.tweetId)
+    const tweetId = fromExternalId(input.tweetId, IdPrefix.Tweet)
+    const tweet = await loaders.tweets.load(tweetId)
     if (!tweet) {
       throw new Error("Tweet could not be found")
     }
