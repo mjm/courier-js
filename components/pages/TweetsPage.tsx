@@ -15,13 +15,13 @@ import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
 type Props = TweetsPageQueryResponse
 const TweetsPage: NextPage<Props> = ({ upcoming, past, currentUser }) => {
   return (
-    <main className="my-0 mx-auto py-0 px-4">
+    <main className="container my-8 mx-auto py-0 px-8">
       <Head title="Your Tweets" />
       {currentUser && (
         <SubscriptionProvider user={currentUser}>
           <SubscribeBanner />
           {upcoming && past ? (
-            <div className="my-6 mx-auto lg:max-w-6xl flex flex-col lg:flex-row">
+            <div className="flex flex-row flex-wrap -mx-4">
               <TweetList
                 emptyDescription="You don't have anymore tweets to review."
                 description={upcomingDescription}

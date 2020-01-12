@@ -9,6 +9,10 @@
 
 @import "tailwindcss/utilities";
 
+.break-words {
+  word-break: break-word;
+}
+
 body {
   @apply font-body bg-neutral-2;
 }

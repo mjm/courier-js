@@ -25,8 +25,8 @@ const TweetList = ({
   const { edges, totalCount } = tweets.allTweets
 
   return (
-    <div className="flex-grow mx-auto lg:mx-6 max-w-lg min-w-sm">
-      <div className="py-4 text-neutral-10">
+    <div className="w-full lg:px-4 lg:w-1/2 mb-8">
+      <div className="pb-4 text-neutral-10">
         {totalCount === 0 ? emptyDescription : description(totalCount)}
       </div>
       <Group direction="column" spacing={3}>
