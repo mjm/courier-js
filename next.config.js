@@ -10,7 +10,7 @@ module.exports = withMDX(
     withFonts({
       target: "serverless",
 
-      pageExtensions: ["tsx", "mdx"],
+      pageExtensions: ["ts", "tsx", "mdx"],
 
       env: {
         CLIENT_ID: process.env.CLIENT_ID,
