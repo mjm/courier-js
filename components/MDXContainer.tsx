@@ -44,6 +44,7 @@ const components = {
       return <a href={href} target="_blank" {...props} />
     }
   },
+  inlineCode: (props: any) => <code className="text-sm" {...props} />,
 }
 
 const MDXContainer: React.FC = ({ children }) => (
