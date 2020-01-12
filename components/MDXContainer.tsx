@@ -2,6 +2,7 @@ import { MDXProvider } from "@mdx-js/react"
 import Nav from "components/Nav"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons"
+import Link from "next/link"
 
 const components = {
   wrapper: (props: any) => (
@@ -32,6 +33,17 @@ const components = {
       {children}
     </li>
   ),
+  a: ({ href, ...props }: any) => {
+    if (href[0] === "/") {
+      return (
+        <Link href={href}>
+          <a className="text-primary-10 hover:underline" {...props} />
+        </Link>
+      )
+    } else {
+      return <a href={href} target="_blank" {...props} />
+    }
+  },
 }
 
 const MDXContainer: React.FC = ({ children }) => (
