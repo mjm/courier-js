@@ -1,11 +1,12 @@
 import React from "react"
 import App from "next/app"
 import Router from "next/router"
-import { renewSession, isAuthenticated } from "../utils/auth0"
+import { renewSession, isAuthenticated } from "utils/auth0"
 import { config } from "@fortawesome/fontawesome-svg-core"
-import * as theme from "../utils/theme"
+import * as theme from "utils/theme"
 import { ThemeProvider } from "emotion-theming"
 import NProgress from "nprogress"
+import MDXContainer from "components/MDXContainer"
 
 config.autoAddCss = false
 
@@ -55,10 +56,12 @@ class MyApp extends App {
 
     return (
       <ThemeProvider theme={theme}>
-        <Component
-          {...pageProps}
-          isAuthenticating={this.state.isAuthenticating}
-        />
+        <MDXContainer>
+          <Component
+            {...pageProps}
+            isAuthenticating={this.state.isAuthenticating}
+          />
+        </MDXContainer>
       </ThemeProvider>
     )
   }

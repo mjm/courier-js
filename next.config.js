@@ -3,54 +3,61 @@ const path = require("path")
 const webpack = require("webpack")
 const withCSS = require("@zeit/next-css")
 const withFonts = require("next-fonts")
+const withMDX = require("@next/mdx")()
 
-module.exports = withCSS(
-  withFonts({
-    target: "serverless",
+module.exports = withMDX(
+  withCSS(
+    withFonts({
+      target: "serverless",
 
-    env: {
-      CLIENT_ID: process.env.CLIENT_ID,
-      AUTH_DOMAIN: process.env.AUTH_DOMAIN,
-      API_IDENTIFIER: process.env.API_IDENTIFIER,
-      STRIPE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
-    },
+      pageExtensions: ["tsx", "mdx"],
 
-    webpack(config, options) {
-      config.resolve.modules.push(__dirname)
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        "@mutations": path.join(__dirname, "components/mutations"),
-        "@pages": path.join(__dirname, "components/pages"),
-      }
+      env: {
+        CLIENT_ID: process.env.CLIENT_ID,
+        AUTH_DOMAIN: process.env.AUTH_DOMAIN,
+        API_IDENTIFIER: process.env.API_IDENTIFIER,
+        STRIPE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+      },
 
-      config.node = {
-        fs: "empty",
-      }
+      webpack(config, _options) {
+        config.resolve.modules.push(__dirname)
+        config.resolve.alias = {
+          ...config.resolve.alias,
+          "@mutations": path.join(__dirname, "components/mutations"),
+          "@pages": path.join(__dirname, "components/pages"),
+        }
 
-      config.plugins.push(new webpack.IgnorePlugin(/^pg-native$/))
+        config.node = {
+          fs: "empty",
+        }
 
-      // https://github.com/felixge/node-formidable/issues/337
-      config.plugins.push(new webpack.DefinePlugin({ "global.GENTLY": false }))
+        config.plugins.push(new webpack.IgnorePlugin(/^pg-native$/))
 
-      config.plugins.push(
-        new webpack.NormalModuleReplacementPlugin(
-          /courier-push\.p12$/,
-          resource => {
-            resource.request = resource.request.replace(
-              /courier-push\.p12$/,
-              process.env.APNS_CERTIFICATE
-            )
-          }
+        // https://github.com/felixge/node-formidable/issues/337
+        config.plugins.push(
+          new webpack.DefinePlugin({ "global.GENTLY": false })
         )
-      )
 
-      config.module.rules.push({
-        test: /\.graphql$/,
-        exclude: /node_modules/,
-        use: "raw-loader",
-      })
+        config.plugins.push(
+          new webpack.NormalModuleReplacementPlugin(
+            /courier-push\.p12$/,
+            resource => {
+              resource.request = resource.request.replace(
+                /courier-push\.p12$/,
+                process.env.APNS_CERTIFICATE
+              )
+            }
+          )
+        )
 
-      return config
-    },
-  })
+        config.module.rules.push({
+          test: /\.graphql$/,
+          exclude: /node_modules/,
+          use: "raw-loader",
+        })
+
+        return config
+      },
+    })
+  )
 )
