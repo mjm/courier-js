@@ -18,7 +18,7 @@ const FeedList: React.FC<Props> = ({ feeds }) => {
 
   return (
     <div>
-      <div className="pb-4 pt-8 text-neutral-10">
+      <div className="pb-4 text-neutral-10">
         {totalCount === 0 ? (
           "You aren't watching any feeds yet."
         ) : totalCount === 1 ? (
@@ -35,13 +35,26 @@ const FeedList: React.FC<Props> = ({ feeds }) => {
         )}
       </div>
       <div className="-m-2">
-        <div className="flex flex-row flex-wrap w-full mb-4">
+        <div
+          className="w-full mb-4"
+          css={{
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            gridAutoRows: "1fr",
+            "@media (min-width: 640px)": {
+              gridTemplateColumns: "1fr 1fr",
+            },
+            "@media (min-width: 1024px)": {
+              gridTemplateColumns: "1fr 1fr 1fr",
+            },
+          }}
+        >
           {edges.map(({ node }) => (
-            <div key={node.id} className="p-2 w-full sm:w-1/2 lg:w-1/3">
+            <div key={node.id} className="p-2">
               <FeedCard feed={node} />
             </div>
           ))}
-          <div className="p-2 w-full sm:w-1/2 lg:w-1/3">
+          <div className="p-2">
             <Link href="/feeds/new">
               <a className="bg-neutral-3 rounded-lg shadow-md p-4 w-full h-full flex justify-center items-center">
                 <div className="m-auto font-medium text-neutral-9">

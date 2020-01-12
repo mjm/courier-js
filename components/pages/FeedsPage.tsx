@@ -13,7 +13,7 @@ type Props = FeedsPageQueryResponse & {
 }
 const FeedsPage: NextPage<Props> = ({ environment, ...props }) => {
   return (
-    <main className="container mx-auto">
+    <main className="container mx-auto my-8">
       <Head title="Watched Feeds" />
 
       <FeedList feeds={props} />
