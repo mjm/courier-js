@@ -1,5 +1,5 @@
 import { createFragmentContainer, graphql, RelayProp } from "react-relay"
-import { SubscribeForm_user } from "../lib/__generated__/SubscribeForm_user.graphql"
+import { SubscribeForm_user } from "@generated/SubscribeForm_user.graphql"
 import styled from "@emotion/styled"
 import {
   Field,
@@ -8,6 +8,7 @@ import {
   FieldProps,
   ErrorMessage,
   FormikHelpers,
+  useFormikContext,
 } from "formik"
 import * as yup from "yup"
 import {
@@ -16,16 +17,16 @@ import {
   ReactStripeElements,
 } from "react-stripe-elements"
 import { useRouter } from "next/router"
-import Group from "./Group"
-import Card, { CardHeader } from "./Card"
 import { Flex, Box } from "@rebass/emotion"
 import { ThemeContext } from "@emotion/core"
-import { ErrorBox } from "./ErrorBox"
+import { ErrorBox } from "components/ErrorBox"
 import { Button } from "./Button"
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons"
-import { subscribe } from "./mutations/Subscribe"
-import { renewSession } from "../utils/auth0"
-import { FieldError } from "./FieldError"
+import { subscribe } from "@mutations/Subscribe"
+import { renewSession } from "utils/auth0"
+import { FieldError } from "components/FieldError"
+import { IconProp } from "@fortawesome/fontawesome-svg-core"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface Props {
   user: SubscribeForm_user
@@ -93,63 +94,60 @@ const SubscribeForm = injectStripe<Props>(
           setStatus,
           status: { error },
         }) => (
-          <Form>
-            <Group direction="column" spacing={3}>
-              <Card>
-                <CardHeader>Payment Details</CardHeader>
-                <Group direction="column" spacing={2}>
-                  {savedCard && (
-                    <>
-                      <Flex flexWrap="wrap">
-                        <Field
-                          type="radio"
-                          name="method"
-                          value="use-saved-card"
-                          label={`Use saved credit card (${savedCard.brand} ${savedCard.lastFour})`}
-                          component={RadioButton}
-                        />
-                        <Field
-                          type="radio"
-                          name="method"
-                          value="new-card"
-                          label="Enter new credit card"
-                          component={RadioButton}
-                        />
-                      </Flex>
-                      <ErrorMessage name="method" component={FieldError} />
-                    </>
-                  )}
-                  {values.method === "use-saved-card" ? null : (
-                    <>
-                      <TextField
-                        type="text"
-                        name="name"
-                        placeholder="Name on card"
-                      />
-                      <ErrorMessage name="name" component={FieldError} />
-                      <TextField
-                        type="email"
-                        name="email"
-                        placeholder="Email address"
-                      />
-                      <ErrorMessage name="email" component={FieldError} />
-                      <CardInput onChange={() => setStatus({ error: null })} />
-                    </>
-                  )}
-                </Group>
-              </Card>
-              <ErrorBox error={error} />
-              <Button
-                size="large"
-                type="submit"
-                icon={faCreditCard}
-                spin={isSubmitting}
-                alignSelf="center"
-                disabled={!isValid}
-              >
-                Subscribe
-              </Button>
-            </Group>
+          <Form className="px-6 pb-6">
+            {savedCard && (
+              <>
+                <div className="flex flex-row -mx-2">
+                  <CardChoice icon={faCreditCard} method="use-saved-card">
+                    Use saved card
+                  </CardChoice>
+                  <CardChoice icon={faCreditCard} method="new-card">
+                    Enter new card
+                  </CardChoice>
+                </div>
+                <Flex flexWrap="wrap">
+                  <Field
+                    type="radio"
+                    name="method"
+                    value="use-saved-card"
+                    label={`Use saved credit card (${savedCard.brand} ${savedCard.lastFour})`}
+                    component={RadioButton}
+                  />
+                  <Field
+                    type="radio"
+                    name="method"
+                    value="new-card"
+                    label="Enter new credit card"
+                    component={RadioButton}
+                  />
+                </Flex>
+                <ErrorMessage name="method" component={FieldError} />
+              </>
+            )}
+            {values.method === "use-saved-card" ? null : (
+              <>
+                <TextField type="text" name="name" placeholder="Name on card" />
+                <ErrorMessage name="name" component={FieldError} />
+                <TextField
+                  type="email"
+                  name="email"
+                  placeholder="Email address"
+                />
+                <ErrorMessage name="email" component={FieldError} />
+                <CardInput onChange={() => setStatus({ error: null })} />
+              </>
+            )}
+            <ErrorBox error={error} />
+            <Button
+              size="large"
+              type="submit"
+              icon={faCreditCard}
+              spin={isSubmitting}
+              alignSelf="center"
+              disabled={!isValid}
+            >
+              Subscribe
+            </Button>
           </Form>
         )}
       />
@@ -171,6 +169,35 @@ export default createFragmentContainer(SubscribeForm, {
     }
   `,
 })
+
+const CardChoice: React.FC<{
+  icon: IconProp
+  method: SubscribeData["method"]
+}> = ({ icon, method, children }) => {
+  const { setFieldValue, values } = useFormikContext<SubscribeData>()
+  const isSelected = values.method === method
+
+  return (
+    <div className="w-1/2 px-2 text-sm text-neutral-8">
+      <button
+        type="button"
+        className={`w-full block border rounded-lg p-4 focus:outline-none ${
+          isSelected ? "border-primary-3" : "border-neutral-2"
+        }`}
+        onClick={() => setFieldValue("method", method)}
+      >
+        <div
+          className={`flex flex-col items-center ${
+            isSelected ? "text-primary-8" : "text-neutral-8"
+          }`}
+        >
+          <FontAwesomeIcon icon={icon} size="2x" />
+          {children}
+        </div>
+      </button>
+    </div>
+  )
+}
 
 const TextField = styled(Field)(({ theme }: any) => ({
   color: theme.colors.primary[800],

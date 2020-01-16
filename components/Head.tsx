@@ -10,7 +10,6 @@ const Head = (props: {
   description?: string
   url?: string
   ogImage?: string
-  stripe?: boolean
 }) => (
   <NextHead>
     <meta charSet="UTF-8" />
