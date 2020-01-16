@@ -12,9 +12,6 @@ config.autoAddCss = false
 
 import "components/Tailwind.css"
 import "components/Progress.css"
-import "typeface-rubik"
-import "typeface-ibm-plex-sans"
-import "typeface-inter"
 import "@fortawesome/fontawesome-svg-core/styles.css"
 
 Router.events.on("routeChangeStart", (url: string) => {
