@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { CourierContext } from "../../lib/context"
+import { CourierContext } from "lib/context"
 
 const { billingEvents } = CourierContext.create()
 

@@ -1,8 +1,8 @@
 import { ApolloServer, makeExecutableSchema, gql } from "apollo-server-micro"
-import resolvers from "../../lib/resolvers"
-import { CourierContext } from "../../lib/context"
+import resolvers from "lib/resolvers"
+import { CourierContext } from "lib/context"
 
-const schemaText = require("../../schema.graphql").default
+const schemaText = require("schema.graphql").default
 
 const typeDefs = gql`
   ${schemaText}
