@@ -1,48 +1,37 @@
 import { NextPage } from "next"
-import Container, { FlushContainer } from "../Container"
 import Head from "../Head"
-import Group from "../Group"
-import { Button } from "../Button"
-import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons"
-import { logout } from "../../utils/auth0"
-import withData from "../../hocs/withData"
-import withSecurePage from "../../hocs/withSecurePage"
+import withData from "hocs/withData"
+import withSecurePage from "hocs/withSecurePage"
 import { graphql } from "react-relay"
-import UserInfoCard from "../UserInfoCard"
-import SubscriptionInfoCard from "../SubscriptionInfoCard"
-import RecentEventsCard from "../RecentEventsCard"
-import PageHeader from "../PageHeader"
-import { AccountPageQueryResponse } from "../../lib/__generated__/AccountPageQuery.graphql"
+import UserInfoCard from "components/UserInfoCard"
+import SubscriptionInfoCard from "components/SubscriptionInfoCard"
+import RecentEventsCard from "components/RecentEventsCard"
+import { AccountPageQueryResponse } from "@generated/AccountPageQuery.graphql"
+import UserActionsCard from "components/UserActionsCard"
 
-type Props = AccountPageQueryResponse
-const AccountPage: NextPage<Props> = props => {
+const AccountPage: NextPage<AccountPageQueryResponse> = props => {
   const { currentUser } = props
+  if (!currentUser) {
+    return null
+  }
+
   return (
-    <Container>
+    <main className="container mx-auto my-8">
       <Head title="Your Account" />
 
-      <PageHeader mb={4}>Your Account</PageHeader>
-      <FlushContainer>
-        <Group direction="column" spacing={3}>
-          {currentUser && (
-            <>
-              <UserInfoCard user={currentUser} />
-              <SubscriptionInfoCard user={currentUser} />
-            </>
-          )}
-          <RecentEventsCard events={props} />
-        </Group>
-      </FlushContainer>
-      <Button
-        mt={3}
-        color="red"
-        size="medium"
-        icon={faSignOutAlt}
-        onClick={() => logout()}
-      >
-        Sign Out
-      </Button>
-    </Container>
+      <div className="px-3">
+        <div className="flex flex-wrap -mx-3">
+          <div className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0 px-3 mb-6">
+            <UserInfoCard user={currentUser} />
+            <SubscriptionInfoCard user={currentUser} />
+            <UserActionsCard />
+          </div>
+          <div className="w-full md:w-2/3 lg:w-3/4 px-3">
+            <RecentEventsCard events={props} />
+          </div>
+        </div>
+      </div>
+    </main>
   )
 }
 

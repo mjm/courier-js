@@ -6,6 +6,8 @@ export type SubscriptionStatus = "ACTIVE" | "CANCELED" | "EXPIRED" | "INACTIVE" 
 export type SubscriptionInfoCard_user = {
     readonly customer: {
         readonly creditCard: {
+            readonly brand: string;
+            readonly lastFour: string;
             readonly " $fragmentRefs": FragmentRefs<"CreditCard_card">;
         } | null;
     } | null;
@@ -50,6 +52,20 @@ const node: ReaderFragment = {
           "concreteType": "CreditCard",
           "plural": false,
           "selections": [
+            {
+              "kind": "ScalarField",
+              "alias": null,
+              "name": "brand",
+              "args": null,
+              "storageKey": null
+            },
+            {
+              "kind": "ScalarField",
+              "alias": null,
+              "name": "lastFour",
+              "args": null,
+              "storageKey": null
+            },
             {
               "kind": "FragmentSpread",
               "name": "CreditCard_card",
@@ -98,5 +114,5 @@ const node: ReaderFragment = {
     }
   ]
 };
-(node as any).hash = 'd308fc780bc21d3bd2a9ab6559be843a';
+(node as any).hash = '1f0e9fc2bebd0a440f74d13775c3ab14';
 export default node;

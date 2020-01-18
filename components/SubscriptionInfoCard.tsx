@@ -1,87 +1,101 @@
-import { useRouter } from "next/router"
-import Card, { CardHeader } from "./Card"
 import Moment from "react-moment"
-import Group from "./Group"
-import { Button } from "./Button"
-import { faCreditCard, faTimesCircle } from "@fortawesome/free-solid-svg-icons"
-import {
-  createFragmentContainer,
-  graphql,
-  RelayProp,
-  Environment,
-} from "react-relay"
-import { SubscriptionInfoCard_user } from "../lib/__generated__/SubscriptionInfoCard_user.graphql"
-import { cancelSubscription } from "./mutations/CancelSubscription"
-import CreditCard from "./CreditCard"
-import SubscriptionStatus from "./SubscriptionStatus"
-import InfoField from "./InfoField"
+import { createFragmentContainer, graphql, RelayProp } from "react-relay"
+import { SubscriptionInfoCard_user } from "@generated/SubscriptionInfoCard_user.graphql"
+import { cancelSubscription } from "@mutations/CancelSubscription"
+import Link from "next/link"
+import CreditCardIcon from "components/CreditCardIcon"
+import AsyncButton from "components/AsyncButton"
 
-interface Props {
+const SubscriptionInfoCard: React.FC<{
   user: SubscriptionInfoCard_user
   relay: RelayProp
-}
-
-const SubscriptionInfoCard: React.FC<Props> = ({
-  user,
-  relay: { environment },
-}) => {
-  const router = useRouter()
+}> = ({ user, relay: { environment } }) => {
   const { customer, subscription, subscriptionStatusOverride } = user
 
-  return (
-    <Card>
-      <CardHeader>Subscription</CardHeader>
-      {subscription ? (
-        <>
-          <InfoField label="Status">
-            <SubscriptionStatus user={user} />
-          </InfoField>
-          {subscription.status === "ACTIVE" ? (
-            <InfoField label="Renews">
-              <Moment format="LL">{subscription.periodEnd}</Moment> (
-              <Moment fromNow>{subscription.periodEnd}</Moment>)
-            </InfoField>
-          ) : subscription.status === "CANCELED" ? (
-            <InfoField label="Expires">
-              <Moment format="LL">{subscription.periodEnd}</Moment> (
-              <Moment fromNow>{subscription.periodEnd}</Moment>)
-            </InfoField>
-          ) : null}
-        </>
-      ) : (
-        <InfoField label="Status">
-          <SubscriptionStatus user={user} />
-        </InfoField>
-      )}
-      {customer && customer.creditCard ? (
-        <InfoField label="Payment">
-          <CreditCard card={customer.creditCard} />
-        </InfoField>
-      ) : null}
-      {subscriptionStatusOverride ? null : (
-        <Group mt={3} direction="row" spacing={2} wrap>
+  if (!subscription && !subscriptionStatusOverride) {
+    return (
+      <Link href="/subscribe">
+        <a className="btn btn-first btn-first-primary block w-full text-center text-base mb-4">
+          Subscribe now
+        </a>
+      </Link>
+    )
+  }
+
+  const status = subscription?.status ?? subscriptionStatusOverride
+  if (status === "ACTIVE") {
+    async function cancel() {
+      try {
+        await cancelSubscription(environment)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    return (
+      <div className="rounded-lg shadow-md bg-neutral-1 p-4 text-neutral-7 text-sm mb-4">
+        <div>
           {subscription ? (
-            subscription.status === "ACTIVE" ? (
-              <CancelButton environment={environment} />
-            ) : (
-              <Button
-                icon={faCreditCard}
-                onClick={() => router.push("/subscribe")}
+            <>
+              Subscription renews{" "}
+              <Moment
+                fromNow
+                className="inline-block font-medium text-primary-9"
               >
-                Resubscribe
-              </Button>
-            )
+                {subscription.periodEnd}
+              </Moment>
+            </>
           ) : (
-            <Button
-              icon={faCreditCard}
-              onClick={() => router.push("/subscribe")}
-            >
-              Subscribe
-            </Button>
+            <>Subscribed indefinitely</>
           )}
-        </Group>
-      )}
-    </Card>
+        </div>
+        {customer?.creditCard && (
+          <div className="mt-3 flex flex-row justify-between items-baseline">
+            <div>
+              <CreditCardIcon brand={customer.creditCard.brand} />
+              <span className="ml-1 font-medium">
+                {customer.creditCard.lastFour}
+              </span>
+            </div>
+            <AsyncButton
+              onClick={cancel}
+              className="btn btn-third btn-third-neutral font-medium border-0 py-0"
+            >
+              Cancel
+            </AsyncButton>
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-lg shadow-md bg-neutral-1 p-4 text-neutral-7 text-sm mb-4">
+      <div>
+        {subscription ? (
+          <>
+            Subscription {status === "CANCELED" ? "expires" : "expired"}{" "}
+            {subscription.periodEnd && (
+              <Moment
+                fromNow
+                className="inline-block font-medium text-primary-9"
+              >
+                {subscription.periodEnd}
+              </Moment>
+            )}
+          </>
+        ) : (
+          <>Subscription {status === "CANCELED" ? "expires soon" : "expired"}</>
+        )}
+      </div>
+      <div className="mt-3 flex flex-row justify-between items-baseline">
+        <Link href="/subscribe">
+          <a className="btn btn-first btn-first-primary font-medium w-full text-center">
+            Resubscribe
+          </a>
+        </Link>
+      </div>
+    </div>
   )
 }
 
@@ -90,6 +104,8 @@ export default createFragmentContainer(SubscriptionInfoCard, {
     fragment SubscriptionInfoCard_user on User {
       customer {
         creditCard {
+          brand
+          lastFour
           ...CreditCard_card
         }
       }
@@ -102,26 +118,3 @@ export default createFragmentContainer(SubscriptionInfoCard, {
     }
   `,
 })
-
-interface CancelButtonProps {
-  environment: Environment
-}
-
-const CancelButton: React.FC<CancelButtonProps> = ({ environment }) => {
-  return (
-    <Button
-      icon={faTimesCircle}
-      color="red"
-      invert
-      onClickAsync={async () => {
-        try {
-          await cancelSubscription(environment)
-        } catch (err) {
-          console.error(err)
-        }
-      }}
-    >
-      Cancel
-    </Button>
-  )
-}
