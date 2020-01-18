@@ -1,13 +1,12 @@
 import React from "react"
-import { parseHash, setToken } from "../utils/auth0"
+import { parseHash, setToken } from "utils/auth0"
 import Router from "next/router"
-import { ErrorContainer, useErrors } from "../components/ErrorContainer"
-import withPublicPage from "../hocs/withPublicPage"
+import { ErrorContainer, useErrors } from "components/ErrorContainer"
+import withPublicPage from "hocs/withPublicPage"
 import { NextPage } from "next"
-import Container from "../components/Container"
-import Head from "../components/Head"
-import { ErrorBox } from "../components/ErrorBox"
-import Loading from "../components/Loading"
+import Head from "components/Head"
+import { ErrorBox } from "components/ErrorBox"
+import Loading from "components/Loading"
 
 const LoggedIn: NextPage<{}> = () => {
   return (
@@ -39,10 +38,10 @@ const ProcessLogin = () => {
   }, [])
 
   return (
-    <Container pt={4}>
+    <main className="container mx-auto py-8">
       <Head title="Logging In" />
       <ErrorBox />
       {errors.length ? null : <Loading />}
-    </Container>
+    </main>
   )
 }

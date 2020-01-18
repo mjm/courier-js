@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
-import Icon from "./Icon"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface Props {
   delay?: number
@@ -18,15 +18,14 @@ const Loading = ({ delay = 1000 }: Props) => {
   }, [delay])
 
   return (
-    <div>
-      <Icon
-        css={{ display: "block", visibility: show ? "visible" : "hidden" }}
-        my={4}
-        mx="auto"
-        fontSize={7}
-        color="primary.700"
+    <div className="text-4xl">
+      <FontAwesomeIcon
         icon={faSpinner}
         spin
+        className={`my-6 mx-auto text-primary-9 ${
+          show ? "visible" : "invisible"
+        }`}
+        style={{ display: "block" }}
       />
     </div>
   )

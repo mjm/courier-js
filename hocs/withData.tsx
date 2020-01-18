@@ -111,7 +111,7 @@ export default withData
 
 function makeFetchQuery(ctx?: NextPageContext): FetchFunction {
   const req = ctx && ctx.req
-  const url = apiUrl("/graphql", req)
+  const url = apiUrl("/api/graphql", req)
 
   return async (operation, variables, _cacheConfig, _uploadables) => {
     const token = getToken(req, "accessToken")
