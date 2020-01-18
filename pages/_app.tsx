@@ -1,6 +1,6 @@
 import React from "react"
-import App from "next/app"
 import Router from "next/router"
+import { AppProps } from "next/app"
 import { renewSession, isAuthenticated } from "utils/auth0"
 import { config } from "@fortawesome/fontawesome-svg-core"
 import NProgress from "nprogress"
@@ -19,24 +19,17 @@ Router.events.on("routeChangeStart", (url: string) => {
 Router.events.on("routeChangeComplete", () => NProgress.done())
 Router.events.on("routeChangeError", () => NProgress.done())
 
-class MyApp extends App {
-  state = {
-    isAuthenticating: true,
-  }
+const App: React.FC<AppProps> = ({ Component, pageProps, router }) => {
+  const [isAuthenticating, setAuthenticating] = React.useState(true)
 
-  async componentDidMount() {
-    if (Router.pathname === "/logged-in") {
-      this.setState({ isAuthenticating: false })
-      return
-    }
-
+  async function handleAuthenticating() {
     try {
       const authed = isAuthenticated()
       await renewSession()
 
       // if auth status changes, re-route to same URL to force initial props to be called again
       if (authed !== isAuthenticated()) {
-        Router.replace(Router.asPath!)
+        router.replace(router.asPath!)
       }
     } catch (err) {
       if (err.error !== "login_required") {
@@ -44,21 +37,23 @@ class MyApp extends App {
       }
     }
 
-    this.setState({ isAuthenticating: false })
+    setAuthenticating(false)
   }
 
-  render() {
-    const { Component, pageProps } = this.props
+  React.useEffect(() => {
+    if (router.pathname === "/logged-in") {
+      setAuthenticating(false)
+      return
+    }
 
-    return (
-      <MDXContainer>
-        <Component
-          {...pageProps}
-          isAuthenticating={this.state.isAuthenticating}
-        />
-      </MDXContainer>
-    )
-  }
+    handleAuthenticating()
+  }, [])
+
+  return (
+    <MDXContainer>
+      <Component {...pageProps} isAuthenticating={isAuthenticating} />
+    </MDXContainer>
+  )
 }
 
-export default MyApp
+export default App
