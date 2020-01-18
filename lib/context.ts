@@ -40,12 +40,10 @@ container
     const env = context.container.get(Environment)
     const stripe = new Stripe(env.stripeKey)
 
-    // @ts-ignore
     stripe.on("request", req => {
       console.log(req)
     })
 
-    // @ts-ignore
     stripe.on("response", res => {
       console.log(res)
     })

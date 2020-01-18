@@ -40,7 +40,7 @@ const SubscribeForm = injectStripe<Props>(
     async function onSubmit(
       input: SubscribeData,
       actions: FormikHelpers<SubscribeData>
-    ) {
+    ): Promise<void> {
       if (!stripe) {
         return
       }
