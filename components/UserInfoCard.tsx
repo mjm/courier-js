@@ -4,13 +4,6 @@ import { UserInfoCard_user } from "@generated/UserInfoCard_user.graphql"
 const UserInfoCard: React.FC<{
   user: UserInfoCard_user
 }> = ({ user }) => {
-  // async function copyAPIToken() {
-  //   const token = getToken(null, "accessToken")
-  //   if (token) {
-  //     await navigator.clipboard.writeText(token)
-  //   }
-  // }
-
   return (
     <div className="rounded-lg shadow-md bg-white p-4 flex flex-col items-center mb-4">
       <img src={user.picture} className="w-12 rounded-full mb-3" />

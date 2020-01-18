@@ -5,7 +5,7 @@ const UserActionsCard: React.FC = () => {
   const { logout } = useAuth0()
 
   async function copyAPIToken() {
-    const token = getToken(null, "accessToken")
+    const token = getToken(undefined, "accessToken")
     if (token) {
       await navigator.clipboard.writeText(token)
     }
