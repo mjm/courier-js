@@ -64,17 +64,17 @@ interface CardTypeStyle {
 const cardTypeStyles: Record<TweetStatus, CardTypeStyle> = {
   CANCELED: {
     container: "bg-neutral-3 text-neutral-9",
-    badge: "bg-neutral-6 text-neutral-1",
+    badge: "bg-neutral-4 text-neutral-9",
     actions: "bg-transparent shadow-none pt-0",
   },
   DRAFT: {
     container: "",
-    badge: "bg-primary-6 text-primary-1",
+    badge: "bg-primary-1 text-primary-5",
     actions: "",
   },
   POSTED: {
     container: "",
-    badge: "bg-secondary-7 text-secondary-1",
+    badge: "bg-secondary-1 text-secondary-7",
     actions: "",
   },
   "%future added value": {
