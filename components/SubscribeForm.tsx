@@ -18,12 +18,12 @@ import { useRouter } from "next/router"
 import { ErrorBox } from "components/ErrorBox"
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons"
 import { subscribe } from "@mutations/Subscribe"
-import { renewSession } from "utils/auth0"
 import { FieldError } from "components/FieldError"
 import { IconProp } from "@fortawesome/fontawesome-svg-core"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { iconForBrand } from "components/CreditCardIcon"
 import { theme } from "tailwind.config"
+import { useAuth0 } from "components/Auth0Provider"
 
 interface Props {
   user: SubscribeForm_user
@@ -33,6 +33,7 @@ interface Props {
 const SubscribeForm = injectStripe<Props>(
   ({ user, stripe, relay: { environment } }) => {
     const router = useRouter()
+    const { renewSession } = useAuth0()
 
     const savedCard = user.customer?.creditCard
 

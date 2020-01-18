@@ -5,13 +5,12 @@ import { faCheckCircle } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 
 const components = {
-  wrapper: (props: any) => (
+  wrapper: ({ children }: any) => (
     <>
       <Nav />
-      <main
-        className="max-w-2xl mx-auto px-8 my-8 text-neutral-10"
-        {...props}
-      />
+      <main className="max-w-2xl mx-auto px-8 my-8 text-neutral-10">
+        {children}
+      </main>
     </>
   ),
   h1: (props: any) => (

@@ -1,12 +1,12 @@
 import React from "react"
-import { parseHash, setToken } from "utils/auth0"
-import Router from "next/router"
+import { useRouter } from "next/router"
 import { ErrorContainer, useErrors } from "components/ErrorContainer"
 import withPublicPage from "hocs/withPublicPage"
 import { NextPage } from "next"
 import Head from "components/Head"
 import { ErrorBox } from "components/ErrorBox"
 import Loading from "components/Loading"
+import { useAuth0 } from "components/Auth0Provider"
 
 const LoggedIn: NextPage<{}> = () => {
   return (
@@ -20,21 +20,20 @@ export default withPublicPage(LoggedIn)
 
 const ProcessLogin = () => {
   const { errors, setError } = useErrors()
+  const router = useRouter()
+  const { receiveToken } = useAuth0()
+
+  async function handleLogin() {
+    try {
+      await receiveToken()
+      router.push("/")
+    } catch (err) {
+      setError(err)
+    }
+  }
 
   React.useEffect(() => {
-    parseHash((err, result) => {
-      if (err) {
-        setError(
-          new Error(`Could not log in to Courier: ${err.errorDescription}`)
-        )
-        return
-      }
-
-      if (result) {
-        setToken(result)
-        Router.push("/")
-      }
-    })
+    handleLogin()
   }, [])
 
   return (

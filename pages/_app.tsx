@@ -1,10 +1,11 @@
 import React from "react"
-import Router from "next/router"
+import { useRouter } from "next/router"
 import { AppProps } from "next/app"
-import { renewSession, isAuthenticated } from "utils/auth0"
+import { isAuthenticated } from "utils/auth0"
 import { config } from "@fortawesome/fontawesome-svg-core"
 import NProgress from "nprogress"
 import MDXContainer from "components/MDXContainer"
+import { Auth0Provider, useAuth0 } from "components/Auth0Provider"
 
 config.autoAddCss = false
 
@@ -12,14 +13,17 @@ import "components/Tailwind.css"
 import "components/Progress.css"
 import "@fortawesome/fontawesome-svg-core/styles.css"
 
-Router.events.on("routeChangeStart", (url: string) => {
-  console.log(`Loading: ${url}`)
-  NProgress.start()
-})
-Router.events.on("routeChangeComplete", () => NProgress.done())
-Router.events.on("routeChangeError", () => NProgress.done())
+const App: React.FC<AppProps> = props => (
+  <Auth0Provider>
+    <AppInner {...props} />
+  </Auth0Provider>
+)
 
-const App: React.FC<AppProps> = ({ Component, pageProps, router }) => {
+export default App
+
+function useAuthenticating(): boolean {
+  const router = useRouter()
+  const { renewSession } = useAuth0()
   const [isAuthenticating, setAuthenticating] = React.useState(true)
 
   async function handleAuthenticating() {
@@ -49,11 +53,38 @@ const App: React.FC<AppProps> = ({ Component, pageProps, router }) => {
     handleAuthenticating()
   }, [])
 
+  return isAuthenticating
+}
+
+function useProgressBar() {
+  const router = useRouter()
+
+  React.useEffect(() => {
+    const onStart = (url: string) => {
+      console.log(`Loading: ${url}`)
+      NProgress.start()
+    }
+    const onEnd = () => NProgress.done()
+
+    router.events.on("routeChangeStart", onStart)
+    router.events.on("routeChangeComplete", onEnd)
+    router.events.on("routeChangeError", onEnd)
+
+    return () => {
+      router.events.off("routeChangeStart", onStart)
+      router.events.off("routeChangeComplete", onEnd)
+      router.events.off("routeChangeError", onEnd)
+    }
+  }, [])
+}
+
+const AppInner: React.FC<AppProps> = ({ Component, pageProps }) => {
+  const isAuthenticating = useAuthenticating()
+  useProgressBar()
+
   return (
     <MDXContainer>
       <Component {...pageProps} isAuthenticating={isAuthenticating} />
     </MDXContainer>
   )
 }
-
-export default App

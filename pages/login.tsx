@@ -3,9 +3,11 @@ import withPublicPage from "hocs/withPublicPage"
 import { NextPage } from "next"
 import Head from "components/Head"
 import Loading from "components/Loading"
-import { authorize } from "utils/auth0"
+import { useAuth0 } from "components/Auth0Provider"
 
-const Login: NextPage<{}> = () => {
+const Login: NextPage = () => {
+  const { authorize } = useAuth0()
+
   React.useEffect(() => {
     authorize()
   }, [])

@@ -1,6 +1,9 @@
-import { getToken, logout } from "utils/auth0"
+import { getToken } from "utils/auth0"
+import { useAuth0 } from "components/Auth0Provider"
 
 const UserActionsCard: React.FC = () => {
+  const { logout } = useAuth0()
+
   async function copyAPIToken() {
     const token = getToken(null, "accessToken")
     if (token) {
