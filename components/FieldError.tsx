@@ -1,6 +1,5 @@
-import { Box } from "@rebass/emotion"
-import Icon from "./Icon"
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface Props {
   children?: React.ReactNode
@@ -8,9 +7,9 @@ interface Props {
 
 export const FieldError: React.FC<Props> = ({ children }) => {
   return (
-    <Box color="red.900" mb={3}>
-      <Icon mr={2} mt="2px" color="red.500" icon={faExclamationCircle} />
+    <div className="mb-4 text-red-10 flex items-center">
+      <FontAwesomeIcon icon={faExclamationCircle} className="text-red-6 mr-2" />
       {children}
-    </Box>
+    </div>
   )
 }

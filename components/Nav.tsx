@@ -11,7 +11,6 @@ import {
   faBars,
 } from "@fortawesome/free-solid-svg-icons"
 import { faTwitter } from "@fortawesome/free-brands-svg-icons"
-import Icon from "components/Icon"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useRouter } from "next/router"
 
@@ -102,7 +101,7 @@ const NavItem = ({ href, icon, children, brand = false }: NavItemProps) => {
         <a
           className={`font-bold no-underline inline-flex items-center py-2 px-3 h-full flex-shrink-0 sm:py-3 sm:py-4 hover:text-primary-7 ${activeClass} ${brandClass}`}
         >
-          {icon && <Icon mr={2} icon={icon} />}
+          {icon && <FontAwesomeIcon className="mr-2" icon={icon} />}
           {children}
         </a>
       </Link>

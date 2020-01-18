@@ -22,7 +22,7 @@ import TweetCardActions from "components/TweetCardActions"
 import AsyncButton from "components/AsyncButton"
 import { useAuth } from "components/AuthProvider"
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons"
-import Icon from "components/Icon"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 mention(linkify)
 
@@ -239,7 +239,7 @@ const PostedActions: React.FC<PostedActionsProps> = ({ tweet }) => {
           className="btn btn-third btn-third-secondary"
         >
           Posted <Moment fromNow>{tweet.postedAt}</Moment>{" "}
-          <Icon ml={1} icon={faExternalLinkAlt} />
+          <FontAwesomeIcon className="ml-1" icon={faExternalLinkAlt} />
         </a>
       }
     />
