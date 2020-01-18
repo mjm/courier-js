@@ -1,30 +1,35 @@
 import React from "react"
 import { getUser, isAuthenticated } from "utils/auth0"
 import Nav from "components/Nav"
-import { NextPageContext, NextPage } from "next"
+import { NextPageContext, NextPage, NextComponentType } from "next"
 import { AuthProvider } from "components/AuthProvider"
 
-type DefaultPageProps<T> = T & {
-  user: any
-  isAuthenticating: boolean
-  isAuthenticated: boolean
-}
+export type DefaultPageWrapped<P = {}, IP = P> = NextComponentType<
+  DefaultPageContext,
+  IP,
+  P
+>
 
-export interface DefaultPage<T> {
-  (props: DefaultPageProps<T>): JSX.Element
-  getInitialProps?(ctx: DefaultPageContext): Promise<T>
-}
-
-export type DefaultPageResult<T> = NextPage<DefaultPageProps<T>>
+export type DefaultPage<P, IP = P> = NextPage<
+  P & {
+    user: any
+    isAuthenticating: boolean
+    isAuthenticated: boolean
+  },
+  IP & {
+    user: any
+    isAuthenticated: boolean
+  }
+>
 
 export interface DefaultPageContext extends NextPageContext {
   user: any
 }
 
-export default function withDefaultPage<T>(
-  Page: NextPage<T>
-): DefaultPageResult<T> {
-  const defaultPage: DefaultPageResult<T> = props => {
+export default function withDefaultPage<P, IP = P>(
+  Page: DefaultPageWrapped<P, IP>
+): DefaultPage<P, IP> {
+  const defaultPage: DefaultPage<P, IP> = props => {
     const { user, isAuthenticated, isAuthenticating } = props
 
     return (
@@ -45,7 +50,7 @@ export default function withDefaultPage<T>(
 
     let pageProps: any = {}
     if (Page.getInitialProps) {
-      pageProps = await Page.getInitialProps({ ...ctx, user } as any)
+      pageProps = await Page.getInitialProps({ ...ctx, user })
     }
 
     return {

@@ -24,17 +24,34 @@ interface WithDataOptions<Props, Operation extends OperationType> {
   getVariables?: (props: Props) => Operation["variables"]
 }
 
+type WithDataWrapped<P, IP> = NextPage<
+  P & {
+    environment?: Environment
+  },
+  IP
+>
+
+type DataPage<P, IP> = NextPage<
+  P & {
+    queryRecords: any
+  },
+  IP & {
+    queryRecords: any
+  }
+>
+
 function withData<
+  Operation extends OperationType,
   P extends Operation["response"] & Object,
-  Operation extends OperationType
+  IP = P
 >(
-  Page: NextPage<P, any>,
-  options: WithDataOptions<P, Operation> = {}
-): NextPage<P> {
-  const dataPage: NextPage<any, any> = ({ queryRecords, ...props }) => {
+  Page: WithDataWrapped<P, IP>,
+  options: WithDataOptions<IP, Operation> = {}
+): DataPage<P, IP> {
+  const dataPage: DataPage<P, IP> = props => {
     const environmentRef = React.useRef<Environment | null>(null)
     if (environmentRef.current === null) {
-      environmentRef.current = initEnvironment(undefined, queryRecords)
+      environmentRef.current = initEnvironment(undefined, props.queryRecords)
     }
 
     return (
@@ -52,7 +69,7 @@ function withData<
 
   dataPage.getInitialProps = async ctx => {
     // @ts-ignore
-    let composedInitialProps: P = {}
+    let composedInitialProps: IP = {}
     if (Page.getInitialProps) {
       composedInitialProps = await Page.getInitialProps(ctx)
     }

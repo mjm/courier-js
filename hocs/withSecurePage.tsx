@@ -1,14 +1,14 @@
 import React from "react"
-import withDefaultPage, { DefaultPageResult } from "hocs/withDefaultPage"
+import withDefaultPage, { DefaultPage } from "hocs/withDefaultPage"
 import Loading from "components/Loading"
 import { NextPage } from "next"
 import { useAuth } from "components/AuthProvider"
 import Router from "next/router"
 
-export default function withSecurePage<T>(
-  Page: NextPage<T>
-): DefaultPageResult<T> {
-  const securePage: NextPage<T> = props => {
+export default function withSecurePage<P, IP>(
+  Page: NextPage<P, IP>
+): DefaultPage<P, IP> {
+  const securePage: NextPage<P, IP> = props => {
     const { isAuthenticated, isAuthenticating } = useAuth()
 
     if (!isAuthenticated) {
