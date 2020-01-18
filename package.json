@@ -20,8 +20,6 @@
     "migrate": "node-pg-migrate up && npm run gen:schema"
   },
   "dependencies": {
-    "@emotion/babel-preset-css-prop": "^10.0.9",
-    "@emotion/core": "^10.0.10",
     "@fortawesome/fontawesome-svg-core": "^1.2.26",
     "@fortawesome/free-brands-svg-icons": "^5.12.0",
     "@fortawesome/free-solid-svg-icons": "^5.12.0",
@@ -56,7 +54,6 @@
     "autoprefixer": "^9.7.3",
     "cookie": "^0.4.0",
     "dataloader": "^1.4.0",
-    "emotion-theming": "^10.0.10",
     "feed-locator": "^1.0.0",
     "formik": "^2.1.1",
     "graphql-iso-date": "^3.6.1",
@@ -112,7 +109,6 @@
     "@types/jwt-decode": "^2.2.1",
     "@types/react-relay": "^7.0.3",
     "@types/relay-runtime": "^6.0.11",
-    "babel-plugin-emotion": "^10.0.13",
     "babel-plugin-module-resolver": "^3.2.0",
     "babel-plugin-relay": "^7.1.0",
     "babel-plugin-transform-typescript-metadata": "^0.2.2",

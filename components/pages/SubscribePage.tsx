@@ -35,7 +35,7 @@ const SubscribePage: NextPage<Props> = ({ currentUser }) => {
         <div className="text-6xl font-medium text-center p-6 flex flex-row justify-center items-start">
           <span
             className="font-bold text-primary-7"
-            css={{ lineHeight: "64px" }}
+            style={{ lineHeight: "64px" }}
           >
             $5
           </span>

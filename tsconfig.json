@@ -24,7 +24,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "esnext",
-    "types": ["node", "@emotion/core", "reflect-metadata"],
+    "types": ["node", "reflect-metadata"],
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,

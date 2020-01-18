@@ -5,11 +5,12 @@ import { FeedList_feeds } from "@generated/FeedList_feeds.graphql"
 import FeedCard from "components/FeedCard"
 import Link from "next/link"
 
-interface Props {
-  feeds: FeedList_feeds
-}
+// need to use CSS Grid _and_ media queries, so a CSS module is the best thing here
+import styles from "components/FeedList.module.css"
 
-const FeedList: React.FC<Props> = ({ feeds }) => {
+const FeedList: React.FC<{
+  feeds: FeedList_feeds
+}> = ({ feeds }) => {
   if (!feeds.allSubscribedFeeds) {
     return null
   }
@@ -35,20 +36,7 @@ const FeedList: React.FC<Props> = ({ feeds }) => {
         )}
       </div>
       <div className="-m-2">
-        <div
-          className="w-full mb-4"
-          css={{
-            display: "grid",
-            gridTemplateColumns: "1fr",
-            gridAutoRows: "1fr",
-            "@media (min-width: 640px)": {
-              gridTemplateColumns: "1fr 1fr",
-            },
-            "@media (min-width: 1024px)": {
-              gridTemplateColumns: "1fr 1fr 1fr",
-            },
-          }}
-        >
+        <div className={`w-full mb-4 ${styles.feedGrid}`}>
           {edges.map(({ node }) => (
             <div key={node.id} className="p-2">
               <FeedCard feed={node} />

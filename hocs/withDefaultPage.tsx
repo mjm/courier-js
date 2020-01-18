@@ -1,10 +1,8 @@
 import React from "react"
-import { getUser, isAuthenticated } from "../utils/auth0"
-import Nav from "../components/Nav"
+import { getUser, isAuthenticated } from "utils/auth0"
+import Nav from "components/Nav"
 import { NextPageContext, NextPage } from "next"
-import { ThemeProvider } from "emotion-theming"
-import * as theme from "../utils/theme"
-import { AuthProvider } from "../components/AuthProvider"
+import { AuthProvider } from "components/AuthProvider"
 
 type DefaultPageProps<T> = T & {
   user: any
@@ -30,16 +28,14 @@ export default function withDefaultPage<T>(
     const { user, isAuthenticated, isAuthenticating } = props
 
     return (
-      <ThemeProvider theme={theme}>
-        <AuthProvider
-          user={user}
-          isAuthenticated={isAuthenticated}
-          isAuthenticating={isAuthenticating}
-        >
-          <Nav user={user} isAuthenticating={isAuthenticating} />
-          <Page {...props} />
-        </AuthProvider>
-      </ThemeProvider>
+      <AuthProvider
+        user={user}
+        isAuthenticated={isAuthenticated}
+        isAuthenticating={isAuthenticating}
+      >
+        <Nav user={user} isAuthenticating={isAuthenticating} />
+        <Page {...props} />
+      </AuthProvider>
     )
   }
 
