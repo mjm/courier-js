@@ -4,7 +4,7 @@
 }
 
 [data-reach-alert-dialog-label] {
-  @apply px-4 py-2 rounded-t-lg bg-primary-10 text-primary-1 text-sm font-medium uppercase;
+  @apply p-3 rounded-t-lg text-primary-10 font-medium text-sm text-center;
 }
 
 [data-reach-alert-dialog-description] {

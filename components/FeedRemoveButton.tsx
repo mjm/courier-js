@@ -83,7 +83,7 @@ const RemoveDialog: React.FC<{
 
   return (
     <AlertDialog leastDestructiveRef={buttonRef} onDismiss={closeDialog}>
-      <AlertDialogLabel>Are you sure?</AlertDialogLabel>
+      <AlertDialogLabel>Stop Watching Feed</AlertDialogLabel>
 
       <ErrorBox className="m-4" />
 
