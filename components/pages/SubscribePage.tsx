@@ -10,9 +10,9 @@ import { SubscribePageQueryResponse } from "@generated/SubscribePageQuery.graphq
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCheckCircle, faCreditCard } from "@fortawesome/free-solid-svg-icons"
 
-type Props = SubscribePageQueryResponse
-
-const SubscribePage: NextPage<Props> = ({ currentUser }) => {
+const SubscribePage: NextPage<SubscribePageQueryResponse> = ({
+  currentUser,
+}) => {
   const [stripe, setStripe] = React.useState<stripe.Stripe | null>(null)
   React.useEffect(() => {
     setStripe(window.Stripe(process.env.STRIPE_KEY!))

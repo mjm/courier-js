@@ -8,11 +8,11 @@ import withData from "hocs/withData"
 import { Environment } from "react-relay"
 import { addFeed } from "@mutations/AddFeed"
 import Router from "next/router"
+import { NextPage } from "next"
 
-interface Props {
-  environment: Environment
-}
-const NewFeedPage: React.FC<Props> = ({ environment }) => {
+const NewFeedPage: NextPage<{ environment: Environment }> = ({
+  environment,
+}) => {
   const [url, setURL] = React.useState("")
 
   async function watchFeed() {

@@ -8,10 +8,9 @@ import withSecurePage from "hocs/withSecurePage"
 import FeedList from "components/FeedList"
 import { FeedsPageQueryResponse } from "@generated/FeedsPageQuery.graphql"
 
-type Props = FeedsPageQueryResponse & {
+const FeedsPage: NextPage<FeedsPageQueryResponse & {
   environment: Environment
-}
-const FeedsPage: NextPage<Props> = ({ environment, ...props }) => {
+}> = ({ environment, ...props }) => {
   return (
     <main className="container mx-auto my-8">
       <Head title="Watched Feeds" />

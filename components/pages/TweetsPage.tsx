@@ -12,8 +12,11 @@ import SubscriptionProvider, {
 import Notice from "components/Notice"
 import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
 
-type Props = TweetsPageQueryResponse
-const TweetsPage: NextPage<Props> = ({ upcoming, past, currentUser }) => {
+const TweetsPage: NextPage<TweetsPageQueryResponse> = ({
+  upcoming,
+  past,
+  currentUser,
+}) => {
   return (
     <main className="container my-8 mx-auto py-0 px-8">
       <Head title="Your Tweets" />
