@@ -1,5 +1,5 @@
 import { graphql, Environment, commitMutation } from "react-relay"
-import { EditTweetMutationResponse } from "../../lib/__generated__/EditTweetMutation.graphql"
+import { EditTweetMutationResponse } from "@generated/EditTweetMutation.graphql"
 
 const mutation = graphql`
   mutation EditTweetMutation($input: EditTweetInput!) {

@@ -14,7 +14,7 @@ import { ReactRelayContext } from "react-relay"
 import fetch from "isomorphic-unfetch"
 import { IncomingMessage } from "http"
 import { NextPageContext, NextPage } from "next"
-import { getToken } from "../utils/auth0"
+import { getToken } from "utils/auth0"
 import Router from "next/router"
 
 let relayEnvironment: Environment | null = null

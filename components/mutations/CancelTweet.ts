@@ -1,5 +1,5 @@
 import { graphql, commitMutation, Environment } from "react-relay"
-import { CancelTweetMutationResponse } from "../../lib/__generated__/CancelTweetMutation.graphql"
+import { CancelTweetMutationResponse } from "@generated/CancelTweetMutation.graphql"
 
 const mutation = graphql`
   mutation CancelTweetMutation($input: CancelTweetInput!) {

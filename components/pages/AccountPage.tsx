@@ -1,5 +1,5 @@
 import { NextPage } from "next"
-import Head from "../Head"
+import Head from "components/Head"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
 import { graphql } from "react-relay"
