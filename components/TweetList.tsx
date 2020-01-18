@@ -5,7 +5,6 @@ import {
   RelayPaginationProp,
 } from "react-relay"
 import { TweetList_tweets } from "@generated/TweetList_tweets.graphql"
-import Group from "components/Group"
 import TweetCard from "components/TweetCard"
 
 interface Props {
@@ -29,27 +28,25 @@ const TweetList = ({
       <div className="pb-4 text-neutral-10">
         {totalCount === 0 ? emptyDescription : description(totalCount)}
       </div>
-      <Group direction="column" spacing={3}>
-        {edges.map(edge => (
-          <TweetCard key={edge.node.id} tweet={edge.node} />
-        ))}
-        {hasMore() && (
-          <div className="flex justify-center">
-            <button
-              className="btn btn-third btn-third-neutral"
-              disabled={isLoading}
-              onClick={() => {
-                setLoading(true)
-                loadMore(10, () => {
-                  setLoading(false)
-                })
-              }}
-            >
-              Show more…
-            </button>
-          </div>
-        )}
-      </Group>
+      {edges.map(edge => (
+        <TweetCard key={edge.node.id} tweet={edge.node} />
+      ))}
+      {hasMore() && (
+        <div className="flex justify-center">
+          <button
+            className="btn btn-third btn-third-neutral"
+            disabled={isLoading}
+            onClick={() => {
+              setLoading(true)
+              loadMore(10, () => {
+                setLoading(false)
+              })
+            }}
+          >
+            Show more…
+          </button>
+        </div>
+      )}
     </div>
   )
 }

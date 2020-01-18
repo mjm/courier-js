@@ -73,7 +73,7 @@ const EditTweetForm = ({ tweet, onStopEditing, relay }: Props) => {
                   <button
                     type="button"
                     disabled={isSubmitting}
-                    className="btn btn-first btn-first-primary"
+                    className="btn btn-first btn-first-primary mr-2"
                     onClick={() => submit("post")}
                   >
                     Post now

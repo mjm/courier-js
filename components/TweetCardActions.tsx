@@ -1,5 +1,4 @@
 import React from "react"
-import Group from "components/Group"
 
 interface Props {
   inline?: boolean
@@ -28,11 +27,7 @@ const TweetCardActions: React.FC<Props> = ({
         </div>
       )}
       <div className="flex">
-        {left && (
-          <Group direction="row" spacing={2}>
-            {left}
-          </Group>
-        )}
+        {left && <div>{left}</div>}
         {right && <div className="ml-auto">{right}</div>}
       </div>
     </div>

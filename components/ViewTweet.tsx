@@ -168,7 +168,7 @@ const DraftActions: React.FC<DraftActionsProps> = ({
       left={
         <>
           <AsyncButton
-            className="btn btn-first btn-first-primary"
+            className="btn btn-first btn-first-primary mr-2"
             onClick={async () => {
               try {
                 await postTweet(environment, { id: tweet.id! })
