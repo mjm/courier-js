@@ -66,14 +66,7 @@ const SubscribePage: NextPage<Props> = ({ currentUser }) => {
         </div>
 
         {isFormVisible ? (
-          <Elements
-            fonts={[
-              {
-                cssSrc:
-                  "https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap",
-              },
-            ]}
-          >
+          <Elements fonts={[{ cssSrc: "https://rsms.me/inter/inter.css" }]}>
             <SubscribeForm user={currentUser} />
           </Elements>
         ) : (
