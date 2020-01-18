@@ -30,7 +30,6 @@ const EditTweetForm = ({ tweet, onStopEditing, relay }: Props) => {
     <Formik
       initialValues={initialValues}
       initialStatus={{ error: null }}
-      isInitialValid
       onSubmit={async ({ action, ...values }, actions) => {
         const input = { id: tweet.id, ...values }
         input.mediaURLs = input.mediaURLs.filter(url => url !== "")

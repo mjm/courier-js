@@ -80,17 +80,12 @@ const SubscribeForm = injectStripe<Props>(
           ...initialSubscribeData,
           method: savedCard ? "use-saved-card" : "new-card",
         }}
-        isInitialValid={!!savedCard}
+        validateOnMount
         initialStatus={{ error: null }}
         validationSchema={subscribeSchema}
         onSubmit={onSubmit}
-        render={({
-          values,
-          isSubmitting,
-          isValid,
-          setStatus,
-          status: { error },
-        }) => (
+      >
+        {({ values, isSubmitting, isValid, setStatus, status: { error } }) => (
           <Form className="px-6 pb-6">
             {savedCard && (
               <>
@@ -140,7 +135,7 @@ const SubscribeForm = injectStripe<Props>(
             </div>
           </Form>
         )}
-      />
+      </Formik>
     )
   }
 )
