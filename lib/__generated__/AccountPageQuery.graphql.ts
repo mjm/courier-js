@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash f3c6e59970f6e9a8ce222cbed41fba71 */
+/* @relayHash 90f3211f4bc8b8da3d9cd26afbcccc01 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -49,7 +49,7 @@ fragment EventTableRow_event on Event {
 }
 
 fragment RecentEventsCard_events on Query {
-  allEvents(first: 15) {
+  allEvents(first: 10) {
     edges {
       node {
         id
@@ -100,7 +100,7 @@ var v0 = [
   {
     "kind": "Literal",
     "name": "first",
-    "value": 15
+    "value": 10
   }
 ],
 v1 = {
@@ -270,7 +270,7 @@ return {
         "kind": "LinkedField",
         "alias": null,
         "name": "allEvents",
-        "storageKey": "allEvents(first:15)",
+        "storageKey": "allEvents(first:10)",
         "args": (v0/*: any*/),
         "concreteType": "EventConnection",
         "plural": false,
@@ -413,7 +413,7 @@ return {
     "operationKind": "query",
     "name": "AccountPageQuery",
     "id": null,
-    "text": "query AccountPageQuery {\n  currentUser {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment CreditCard_card on CreditCard {\n  brand\n  lastFour\n  expirationMonth\n  expirationYear\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 15) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n      ...CreditCard_card\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n  ...SubscriptionStatus_user\n}\n\nfragment SubscriptionStatus_user on User {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n  picture\n}\n",
+    "text": "query AccountPageQuery {\n  currentUser {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment CreditCard_card on CreditCard {\n  brand\n  lastFour\n  expirationMonth\n  expirationYear\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 10) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n      ...CreditCard_card\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n  ...SubscriptionStatus_user\n}\n\nfragment SubscriptionStatus_user on User {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n  picture\n}\n",
     "metadata": {}
   }
 };

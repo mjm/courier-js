@@ -1,21 +1,22 @@
 import Moment from "react-moment"
 import { createFragmentContainer, graphql } from "react-relay"
-import { EventTableRow_event } from "../lib/__generated__/EventTableRow_event.graphql"
+import { EventTableRow_event } from "@generated/EventTableRow_event.graphql"
+import Link from "next/link"
 
-interface Props {
+const EventTableRow: React.FC<{
   event: EventTableRow_event
-}
-
-const EventTableRow: React.FC<Props> = ({ event }) => {
+}> = ({ event }) => {
   return (
-    <tr>
-      <td>
+    <div
+      className={`p-4 flex items-baseline justify-stretch border-neutral-2 border-t first:border-0`}
+    >
+      <div className="flex-grow truncate text-neutral-10">
         <EventDescription event={event} />
-      </td>
-      <td>
+      </div>
+      <div className="flex-shrink-0 ml-4 text-sm text-neutral-8">
         <Moment fromNow>{event.createdAt}</Moment>
-      </td>
-    </tr>
+      </div>
+    </div>
   )
 }
 
@@ -38,38 +39,38 @@ export default createFragmentContainer(EventTableRow, {
   `,
 })
 
-interface EventDescriptionProps {
+const EventDescription: React.FC<{
   event: EventTableRow_event
-}
-
-const EventDescription: React.FC<EventDescriptionProps> = ({ event }) => {
-  const feedTitle = event.feed && event.feed.title
-  const tweetBody = event.tweet && event.tweet.body
+}> = ({ event }) => {
+  const tweetBody = event.tweet?.body
 
   switch (event.eventType) {
     case "FEED_SET_AUTOPOST":
       return (
         <>
           You turned {event.boolValue ? "on" : "off"} autoposting for{" "}
-          <em>{feedTitle}</em>
+          <FeedLink id={event.feed!.id} title={event.feed!.title} />
         </>
       )
     case "FEED_REFRESH":
       return (
         <>
-          You refreshed <em>{feedTitle}</em>
+          You refreshed{" "}
+          <FeedLink id={event.feed!.id} title={event.feed!.title} />
         </>
       )
     case "FEED_SUBSCRIBE":
       return (
         <>
-          You subscribed to <em>{feedTitle}</em>
+          You subscribed to{" "}
+          <FeedLink id={event.feed!.id} title={event.feed!.title} />
         </>
       )
     case "FEED_UNSUBSCRIBE":
       return (
         <>
-          You unsubscribed from <em>{feedTitle}</em>
+          You unsubscribed from{" "}
+          <FeedLink id={event.feed!.id} title={event.feed!.title} />
         </>
       )
     case "TWEET_CANCEL":
@@ -115,4 +116,12 @@ const EventDescription: React.FC<EventDescriptionProps> = ({ event }) => {
     default:
       return <></>
   }
+}
+
+const FeedLink: React.FC<{ id: string; title: string }> = ({ id, title }) => {
+  return (
+    <Link href="/feeds/[id]" as={`/feeds/${id}`}>
+      <a className="font-medium text-primary-9 hover:underline">{title}</a>
+    </Link>
+  )
 }
