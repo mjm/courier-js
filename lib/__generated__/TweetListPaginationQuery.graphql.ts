@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 47a41698e6935c5c9a059c4c0509c155 */
+/* @relayHash d590d67ef93a2d5201e496d360176245 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -38,10 +38,12 @@ fragment EditTweetForm_tweet on Tweet {
   mediaURLs
 }
 
-fragment TweetCard_tweet on Tweet {
-  status
+fragment TweetCard_tweet on TweetContent {
   ...EditTweetForm_tweet
   ...ViewTweet_tweet
+  ... on Tweet {
+    status
+  }
 }
 
 fragment TweetList_tweets_3KQYpM on User {
@@ -62,16 +64,18 @@ fragment TweetList_tweets_3KQYpM on User {
   }
 }
 
-fragment ViewTweet_tweet on Tweet {
-  id
+fragment ViewTweet_tweet on TweetContent {
   body
   mediaURLs
-  status
   action
-  postAfter
-  postedAt
-  postedTweetID
   retweetID
+  ... on Tweet {
+    id
+    status
+    postAfter
+    postedAt
+    postedTweetID
+  }
 }
 */
 
@@ -204,13 +208,6 @@ return {
                       {
                         "kind": "ScalarField",
                         "alias": null,
-                        "name": "status",
-                        "args": null,
-                        "storageKey": null
-                      },
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
                         "name": "body",
                         "args": null,
                         "storageKey": null
@@ -232,6 +229,20 @@ return {
                       {
                         "kind": "ScalarField",
                         "alias": null,
+                        "name": "retweetID",
+                        "args": null,
+                        "storageKey": null
+                      },
+                      {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "name": "status",
+                        "args": null,
+                        "storageKey": null
+                      },
+                      {
+                        "kind": "ScalarField",
+                        "alias": null,
                         "name": "postAfter",
                         "args": null,
                         "storageKey": null
@@ -247,13 +258,6 @@ return {
                         "kind": "ScalarField",
                         "alias": null,
                         "name": "postedTweetID",
-                        "args": null,
-                        "storageKey": null
-                      },
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "retweetID",
                         "args": null,
                         "storageKey": null
                       },
@@ -328,7 +332,7 @@ return {
     "operationKind": "query",
     "name": "TweetListPaginationQuery",
     "id": null,
-    "text": "query TweetListPaginationQuery(\n  $filter: TweetFilter\n  $count: Int!\n  $cursor: Cursor\n) {\n  viewer {\n    ...TweetList_tweets_3KQYpM\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment TweetCard_tweet on Tweet {\n  status\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n}\n\nfragment TweetList_tweets_3KQYpM on User {\n  allTweets(filter: $filter, first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  id\n  body\n  mediaURLs\n  status\n  action\n  postAfter\n  postedAt\n  postedTweetID\n  retweetID\n}\n",
+    "text": "query TweetListPaginationQuery(\n  $filter: TweetFilter\n  $count: Int!\n  $cursor: Cursor\n) {\n  viewer {\n    ...TweetList_tweets_3KQYpM\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment TweetCard_tweet on TweetContent {\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n  ... on Tweet {\n    status\n  }\n}\n\nfragment TweetList_tweets_3KQYpM on User {\n  allTweets(filter: $filter, first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweet_tweet on TweetContent {\n  body\n  mediaURLs\n  action\n  retweetID\n  ... on Tweet {\n    id\n    status\n    postAfter\n    postedAt\n    postedTweetID\n  }\n}\n",
     "metadata": {}
   }
 };

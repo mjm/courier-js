@@ -1,0 +1,18 @@
+/* purgecss start ignore */
+@import "tailwindcss/base";
+/* purgecss end ignore */
+
+@import "tailwindcss/components";
+@import "./Button.css";
+@import "@reach/dialog/styles.css";
+@import "./Dialog.css";
+
+@import "tailwindcss/utilities";
+
+.break-words {
+  word-break: break-word;
+}
+
+body {
+  @apply font-body bg-neutral-2;
+}

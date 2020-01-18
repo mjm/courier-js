@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next"
-import { CourierContext } from "../../lib/context"
-import { completeIndieAuth } from "../../utils/indieauth"
+import { CourierContext } from "lib/context"
+import { completeIndieAuth } from "utils/indieauth"
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { user } = await CourierContext.createForRequest(req)

@@ -1,39 +1,22 @@
-import { getToken } from "../utils/auth0"
-import Card from "./Card"
-import Group from "./Group"
-import { Button } from "./Button"
-import { faCopy } from "@fortawesome/free-solid-svg-icons"
 import { createFragmentContainer, graphql } from "react-relay"
-import { UserInfoCard_user } from "../lib/__generated__/UserInfoCard_user.graphql"
-import InfoField from "./InfoField"
+import { UserInfoCard_user } from "@generated/UserInfoCard_user.graphql"
 
-interface Props {
+const UserInfoCard: React.FC<{
   user: UserInfoCard_user
-}
-
-const UserInfoCard: React.FC<Props> = ({ user }) => {
-  async function copyAPIToken() {
-    const token = getToken(null, "accessToken")
-    if (token) {
-      await navigator.clipboard.writeText(token)
-    }
-  }
+}> = ({ user }) => {
+  // async function copyAPIToken() {
+  //   const token = getToken(null, "accessToken")
+  //   if (token) {
+  //     await navigator.clipboard.writeText(token)
+  //   }
+  // }
 
   return (
-    <Card>
-      <InfoField label="Name">{user.name}</InfoField>
-      <InfoField label="Twitter Username">
-        <a href={`https://twitter.com/${user.nickname}`} target="_blank">
-          @{user.nickname}
-        </a>
-      </InfoField>
-
-      <Group mt={3} direction="row" spacing={2} wrap alignItems="center">
-        <Button icon={faCopy} onClick={copyAPIToken}>
-          Copy API Token
-        </Button>
-      </Group>
-    </Card>
+    <div className="rounded-lg shadow-md bg-white p-4 flex flex-col items-center mb-4">
+      <img src={user.picture} className="w-12 rounded-full mb-3" />
+      <h1 className="font-bold text-primary-10">{user.name}</h1>
+      <h2 className="text-neutral-5 text-sm">@{user.nickname}</h2>
+    </div>
   )
 }
 
@@ -42,6 +25,7 @@ export default createFragmentContainer(UserInfoCard, {
     fragment UserInfoCard_user on User {
       name
       nickname
+      picture
     }
   `,
 })

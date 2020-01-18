@@ -1,25 +1,31 @@
 import React from "react"
-import { CardProps, Box, Text } from "@rebass/emotion"
-import Notice from "./Notice"
-import { useErrors } from "./ErrorContainer"
+import Notice from "components/Notice"
+import { useErrors } from "components/ErrorContainer"
 
-interface ErrorBoxProps extends CardProps {
+interface ErrorBoxProps {
+  title?: string
+  className?: string
   error?: Error
   errors?: Error[]
 }
-export const ErrorBox = ({ error, errors, ...props }: ErrorBoxProps) => {
+export const ErrorBox = ({
+  title,
+  className,
+  error,
+  errors,
+}: ErrorBoxProps) => {
   // pull errors from the ErrorContainer if none are passed in
   const { errors: ctxErrors, clearErrors } = useErrors()
   let onClose: undefined | (() => void)
 
-  if (ctxErrors && !errors) {
+  if (ctxErrors && !errors && !error) {
     errors = ctxErrors
     onClose = clearErrors
   } else {
     errors = errors || []
 
     if (error) {
-      errors = [...(errors || []), error]
+      errors = [...errors, ...unwrapRelayError(error)]
     }
   }
 
@@ -28,19 +34,28 @@ export const ErrorBox = ({ error, errors, ...props }: ErrorBoxProps) => {
   }
 
   return (
-    <Notice {...props} variant="error" onClose={onClose}>
+    <Notice
+      title={title}
+      variant="error"
+      onClose={onClose}
+      className={className}
+    >
       {errors.length > 1 ? (
-        <>
-          <Text>There were some issues adding the feed:</Text>
-          <Box as="ul" mt={2} mb={1} ml={2} pl={3}>
-            {errors.map((err: Error, i: number) => (
-              <li key={i}>{err.message}</li>
-            ))}
-          </Box>
-        </>
+        <ul className="ml-2 pl-3">
+          {errors.map((err: Error, i: number) => (
+            <li key={i}>{err.message}</li>
+          ))}
+        </ul>
       ) : (
         errors[0].message
       )}
     </Notice>
   )
+}
+
+function unwrapRelayError(error: any): Error[] {
+  if (error.name === "RelayNetwork") {
+    return error.source.errors.map(({ message }: any) => new Error(message))
+  }
+  return [error]
 }

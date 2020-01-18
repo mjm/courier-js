@@ -1,24 +1,59 @@
 import React from "react"
 
 import { createPaginationContainer, graphql } from "react-relay"
-import { FeedList_feeds } from "../lib/__generated__/FeedList_feeds.graphql"
-import { FlushContainer } from "./Container"
-import Group from "./Group"
-import FeedCard from "./FeedCard"
+import { FeedList_feeds } from "@generated/FeedList_feeds.graphql"
+import FeedCard from "components/FeedCard"
+import Link from "next/link"
 
-interface Props {
+// need to use CSS Grid _and_ media queries, so a CSS module is the best thing here
+import styles from "components/FeedList.module.css"
+
+const FeedList: React.FC<{
   feeds: FeedList_feeds
-}
+}> = ({ feeds }) => {
+  if (!feeds.allSubscribedFeeds) {
+    return null
+  }
 
-const FeedList: React.FC<Props> = ({ feeds }) => {
+  const { edges, totalCount } = feeds.allSubscribedFeeds
+
   return (
-    <FlushContainer>
-      <Group direction="column" spacing={3} mb={3}>
-        {feeds.allSubscribedFeeds.edges.map(({ node }) => (
-          <FeedCard key={node.id} feed={node} />
-        ))}
-      </Group>
-    </FlushContainer>
+    <div>
+      <div className="pb-4 text-neutral-10">
+        {totalCount === 0 ? (
+          "You aren't watching any feeds yet."
+        ) : totalCount === 1 ? (
+          <>
+            You are currently watching{" "}
+            <strong className="text-neutral-9">1 feed</strong> for new posts.
+          </>
+        ) : (
+          <>
+            You are currently watching{" "}
+            <strong className="text-neutral-10">{totalCount} feeds</strong> for
+            new posts.
+          </>
+        )}
+      </div>
+      <div className="-m-2">
+        <div className={`w-full mb-4 ${styles.feedGrid}`}>
+          {edges.map(({ node }) => (
+            <div key={node.id} className="p-2">
+              <FeedCard feed={node} />
+            </div>
+          ))}
+          <div className="p-2">
+            <Link href="/feeds/new">
+              <a className="bg-neutral-3 rounded-lg shadow-md p-4 w-full h-full flex justify-center items-center">
+                <div className="m-auto font-medium text-neutral-9">
+                  Watch a new feed…
+                </div>
+              </a>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -39,6 +74,7 @@ export default createPaginationContainer(
               ...FeedCard_feed
             }
           }
+          totalCount
         }
       }
     `,

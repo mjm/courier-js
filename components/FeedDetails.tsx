@@ -1,16 +1,12 @@
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
-import { FeedDetails_feed } from "../lib/__generated__/FeedDetails_feed.graphql"
-import Head from "./Head"
-import { FlushContainer } from "./Container"
-import Group from "./Group"
-import { ErrorBox } from "./ErrorBox"
-import { FeedDetails_user } from "../lib/__generated__/FeedDetails_user.graphql"
-import FeedInfoCard from "./FeedInfoCard"
-import FeedRecentPostList from "./FeedRecentPostList"
-import FeedAutopostCard from "./FeedAutopostCard"
-import FeedRemoveCard from "./FeedRemoveCard"
-import PageHeader from "./PageHeader"
+import { FeedDetails_feed } from "@generated/FeedDetails_feed.graphql"
+import Head from "components/Head"
+import { ErrorBox } from "components/ErrorBox"
+import { FeedDetails_user } from "@generated/FeedDetails_user.graphql"
+import FeedInfoCard from "components/FeedInfoCard"
+import FeedRecentPostList from "components/FeedRecentPostList"
+import FeedRemoveButton from "components/FeedRemoveButton"
 
 interface Props {
   feed: FeedDetails_feed
@@ -19,20 +15,28 @@ interface Props {
 
 const FeedDetails: React.FC<Props> = ({ feed, user }) => {
   return (
-    <>
+    <div className="px-3">
       <Head title={`${feed.feed.title} - Feed Details`} />
 
-      <PageHeader mb={4}>{feed.feed.title}</PageHeader>
-      <FlushContainer>
-        <Group direction="column" spacing={3}>
-          <ErrorBox width={undefined} />
-          <FeedInfoCard feed={feed.feed} user={user} />
+      <div className="w-full flex justify-between items-baseline mb-4">
+        <h2 className="text-xl font-bold text-neutral-9">{feed.feed.title}</h2>
+        <div className="text-sm text-neutral-8">
+          Pulling from{" "}
+          <span className="font-bold text-neutral-10">{feed.feed.url}</span>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap -mx-3">
+        <div className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0 px-3 mb-6">
+          <FeedInfoCard feed={feed} user={user} />
+          <FeedRemoveButton feed={feed} />
+        </div>
+        <div className="w-full md:w-2/3 lg:w-3/4 px-3">
+          <ErrorBox className="mb-4" />
           <FeedRecentPostList feed={feed.feed} />
-          <FeedAutopostCard feed={feed} />
-          <FeedRemoveCard feed={feed} />
-        </Group>
-      </FlushContainer>
-    </>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -42,11 +46,11 @@ export default createFragmentContainer(FeedDetails, {
       id
       feed {
         title
-        ...FeedInfoCard_feed
+        url
         ...FeedRecentPostList_feed
       }
-      ...FeedAutopostCard_feed
-      ...FeedRemoveCard_feed
+      ...FeedInfoCard_feed
+      ...FeedRemoveButton_feed
     }
   `,
   user: graphql`

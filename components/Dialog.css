@@ -1,0 +1,12 @@
+[data-reach-dialog-content] {
+  width: 32rem;
+  @apply max-w-full shadow-xl rounded-lg bg-white p-0;
+}
+
+[data-reach-alert-dialog-label] {
+  @apply p-3 rounded-t-lg text-primary-10 font-medium text-sm text-center;
+}
+
+[data-reach-alert-dialog-description] {
+  @apply p-4 text-neutral-10;
+}

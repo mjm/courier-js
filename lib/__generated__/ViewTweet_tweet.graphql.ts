@@ -5,15 +5,15 @@ import { FragmentRefs } from "relay-runtime";
 export type TweetAction = "RETWEET" | "TWEET" | "%future added value";
 export type TweetStatus = "CANCELED" | "DRAFT" | "POSTED" | "%future added value";
 export type ViewTweet_tweet = {
-    readonly id: string;
     readonly body: string;
     readonly mediaURLs: ReadonlyArray<string>;
-    readonly status: TweetStatus;
     readonly action: TweetAction;
-    readonly postAfter: any | null;
-    readonly postedAt: any | null;
-    readonly postedTweetID: string | null;
     readonly retweetID: string;
+    readonly id?: string;
+    readonly status?: TweetStatus;
+    readonly postAfter?: any | null;
+    readonly postedAt?: any | null;
+    readonly postedTweetID?: string | null;
     readonly " $refType": "ViewTweet_tweet";
 };
 export type ViewTweet_tweet$data = ViewTweet_tweet;
@@ -27,17 +27,10 @@ export type ViewTweet_tweet$key = {
 const node: ReaderFragment = {
   "kind": "Fragment",
   "name": "ViewTweet_tweet",
-  "type": "Tweet",
+  "type": "TweetContent",
   "metadata": null,
   "argumentDefinitions": [],
   "selections": [
-    {
-      "kind": "ScalarField",
-      "alias": null,
-      "name": "id",
-      "args": null,
-      "storageKey": null
-    },
     {
       "kind": "ScalarField",
       "alias": null,
@@ -55,35 +48,7 @@ const node: ReaderFragment = {
     {
       "kind": "ScalarField",
       "alias": null,
-      "name": "status",
-      "args": null,
-      "storageKey": null
-    },
-    {
-      "kind": "ScalarField",
-      "alias": null,
       "name": "action",
-      "args": null,
-      "storageKey": null
-    },
-    {
-      "kind": "ScalarField",
-      "alias": null,
-      "name": "postAfter",
-      "args": null,
-      "storageKey": null
-    },
-    {
-      "kind": "ScalarField",
-      "alias": null,
-      "name": "postedAt",
-      "args": null,
-      "storageKey": null
-    },
-    {
-      "kind": "ScalarField",
-      "alias": null,
-      "name": "postedTweetID",
       "args": null,
       "storageKey": null
     },
@@ -93,8 +58,49 @@ const node: ReaderFragment = {
       "name": "retweetID",
       "args": null,
       "storageKey": null
+    },
+    {
+      "kind": "InlineFragment",
+      "type": "Tweet",
+      "selections": [
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "name": "id",
+          "args": null,
+          "storageKey": null
+        },
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "name": "status",
+          "args": null,
+          "storageKey": null
+        },
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "name": "postAfter",
+          "args": null,
+          "storageKey": null
+        },
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "name": "postedAt",
+          "args": null,
+          "storageKey": null
+        },
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "name": "postedTweetID",
+          "args": null,
+          "storageKey": null
+        }
+      ]
     }
   ]
 };
-(node as any).hash = '4b461a1ad962223b53f87cc3e89892f7';
+(node as any).hash = '4b64de34b31075007ff94db1e8d7cc09';
 export default node;

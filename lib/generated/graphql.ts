@@ -77,7 +77,7 @@ export type DeleteFeedPayload = {
   id: Scalars['ID'],
 };
 
-export type DeviceToken = {
+export type DeviceToken = Node & {
   id: Scalars['ID'],
   token: Scalars['String'],
 };
@@ -92,7 +92,7 @@ export type EditTweetPayload = {
   tweet: Tweet,
 };
 
-export type Event = {
+export type Event = Node & {
   id: Scalars['ID'],
   eventType: EventType,
   createdAt: Scalars['DateTime'],
@@ -130,7 +130,7 @@ export enum EventType {
   SubscriptionExpire = 'SUBSCRIPTION_EXPIRE'
 }
 
-export type Feed = {
+export type Feed = Node & {
   id: Scalars['ID'],
   url: Scalars['String'],
   title: Scalars['String'],
@@ -160,6 +160,13 @@ export type FeedConnection = {
 export type FeedEdge = {
   cursor: Scalars['Cursor'],
   node: Feed,
+};
+
+export type FeedPreview = {
+  url: Scalars['String'],
+  title: Scalars['String'],
+  homePageURL: Scalars['String'],
+  tweets: Array<TweetPreview>,
 };
 
 export type MicroformatPage = {
@@ -242,6 +249,10 @@ export type MutationSendTestNotificationArgs = {
   input: SendTestNotificationInput
 };
 
+export type Node = {
+  id: Scalars['ID'],
+};
+
 export enum NotificationEnvironment {
   Production = 'PRODUCTION',
   Sandbox = 'SANDBOX'
@@ -254,7 +265,7 @@ export type PageInfo = {
   hasPreviousPage: Scalars['Boolean'],
 };
 
-export type Post = {
+export type Post = Node & {
   id: Scalars['ID'],
   feed: Feed,
   itemId: Scalars['String'],
@@ -293,12 +304,19 @@ export type PostTweetPayload = {
 export type Query = {
   currentUser?: Maybe<User>,
   viewer?: Maybe<User>,
+  node?: Maybe<Node>,
   allSubscribedFeeds: SubscribedFeedConnection,
   subscribedFeed?: Maybe<SubscribedFeed>,
   allTweets: TweetConnection,
   tweet?: Maybe<Tweet>,
   allEvents: EventConnection,
   microformats?: Maybe<MicroformatPage>,
+  feedPreview?: Maybe<FeedPreview>,
+};
+
+
+export type QueryNodeArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -341,6 +359,11 @@ export type QueryMicroformatsArgs = {
   url: Scalars['String']
 };
 
+
+export type QueryFeedPreviewArgs = {
+  url: Scalars['String']
+};
+
 export type RefreshFeedInput = {
   id: Scalars['ID'],
 };
@@ -367,7 +390,7 @@ export type SetFeedOptionsPayload = {
   feed: SubscribedFeed,
 };
 
-export type SubscribedFeed = {
+export type SubscribedFeed = Node & {
   id: Scalars['ID'],
   feed: Feed,
   autopost: Scalars['Boolean'],
@@ -406,7 +429,7 @@ export enum TestNotificationType {
   Posted = 'POSTED'
 }
 
-export type Tweet = {
+export type Tweet = Node & TweetContent & {
   id: Scalars['ID'],
   feed: SubscribedFeed,
   post: Post,
@@ -432,6 +455,13 @@ export type TweetConnection = {
   totalCount: Scalars['Int'],
 };
 
+export type TweetContent = {
+  action: TweetAction,
+  body: Scalars['String'],
+  mediaURLs: Array<Scalars['String']>,
+  retweetID: Scalars['String'],
+};
+
 export type TweetEdge = {
   cursor: Scalars['Cursor'],
   node: Tweet,
@@ -441,6 +471,13 @@ export enum TweetFilter {
   Upcoming = 'UPCOMING',
   Past = 'PAST'
 }
+
+export type TweetPreview = TweetContent & {
+  action: TweetAction,
+  body: Scalars['String'],
+  mediaURLs: Array<Scalars['String']>,
+  retweetID: Scalars['String'],
+};
 
 export enum TweetStatus {
   Draft = 'DRAFT',
@@ -561,7 +598,10 @@ export type ResolversTypes = {
   TweetConnection: Pager<types.Tweet>,
   TweetEdge: Omit<TweetEdge, 'node'> & { node: ResolversTypes['Tweet'] },
   Tweet: types.Tweet,
+  Node: Node,
   ID: Scalars['ID'],
+  TweetContent: TweetContent,
+  TweetAction: TweetAction,
   SubscribedFeed: types.SubscribedFeed,
   Feed: types.Feed,
   PostConnection: Pager<types.Post>,
@@ -569,7 +609,6 @@ export type ResolversTypes = {
   Post: types.Post,
   PageInfo: PageInfo,
   Boolean: Scalars['Boolean'],
-  TweetAction: TweetAction,
   TweetStatus: TweetStatus,
   SubscribedFeedConnection: Pager<types.SubscribedFeed>,
   SubscribedFeedEdge: PagerEdge<types.SubscribedFeed>,
@@ -578,6 +617,8 @@ export type ResolversTypes = {
   Event: types.Event,
   EventType: EventType,
   MicroformatPage: MicroformatDocument,
+  FeedPreview: Omit<FeedPreview, 'tweets'> & { tweets: Array<ResolversTypes['TweetPreview']> },
+  TweetPreview: types.PreviewTweet,
   Mutation: {},
   AddFeedInput: AddFeedInput,
   AddFeedPayload: Omit<AddFeedPayload, 'feed' | 'feedEdge'> & { feed: ResolversTypes['SubscribedFeed'], feedEdge: ResolversTypes['SubscribedFeedEdge'] },
@@ -705,6 +746,13 @@ export type FeedEdgeResolvers<ContextType = CourierContext, ParentType = Resolve
   node?: Resolver<ResolversTypes['Feed'], ParentType, ContextType>,
 };
 
+export type FeedPreviewResolvers<ContextType = CourierContext, ParentType = ResolversTypes['FeedPreview']> = {
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  homePageURL?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  tweets?: Resolver<Array<ResolversTypes['TweetPreview']>, ParentType, ContextType>,
+};
+
 export type MicroformatPageResolvers<ContextType = CourierContext, ParentType = ResolversTypes['MicroformatPage']> = {
   authorizationEndpoint?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
   tokenEndpoint?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
@@ -723,6 +771,11 @@ export type MutationResolvers<ContextType = CourierContext, ParentType = Resolve
   cancelSubscription?: Resolver<ResolversTypes['CancelSubscriptionPayload'], ParentType, ContextType, MutationCancelSubscriptionArgs>,
   addDevice?: Resolver<ResolversTypes['AddDevicePayload'], ParentType, ContextType, MutationAddDeviceArgs>,
   sendTestNotification?: Resolver<ResolversTypes['SendTestNotificationPayload'], ParentType, ContextType, MutationSendTestNotificationArgs>,
+};
+
+export type NodeResolvers<ContextType = CourierContext, ParentType = ResolversTypes['Node']> = {
+  __resolveType: TypeResolveFn<'Tweet' | 'SubscribedFeed' | 'Feed' | 'Post' | 'Event' | 'DeviceToken', ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
 };
 
 export type PageInfoResolvers<ContextType = CourierContext, ParentType = ResolversTypes['PageInfo']> = {
@@ -765,12 +818,14 @@ export type PostTweetPayloadResolvers<ContextType = CourierContext, ParentType =
 export type QueryResolvers<ContextType = CourierContext, ParentType = ResolversTypes['Query']> = {
   currentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
   viewer?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
+  node?: Resolver<Maybe<ResolversTypes['Node']>, ParentType, ContextType, QueryNodeArgs>,
   allSubscribedFeeds?: Resolver<ResolversTypes['SubscribedFeedConnection'], ParentType, ContextType, QueryAllSubscribedFeedsArgs>,
   subscribedFeed?: Resolver<Maybe<ResolversTypes['SubscribedFeed']>, ParentType, ContextType, QuerySubscribedFeedArgs>,
   allTweets?: Resolver<ResolversTypes['TweetConnection'], ParentType, ContextType, QueryAllTweetsArgs>,
   tweet?: Resolver<Maybe<ResolversTypes['Tweet']>, ParentType, ContextType, QueryTweetArgs>,
   allEvents?: Resolver<ResolversTypes['EventConnection'], ParentType, ContextType, QueryAllEventsArgs>,
   microformats?: Resolver<Maybe<ResolversTypes['MicroformatPage']>, ParentType, ContextType, QueryMicroformatsArgs>,
+  feedPreview?: Resolver<Maybe<ResolversTypes['FeedPreview']>, ParentType, ContextType, QueryFeedPreviewArgs>,
 };
 
 export type RefreshFeedPayloadResolvers<ContextType = CourierContext, ParentType = ResolversTypes['RefreshFeedPayload']> = {
@@ -828,9 +883,24 @@ export type TweetConnectionResolvers<ContextType = CourierContext, ParentType = 
   totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
 };
 
+export type TweetContentResolvers<ContextType = CourierContext, ParentType = ResolversTypes['TweetContent']> = {
+  __resolveType: TypeResolveFn<'Tweet' | 'TweetPreview', ParentType, ContextType>,
+  action?: Resolver<ResolversTypes['TweetAction'], ParentType, ContextType>,
+  body?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  mediaURLs?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>,
+  retweetID?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
 export type TweetEdgeResolvers<ContextType = CourierContext, ParentType = ResolversTypes['TweetEdge']> = {
   cursor?: Resolver<ResolversTypes['Cursor'], ParentType, ContextType>,
   node?: Resolver<ResolversTypes['Tweet'], ParentType, ContextType>,
+};
+
+export type TweetPreviewResolvers<ContextType = CourierContext, ParentType = ResolversTypes['TweetPreview']> = {
+  action?: Resolver<ResolversTypes['TweetAction'], ParentType, ContextType>,
+  body?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  mediaURLs?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>,
+  retweetID?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
 };
 
 export type UncancelTweetPayloadResolvers<ContextType = CourierContext, ParentType = ResolversTypes['UncancelTweetPayload']> = {
@@ -871,8 +941,10 @@ export type Resolvers<ContextType = CourierContext> = {
   Feed?: FeedResolvers<ContextType>,
   FeedConnection?: FeedConnectionResolvers<ContextType>,
   FeedEdge?: FeedEdgeResolvers<ContextType>,
+  FeedPreview?: FeedPreviewResolvers<ContextType>,
   MicroformatPage?: MicroformatPageResolvers<ContextType>,
   Mutation?: MutationResolvers<ContextType>,
+  Node?: NodeResolvers,
   PageInfo?: PageInfoResolvers<ContextType>,
   Post?: PostResolvers<ContextType>,
   PostConnection?: PostConnectionResolvers<ContextType>,
@@ -888,7 +960,9 @@ export type Resolvers<ContextType = CourierContext> = {
   SubscribePayload?: SubscribePayloadResolvers<ContextType>,
   Tweet?: TweetResolvers<ContextType>,
   TweetConnection?: TweetConnectionResolvers<ContextType>,
+  TweetContent?: TweetContentResolvers,
   TweetEdge?: TweetEdgeResolvers<ContextType>,
+  TweetPreview?: TweetPreviewResolvers<ContextType>,
   UncancelTweetPayload?: UncancelTweetPayloadResolvers<ContextType>,
   User?: UserResolvers<ContextType>,
   UserSubscription?: UserSubscriptionResolvers<ContextType>,

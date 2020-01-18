@@ -1,10 +1,9 @@
 import React from "react"
-import withPublicPage from "../hocs/withPublicPage"
+import withPublicPage from "hocs/withPublicPage"
 import { NextPage } from "next"
-import Head from "../components/Head"
-import Loading from "../components/Loading"
-import { authorize } from "../utils/auth0"
-import Container from "../components/Container"
+import Head from "components/Head"
+import Loading from "components/Loading"
+import { authorize } from "utils/auth0"
 
 const Login: NextPage<{}> = () => {
   React.useEffect(() => {
@@ -12,10 +11,10 @@ const Login: NextPage<{}> = () => {
   }, [])
 
   return (
-    <Container>
+    <main>
       <Head title="Logging In" />
       <Loading />
-    </Container>
+    </main>
   )
 }
 

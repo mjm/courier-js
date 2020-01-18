@@ -21,6 +21,8 @@ import { IncomingMessage } from "http"
 import BillingEventService from "./services/billing_event_service"
 import PublishService from "./services/publish_service"
 import NotificationService from "./services/notification_service"
+import { EventLoader } from "lib/repositories/event_repository"
+import { DeviceTokenLoader } from "lib/repositories/device_token_repository"
 
 const container = new Container({
   autoBindInjectable: true,
@@ -61,6 +63,8 @@ export class CourierContext {
     tweets: TweetLoader
     customers: CustomerLoader
     subscriptions: SubscriptionLoader
+    events: EventLoader
+    deviceTokens: DeviceTokenLoader
   }
 
   user: UserService
@@ -99,7 +103,9 @@ export class CourierContext {
     postLoader: PostLoader,
     tweetLoader: TweetLoader,
     customerLoader: CustomerLoader,
-    subscriptionLoader: SubscriptionLoader
+    subscriptionLoader: SubscriptionLoader,
+    eventLoader: EventLoader,
+    deviceTokenLoader: DeviceTokenLoader
   ) {
     this.user = user
     this.feeds = feeds
@@ -118,6 +124,8 @@ export class CourierContext {
       tweets: tweetLoader,
       customers: customerLoader,
       subscriptions: subscriptionLoader,
+      events: eventLoader,
+      deviceTokens: deviceTokenLoader,
     }
   }
 }

@@ -1,20 +1,13 @@
 import React from "react"
 import { createFragmentContainer, graphql, RelayProp } from "react-relay"
-import { Formik, FieldArray, Field, Form } from "formik"
-import Group from "./Group"
-import { Button } from "./Button"
-import {
-  faPlus,
-  faTrashAlt,
-  faShare,
-  faCheck,
-  faBan,
-} from "@fortawesome/free-solid-svg-icons"
-import { Flex } from "@rebass/emotion"
-import { ErrorBox } from "./ErrorBox"
-import { EditTweetForm_tweet } from "../lib/__generated__/EditTweetForm_tweet.graphql"
-import { editTweet } from "./mutations/EditTweet"
-import { postTweet } from "./mutations/PostTweet"
+import { Formik, FieldArray, Field, Form, useFormikContext } from "formik"
+import { faPlus, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
+import { ErrorBox } from "components/ErrorBox"
+import { EditTweetForm_tweet } from "@generated/EditTweetForm_tweet.graphql"
+import { editTweet } from "@mutations/EditTweet"
+import { postTweet } from "@mutations/PostTweet"
+import TweetCardActions from "components/TweetCardActions"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 interface Props {
   tweet: EditTweetForm_tweet
@@ -29,7 +22,7 @@ type FormValues = Pick<EditTweetForm_tweet, "body" | "mediaURLs"> & {
 const EditTweetForm = ({ tweet, onStopEditing, relay }: Props) => {
   const initialValues: FormValues = {
     body: tweet.body,
-    mediaURLs: tweet.mediaURLs,
+    mediaURLs: [...tweet.mediaURLs],
     action: "save",
   }
 
@@ -37,9 +30,9 @@ const EditTweetForm = ({ tweet, onStopEditing, relay }: Props) => {
     <Formik
       initialValues={initialValues}
       initialStatus={{ error: null }}
-      isInitialValid
       onSubmit={async ({ action, ...values }, actions) => {
         const input = { id: tweet.id, ...values }
+        input.mediaURLs = input.mediaURLs.filter(url => url !== "")
         try {
           if (action === "save") {
             editTweet(relay.environment, input)
@@ -61,107 +54,50 @@ const EditTweetForm = ({ tweet, onStopEditing, relay }: Props) => {
           setTimeout(() => submitForm(), 0)
         }
 
-        function submitting(action: FormValues["action"]) {
-          return isSubmitting && action === values.action
-        }
-
-        function canAddMedia() {
-          return values.mediaURLs.length < 4
-        }
-
         return (
           <Form>
-            <Group direction="column" spacing={2}>
-              <ErrorBox error={status.error} />
+            <ErrorBox error={status.error} />
+            <div className="px-4 pt-5 pb-3">
               <Field
                 component="textarea"
                 name="body"
                 autoFocus
-                css={(theme: any) => [
-                  {
-                    width: "100%",
-                    height: theme.space[6],
-                    border: `2px solid ${theme.colors.primary[500]}`,
-                    borderRadius: "0.5rem",
-                  },
-                  inputStyles(theme),
-                ]}
+                className="bg-neutral-1 border border-neutral-2 rounded w-full h-32 p-3 focus:outline-none"
               />
-              <FieldArray name="mediaURLs">
-                {({ insert, remove, push }) => (
-                  <>
-                    {values.mediaURLs.map((_url, index) => (
-                      <Flex key={index} alignItems="center" py={1}>
-                        <Field
-                          name={`mediaURLs.${index}`}
-                          placeholder="https://example.org/photo.jpg"
-                          css={(theme: any) => [
-                            {
-                              flexGrow: 1,
-                              marginRight: theme.space[2],
-                              border: 0,
-                              borderBottom: `2px solid ${theme.colors.primary[500]}`,
-                            },
-                            inputStyles(theme),
-                          ]}
-                        />
-                        <Button
-                          onClick={() => insert(index, "")}
-                          disabled={!canAddMedia()}
-                          icon={faPlus}
-                        >
-                          Add Above
-                        </Button>
-                        <Button
-                          onClick={() => remove(index)}
-                          color="red"
-                          icon={faTrashAlt}
-                        >
-                          Remove
-                        </Button>
-                      </Flex>
-                    ))}
-                    <Button
-                      onClick={() => push("")}
-                      disabled={!canAddMedia()}
-                      icon={faPlus}
-                    >
-                      Add Media
-                    </Button>
-                  </>
-                )}
-              </FieldArray>
-              <Group direction="row" spacing={2} wrap>
-                <Button
+            </div>
+            <MediaURLFields urls={values.mediaURLs} />
+            <TweetCardActions
+              left={
+                <>
+                  <button
+                    type="button"
+                    disabled={isSubmitting}
+                    className="btn btn-first btn-first-primary mr-2"
+                    onClick={() => submit("post")}
+                  >
+                    Post now
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-second btn-second-neutral"
+                    disabled={isSubmitting}
+                    onClick={() => submit("save")}
+                  >
+                    Save draft
+                  </button>
+                </>
+              }
+              right={
+                <button
+                  type="button"
+                  className="btn btn-third btn-third-neutral"
                   disabled={isSubmitting}
-                  icon={faBan}
-                  color="red"
-                  invert
                   onClick={onStopEditing}
                 >
-                  Discard Changes
-                </Button>
-                <Button
-                  disabled={isSubmitting}
-                  icon={faCheck}
-                  spin={submitting("save")}
-                  invert
-                  onClick={() => submit("save")}
-                >
-                  Save Draft
-                </Button>
-                <Button
-                  disabled={isSubmitting}
-                  icon={faShare}
-                  spin={submitting("post")}
-                  color="blue"
-                  invert
-                  onClick={() => submit("post")}
-                >
-                  Post Now
-                </Button>
-              </Group>
-            </Group>
+                  Discard changes
+                </button>
+              }
+            />
           </Form>
         )
       }}
@@ -179,9 +115,74 @@ export default createFragmentContainer(EditTweetForm, {
   `,
 })
 
-const inputStyles = (theme: any) => ({
-  padding: theme.space[2],
-  color: theme.colors.primary[900],
-  backgroundColor: theme.colors.primary[100],
-  outline: "none",
-})
+interface MediaURLFieldsProps {
+  urls: readonly string[]
+}
+const MediaURLFields: React.FC<MediaURLFieldsProps> = ({ urls }) => {
+  const { setFieldValue } = useFormikContext()
+  const canAddMedia = urls.length < 4 || (urls.length === 4 && urls[3] === "")
+
+  const lastURL = urls.length ? urls[urls.length - 1] : null
+  React.useEffect(() => {
+    if (urls.length === 4) {
+      return
+    }
+
+    if (lastURL !== "") {
+      setFieldValue("mediaURLs", [...urls, ""])
+    }
+  }, [urls, urls.length, lastURL])
+
+  return (
+    <FieldArray name="mediaURLs">
+      {({ insert, remove, pop }) => {
+        function realInsert(index: number) {
+          insert(index, "")
+          if (urls.length === 4 && urls[3] === "") {
+            pop()
+          }
+        }
+
+        return (
+          <div className="pb-4 px-4">
+            <h4 className="text-xs font-bold text-neutral-6 uppercase">
+              Image URLs
+            </h4>
+            <div className="border border-neutral-2 bg-neutral-1 rounded">
+              {urls.map((url, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center border-neutral-2 ${
+                    index + 1 === urls.length ? "" : "border-b"
+                  }`}
+                >
+                  <Field
+                    name={`mediaURLs.${index}`}
+                    placeholder="https://example.org/photo.jpg"
+                    className="appearance-none bg-transparent border-none w-full p-3 text-sm focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    className="flex-shrink-0 border-transparent outline-none px-2 py-1 text-neutral-6 disabled:text-neutral-4 text-lg"
+                    onClick={() => realInsert(index)}
+                    disabled={!canAddMedia || url === ""}
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                  <button
+                    type="button"
+                    className="flex-shrink-0 border-transparent outline-none pl-2 pr-3 py-1 text-neutral-6 disabled:text-neutral-4 text-lg"
+                    onClick={() => remove(index)}
+                    disabled={url === "" && index === urls.length - 1}
+                  >
+                    <FontAwesomeIcon icon={faTrashAlt} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      }}
+    </FieldArray>
+  )
+}

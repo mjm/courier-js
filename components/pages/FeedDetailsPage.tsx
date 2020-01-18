@@ -1,40 +1,31 @@
 import { NextPage } from "next"
-import withData from "../../hocs/withData"
-import withSecurePage from "../../hocs/withSecurePage"
+import withData from "hocs/withData"
+import withSecurePage from "hocs/withSecurePage"
 import { graphql } from "react-relay"
-import Container from "../Container"
-import { ErrorContainer } from "../ErrorContainer"
-import FeedDetails from "../FeedDetails"
-import { FeedDetailsPageQueryResponse } from "../../lib/__generated__/FeedDetailsPageQuery.graphql"
+import { ErrorContainer } from "components/ErrorContainer"
+import FeedDetails from "components/FeedDetails"
+import { FeedDetailsPageQueryResponse } from "@generated/FeedDetailsPageQuery.graphql"
 
-type Props = FeedDetailsPageQueryResponse & {
-  id: string
-}
-
-const FeedDetailsPage: NextPage<Props, any> = ({
-  subscribedFeed,
-  currentUser,
-}) => {
+const FeedDetailsPage: NextPage<
+  FeedDetailsPageQueryResponse,
+  { id: string }
+> = ({ subscribedFeed, currentUser }) => {
   if (!subscribedFeed || !currentUser) {
     // TODO I think this means there's no such feed
     return <></>
   }
 
   return (
-    <Container
-      css={{
-        a: { textDecoration: "none" },
-      }}
-    >
+    <main className="container mx-auto my-8">
       <ErrorContainer>
         <FeedDetails feed={subscribedFeed} user={currentUser} />
       </ErrorContainer>
-    </Container>
+    </main>
   )
 }
 
 FeedDetailsPage.getInitialProps = async ({ query }) => {
-  return { id: query.id }
+  return { id: query.id as string }
 }
 
 export default withData(withSecurePage(FeedDetailsPage), {

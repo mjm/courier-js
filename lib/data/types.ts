@@ -71,6 +71,13 @@ export interface SubscribedFeed {
   updatedAt: Date
 }
 
+export interface PreviewFeed {
+  url: string
+  title: string
+  homePageURL: string
+  tweets: PreviewTweet[]
+}
+
 export interface FeedInput {
   userId: UserId
   url: string
@@ -141,6 +148,13 @@ export interface Tweet {
 
 export type TweetAction = table.tweet_action
 export type TweetStatus = table.tweet_status
+
+export interface PreviewTweet {
+  action: TweetAction
+  body: string
+  mediaURLs: string[]
+  retweetID: string
+}
 
 export interface ImportTweetsInput {
   feedSubscriptionId: FeedSubscriptionId

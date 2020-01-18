@@ -14,7 +14,8 @@ import { ReactRelayContext } from "react-relay"
 import fetch from "isomorphic-unfetch"
 import { IncomingMessage } from "http"
 import { NextPageContext, NextPage } from "next"
-import { getToken } from "../utils/auth0"
+import { getToken } from "utils/auth0"
+import Router from "next/router"
 
 let relayEnvironment: Environment | null = null
 
@@ -23,17 +24,34 @@ interface WithDataOptions<Props, Operation extends OperationType> {
   getVariables?: (props: Props) => Operation["variables"]
 }
 
+type WithDataWrapped<P, IP> = NextPage<
+  P & {
+    environment?: Environment
+  },
+  IP
+>
+
+type DataPage<P, IP> = NextPage<
+  P & {
+    queryRecords: any
+  },
+  IP & {
+    queryRecords: any
+  }
+>
+
 function withData<
+  Operation extends OperationType,
   P extends Operation["response"] & Object,
-  Operation extends OperationType
+  IP = P
 >(
-  Page: NextPage<P, any>,
-  options: WithDataOptions<P, Operation> = {}
-): NextPage<P> {
-  const dataPage: NextPage<any, any> = ({ queryRecords, ...props }) => {
+  Page: WithDataWrapped<P, IP>,
+  options: WithDataOptions<IP, Operation> = {}
+): DataPage<P, IP> {
+  const dataPage: DataPage<P, IP> = props => {
     const environmentRef = React.useRef<Environment | null>(null)
     if (environmentRef.current === null) {
-      environmentRef.current = initEnvironment(undefined, queryRecords)
+      environmentRef.current = initEnvironment(undefined, props.queryRecords)
     }
 
     return (
@@ -51,7 +69,7 @@ function withData<
 
   dataPage.getInitialProps = async ctx => {
     // @ts-ignore
-    let composedInitialProps: P = {}
+    let composedInitialProps: IP = {}
     if (Page.getInitialProps) {
       composedInitialProps = await Page.getInitialProps(ctx)
     }
@@ -66,15 +84,34 @@ function withData<
         variables = options.getVariables(composedInitialProps)
       }
 
-      queryProps = await fetchQuery<Operation>(
-        environment,
-        options.query,
-        variables
-      )
-      queryRecords = environment
-        .getStore()
-        .getSource()
-        .toJSON()
+      try {
+        queryProps = await fetchQuery<Operation>(
+          environment,
+          options.query,
+          variables
+        )
+        queryRecords = environment
+          .getStore()
+          .getSource()
+          .toJSON()
+      } catch (err) {
+        if (err.name === "RelayNetwork") {
+          const inner = err.source.errors[0]
+          if (
+            inner &&
+            inner.extensions &&
+            inner.extensions.code === "UNAUTHENTICATED"
+          ) {
+            // redirect auth errors to the login page
+            if (ctx.res) {
+              ctx.res.writeHead(302, { Location: "/login" })
+              ctx.res.end()
+            } else {
+              Router.push("/login")
+            }
+          }
+        }
+      }
     }
 
     return {
@@ -91,7 +128,7 @@ export default withData
 
 function makeFetchQuery(ctx?: NextPageContext): FetchFunction {
   const req = ctx && ctx.req
-  const url = apiUrl("/graphql", req)
+  const url = apiUrl("/api/graphql", req)
 
   return async (operation, variables, _cacheConfig, _uploadables) => {
     const token = getToken(req, "accessToken")
@@ -107,7 +144,11 @@ function makeFetchQuery(ctx?: NextPageContext): FetchFunction {
         variables,
       }),
     })
-    return await response.json()
+    const json = await response.json()
+    if (json && json.errors) {
+      return { ...json, data: null }
+    }
+    return json
   }
 }
 

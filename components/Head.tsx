@@ -10,7 +10,6 @@ const Head = (props: {
   description?: string
   url?: string
   ogImage?: string
-  stripe?: boolean
 }) => (
   <NextHead>
     <meta charSet="UTF-8" />
@@ -37,7 +36,11 @@ const Head = (props: {
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <script src="https://js.stripe.com/v3/" />
-    <link rel="stylesheet" type="text/css" href="/nprogress.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://rsms.me/inter/inter.css"
+    />
   </NextHead>
 )
 

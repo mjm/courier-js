@@ -5,24 +5,24 @@ import {
   Environment,
   RelayProp,
 } from "react-relay"
-import Group from "./Group"
-import styled from "@emotion/styled"
 import Moment from "react-moment"
 import Linkify from "linkifyjs/react"
 import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
-import { URLContainer } from "./URLText"
-import { Flex, Box, Image } from "@rebass/emotion"
-import { useAuth } from "./AuthProvider"
-import { faEdit, faBan } from "@fortawesome/free-solid-svg-icons"
-import { Button } from "./Button"
-import { ViewTweet_tweet } from "../lib/__generated__/ViewTweet_tweet.graphql"
-import { cancelTweet } from "./mutations/CancelTweet"
-import { uncancelTweet } from "./mutations/UncancelTweet"
-import { useErrors } from "./ErrorContainer"
-import { faTwitter } from "@fortawesome/free-brands-svg-icons"
-import { postTweet } from "./mutations/PostTweet"
-import { useSubscription } from "./SubscriptionProvider"
+import {
+  ViewTweet_tweet,
+  TweetStatus,
+} from "@generated/ViewTweet_tweet.graphql"
+import { cancelTweet } from "@mutations/CancelTweet"
+import { uncancelTweet } from "@mutations/UncancelTweet"
+import { useErrors } from "components/ErrorContainer"
+import { postTweet } from "@mutations/PostTweet"
+import { useSubscription } from "components/SubscriptionProvider"
+import TweetCardActions from "components/TweetCardActions"
+import AsyncButton from "components/AsyncButton"
+import { useAuth } from "components/AuthProvider"
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 mention(linkify)
 
@@ -33,41 +33,12 @@ interface Props {
 }
 
 const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
-  const { user } = useAuth()
-  const { isSubscribed } = useSubscription()
-
   return (
-    <Group direction="column" spacing={3}>
+    <>
       {tweet.action === "TWEET" ? (
         <>
-          <Linkify
-            tagName="div"
-            options={{
-              formatHref: {
-                mention: val => `https://twitter.com${val}`,
-              },
-              target: "_blank",
-            }}
-            css={{ whiteSpace: "pre-wrap" }}
-          >
-            <URLContainer>{tweet.body}</URLContainer>
-          </Linkify>
-          {tweet.mediaURLs.length ? (
-            <Flex mt={2} flexWrap="wrap">
-              {tweet.mediaURLs.map(url => (
-                <Box
-                  key={url}
-                  as="figure"
-                  width={[1 / 2, 1 / 4]}
-                  m={0}
-                  py={0}
-                  px={1}
-                >
-                  <Image width={1} borderRadius="1rem" src={url} />
-                </Box>
-              ))}
-            </Flex>
-          ) : null}
+          <TweetBody tweet={tweet} />
+          <TweetMedia tweet={tweet} />
         </>
       ) : (
         <div>
@@ -79,129 +50,198 @@ const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
           </a>
         </div>
       )}
-      <Group direction="row" spacing={2} wrap alignItems="center">
-        {tweet.status === "DRAFT" && (
-          <>
-            <CancelButton id={tweet.id} environment={relay.environment} />
-            {tweet.action === "TWEET" ? (
-              <Button icon={faEdit} invert onClick={onEdit}>
-                Edit Tweet
-              </Button>
-            ) : null}
-            <PostButton id={tweet.id} environment={relay.environment} />
-            {isSubscribed && tweet.postAfter && (
-              <StatusText css={{ display: "inline-block" }}>
-                will post{" "}
-                <Moment
-                  fromNow
-                  filter={str => {
-                    if (str.includes("ago")) {
-                      return "soon"
-                    } else {
-                      return str
-                    }
-                  }}
-                >
-                  {tweet.postAfter}
-                </Moment>
-              </StatusText>
-            )}
-          </>
-        )}
-        {tweet.status === "CANCELED" && (
-          <StatusText>
-            canceled.{" "}
-            <UncancelButton id={tweet.id} environment={relay.environment} />
-          </StatusText>
-        )}
-        {tweet.status === "POSTED" && (
-          <StatusText>
-            <a
-              href={`https://twitter.com/${user.nickname}/status/${tweet.postedTweetID}`}
-              target="_blank"
-            >
-              tweeted <Moment fromNow>{tweet.postedAt}</Moment>
-            </a>
-          </StatusText>
-        )}
-      </Group>
-    </Group>
+      {tweet.status === "DRAFT" && (
+        <DraftActions
+          tweet={tweet}
+          environment={relay.environment}
+          onEdit={onEdit}
+        />
+      )}
+      {tweet.status === "CANCELED" && (
+        <CanceledActions tweet={tweet} environment={relay.environment} />
+      )}
+      {tweet.status === "POSTED" && <PostedActions tweet={tweet} />}
+    </>
   )
 }
 
 export default createFragmentContainer(ViewTweet, {
   tweet: graphql`
-    fragment ViewTweet_tweet on Tweet {
-      id
+    fragment ViewTweet_tweet on TweetContent {
       body
       mediaURLs
-      status
       action
-      postAfter
-      postedAt
-      postedTweetID
       retweetID
+
+      ... on Tweet {
+        id
+        status
+        postAfter
+        postedAt
+        postedTweetID
+      }
     }
   `,
 })
 
-const StatusText = styled.div(({ theme }: any) => ({
-  fontSize: theme.fontSizes[1],
-  fontStyle: "italic",
-  color: theme.colors.gray[600],
-}))
+const TweetBody: React.FC<{ tweet: ViewTweet_tweet }> = ({ tweet }) => {
+  return (
+    <div className="whitespace-pre-wrap p-4">
+      <Linkify
+        tagName="span"
+        options={{
+          className: `break-words no-underline hover:underline ${
+            linkStyles[tweet.status || "DRAFT"]
+          }`,
+          formatHref: {
+            mention: val => `https://twitter.com${val}`,
+          },
+          target: "_blank",
+        }}
+      >
+        {tweet.body}
+      </Linkify>
+    </div>
+  )
+}
 
-interface ActionButtonProps {
-  id: string
+const TweetMedia: React.FC<{ tweet: ViewTweet_tweet }> = ({ tweet }) => {
+  if (!tweet.mediaURLs.length) {
+    return null
+  }
+
+  return (
+    <div className="pb-4 px-4 -mx-1 flex flex-row">
+      {tweet.mediaURLs.map((url, index) => (
+        <figure key={index} className="m-0 py-0 px-1 w-1/4">
+          <img src={url} className="w-full rounded-lg" />
+        </figure>
+      ))}
+    </div>
+  )
+}
+
+const linkStyles: Record<TweetStatus, string> = {
+  DRAFT: "text-primary-9",
+  CANCELED: "text-neutral-10",
+  POSTED: "text-secondary-9",
+  "%future added value": "",
+}
+
+interface DraftActionsProps {
+  tweet: ViewTweet_tweet
+  environment: Environment
+  onEdit: () => void
+}
+const DraftActions: React.FC<DraftActionsProps> = ({
+  tweet,
+  environment,
+  onEdit,
+}) => {
+  const { isSubscribed } = useSubscription()
+  const { setError } = useErrors()
+
+  let banner: React.ReactNode = null
+  if (isSubscribed && tweet.postAfter) {
+    banner = (
+      <>
+        Autoposting{" "}
+        <Moment
+          fromNow
+          filter={str => {
+            if (str.includes("ago")) {
+              return "soon"
+            } else {
+              return str
+            }
+          }}
+        >
+          {tweet.postAfter}
+        </Moment>
+      </>
+    )
+  }
+
+  return (
+    <TweetCardActions
+      banner={banner}
+      left={
+        <>
+          <AsyncButton
+            className="btn btn-first btn-first-primary mr-2"
+            onClick={async () => {
+              try {
+                await postTweet(environment, { id: tweet.id! })
+              } catch (e) {
+                setError(e)
+              }
+            }}
+          >
+            Post now
+          </AsyncButton>
+          <button
+            className="btn btn-second btn-second-neutral"
+            onClick={onEdit}
+          >
+            Edit
+          </button>
+        </>
+      }
+      right={
+        <button
+          className="btn btn-third btn-third-neutral"
+          onClick={() => cancelTweet(environment, tweet.id!)}
+        >
+          Don't post
+        </button>
+      }
+    />
+  )
+}
+
+interface CanceledActionsProps {
+  tweet: ViewTweet_tweet
   environment: Environment
 }
 
-const CancelButton: React.FC<ActionButtonProps> = ({ id, environment }) => {
+const CanceledActions: React.FC<CanceledActionsProps> = ({
+  tweet,
+  environment,
+}) => {
   return (
-    <Button
-      icon={faBan}
-      color="red"
-      invert
-      onClick={() => {
-        cancelTweet(environment, id)
-      }}
-    >
-      Don't Post
-    </Button>
+    <TweetCardActions
+      inline
+      left={
+        <button
+          className="btn btn-first btn-first-neutral"
+          onClick={() => uncancelTweet(environment, tweet.id!)}
+        >
+          Restore draft
+        </button>
+      }
+    />
   )
 }
 
-const UncancelButton: React.FC<ActionButtonProps> = ({ id, environment }) => {
-  return (
-    <a
-      href="#"
-      onClick={e => {
-        e.preventDefault()
-        uncancelTweet(environment, id)
-      }}
-    >
-      undo?
-    </a>
-  )
+interface PostedActionsProps {
+  tweet: ViewTweet_tweet
 }
 
-const PostButton: React.FC<ActionButtonProps> = ({ id, environment }) => {
-  const { setError } = useErrors()
+const PostedActions: React.FC<PostedActionsProps> = ({ tweet }) => {
+  const { user } = useAuth()
 
   return (
-    <Button
-      icon={faTwitter}
-      color="blue"
-      invert
-      onClickAsync={async () => {
-        try {
-          await postTweet(environment, { id })
-        } catch (e) {
-          setError(e)
-        }
-      }}
-    >
-      Post to Twitter
-    </Button>
+    <TweetCardActions
+      left={
+        <a
+          href={`https://twitter.com/${user.nickname}/status/${tweet.postedTweetID}`}
+          target="_blank"
+          className="btn btn-third btn-third-secondary"
+        >
+          Posted <Moment fromNow>{tweet.postedAt}</Moment>{" "}
+          <FontAwesomeIcon className="ml-1" icon={faExternalLinkAlt} />
+        </a>
+      }
+    />
   )
 }

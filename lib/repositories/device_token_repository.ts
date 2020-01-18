@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify"
-import { DB } from "../key"
+import * as keys from "../key"
 import { sql, DatabasePoolType } from "../db"
 import {
   NewDeviceTokenInput,
@@ -8,10 +8,11 @@ import {
   DeviceTokenEnvironment,
 } from "../data/types"
 import * as table from "../data/dbTypes"
+import { QueryLoader, LoaderQueryFn } from "lib/data/loader"
 
 @injectable()
 class DeviceTokenRepository {
-  constructor(@inject(DB) private db: DatabasePoolType) {}
+  constructor(@inject(keys.DB) private db: DatabasePoolType) {}
 
   async findAllByUser(userId: UserId): Promise<DeviceToken[]> {
     const rows = await this.db.any(sql<table.device_tokens>`
@@ -47,6 +48,31 @@ class DeviceTokenRepository {
       token: row.token,
     }
   }
+}
+
+@injectable()
+export class DeviceTokenLoader extends QueryLoader<
+  DeviceToken,
+  table.device_tokens
+> {
+  constructor(
+    @inject(keys.DB) db: DatabasePoolType,
+    @inject(keys.UserId) private getUserId: () => Promise<UserId>
+  ) {
+    super(db)
+  }
+
+  query: LoaderQueryFn<table.device_tokens> = async cond => {
+    try {
+      const userId = await this.getUserId()
+      return sql`SELECT * FROM device_tokens WHERE user_id = ${userId} AND ${cond(
+        "events"
+      )}`
+    } catch (_e) {
+      return sql`SELECT * FROM device_tokens WHERE ${cond("events")}`
+    }
+  }
+  fromRow = DeviceTokenRepository.fromRow
 }
 
 export default DeviceTokenRepository

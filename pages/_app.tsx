@@ -1,17 +1,15 @@
 import React from "react"
 import App from "next/app"
 import Router from "next/router"
-import { renewSession, isAuthenticated } from "../utils/auth0"
+import { renewSession, isAuthenticated } from "utils/auth0"
 import { config } from "@fortawesome/fontawesome-svg-core"
-import * as theme from "../utils/theme"
-import { ThemeProvider } from "emotion-theming"
 import NProgress from "nprogress"
+import MDXContainer from "components/MDXContainer"
 
 config.autoAddCss = false
 
-import "normalizecss/normalize.css"
-import "typeface-rubik"
-import "typeface-ibm-plex-sans"
+import "components/Tailwind.css"
+import "components/Progress.css"
 import "@fortawesome/fontawesome-svg-core/styles.css"
 
 Router.events.on("routeChangeStart", (url: string) => {
@@ -53,12 +51,12 @@ class MyApp extends App {
     const { Component, pageProps } = this.props
 
     return (
-      <ThemeProvider theme={theme}>
+      <MDXContainer>
         <Component
           {...pageProps}
           isAuthenticating={this.state.isAuthenticating}
         />
-      </ThemeProvider>
+      </MDXContainer>
     )
   }
 }

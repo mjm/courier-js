@@ -9,6 +9,7 @@ import {
   Feed,
   FeedSubscriptionId,
   UserId,
+  PreviewFeed,
 } from "../data/types"
 import { Pager, PagerEdge } from "../data/pager"
 import { scrapeFeed, normalizeURL } from "scrape-feed"
@@ -84,6 +85,25 @@ class FeedService {
     await this.events.record("feed_refresh", { feedId: id })
 
     return updatedFeed
+  }
+
+  async preview(url: string): Promise<PreviewFeed> {
+    const feedURL = await locateFeed(url)
+
+    const feedContents = await scrapeFeed(feedURL)
+    if (!feedContents) {
+      throw new Error("Couldn't load feed contents")
+    }
+
+    const { title, homePageURL, entries } = feedContents
+    const tweets = this.importService.generatePreviewTweets(entries)
+
+    return {
+      url: feedURL,
+      title,
+      homePageURL,
+      tweets,
+    }
   }
 
   async subscribe(url: string): Promise<PagerEdge<SubscribedFeed>> {

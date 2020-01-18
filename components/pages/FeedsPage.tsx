@@ -2,32 +2,21 @@ import React from "react"
 
 import { NextPage } from "next"
 import { graphql, Environment } from "react-relay"
-import Container from "../Container"
-import Head from "../Head"
-import withData from "../../hocs/withData"
-import withSecurePage from "../../hocs/withSecurePage"
-import FeedList from "../FeedList"
-import AddFeedForm from "../AddFeedForm"
-import PageHeader from "../PageHeader"
-import PageDescription from "../PageDescription"
-import { FeedsPageQueryResponse } from "../../lib/__generated__/FeedsPageQuery.graphql"
+import Head from "components/Head"
+import withData from "hocs/withData"
+import withSecurePage from "hocs/withSecurePage"
+import FeedList from "components/FeedList"
+import { FeedsPageQueryResponse } from "@generated/FeedsPageQuery.graphql"
 
-type Props = FeedsPageQueryResponse & {
+const FeedsPage: NextPage<FeedsPageQueryResponse & {
   environment: Environment
-}
-const FeedsPage: NextPage<Props> = ({ environment, ...props }) => {
+}> = ({ environment, ...props }) => {
   return (
-    <Container>
-      <Head title="Feeds to Watch" />
+    <main className="container mx-auto my-8">
+      <Head title="Watched Feeds" />
 
-      <PageHeader>Feeds to Watch</PageHeader>
-      <PageDescription>
-        The feeds you add here will be checked for new posts that need to be
-        tweeted.
-      </PageDescription>
       <FeedList feeds={props} />
-      <AddFeedForm environment={environment} />
-    </Container>
+    </main>
   )
 }
 

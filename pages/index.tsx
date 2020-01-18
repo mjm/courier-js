@@ -1,58 +1,43 @@
 import React from "react"
 import Link from "next/link"
-import Head from "../components/Head"
-import withDefaultPage from "../hocs/withDefaultPage"
+import Head from "components/Head"
+import withDefaultPage from "hocs/withDefaultPage"
 import Router from "next/router"
-import { Card, Text, Box, Heading } from "@rebass/emotion"
-import Group from "../components/Group"
-import { Button } from "../components/Button"
 import { NextPage } from "next"
 
 const Home: NextPage<{}> = () => {
   return (
-    <Box>
+    <main>
       <Head title="Courier" />
 
-      <Card mb={4} px={4} py={5} bg="white" boxShadow="md">
-        <Heading
-          as="h1"
-          fontSize={6}
-          fontWeight={500}
-          mb={2}
-          color="primary.900"
-        >
-          Courier delivers your microblog to Twitter
-        </Heading>
-        <Text
-          as="h2"
-          fontFamily="body"
-          fontSize={4}
-          fontWeight={400}
-          mt={3}
-          mb={4}
-          lineHeight="normal"
-        >
-          Post everything to your own blog, and let Courier deliver it to
-          Twitter in a way that makes sense.
-        </Text>
+      <section className="bg-white shadow-md mb-8 py-16">
+        <div className="container mx-auto px-8">
+          <h1 className="text-3xl font-medium mb-2 text-primary-10">
+            Courier delivers your microblog to Twitter
+          </h1>
+          <h2 className="text-xl text-neutral-10 mt-4 mb-12 max-w-text">
+            Post everything to your own blog, and let Courier deliver it to
+            Twitter in a way that makes sense.
+          </h2>
 
-        <Link href="/login" passHref>
-          <Button as="a" size="large">
-            Get Started
-          </Button>
-        </Link>
-      </Card>
+          <Link href="/login">
+            <a className="btn btn-first btn-first-primary text-2xl font-medium py-3 px-5 rounded-lg">
+              Get Started
+            </a>
+          </Link>
+        </div>
+      </section>
 
-      <Card px={4} mb={4}>
-        <Text fontSize={3} lineHeight="normal">
+      <section className="container mx-auto px-8 mb-10 text-lg leading-relaxed">
+        <div className="max-w-text mx-auto">
           You don’t have to leave Twitter behind to be able to own your content.
           Write all your posts, from shower thoughts to long-form essays, on
           your own site, and let Courier handle bringing it to Twitter.
-        </Text>
-      </Card>
+        </div>
+      </section>
 
-      <Box px={4}>
-        <Group direction="row" spacing={4}>
+      <section className="px-8 container mx-auto">
+        <div className="flex flex-row flex-wrap -mx-4">
           <FeatureCard title="Translates your HTML into tweetable text">
             Courier understands what a tweet should look like and will format
             your posts in an intelligent way. Your tweets will look like you
@@ -69,9 +54,9 @@ const Home: NextPage<{}> = () => {
             a short delay while having other feeds require your approval before
             posting.
           </FeatureCard>
-        </Group>
-      </Box>
-    </Box>
+        </div>
+      </section>
+    </main>
   )
 }
 
@@ -93,10 +78,10 @@ Home.getInitialProps = async ({ res, ...ctx }) => {
 export default withDefaultPage(Home)
 
 const FeatureCard = (props: { title: string; children: React.ReactNode }) => (
-  <Card width={1 / 3}>
-    <Heading as="h3" fontWeight={500} mb={2} color="primary.900">
+  <div className="w-full md:w-1/3 px-4 mb-8">
+    <h3 className="text-lg leading-snug font-medium mb-2 text-primary-10">
       {props.title}
-    </Heading>
-    <Text lineHeight="normal">{props.children}</Text>
-  </Card>
+    </h3>
+    <div className="leading-relaxed">{props.children}</div>
+  </div>
 )
