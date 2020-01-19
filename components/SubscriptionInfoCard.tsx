@@ -106,7 +106,6 @@ export default createFragmentContainer(SubscriptionInfoCard, {
         creditCard {
           brand
           lastFour
-          ...CreditCard_card
         }
       }
       subscription {
@@ -114,7 +113,6 @@ export default createFragmentContainer(SubscriptionInfoCard, {
         periodEnd
       }
       subscriptionStatusOverride
-      ...SubscriptionStatus_user
     }
   `,
 })
