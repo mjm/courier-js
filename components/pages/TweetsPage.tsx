@@ -2,6 +2,7 @@ import React from "react"
 import { graphql } from "react-relay"
 
 import { NextPage } from "next"
+import Link from "next/link"
 
 import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
 import Head from "components/Head"
@@ -101,9 +102,18 @@ const SubscribeBanner: React.FC = () => {
   }
 
   return (
-    <Notice variant="warning">
-      You are not currently subscribed to Courier. You cannot post tweets until
-      you subscribe.
+    <Notice variant="warning" className="mb-6">
+      <div className="flex items-baseline">
+        <div>
+          You are not currently subscribed to Courier. You cannot post tweets
+          until you subscribe.
+        </div>
+        <Link href="/subscribe">
+          <a className="ml-auto flex-shrink-0 btn btn-first bg-yellow-7 border-yellow-7 text-yellow-1">
+            Subscribe now
+          </a>
+        </Link>
+      </div>
     </Notice>
   )
 }

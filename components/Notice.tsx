@@ -30,7 +30,7 @@ const Notice: React.FC<{
   const { box, icon, iconStyle } = variants[variant]
   return (
     <div
-      className={`p-4 rounded-lg shadow border-2 flex items-start ${box} ${className ||
+      className={`p-4 rounded-lg shadow border-2 flex items-baseline ${box} ${className ||
         ""}`}
     >
       <div className="flex-shrink-0 text-lg">
