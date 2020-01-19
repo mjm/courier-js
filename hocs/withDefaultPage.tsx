@@ -1,10 +1,10 @@
 import React from "react"
 
-import { NextComponentType,NextPage, NextPageContext } from "next"
+import { NextComponentType, NextPage, NextPageContext } from "next"
 
 import { AuthProvider } from "components/AuthProvider"
 import Nav from "components/Nav"
-import { getUser, isAuthenticated } from "utils/auth0"
+import { getUser, IdToken, isAuthenticated } from "utils/auth0"
 
 export type DefaultPageWrapped<P = {}, IP = P> = NextComponentType<
   DefaultPageContext,
@@ -14,18 +14,18 @@ export type DefaultPageWrapped<P = {}, IP = P> = NextComponentType<
 
 export type DefaultPage<P, IP = P> = NextPage<
   P & {
-    user: any
+    user: IdToken | undefined
     isAuthenticating: boolean
     isAuthenticated: boolean
   },
   IP & {
-    user: any
+    user: IdToken | undefined
     isAuthenticated: boolean
   }
 >
 
 export interface DefaultPageContext extends NextPageContext {
-  user: any
+  user: IdToken | undefined
 }
 
 export default function withDefaultPage<P, IP = P>(
@@ -50,13 +50,13 @@ export default function withDefaultPage<P, IP = P>(
     const req = ctx && ctx.req
     const user = getUser(req)
 
-    let pageProps: any = {}
+    let pageProps = {}
     if (Page.getInitialProps) {
       pageProps = await Page.getInitialProps({ ...ctx, user })
     }
 
     return {
-      ...pageProps,
+      ...(pageProps as IP),
       user,
       isAuthenticated: !!user && isAuthenticated(req),
     }

@@ -48,9 +48,18 @@ export const ErrorBox: React.FC<{
   )
 }
 
-function unwrapRelayError(error: any): Error[] {
+interface RelayError extends Error {
+  name: "RelayNetwork"
+  source: {
+    errors: { message: string }[]
+  }
+}
+
+function unwrapRelayError(error: Error): Error[] {
   if (error.name === "RelayNetwork") {
-    return error.source.errors.map(({ message }: any) => new Error(message))
+    return (error as RelayError).source.errors.map(
+      ({ message }) => new Error(message)
+    )
   }
   return [error]
 }

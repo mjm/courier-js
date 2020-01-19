@@ -16,8 +16,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
+import { IdToken } from "utils/auth0"
+
 const Nav: React.FC<{
-  user?: any
+  user?: IdToken
   isAuthenticating?: boolean
 }> = ({ user, isAuthenticating = false }) => {
   const [menuVisible, setMenuVisible] = React.useState(false)

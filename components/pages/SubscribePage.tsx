@@ -1,6 +1,6 @@
 import React from "react"
 import { graphql } from "react-relay"
-import { Elements,StripeProvider } from "react-stripe-elements"
+import { Elements, StripeProvider } from "react-stripe-elements"
 
 import { NextPage } from "next"
 
@@ -18,7 +18,11 @@ const SubscribePage: NextPage<SubscribePageQueryResponse> = ({
 }) => {
   const [stripe, setStripe] = React.useState<stripe.Stripe | null>(null)
   React.useEffect(() => {
-    setStripe(window.Stripe(process.env.STRIPE_KEY!))
+    if (!process.env.STRIPE_KEY) {
+      throw new Error("No Stripe publishable key set when building")
+    }
+
+    setStripe(window.Stripe(process.env.STRIPE_KEY))
   }, [])
 
   const [isFormVisible, setFormVisible] = React.useState(true)

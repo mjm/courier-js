@@ -1,7 +1,9 @@
 import React from "react"
 
+import { IdToken } from "utils/auth0"
+
 interface AuthState {
-  user?: any
+  user?: IdToken
   isAuthenticated: boolean
   isAuthenticating: boolean
 }
@@ -12,7 +14,7 @@ const AuthContext = React.createContext<AuthState>({
 })
 
 export const AuthProvider: React.FC<{
-  user: any | undefined
+  user: IdToken | undefined
   isAuthenticated: boolean
   isAuthenticating: boolean
 }> = ({ children, ...rest }) => (

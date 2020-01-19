@@ -17,7 +17,8 @@
     "gen": "graphql-codegen --config codegen.yml",
     "gen:schema": "schemats generate -c $DATABASE_URL --noHeader -o lib/data/dbTypes.ts",
     "relay": "relay-compiler",
-    "migrate": "node-pg-migrate up && npm run gen:schema"
+    "migrate": "node-pg-migrate up && npm run gen:schema",
+    "lint": "eslint '**/*.ts' '**/*.tsx'"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.26",

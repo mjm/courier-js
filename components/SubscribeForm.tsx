@@ -58,7 +58,7 @@ const SubscribeForm = injectStripe<Props>(
           }
 
           await subscribe(environment, {
-            tokenID: token!.id,
+            tokenID: (token as stripe.Token).id,
             email: input.email,
           })
         } else {

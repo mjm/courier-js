@@ -171,7 +171,7 @@ const DraftActions: React.FC<DraftActionsProps> = ({
             className="btn btn-first btn-first-primary mr-2"
             onClick={async () => {
               try {
-                await postTweet(environment, { id: tweet.id! })
+                await postTweet(environment, { id: tweet.id as string })
               } catch (e) {
                 setError(e)
               }
@@ -190,7 +190,7 @@ const DraftActions: React.FC<DraftActionsProps> = ({
       right={
         <button
           className="btn btn-third btn-third-neutral"
-          onClick={() => cancelTweet(environment, tweet.id!)}
+          onClick={() => cancelTweet(environment, tweet.id as string)}
         >
           Don't post
         </button>
@@ -214,7 +214,7 @@ const CanceledActions: React.FC<CanceledActionsProps> = ({
       left={
         <button
           className="btn btn-first btn-first-neutral"
-          onClick={() => uncancelTweet(environment, tweet.id!)}
+          onClick={() => uncancelTweet(environment, tweet.id as string)}
         >
           Restore draft
         </button>
@@ -234,7 +234,9 @@ const PostedActions: React.FC<PostedActionsProps> = ({ tweet }) => {
     <TweetCardActions
       left={
         <a
-          href={`https://twitter.com/${user.nickname}/status/${tweet.postedTweetID}`}
+          href={`https://twitter.com/${user?.nickname ?? "user"}/status/${
+            tweet.postedTweetID
+          }`}
           target="_blank"
           className="btn btn-third btn-third-secondary"
         >

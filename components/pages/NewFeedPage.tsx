@@ -16,7 +16,7 @@ const NewFeedPage: NextPage<{ environment: Environment }> = ({
 }) => {
   const [url, setURL] = React.useState("")
 
-  async function watchFeed() {
+  async function watchFeed(): Promise<void> {
     await addFeed(environment, url)
     Router.push("/feeds")
   }
