@@ -11,7 +11,7 @@ interface Props {
 }
 const FeedCard: React.FC<Props> = ({ feed }) => {
   return (
-    <article className="bg-white rounded-lg shadow-md p-4 w-full h-full">
+    <article className="bg-white rounded-lg shadow-md p-4 w-full h-full flex flex-col justify-between">
       <div className="mb-6">
         <Link href="/feeds/[id]" as={`/feeds/${feed.id}`}>
           <a className="block font-bold text-neutral-9 text-lg">
