@@ -1,16 +1,17 @@
+import { IdPrefix,toExternalId } from "lib/data/id"
+
 import {
-  EnumMap,
-  TweetResolvers,
-  TweetStatus as TweetStatusGQL,
-  TweetAction as TweetActionGQL,
-} from "../generated/graphql"
-import {
-  TweetStatus as TweetStatusRepo,
-  TweetAction as TweetActionRepo,
   Post,
   SubscribedFeed,
+  TweetAction as TweetActionRepo,
+  TweetStatus as TweetStatusRepo,
 } from "../data/types"
-import { toExternalId, IdPrefix } from "lib/data/id"
+import {
+  EnumMap,
+  TweetAction as TweetActionGQL,
+  TweetResolvers,
+  TweetStatus as TweetStatusGQL,
+} from "../generated/graphql"
 
 export const TweetAction: EnumMap<TweetActionGQL, TweetActionRepo> = {
   TWEET: "tweet",

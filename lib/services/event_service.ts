@@ -1,15 +1,17 @@
-import { injectable, inject } from "inversify"
-import EventRepository from "../repositories/event_repository"
+import { inject,injectable } from "inversify"
+
+import { events } from "lib/data/dbTypes"
+
+import { Pager } from "../data/pager"
 import {
   Event,
+  EventParameters,
   EventType,
   PagingOptions,
   UserId,
-  EventParameters,
 } from "../data/types"
 import * as keys from "../key"
-import { Pager } from "../data/pager"
-import { events } from "lib/data/dbTypes"
+import EventRepository from "../repositories/event_repository"
 
 interface RecordOptions {
   asUser?: UserId | null

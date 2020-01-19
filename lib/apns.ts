@@ -1,6 +1,8 @@
-import { injectable } from "inversify"
-import Environment from "./env"
 import * as http2 from "http2"
+
+import { injectable } from "inversify"
+
+import Environment from "./env"
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pushCert = require("buffer-loader!../certs/courier-push.p12")

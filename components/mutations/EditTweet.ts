@@ -1,4 +1,5 @@
-import { graphql, Environment, commitMutation } from "react-relay"
+import { commitMutation,Environment, graphql } from "react-relay"
+
 import { EditTweetMutationResponse } from "@generated/EditTweetMutation.graphql"
 
 const mutation = graphql`

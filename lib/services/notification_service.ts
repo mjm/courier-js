@@ -1,8 +1,9 @@
-import { injectable, inject } from "inversify"
-import DeviceTokenRepository from "../repositories/device_token_repository"
-import { NewDeviceTokenInput, UserId, DeviceToken, Tweet } from "../data/types"
-import * as keys from "../key"
+import { inject, injectable } from "inversify"
+
 import PushNotificationProvider, { Device } from "../apns"
+import { DeviceToken, NewDeviceTokenInput, Tweet, UserId } from "../data/types"
+import * as keys from "../key"
+import DeviceTokenRepository from "../repositories/device_token_repository"
 
 const appBundleId = "com.mattmoriarity.Courier"
 

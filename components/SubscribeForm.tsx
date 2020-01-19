@@ -1,29 +1,32 @@
 import { createFragmentContainer, graphql, RelayProp } from "react-relay"
-import { SubscribeForm_user } from "@generated/SubscribeForm_user.graphql"
 import {
-  Field,
-  Formik,
-  Form,
+  CardElement,
+  injectStripe,
+  ReactStripeElements,
+} from "react-stripe-elements"
+
+import { useRouter } from "next/router"
+
+import { IconProp } from "@fortawesome/fontawesome-svg-core"
+import { faCreditCard } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {
   ErrorMessage,
+  Field,
+  Form,
+  Formik,
   FormikHelpers,
   useFormikContext,
 } from "formik"
 import * as yup from "yup"
-import {
-  injectStripe,
-  CardElement,
-  ReactStripeElements,
-} from "react-stripe-elements"
-import { useRouter } from "next/router"
-import { ErrorBox } from "components/ErrorBox"
-import { faCreditCard } from "@fortawesome/free-solid-svg-icons"
+
+import { SubscribeForm_user } from "@generated/SubscribeForm_user.graphql"
 import { subscribe } from "@mutations/Subscribe"
-import { FieldError } from "components/FieldError"
-import { IconProp } from "@fortawesome/fontawesome-svg-core"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { iconForBrand } from "components/CreditCardIcon"
-import { theme } from "tailwind.config"
 import { useAuth0 } from "components/Auth0Provider"
+import { iconForBrand } from "components/CreditCardIcon"
+import { ErrorBox } from "components/ErrorBox"
+import { FieldError } from "components/FieldError"
+import { theme } from "tailwind.config"
 
 interface Props {
   user: SubscribeForm_user

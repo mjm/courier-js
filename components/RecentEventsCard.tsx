@@ -1,6 +1,7 @@
 import { createFragmentContainer, graphql } from "react-relay"
+
 import { RecentEventsCard_events } from "@generated/RecentEventsCard_events.graphql"
-import EventTableRow from "./EventTableRow"
+import EventTableRow from "components/EventTableRow"
 
 const RecentEventsCard: React.FC<{
   events: RecentEventsCard_events

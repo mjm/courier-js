@@ -1,14 +1,16 @@
-import { injectable, inject } from "inversify"
-import * as keys from "../key"
-import { sql, DatabasePoolType } from "../db"
-import {
-  NewDeviceTokenInput,
-  DeviceToken,
-  UserId,
-  DeviceTokenEnvironment,
-} from "../data/types"
+import { inject,injectable } from "inversify"
+
+import { LoaderQueryFn,QueryLoader } from "lib/data/loader"
+
 import * as table from "../data/dbTypes"
-import { QueryLoader, LoaderQueryFn } from "lib/data/loader"
+import {
+  DeviceToken,
+  DeviceTokenEnvironment,
+  NewDeviceTokenInput,
+  UserId,
+} from "../data/types"
+import { DatabasePoolType,sql } from "../db"
+import * as keys from "../key"
 
 @injectable()
 class DeviceTokenRepository {

@@ -1,5 +1,6 @@
-import { QueryResolvers } from "../generated/graphql"
 import { fromExternalId, IdPrefix } from "lib/data/id"
+
+import { QueryResolvers } from "../generated/graphql"
 
 export const Query: QueryResolvers = {
   async currentUser(_parent, _args, { user }) {

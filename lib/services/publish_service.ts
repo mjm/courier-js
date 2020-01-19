@@ -1,11 +1,12 @@
 import { injectable } from "inversify"
-import { PostId, UserId } from "../data/types"
-import { PostLoader } from "../repositories/post_repository"
-import { Micropub } from "micropub-client"
-import { FeedLoader } from "../repositories/feed_repository"
-import UserService from "./user_service"
-import Microformats, { MicroformatDocument } from "microformat-node"
 import fetch from "isomorphic-unfetch"
+import Microformats, { MicroformatDocument } from "microformat-node"
+import { Micropub } from "micropub-client"
+
+import { PostId, UserId } from "../data/types"
+import { FeedLoader } from "../repositories/feed_repository"
+import { PostLoader } from "../repositories/post_repository"
+import UserService from "./user_service"
 
 @injectable()
 class PublishService {

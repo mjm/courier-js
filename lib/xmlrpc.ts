@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { NextApiRequest, NextApiResponse } from "next"
+
 import Deserializer from "xmlrpc/lib/deserializer"
 import Serializer from "xmlrpc/lib/serializer"
-import { NextApiRequest, NextApiResponse } from "next"
 
 export interface XMLRPCRequest {
   methodName: string

@@ -1,8 +1,9 @@
 import DataLoader from "dataloader"
-import { sql, DatabasePoolType, SqlTokenType } from "../db"
-import keyBy from "lodash/keyBy"
 import { injectable } from "inversify"
+import keyBy from "lodash/keyBy"
 import { SqlSqlTokenType } from "slonik"
+
+import { DatabasePoolType, sql, SqlTokenType } from "../db"
 
 export type LoaderBatch<T> = Promise<(T | null)[]>
 

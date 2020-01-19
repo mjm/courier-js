@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import {
-  UserResolvers,
-  CustomerResolvers,
-  CreditCardResolvers,
-  UserSubscriptionResolvers,
-  SubscriptionStatus,
-} from "../generated/graphql"
 import moment from "moment"
+
+import {
+  CreditCardResolvers,
+  CustomerResolvers,
+  SubscriptionStatus,
+  UserResolvers,
+  UserSubscriptionResolvers,
+} from "../generated/graphql"
 
 export const User: UserResolvers = {
   async customer({ stripe_customer_id }, _, { loaders }) {

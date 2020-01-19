@@ -1,10 +1,11 @@
+import { IdPrefix,toExternalId } from "lib/data/id"
+
+import { EventType as EventTypeRepo } from "../data/types"
 import {
+  EnumMap,
   EventResolvers,
   EventType as EventTypeGQL,
-  EnumMap,
 } from "../generated/graphql"
-import { EventType as EventTypeRepo } from "../data/types"
-import { toExternalId, IdPrefix } from "lib/data/id"
 
 export const EventType: EnumMap<EventTypeGQL, EventTypeRepo> = {
   FEED_REFRESH: "feed_refresh",

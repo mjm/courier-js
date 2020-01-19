@@ -1,17 +1,20 @@
 import React from "react"
-import { useRouter } from "next/router"
+
 import { AppProps } from "next/app"
-import { isAuthenticated } from "utils/auth0"
+import { useRouter } from "next/router"
+
 import { config } from "@fortawesome/fontawesome-svg-core"
 import NProgress from "nprogress"
-import MDXContainer from "components/MDXContainer"
-import { Auth0Provider, useAuth0 } from "components/Auth0Provider"
 
-config.autoAddCss = false
+import { Auth0Provider, useAuth0 } from "components/Auth0Provider"
+import MDXContainer from "components/MDXContainer"
+import { isAuthenticated } from "utils/auth0"
 
 import "components/Tailwind.css"
 import "components/Progress.css"
 import "@fortawesome/fontawesome-svg-core/styles.css"
+
+config.autoAddCss = false
 
 const App: React.FC<AppProps> = props => (
   <Auth0Provider>

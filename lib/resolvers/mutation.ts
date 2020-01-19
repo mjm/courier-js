@@ -1,5 +1,6 @@
-import { MutationResolvers, TestNotificationType } from "../generated/graphql"
 import { fromExternalId, IdPrefix } from "lib/data/id"
+
+import { MutationResolvers, TestNotificationType } from "../generated/graphql"
 
 export const Mutation: MutationResolvers = {
   async addFeed(_, { input }, { feeds }) {

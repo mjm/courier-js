@@ -1,6 +1,7 @@
-import { FeedResolvers, SubscribedFeedResolvers } from "../generated/graphql"
-import { toExternalId, IdPrefix } from "lib/data/id"
+import { IdPrefix,toExternalId } from "lib/data/id"
 import { Feed as FeedData } from "lib/data/types"
+
+import { FeedResolvers, SubscribedFeedResolvers } from "../generated/graphql"
 
 export const Feed: FeedResolvers = {
   id({ id }) {

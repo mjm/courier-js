@@ -1,7 +1,8 @@
-import { graphql, Environment } from "react-relay"
+import { Environment, graphql } from "react-relay"
 import { ROOT_ID } from "relay-runtime"
-import { commitMutationAsync } from "./commitMutationAsync"
+
 import { AddFeedMutation } from "@generated/AddFeedMutation.graphql"
+import { commitMutationAsync } from "@mutations/commitMutationAsync"
 
 const mutation = graphql`
   mutation AddFeedMutation($input: AddFeedInput!) {

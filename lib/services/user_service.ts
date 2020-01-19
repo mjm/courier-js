@@ -1,12 +1,14 @@
-import jwksClient from "jwks-rsa"
-import * as jwt from "jsonwebtoken"
-import { AuthenticationClient, ManagementClient, User } from "auth0"
-import { AuthenticationError } from "apollo-server-core"
-import { UserInfo, UserId, UserToken, UserAppMetadata } from "../data/types"
-import Environment from "../env"
-import { injectable, inject } from "inversify"
-import { Token } from "../key"
 import * as crypto from "crypto"
+
+import { AuthenticationError } from "apollo-server-core"
+import { AuthenticationClient, ManagementClient, User } from "auth0"
+import { inject, injectable } from "inversify"
+import * as jwt from "jsonwebtoken"
+import jwksClient from "jwks-rsa"
+
+import { UserAppMetadata, UserId, UserInfo, UserToken } from "../data/types"
+import Environment from "../env"
+import { Token } from "../key"
 
 export type UserIdProvider = () => Promise<UserId>
 

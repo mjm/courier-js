@@ -1,8 +1,10 @@
-import randomBytes from "randombytes"
-import Cookie from "js-cookie"
 import { NextApiRequest } from "next"
-import fetch from "isomorphic-unfetch"
+
 import { URLSearchParams } from "url"
+
+import fetch from "isomorphic-unfetch"
+import Cookie from "js-cookie"
+import randomBytes from "randombytes"
 
 function rootUrl(): string {
   return window.location.protocol + "//" + window.location.host + "/"

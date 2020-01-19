@@ -1,6 +1,7 @@
+import { IncomingMessage } from "http"
+
 import Cookie from "js-cookie"
 import jwtDecode from "jwt-decode"
-import { IncomingMessage } from "http"
 
 export interface IdToken {
   nickname: string

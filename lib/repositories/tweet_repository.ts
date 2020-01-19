@@ -1,19 +1,20 @@
-import { sql, DatabasePoolType, ValueExpressionType } from "../db"
+import { inject,injectable } from "inversify"
+import moment from "moment"
+
 import * as table from "../data/dbTypes"
+import { LoaderQueryFn, QueryLoader } from "../data/loader"
+import { Pager } from "../data/pager"
 import {
-  UserId,
+  FeedSubscriptionId,
+  NewTweetInput,
   PagingOptions,
+  PostId,
   Tweet,
   TweetId,
   UpdateTweetInput,
-  NewTweetInput,
-  FeedSubscriptionId,
-  PostId,
+  UserId,
 } from "../data/types"
-import { Pager } from "../data/pager"
-import moment from "moment"
-import { injectable, inject } from "inversify"
-import { LoaderQueryFn, QueryLoader } from "../data/loader"
+import { DatabasePoolType, sql, ValueExpressionType } from "../db"
 import * as keys from "../key"
 
 type TweetRow = table.tweets & Pick<table.posts, "published_at">

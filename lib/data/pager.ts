@@ -1,8 +1,8 @@
 import {
-  SqlSqlTokenType,
-  sql,
   DatabasePoolType,
   PrimitiveValueExpressionType,
+  sql,
+  SqlSqlTokenType,
   ValueExpressionType,
 } from "../db"
 import { PagingOptions } from "./types"

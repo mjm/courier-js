@@ -1,15 +1,16 @@
-import { sql, DatabasePoolType } from "../db"
+import { inject,injectable } from "inversify"
+
 import * as table from "../data/dbTypes"
+import { LoaderQueryFn, QueryLoader } from "../data/loader"
+import { Pager, PagerEdge } from "../data/pager"
 import {
+  FeedId,
+  FeedSubscriptionId,
   PagingOptions,
   SubscribedFeed,
   UserId,
-  FeedSubscriptionId,
-  FeedId,
 } from "../data/types"
-import { Pager, PagerEdge } from "../data/pager"
-import { injectable, inject } from "inversify"
-import { LoaderQueryFn, QueryLoader } from "../data/loader"
+import { DatabasePoolType,sql } from "../db"
 import * as keys from "../key"
 
 type FeedSubscriptionRow = table.feed_subscriptions & Pick<table.feeds, "url">

@@ -1,9 +1,10 @@
+import { User } from "auth0"
 import { injectable } from "inversify"
 import Stripe from "stripe"
-import UserService from "./user_service"
+
 import { EventType } from "../data/types"
-import { User } from "auth0"
 import EventService from "./event_service"
+import UserService from "./user_service"
 
 @injectable()
 class BillingEventService {

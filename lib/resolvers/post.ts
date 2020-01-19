@@ -1,6 +1,7 @@
-import { PostResolvers } from "../generated/graphql"
-import { toExternalId, IdPrefix } from "lib/data/id"
+import { IdPrefix,toExternalId } from "lib/data/id"
 import { Feed } from "lib/data/types"
+
+import { PostResolvers } from "../generated/graphql"
 
 export const Post: PostResolvers = {
   id({ id }) {

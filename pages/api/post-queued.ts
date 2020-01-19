@@ -1,5 +1,6 @@
-import { CourierContext } from "lib/context"
 import { NextApiRequest, NextApiResponse } from "next"
+
+import { CourierContext } from "lib/context"
 
 const { tweets } = CourierContext.create()
 

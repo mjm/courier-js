@@ -1,6 +1,6 @@
+import moment from "moment"
 import { createPool, InterceptorType } from "slonik"
 import { createInterceptors } from "slonik-interceptor-preset"
-import moment from "moment"
 
 const pool = createPool(process.env.DATABASE_URL || "", {
   typeParsers: [
