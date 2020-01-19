@@ -1,0 +1,4 @@
+/lib/__generated__/*
+/lib/generated/*
+/lib/data/dbTypes.ts
+/types/**/*
