@@ -1,16 +1,18 @@
 import React from "react"
-import { NextPage } from "next"
-import withData from "hocs/withData"
-import withSecurePage from "hocs/withSecurePage"
 import { graphql } from "react-relay"
+
+import { NextPage } from "next"
+
+import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
 import Head from "components/Head"
-import TweetList from "components/TweetList"
 import Loading from "components/Loading"
+import Notice from "components/Notice"
 import SubscriptionProvider, {
   useSubscription,
 } from "components/SubscriptionProvider"
-import Notice from "components/Notice"
-import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
+import TweetList from "components/TweetList"
+import withData from "hocs/withData"
+import withSecurePage from "hocs/withSecurePage"
 
 const TweetsPage: NextPage<TweetsPageQueryResponse> = ({
   upcoming,

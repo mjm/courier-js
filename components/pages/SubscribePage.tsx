@@ -1,14 +1,17 @@
 import React from "react"
+import { graphql } from "react-relay"
+import { Elements,StripeProvider } from "react-stripe-elements"
+
 import { NextPage } from "next"
-import { StripeProvider, Elements } from "react-stripe-elements"
+
+import { faCheckCircle, faCreditCard } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
+import { SubscribePageQueryResponse } from "@generated/SubscribePageQuery.graphql"
 import Head from "components/Head"
+import SubscribeForm from "components/SubscribeForm"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-import { graphql } from "react-relay"
-import SubscribeForm from "components/SubscribeForm"
-import { SubscribePageQueryResponse } from "@generated/SubscribePageQuery.graphql"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCheckCircle, faCreditCard } from "@fortawesome/free-solid-svg-icons"
 
 const SubscribePage: NextPage<SubscribePageQueryResponse> = ({
   currentUser,

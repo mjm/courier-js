@@ -1,12 +1,13 @@
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
+
 import { FeedDetails_feed } from "@generated/FeedDetails_feed.graphql"
-import Head from "components/Head"
-import { ErrorBox } from "components/ErrorBox"
 import { FeedDetails_user } from "@generated/FeedDetails_user.graphql"
+import { ErrorBox } from "components/ErrorBox"
 import FeedInfoCard from "components/FeedInfoCard"
 import FeedRecentPostList from "components/FeedRecentPostList"
 import FeedRemoveButton from "components/FeedRemoveButton"
+import Head from "components/Head"
 
 interface Props {
   feed: FeedDetails_feed

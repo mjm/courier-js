@@ -1,8 +1,10 @@
 import React from "react"
-import { getUser, isAuthenticated } from "utils/auth0"
-import Nav from "components/Nav"
-import { NextPageContext, NextPage, NextComponentType } from "next"
+
+import { NextComponentType,NextPage, NextPageContext } from "next"
+
 import { AuthProvider } from "components/AuthProvider"
+import Nav from "components/Nav"
+import { getUser, isAuthenticated } from "utils/auth0"
 
 export type DefaultPageWrapped<P = {}, IP = P> = NextComponentType<
   DefaultPageContext,

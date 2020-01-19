@@ -1,8 +1,10 @@
-import Link from "next/link"
 import React from "react"
-import { createFragmentContainer, graphql } from "react-relay"
-import { FeedCard_feed } from "@generated/FeedCard_feed.graphql"
 import Moment from "react-moment"
+import { createFragmentContainer, graphql } from "react-relay"
+
+import Link from "next/link"
+
+import { FeedCard_feed } from "@generated/FeedCard_feed.graphql"
 
 interface Props {
   feed: FeedCard_feed

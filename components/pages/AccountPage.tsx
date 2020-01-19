@@ -1,13 +1,15 @@
+import { graphql } from "react-relay"
+
 import { NextPage } from "next"
+
+import { AccountPageQueryResponse } from "@generated/AccountPageQuery.graphql"
 import Head from "components/Head"
+import RecentEventsCard from "components/RecentEventsCard"
+import SubscriptionInfoCard from "components/SubscriptionInfoCard"
+import UserActionsCard from "components/UserActionsCard"
+import UserInfoCard from "components/UserInfoCard"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-import { graphql } from "react-relay"
-import UserInfoCard from "components/UserInfoCard"
-import SubscriptionInfoCard from "components/SubscriptionInfoCard"
-import RecentEventsCard from "components/RecentEventsCard"
-import { AccountPageQueryResponse } from "@generated/AccountPageQuery.graphql"
-import UserActionsCard from "components/UserActionsCard"
 
 const AccountPage: NextPage<AccountPageQueryResponse> = props => {
   const { currentUser } = props

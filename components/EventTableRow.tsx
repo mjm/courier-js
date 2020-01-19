@@ -1,7 +1,9 @@
 import Moment from "react-moment"
 import { createFragmentContainer, graphql } from "react-relay"
-import { EventTableRow_event } from "@generated/EventTableRow_event.graphql"
+
 import Link from "next/link"
+
+import { EventTableRow_event } from "@generated/EventTableRow_event.graphql"
 
 const EventTableRow: React.FC<{
   event: EventTableRow_event

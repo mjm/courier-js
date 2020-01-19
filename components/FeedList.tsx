@@ -1,9 +1,10 @@
 import React from "react"
-
 import { createPaginationContainer, graphql } from "react-relay"
+
+import Link from "next/link"
+
 import { FeedList_feeds } from "@generated/FeedList_feeds.graphql"
 import FeedCard from "components/FeedCard"
-import Link from "next/link"
 
 // need to use CSS Grid _and_ media queries, so a CSS module is the best thing here
 import styles from "components/FeedList.module.css"

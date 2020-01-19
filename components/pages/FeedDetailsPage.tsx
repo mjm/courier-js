@@ -1,10 +1,12 @@
-import { NextPage } from "next"
-import withData from "hocs/withData"
-import withSecurePage from "hocs/withSecurePage"
 import { graphql } from "react-relay"
+
+import { NextPage } from "next"
+
+import { FeedDetailsPageQueryResponse } from "@generated/FeedDetailsPageQuery.graphql"
 import { ErrorContainer } from "components/ErrorContainer"
 import FeedDetails from "components/FeedDetails"
-import { FeedDetailsPageQueryResponse } from "@generated/FeedDetailsPageQuery.graphql"
+import withData from "hocs/withData"
+import withSecurePage from "hocs/withSecurePage"
 
 const FeedDetailsPage: NextPage<
   FeedDetailsPageQueryResponse,

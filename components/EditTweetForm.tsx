@@ -1,13 +1,15 @@
 import React from "react"
 import { createFragmentContainer, graphql, RelayProp } from "react-relay"
-import { Formik, FieldArray, Field, Form, useFormikContext } from "formik"
+
 import { faPlus, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
-import { ErrorBox } from "components/ErrorBox"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { Field, FieldArray, Form, Formik, useFormikContext } from "formik"
+
 import { EditTweetForm_tweet } from "@generated/EditTweetForm_tweet.graphql"
 import { editTweet } from "@mutations/EditTweet"
 import { postTweet } from "@mutations/PostTweet"
+import { ErrorBox } from "components/ErrorBox"
 import TweetCardActions from "components/TweetCardActions"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 type FormValues = Pick<EditTweetForm_tweet, "body" | "mediaURLs"> & {
   action: "save" | "post"

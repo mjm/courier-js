@@ -1,9 +1,10 @@
 import React from "react"
 import {
-  graphql,
   createPaginationContainer,
+  graphql,
   RelayPaginationProp,
 } from "react-relay"
+
 import { TweetList_tweets } from "@generated/TweetList_tweets.graphql"
 import TweetCard from "components/TweetCard"
 

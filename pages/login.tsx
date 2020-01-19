@@ -1,9 +1,11 @@
 import React from "react"
-import withPublicPage from "hocs/withPublicPage"
+
 import { NextPage } from "next"
+
+import { useAuth0 } from "components/Auth0Provider"
 import Head from "components/Head"
 import Loading from "components/Loading"
-import { useAuth0 } from "components/Auth0Provider"
+import withPublicPage from "hocs/withPublicPage"
 
 const Login: NextPage = () => {
   const { authorize } = useAuth0()

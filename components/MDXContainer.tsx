@@ -1,8 +1,10 @@
-import { MDXProvider } from "@mdx-js/react"
-import Nav from "components/Nav"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
+
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { MDXProvider } from "@mdx-js/react"
+
+import Nav from "components/Nav"
 
 const components = {
   wrapper: ({ children }: any) => (

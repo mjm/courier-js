@@ -1,5 +1,5 @@
-import { getToken } from "utils/auth0"
 import { useAuth0 } from "components/Auth0Provider"
+import { getToken } from "utils/auth0"
 
 const UserActionsCard: React.FC = () => {
   const { logout } = useAuth0()

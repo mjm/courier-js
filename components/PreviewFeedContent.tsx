@@ -1,8 +1,9 @@
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
+
 import { PreviewFeedContent_feed } from "@generated/PreviewFeedContent_feed.graphql"
-import TweetCard from "components/TweetCard"
 import AsyncButton from "components/AsyncButton"
+import TweetCard from "components/TweetCard"
 
 const PreviewFeedContent: React.FC<{
   feed: PreviewFeedContent_feed

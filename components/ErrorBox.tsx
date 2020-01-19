@@ -1,6 +1,7 @@
 import React from "react"
-import Notice from "components/Notice"
+
 import { useErrors } from "components/ErrorContainer"
+import Notice from "components/Notice"
 
 export const ErrorBox: React.FC<{
   title?: string

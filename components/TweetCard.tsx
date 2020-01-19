@@ -1,12 +1,13 @@
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
-import { ErrorContainer } from "components/ErrorContainer"
-import { ErrorBox } from "components/ErrorBox"
+
 import {
   TweetCard_tweet,
   TweetStatus,
 } from "@generated/TweetCard_tweet.graphql"
 import EditTweetForm from "components/EditTweetForm"
+import { ErrorBox } from "components/ErrorBox"
+import { ErrorContainer } from "components/ErrorContainer"
 import ViewTweet from "components/ViewTweet"
 
 const TweetCard: React.FC<{

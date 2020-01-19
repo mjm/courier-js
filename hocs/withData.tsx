@@ -1,21 +1,24 @@
 import React from "react"
-
+import { ReactRelayContext } from "react-relay"
 import {
-  FetchFunction,
   Environment,
-  Network,
-  Store,
-  RecordSource,
+  FetchFunction,
   fetchQuery,
   GraphQLTaggedNode,
+  Network,
   OperationType,
+  RecordSource,
+  Store,
 } from "relay-runtime"
-import { ReactRelayContext } from "react-relay"
-import fetch from "isomorphic-unfetch"
-import { IncomingMessage } from "http"
-import { NextPageContext, NextPage } from "next"
-import { getToken } from "utils/auth0"
+
+import { NextPage,NextPageContext } from "next"
 import Router from "next/router"
+
+import { IncomingMessage } from "http"
+
+import fetch from "isomorphic-unfetch"
+
+import { getToken } from "utils/auth0"
 
 let relayEnvironment: Environment | null = null
 

@@ -1,9 +1,11 @@
 import React from "react"
+
+import { NextPage } from "next"
 import Link from "next/link"
+import Router from "next/router"
+
 import Head from "components/Head"
 import withDefaultPage, { DefaultPageContext } from "hocs/withDefaultPage"
-import Router from "next/router"
-import { NextPage } from "next"
 
 const Home: NextPage<{}> = () => {
   return (

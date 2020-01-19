@@ -1,12 +1,14 @@
 import React from "react"
-import { useRouter } from "next/router"
-import { ErrorContainer, useErrors } from "components/ErrorContainer"
-import withPublicPage from "hocs/withPublicPage"
+
 import { NextPage } from "next"
-import Head from "components/Head"
-import { ErrorBox } from "components/ErrorBox"
-import Loading from "components/Loading"
+import { useRouter } from "next/router"
+
 import { useAuth0 } from "components/Auth0Provider"
+import { ErrorBox } from "components/ErrorBox"
+import { ErrorContainer, useErrors } from "components/ErrorContainer"
+import Head from "components/Head"
+import Loading from "components/Loading"
+import withPublicPage from "hocs/withPublicPage"
 
 const LoggedIn: NextPage<{}> = () => {
   return (

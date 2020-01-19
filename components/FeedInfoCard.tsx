@@ -1,19 +1,20 @@
+import Moment from "react-moment"
 import {
   createFragmentContainer,
-  graphql,
-  RelayProp,
   Environment,
   fetchQuery,
+  graphql,
+  RelayProp,
 } from "react-relay"
+
 import { FeedInfoCard_feed } from "@generated/FeedInfoCard_feed.graphql"
 import { FeedInfoCard_user } from "@generated/FeedInfoCard_user.graphql"
 import { FeedInfoCardEndpointsQuery } from "@generated/FeedInfoCardEndpointsQuery.graphql"
-import { beginIndieAuth } from "utils/indieauth"
-import AsyncButton from "components/AsyncButton"
-import Moment from "react-moment"
 import { refreshFeed } from "@mutations/RefreshFeed"
-import { useErrors } from "components/ErrorContainer"
 import { setFeedOptions } from "@mutations/SetFeedOptions"
+import AsyncButton from "components/AsyncButton"
+import { useErrors } from "components/ErrorContainer"
+import { beginIndieAuth } from "utils/indieauth"
 
 interface Props {
   feed: FeedInfoCard_feed

@@ -1,18 +1,20 @@
 import React from "react"
+
 import Link from "next/link"
-import {
-  faPaperPlane,
-  faRss,
-  IconDefinition,
-  faSignInAlt,
-  faDollarSign,
-  faQuestion,
-  faStar,
-  faBars,
-} from "@fortawesome/free-solid-svg-icons"
-import { faTwitter } from "@fortawesome/free-brands-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useRouter } from "next/router"
+
+import { faTwitter } from "@fortawesome/free-brands-svg-icons"
+import {
+  faBars,
+  faDollarSign,
+  faPaperPlane,
+  faQuestion,
+  faRss,
+  faSignInAlt,
+  faStar,
+  IconDefinition,
+} from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 const Nav: React.FC<{
   user?: any
