@@ -2,11 +2,7 @@ import React, { useState, useEffect } from "react"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-interface Props {
-  delay?: number
-}
-
-const Loading = ({ delay = 1000 }: Props) => {
+const Loading: React.FC<{ delay?: number }> = ({ delay = 1000 }) => {
   const [show, setShow] = useState(false)
 
   useEffect(() => {

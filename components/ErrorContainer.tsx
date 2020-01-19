@@ -7,7 +7,9 @@ interface ErrorState {
 
 const ErrorContext = React.createContext<ErrorState>({
   errors: [],
-  dispatch: () => {},
+  dispatch: () => {
+    // do nothing
+  },
 })
 
 type Action =
@@ -32,7 +34,9 @@ const reducer: React.Reducer<{ errors: Error[] }, Action> = (
 interface ErrorContainerProps {
   children: ((bag: ErrorsBag) => React.ReactNode) | React.ReactNode
 }
-export const ErrorContainer = ({ children }: ErrorContainerProps) => {
+export const ErrorContainer = ({
+  children,
+}: ErrorContainerProps): React.ReactElement => {
   const [{ errors }, dispatch] = React.useReducer(reducer, { errors: [] })
   const ctx = { errors, dispatch }
 
@@ -44,7 +48,8 @@ export const ErrorContainer = ({ children }: ErrorContainerProps) => {
   return <ErrorContext.Provider value={ctx}>{children}</ErrorContext.Provider>
 }
 
-export const useErrors = () => createErrorsBag(React.useContext(ErrorContext))
+export const useErrors = (): ErrorsBag =>
+  createErrorsBag(React.useContext(ErrorContext))
 
 interface ErrorsBag {
   errors: Error[]

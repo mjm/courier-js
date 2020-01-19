@@ -42,7 +42,7 @@ type DataPage<P, IP> = NextPage<
 
 function withData<
   Operation extends OperationType,
-  P extends Operation["response"] & Object,
+  P extends Operation["response"] & Record<string, any>,
   IP = P
 >(
   Page: WithDataWrapped<P, IP>,
@@ -68,8 +68,7 @@ function withData<
   }
 
   dataPage.getInitialProps = async ctx => {
-    // @ts-ignore
-    let composedInitialProps: IP = {}
+    let composedInitialProps: IP = {} as any
     if (Page.getInitialProps) {
       composedInitialProps = await Page.getInitialProps(ctx)
     }

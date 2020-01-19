@@ -88,7 +88,7 @@ const LastCheckedSection: React.FC<{
 }> = ({ feed, environment }) => {
   const { setError, clearErrors } = useErrors()
 
-  async function onClick() {
+  async function onClick(): Promise<void> {
     try {
       await refreshFeed(environment, feed.id)
       clearErrors()
@@ -119,7 +119,7 @@ const AutopostSection: React.FC<{
 }> = ({ feed, environment }) => {
   const { setError, clearErrors } = useErrors()
 
-  async function onClick() {
+  async function onClick(): Promise<void> {
     try {
       await setFeedOptions(environment, {
         id: feed.id,
@@ -169,7 +169,7 @@ export const MicropubSection: React.FC<{
     feed.homePageURL.replace(/\./g, "-")
   )
 
-  async function onClick() {
+  async function onClick(): Promise<void> {
     const variables = { url: feed.homePageURL }
     const { microformats } = await fetchQuery<FeedInfoCardEndpointsQuery>(
       environment,

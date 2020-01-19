@@ -5,12 +5,12 @@ const defaultDescription = ""
 const defaultOGURL = ""
 const defaultOGImage = ""
 
-const Head = (props: {
+const Head: React.FC<{
   title?: string
   description?: string
   url?: string
   ogImage?: string
-}) => (
+}> = props => (
   <NextHead>
     <meta charSet="UTF-8" />
     <title>{props.title || ""}</title>

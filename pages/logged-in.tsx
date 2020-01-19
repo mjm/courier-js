@@ -18,12 +18,12 @@ const LoggedIn: NextPage<{}> = () => {
 
 export default withPublicPage(LoggedIn)
 
-const ProcessLogin = () => {
+const ProcessLogin: React.FC = () => {
   const { errors, setError } = useErrors()
   const router = useRouter()
   const { receiveToken } = useAuth0()
 
-  async function handleLogin() {
+  async function handleLogin(): Promise<void> {
     try {
       await receiveToken()
       router.push("/")

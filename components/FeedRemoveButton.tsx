@@ -66,12 +66,12 @@ const RemoveDialog: React.FC<{
     return null
   }
 
-  function closeDialog() {
+  function closeDialog(): void {
     clearErrors()
     onClose()
   }
 
-  async function onDelete() {
+  async function onDelete(): Promise<void> {
     try {
       await deleteFeed(environment, feed.id)
       closeDialog()

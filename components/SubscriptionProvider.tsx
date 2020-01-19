@@ -10,7 +10,8 @@ const SubscriptionContext = React.createContext<SubscriptionState>({
   isSubscribed: false,
 })
 
-export const useSubscription = () => React.useContext(SubscriptionContext)
+export const useSubscription = (): SubscriptionState =>
+  React.useContext(SubscriptionContext)
 
 interface Props {
   user: SubscriptionProvider_user

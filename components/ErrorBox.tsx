@@ -2,18 +2,12 @@ import React from "react"
 import Notice from "components/Notice"
 import { useErrors } from "components/ErrorContainer"
 
-interface ErrorBoxProps {
+export const ErrorBox: React.FC<{
   title?: string
   className?: string
   error?: Error
   errors?: Error[]
-}
-export const ErrorBox = ({
-  title,
-  className,
-  error,
-  errors,
-}: ErrorBoxProps) => {
+}> = ({ title, className, error, errors }) => {
   // pull errors from the ErrorContainer if none are passed in
   const { errors: ctxErrors, clearErrors } = useErrors()
   let onClose: undefined | (() => void)

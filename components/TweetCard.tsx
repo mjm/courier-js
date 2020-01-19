@@ -9,11 +9,9 @@ import {
 import EditTweetForm from "components/EditTweetForm"
 import ViewTweet from "components/ViewTweet"
 
-interface Props {
+const TweetCard: React.FC<{
   tweet: TweetCard_tweet
-}
-
-const TweetCard = ({ tweet }: Props) => {
+}> = ({ tweet }) => {
   const [editing, setEditing] = React.useState(false)
   const statusClass = tweet.status ? cardTypeStyles[tweet.status].container : ""
 

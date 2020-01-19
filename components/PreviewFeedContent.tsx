@@ -4,11 +4,10 @@ import { PreviewFeedContent_feed } from "@generated/PreviewFeedContent_feed.grap
 import TweetCard from "components/TweetCard"
 import AsyncButton from "components/AsyncButton"
 
-interface Props {
+const PreviewFeedContent: React.FC<{
   feed: PreviewFeedContent_feed
   onWatch: () => Promise<void>
-}
-const PreviewFeedContent: React.FC<Props> = ({ feed, onWatch }) => {
+}> = ({ feed, onWatch }) => {
   return (
     <article className="my-8">
       <div className="mb-8">

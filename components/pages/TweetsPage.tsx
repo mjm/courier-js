@@ -91,7 +91,7 @@ const pastDescription = (count: number): React.ReactNode => {
   )
 }
 
-const SubscribeBanner = () => {
+const SubscribeBanner: React.FC = () => {
   const { isSubscribed } = useSubscription()
 
   if (isSubscribed) {

@@ -14,6 +14,7 @@ module.exports = {
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "prettier/@typescript-eslint",
   ],
   rules: {
@@ -25,5 +26,6 @@ module.exports = {
     ],
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars-experimental": "warn",
+    "@typescript-eslint/unbound-method": "off",
   },
 }

@@ -24,7 +24,7 @@ const FeedDetailsPage: NextPage<
   )
 }
 
-FeedDetailsPage.getInitialProps = async ({ query }) => {
+FeedDetailsPage.getInitialProps = ({ query }) => {
   return { id: query.id as string }
 }
 

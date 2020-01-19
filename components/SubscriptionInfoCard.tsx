@@ -12,6 +12,14 @@ const SubscriptionInfoCard: React.FC<{
 }> = ({ user, relay: { environment } }) => {
   const { customer, subscription, subscriptionStatusOverride } = user
 
+  async function cancel(): Promise<void> {
+    try {
+      await cancelSubscription(environment)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   if (!subscription && !subscriptionStatusOverride) {
     return (
       <Link href="/subscribe">
@@ -24,14 +32,6 @@ const SubscriptionInfoCard: React.FC<{
 
   const status = subscription?.status ?? subscriptionStatusOverride
   if (status === "ACTIVE") {
-    async function cancel() {
-      try {
-        await cancelSubscription(environment)
-      } catch (err) {
-        console.error(err)
-      }
-    }
-
     return (
       <div className="rounded-lg shadow-md bg-neutral-1 p-4 text-neutral-7 text-sm mb-4">
         <div>

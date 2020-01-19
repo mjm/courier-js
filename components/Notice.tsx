@@ -20,14 +20,12 @@ const variants = {
   },
 }
 
-interface Props {
+const Notice: React.FC<{
   variant?: keyof typeof variants
   onClose?: () => void
   title?: string
-  children: React.ReactNode
   className?: string
-}
-const Notice = ({ variant = "warning", title, children, className }: Props) => {
+}> = ({ variant = "warning", title, children, className }) => {
   const { box, icon, iconStyle } = variants[variant]
   return (
     <div

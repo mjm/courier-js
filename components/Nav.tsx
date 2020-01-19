@@ -14,12 +14,10 @@ import { faTwitter } from "@fortawesome/free-brands-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useRouter } from "next/router"
 
-interface Props {
+const Nav: React.FC<{
   user?: any
   isAuthenticating?: boolean
-}
-
-const Nav = ({ user, isAuthenticating = false }: Props) => {
+}> = ({ user, isAuthenticating = false }) => {
   const [menuVisible, setMenuVisible] = React.useState(false)
 
   return (
@@ -81,13 +79,12 @@ const Nav = ({ user, isAuthenticating = false }: Props) => {
 
 export default Nav
 
-interface NavItemProps {
+const NavItem: React.FC<{
   href: string
   icon?: IconDefinition
   children?: React.ReactNode
   brand?: boolean
-}
-const NavItem = ({ href, icon, children, brand = false }: NavItemProps) => {
+}> = ({ href, icon, children, brand = false }) => {
   const router = useRouter()
 
   const brandClass = brand ? "font-display text-2xl text-primary-9" : ""

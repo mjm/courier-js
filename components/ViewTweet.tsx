@@ -26,13 +26,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 mention(linkify)
 
-interface Props {
+const ViewTweet: React.FC<{
   tweet: ViewTweet_tweet
   onEdit: () => void
   relay: RelayProp
-}
-
-const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
+}> = ({ tweet, onEdit, relay }) => {
   return (
     <>
       {tweet.action === "TWEET" ? (

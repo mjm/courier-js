@@ -26,14 +26,14 @@ function useAuthenticating(): boolean {
   const { renewSession } = useAuth0()
   const [isAuthenticating, setAuthenticating] = React.useState(true)
 
-  async function handleAuthenticating() {
+  async function handleAuthenticating(): Promise<void> {
     try {
       const authed = isAuthenticated()
       await renewSession()
 
       // if auth status changes, re-route to same URL to force initial props to be called again
       if (authed !== isAuthenticated()) {
-        router.replace(router.asPath!)
+        router.replace(router.asPath)
       }
     } catch (err) {
       if (err.error !== "login_required") {
@@ -56,15 +56,17 @@ function useAuthenticating(): boolean {
   return isAuthenticating
 }
 
-function useProgressBar() {
+function useProgressBar(): void {
   const router = useRouter()
 
   React.useEffect(() => {
-    const onStart = (url: string) => {
+    const onStart = (url: string): void => {
       console.log(`Loading: ${url}`)
       NProgress.start()
     }
-    const onEnd = () => NProgress.done()
+    const onEnd = (): void => {
+      NProgress.done()
+    }
 
     router.events.on("routeChangeStart", onStart)
     router.events.on("routeChangeComplete", onEnd)
