@@ -27,7 +27,7 @@ export * from "slonik"
 
 function createLoggingInterceptor(): InterceptorType {
   return {
-    async afterQueryExecution(_context, query, result) {
+    afterQueryExecution(_context, query, result) {
       console.log({
         sql: query.sql,
         values: query.values,

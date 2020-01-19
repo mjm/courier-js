@@ -3,6 +3,11 @@ import { CourierContext } from "lib/context"
 
 const { feeds } = CourierContext.create()
 
+interface XMLRPCError extends Error {
+  faultCode: number
+  faultString: string
+}
+
 const handler: XMLRPCRequestHandler = async ({ methodName, params }) => {
   if (methodName === "weblogUpdates.ping") {
     const [title, homePageURL] = params
@@ -17,10 +22,8 @@ const handler: XMLRPCRequestHandler = async ({ methodName, params }) => {
   } else {
     const err = new Error(
       `This server doesn't understand the '${methodName}' method`
-    )
-    // @ts-ignore
+    ) as XMLRPCError
     err.faultCode = 404
-    // @ts-ignore
     err.faultString = err.message
     throw err
   }

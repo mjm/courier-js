@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import {
   UserResolvers,
   CustomerResolvers,
@@ -8,10 +9,10 @@ import {
 import moment from "moment"
 
 export const User: UserResolvers = {
-  async customer({ stripe_customer_id }, {}, { loaders }) {
+  async customer({ stripe_customer_id }, _, { loaders }) {
     if (stripe_customer_id) {
       const customer = await loaders.customers.load(stripe_customer_id)
-      if (customer && !(customer as any).deleted) {
+      if (customer && !("deleted" in customer)) {
         return customer
       }
     }
@@ -19,7 +20,7 @@ export const User: UserResolvers = {
     return null
   },
 
-  async subscription({ stripe_subscription_id }, {}, { loaders }) {
+  async subscription({ stripe_subscription_id }, _, { loaders }) {
     if (stripe_subscription_id) {
       return await loaders.subscriptions.load(stripe_subscription_id)
     } else {

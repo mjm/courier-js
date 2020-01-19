@@ -1,10 +1,16 @@
 import TweetRepository, {
   TweetPagingOptions,
   TweetLoader,
+  TweetPager,
 } from "../repositories/tweet_repository"
-import { UserId, Tweet, TweetId, UpdateTweetInput } from "../data/types"
+import {
+  UserId,
+  Tweet,
+  TweetId,
+  UpdateTweetInput,
+  SubscribedFeed,
+} from "../data/types"
 import { UserInputError } from "apollo-server-core"
-import { Pager } from "../data/pager"
 import { SubscribedFeedLoader } from "../repositories/feed_subscription_repository"
 import TwitterService from "./twitter_service"
 import { injectable, inject } from "inversify"
@@ -33,7 +39,7 @@ class TweetService {
     private notifications: NotificationService
   ) {}
 
-  async paged(options: TweetPagingOptions = {}): Promise<Pager<Tweet, any>> {
+  async paged(options: TweetPagingOptions = {}): Promise<TweetPager> {
     return this.tweets.paged(await this.getUserId(), options)
   }
 
@@ -117,7 +123,7 @@ class TweetService {
       try {
         const feed = (await this.subscribedFeedLoader.load(
           tweet.feedSubscriptionId
-        ))!
+        )) as SubscribedFeed
 
         if (!(await this.billing.isUserSubscribed(feed.userId))) {
           console.log(
@@ -155,7 +161,7 @@ class TweetService {
       // this is probably fine: Twitter silently rejects duplicate posts that are
       // close together.
       // just refetch the tweet and return that as if we did it here.
-      return (await this.tweetLoader.reload(tweet.id))!
+      return (await this.tweetLoader.reload(tweet.id)) as Tweet
     }
 
     await this.notifications.sendTweetPosted(userId, tweet)

@@ -31,7 +31,10 @@ function getOptimisticResponse(
   }
 }
 
-export function editTweet(environment: Environment, input: EditTweetInput) {
+export function editTweet(
+  environment: Environment,
+  input: EditTweetInput
+): void {
   const variables = { input }
 
   commitMutation(environment, {

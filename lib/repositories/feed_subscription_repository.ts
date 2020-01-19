@@ -15,14 +15,13 @@ import * as keys from "../key"
 type FeedSubscriptionRow = table.feed_subscriptions & Pick<table.feeds, "url">
 type NullPartial<T> = { [P in keyof T]?: T[P] | null }
 
+export type FeedSubscriptionPager = Pager<SubscribedFeed, FeedSubscriptionRow>
+
 @injectable()
 class FeedSubscriptionRepository {
   constructor(@inject(keys.DB) private db: DatabasePoolType) {}
 
-  paged(
-    userId: UserId,
-    options: PagingOptions = {}
-  ): Pager<SubscribedFeed, FeedSubscriptionRow> {
+  paged(userId: UserId, options: PagingOptions = {}): FeedSubscriptionPager {
     return new Pager({
       db: this.db,
       query: sql`

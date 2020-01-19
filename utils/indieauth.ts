@@ -102,7 +102,7 @@ export async function completeIndieAuth(
   }
 }
 
-function setStoredData(data: StoredData) {
+function setStoredData(data: StoredData): void {
   Cookie.set("indieauth", data)
 }
 

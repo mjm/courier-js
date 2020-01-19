@@ -21,6 +21,8 @@ export type TweetPagingOptions = PagingOptions & {
   filter?: "UPCOMING" | "PAST" | null
 }
 
+export type TweetPager = Pager<Tweet, TweetRow>
+
 @injectable()
 class TweetRepository {
   constructor(@inject(keys.DB) private db: DatabasePoolType) {}
@@ -28,7 +30,7 @@ class TweetRepository {
   paged(
     userId: UserId,
     { filter, ...variables }: TweetPagingOptions = {}
-  ): Pager<Tweet, TweetRow> {
+  ): TweetPager {
     let filterCondition: ValueExpressionType = sql``
     if (filter) {
       const operator = filter === "UPCOMING" ? sql`=` : sql`<>`

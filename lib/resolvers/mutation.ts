@@ -69,7 +69,7 @@ export const Mutation: MutationResolvers = {
     return { user: await user.getUserInfo() }
   },
 
-  async cancelSubscription(_, {}, { billing, user }) {
+  async cancelSubscription(_parent, _args, { billing, user }) {
     await billing.cancel()
     return { user: await user.getUserInfo() }
   },

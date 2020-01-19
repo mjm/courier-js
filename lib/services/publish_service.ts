@@ -37,7 +37,7 @@ class PublishService {
       return
     }
 
-    let token = await this.userService.getMicropubToken(
+    const token = await this.userService.getMicropubToken(
       userId,
       feed.homePageURL
     )

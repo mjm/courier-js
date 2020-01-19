@@ -123,7 +123,7 @@ export class PostLoader extends QueryLoader<Post, table.posts> {
     super(db)
   }
 
-  query: LoaderQueryFn<table.posts> = async cond =>
+  query: LoaderQueryFn<table.posts> = cond =>
     sql`SELECT * FROM posts WHERE ${cond("posts")}`
   fromRow = PostRepository.fromRow
 }

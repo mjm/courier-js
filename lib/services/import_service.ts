@@ -48,7 +48,9 @@ class ImportService {
   async importRecentPosts(
     feedSubscriptionId: FeedSubscriptionId
   ): Promise<void> {
-    const feed = (await this.subscribedFeedLoader.load(feedSubscriptionId))!
+    const feed = (await this.subscribedFeedLoader.load(
+      feedSubscriptionId
+    )) as SubscribedFeed
 
     // translating every post for the new subscription could be an excessive amount of work,
     // and probably isn't what someone expects anyway, so we just grab the last few.
@@ -179,7 +181,7 @@ class ImportService {
     const zippedTweets = zip(tweets, existingTweets).map(
       ([nt, et], i) => [i, nt, et] as const
     )
-    for (let [i, tweet, existingTweet] of zippedTweets) {
+    for (const [i, tweet, existingTweet] of zippedTweets) {
       if (!existingTweet && tweet) {
         // we need to make a new tweet here
 

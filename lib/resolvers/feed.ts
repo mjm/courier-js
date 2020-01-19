@@ -1,5 +1,6 @@
 import { FeedResolvers, SubscribedFeedResolvers } from "../generated/graphql"
 import { toExternalId, IdPrefix } from "lib/data/id"
+import { Feed as FeedData } from "lib/data/types"
 
 export const Feed: FeedResolvers = {
   id({ id }) {
@@ -16,7 +17,7 @@ export const SubscribedFeed: SubscribedFeedResolvers = {
     return toExternalId(IdPrefix.FeedSubscription, id)
   },
 
-  async feed({ feedId }, {}, { loaders }) {
-    return (await loaders.feeds.load(feedId))!
+  async feed({ feedId }, _, { loaders }) {
+    return (await loaders.feeds.load(feedId)) as FeedData
   },
 }

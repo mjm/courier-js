@@ -2,6 +2,7 @@ import { injectable } from "inversify"
 import Environment from "./env"
 import * as http2 from "http2"
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const pushCert = require("buffer-loader!../certs/courier-push.p12")
 
 const { HTTP2_HEADER_PATH, HTTP2_HEADER_METHOD } = http2.constants
@@ -16,7 +17,7 @@ export interface Notification {
   threadId?: string
   category?: string
 
-  appData?: Record<string, any>
+  appData?: {}
 
   topic: string
   pushType?: string
@@ -33,7 +34,6 @@ export type LocalizableAlertString =
 
 interface NotificationPayload {
   aps: NotificationApsPayload
-  [key: string]: any
 }
 
 interface NotificationApsPayload {

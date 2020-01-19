@@ -210,13 +210,21 @@ export interface Event {
   id: EventId
   userId: UserId | null
   eventType: EventType
-  parameters: Object
+  parameters: EventParameters
   createdAt: Date
+}
+
+export interface EventParameters {
+  feedId?: FeedId
+  feedSubscriptionId?: FeedSubscriptionId
+  tweetId?: TweetId
+  value?: boolean
+  subscriptionId?: string
 }
 
 export interface NewEventInput {
   eventType: EventType
-  parameters: Object
+  parameters: EventParameters
 }
 
 export type DeviceTokenId = string

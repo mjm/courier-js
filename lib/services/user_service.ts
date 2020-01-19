@@ -100,11 +100,12 @@ class UserService {
     }
 
     return {
-      access_token: twitterIdentity.access_token!,
+      access_token: twitterIdentity.access_token as string,
       // I guess this isn't a universal property, because Auth0 doesn't have it
       // declared in their types.
-      // @ts-ignore
-      access_token_secret: twitterIdentity.access_token_secret,
+      access_token_secret: ((twitterIdentity as unknown) as {
+        access_token_secret: string
+      }).access_token_secret,
     }
   }
 
@@ -206,7 +207,7 @@ class UserService {
     )
   }
 
-  async update(metadata: UserAppMetadata): Promise<any> {
+  async update(metadata: UserAppMetadata): Promise<User> {
     return await this.managementClient.updateAppMetadata(
       { id: await this.requireUserId() },
       metadata

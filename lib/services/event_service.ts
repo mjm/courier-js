@@ -1,8 +1,15 @@
 import { injectable, inject } from "inversify"
 import EventRepository from "../repositories/event_repository"
-import { Event, EventType, PagingOptions, UserId } from "../data/types"
+import {
+  Event,
+  EventType,
+  PagingOptions,
+  UserId,
+  EventParameters,
+} from "../data/types"
 import * as keys from "../key"
 import { Pager } from "../data/pager"
+import { events } from "lib/data/dbTypes"
 
 interface RecordOptions {
   asUser?: UserId | null
@@ -15,13 +22,13 @@ class EventService {
     private events: EventRepository
   ) {}
 
-  async paged(options: PagingOptions = {}): Promise<Pager<Event>> {
+  async paged(options: PagingOptions = {}): Promise<Pager<Event, events>> {
     return this.events.paged(await this.getUserId(), options)
   }
 
   async record(
     eventType: EventType,
-    parameters: Object = {},
+    parameters: EventParameters = {},
     options: RecordOptions = {}
   ): Promise<Event> {
     const userId = options.asUser || (await this.getUserId().catch(() => null))

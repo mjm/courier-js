@@ -1,6 +1,7 @@
 import FeedRepository, { FeedLoader } from "../repositories/feed_repository"
 import FeedSubscriptionRepository, {
   SubscribedFeedLoader,
+  FeedSubscriptionPager,
 } from "../repositories/feed_subscription_repository"
 import {
   SubscribedFeed,
@@ -11,7 +12,7 @@ import {
   UserId,
   PreviewFeed,
 } from "../data/types"
-import { Pager, PagerEdge } from "../data/pager"
+import { PagerEdge } from "../data/pager"
 import { scrapeFeed, normalizeURL } from "scrape-feed"
 import { locateFeed } from "feed-locator"
 import ImportService from "./import_service"
@@ -33,13 +34,11 @@ class FeedService {
     private publish: PublishService
   ) {}
 
-  async paged(
-    options: PagingOptions = {}
-  ): Promise<Pager<SubscribedFeed, any>> {
+  async paged(options: PagingOptions = {}): Promise<FeedSubscriptionPager> {
     return this.feedSubscriptions.paged(await this.getUserId(), options)
   }
 
-  async refreshAllByHomePageURL(url: string) {
+  async refreshAllByHomePageURL(url: string): Promise<void> {
     const homePageURL = normalizeURL(url)
 
     const feeds = await this.feeds.findAllByHomePageURL(homePageURL)

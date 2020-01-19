@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import Deserializer from "xmlrpc/lib/deserializer"
 import Serializer from "xmlrpc/lib/serializer"
 import { NextApiRequest, NextApiResponse } from "next"

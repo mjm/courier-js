@@ -93,7 +93,7 @@ export class FeedLoader extends QueryLoader<Feed, table.feeds> {
     super(db)
   }
 
-  query: LoaderQueryFn<table.feeds> = async cond =>
+  query: LoaderQueryFn<table.feeds> = cond =>
     sql`SELECT * FROM feeds WHERE ${cond("feeds")}`
   fromRow = FeedRepository.fromRow
 }

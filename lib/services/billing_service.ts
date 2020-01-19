@@ -23,7 +23,7 @@ class BillingService {
   async subscribe(
     email?: string | null,
     tokenId?: string | null
-  ): Promise<any> {
+  ): Promise<void> {
     const createNewCustomer = email && tokenId
     const existingSubscription = await this.getSubscription()
     if (existingSubscription) {
@@ -53,7 +53,7 @@ class BillingService {
     }
 
     const customerId = createNewCustomer
-      ? await this.createCustomer(email!, tokenId!)
+      ? await this.createCustomer(email as string, tokenId as string)
       : await this.requireExistingCustomer()
 
     const subscription = await this.stripe.subscriptions.create({

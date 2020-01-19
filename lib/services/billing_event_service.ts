@@ -13,7 +13,7 @@ class BillingEventService {
     let subscription: Stripe.subscriptions.ISubscription
 
     switch (event.type) {
-      case "customer.subscription.updated":
+      case "customer.subscription.updated": {
         // Some reasons we might care about this event:
         // - The subscription renewed automatically
         // - The user canceled the subscription
@@ -29,6 +29,7 @@ class BillingEventService {
 
         await this.recordSubscriptionEvent(eventType, subscription)
         break
+      }
 
       case "customer.subscription.deleted":
         // The user canceled the subscription and later the period ended
@@ -46,8 +47,12 @@ class BillingEventService {
 
   private getEventTypeForUpdate(
     subscription: Stripe.subscriptions.ISubscription,
-    previousAttrs: any
+    previousAttrs: Stripe.events.IEvent["data"]["previous_attributes"]
   ): EventType | undefined {
+    if (!previousAttrs) {
+      return undefined
+    }
+
     if (
       "current_period_end" in previousAttrs &&
       previousAttrs.current_period_end !== subscription.current_period_end

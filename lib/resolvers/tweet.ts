@@ -7,6 +7,8 @@ import {
 import {
   TweetStatus as TweetStatusRepo,
   TweetAction as TweetActionRepo,
+  Post,
+  SubscribedFeed,
 } from "../data/types"
 import { toExternalId, IdPrefix } from "lib/data/id"
 
@@ -26,11 +28,13 @@ export const Tweet: TweetResolvers = {
     return toExternalId(IdPrefix.Tweet, id)
   },
 
-  async post({ postId }, {}, { loaders }) {
-    return (await loaders.posts.load(postId))!
+  async post({ postId }, _, { loaders }) {
+    return (await loaders.posts.load(postId)) as Post
   },
 
-  async feed({ feedSubscriptionId }, {}, { loaders }) {
-    return (await loaders.subscribedFeeds.load(feedSubscriptionId))!
+  async feed({ feedSubscriptionId }, _, { loaders }) {
+    return (await loaders.subscribedFeeds.load(
+      feedSubscriptionId
+    )) as SubscribedFeed
   },
 }

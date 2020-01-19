@@ -3,7 +3,10 @@ import { NextApiRequest, NextApiResponse } from "next"
 
 const { tweets } = CourierContext.create()
 
-export default async (_req: NextApiRequest, res: NextApiResponse) => {
+export default async (
+  _req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
   const results = await tweets.postQueued()
 
   console.log(results)

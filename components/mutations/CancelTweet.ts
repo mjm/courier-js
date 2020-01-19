@@ -23,7 +23,7 @@ function getOptimisticResponse(id: string): CancelTweetMutationResponse {
   }
 }
 
-export function cancelTweet(environment: Environment, id: string) {
+export function cancelTweet(environment: Environment, id: string): void {
   const variables = { input: { id } }
 
   commitMutation(environment, {

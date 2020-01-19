@@ -23,7 +23,7 @@ function getOptimisticResponse(id: string): UncancelTweetMutationResponse {
   }
 }
 
-export function uncancelTweet(environment: Environment, id: string) {
+export function uncancelTweet(environment: Environment, id: string): void {
   const variables = { input: { id } }
 
   commitMutation(environment, {

@@ -75,7 +75,7 @@ export class CourierContext {
   publish: PublishService
   notifications: NotificationService
 
-  static async createForRequest(req: IncomingMessage): Promise<CourierContext> {
+  static createForRequest(req: IncomingMessage): CourierContext {
     const child = container.createChild()
     child.bind<string | null>(keys.Token).toConstantValue(getToken(req))
 
