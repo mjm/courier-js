@@ -1,6 +1,7 @@
-import { ApolloServer, makeExecutableSchema, gql } from "apollo-server-micro"
-import resolvers from "lib/resolvers"
+import { ApolloServer, gql,makeExecutableSchema } from "apollo-server-micro"
+
 import { CourierContext } from "lib/context"
+import resolvers from "lib/resolvers"
 
 const schemaText = require("schema.graphql").default
 
@@ -8,13 +9,13 @@ const typeDefs = gql`
   ${schemaText}
 `
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const schema = makeExecutableSchema({ typeDefs, resolvers: resolvers as any })
 
 const server = new ApolloServer({
   schema,
-  context: async ({ req }) => CourierContext.createForRequest(req),
+  context: ({ req }) => CourierContext.createForRequest(req),
   introspection: true,
-  // @ts-ignore
   playground: {
     settings: {
       "request.credentials": "same-origin",

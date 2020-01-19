@@ -1,21 +1,24 @@
 import React from "react"
 import {
-  RelayProp,
   createFragmentContainer,
-  graphql,
   Environment,
+  graphql,
+  RelayProp,
 } from "react-relay"
-import { FeedRemoveButton_feed } from "@generated/FeedRemoveButton_feed.graphql"
-import { ErrorContainer, useErrors } from "components/ErrorContainer"
-import { ErrorBox } from "components/ErrorBox"
+
+import Router from "next/router"
+
 import {
   AlertDialog,
-  AlertDialogLabel,
   AlertDialogDescription,
+  AlertDialogLabel,
 } from "@reach/alert-dialog"
+
+import { FeedRemoveButton_feed } from "@generated/FeedRemoveButton_feed.graphql"
 import { deleteFeed } from "@mutations/DeleteFeed"
-import Router from "next/router"
 import AsyncButton from "components/AsyncButton"
+import { ErrorBox } from "components/ErrorBox"
+import { ErrorContainer, useErrors } from "components/ErrorContainer"
 
 const FeedRemoveButton: React.FC<{
   feed: FeedRemoveButton_feed
@@ -66,12 +69,12 @@ const RemoveDialog: React.FC<{
     return null
   }
 
-  function closeDialog() {
+  function closeDialog(): void {
     clearErrors()
     onClose()
   }
 
-  async function onDelete() {
+  async function onDelete(): Promise<void> {
     try {
       await deleteFeed(environment, feed.id)
       closeDialog()

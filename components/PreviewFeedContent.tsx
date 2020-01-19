@@ -1,14 +1,14 @@
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
-import { PreviewFeedContent_feed } from "@generated/PreviewFeedContent_feed.graphql"
-import TweetCard from "components/TweetCard"
-import AsyncButton from "components/AsyncButton"
 
-interface Props {
+import { PreviewFeedContent_feed } from "@generated/PreviewFeedContent_feed.graphql"
+import AsyncButton from "components/AsyncButton"
+import TweetCard from "components/TweetCard"
+
+const PreviewFeedContent: React.FC<{
   feed: PreviewFeedContent_feed
   onWatch: () => Promise<void>
-}
-const PreviewFeedContent: React.FC<Props> = ({ feed, onWatch }) => {
+}> = ({ feed, onWatch }) => {
   return (
     <article className="my-8">
       <div className="mb-8">

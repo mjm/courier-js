@@ -1,4 +1,5 @@
 import React from "react"
+
 import {
   faExclamationCircle,
   faExclamationTriangle,
@@ -20,18 +21,16 @@ const variants = {
   },
 }
 
-interface Props {
+const Notice: React.FC<{
   variant?: keyof typeof variants
   onClose?: () => void
   title?: string
-  children: React.ReactNode
   className?: string
-}
-const Notice = ({ variant = "warning", title, children, className }: Props) => {
+}> = ({ variant = "warning", title, children, className }) => {
   const { box, icon, iconStyle } = variants[variant]
   return (
     <div
-      className={`p-4 rounded-lg shadow border-2 flex items-start ${box} ${className ||
+      className={`p-4 rounded-lg shadow border-2 flex items-baseline ${box} ${className ||
         ""}`}
     >
       <div className="flex-shrink-0 text-lg">

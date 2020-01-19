@@ -1,9 +1,11 @@
 import React from "react"
-import withDefaultPage, { DefaultPage } from "hocs/withDefaultPage"
-import Loading from "components/Loading"
+
 import { NextPage } from "next"
-import { useAuth } from "components/AuthProvider"
 import Router from "next/router"
+
+import { useAuth } from "components/AuthProvider"
+import Loading from "components/Loading"
+import withDefaultPage, { DefaultPage } from "hocs/withDefaultPage"
 
 export default function withSecurePage<P, IP>(
   Page: NextPage<P, IP>

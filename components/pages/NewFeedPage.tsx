@@ -1,21 +1,22 @@
 import React from "react"
+import { Environment } from "react-relay"
 
-import withSecurePage from "hocs/withSecurePage"
+import { NextPage } from "next"
+import Router from "next/router"
+
+import { addFeed } from "@mutations/AddFeed"
 import Head from "components/Head"
 import PreviewFeedForm from "components/PreviewFeedForm"
 import PreviewFeedResult from "components/PreviewFeedResult"
 import withData from "hocs/withData"
-import { Environment } from "react-relay"
-import { addFeed } from "@mutations/AddFeed"
-import Router from "next/router"
-import { NextPage } from "next"
+import withSecurePage from "hocs/withSecurePage"
 
 const NewFeedPage: NextPage<{ environment: Environment }> = ({
   environment,
 }) => {
   const [url, setURL] = React.useState("")
 
-  async function watchFeed() {
+  async function watchFeed(): Promise<void> {
     await addFeed(environment, url)
     Router.push("/feeds")
   }

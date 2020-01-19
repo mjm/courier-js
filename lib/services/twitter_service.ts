@@ -1,9 +1,10 @@
-import { UserId, Tweet } from "../data/types"
-import UserService, { TwitterCredentials } from "./user_service"
-import Twitter from "twitter"
-import fetch from "node-fetch"
-import Environment from "../env"
 import { injectable } from "inversify"
+import fetch from "node-fetch"
+import Twitter from "twitter"
+
+import { Tweet,UserId } from "../data/types"
+import Environment from "../env"
+import UserService, { TwitterCredentials } from "./user_service"
 
 /** A reference to a particular media item in the Twitter API. */
 type MediaId = string

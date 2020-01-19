@@ -1,10 +1,11 @@
+import { IdPrefix,toExternalId } from "lib/data/id"
+
+import { EventType as EventTypeRepo } from "../data/types"
 import {
+  EnumMap,
   EventResolvers,
   EventType as EventTypeGQL,
-  EnumMap,
 } from "../generated/graphql"
-import { EventType as EventTypeRepo } from "../data/types"
-import { toExternalId, IdPrefix } from "lib/data/id"
 
 export const EventType: EnumMap<EventTypeGQL, EventTypeRepo> = {
   FEED_REFRESH: "feed_refresh",
@@ -28,8 +29,8 @@ export const Event: EventResolvers = {
     return toExternalId(IdPrefix.Event, id)
   },
 
-  async feed(event, {}, { loaders }) {
-    const params = event.parameters as any
+  async feed(event, _, { loaders }) {
+    const params = event.parameters
     if (params.feedId) {
       return await loaders.feeds.load(params.feedId)
     } else if (params.feedSubscriptionId) {
@@ -44,8 +45,8 @@ export const Event: EventResolvers = {
     return null
   },
 
-  async tweet(event, {}, { loaders }) {
-    const params = event.parameters as any
+  async tweet(event, _, { loaders }) {
+    const params = event.parameters
     if (params.tweetId) {
       return await loaders.tweets.load(params.tweetId)
     }
@@ -54,9 +55,9 @@ export const Event: EventResolvers = {
   },
 
   boolValue(event) {
-    const params = event.parameters as any
+    const params = event.parameters
     if (event.eventType === "feed_set_autopost") {
-      return params.value
+      return params.value as boolean
     }
 
     return null

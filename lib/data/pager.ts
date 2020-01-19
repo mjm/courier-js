@@ -1,8 +1,8 @@
 import {
-  SqlSqlTokenType,
-  sql,
   DatabasePoolType,
   PrimitiveValueExpressionType,
+  sql,
+  SqlSqlTokenType,
   ValueExpressionType,
 } from "../db"
 import { PagingOptions } from "./types"
@@ -19,7 +19,7 @@ interface OrderBy {
   direction: "ASC" | "DESC"
 }
 
-export interface PagerOptions<ResultType, RowType = any> {
+export interface PagerOptions<ResultType, RowType> {
   db: DatabasePoolType
   query: SqlSqlTokenType<RowType>
   orderBy: OrderBy
@@ -29,7 +29,7 @@ export interface PagerOptions<ResultType, RowType = any> {
   getCursorValue: CursorValueFn
 }
 
-export class Pager<ResultType, RowType = any> {
+export class Pager<ResultType, RowType> {
   private db: DatabasePoolType
   private query: SqlSqlTokenType<RowType>
   private orderBy: OrderBy

@@ -1,8 +1,8 @@
 import { Environment } from "react-relay"
 import {
-  MutationParameters,
-  MutationConfig,
   commitMutation,
+  MutationConfig,
+  MutationParameters,
 } from "relay-runtime"
 
 type AsyncMutationConfig<TOperation extends MutationParameters> = Omit<

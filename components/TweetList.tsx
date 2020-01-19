@@ -1,25 +1,24 @@
 import React from "react"
 import {
-  graphql,
   createPaginationContainer,
+  graphql,
   RelayPaginationProp,
 } from "react-relay"
+
 import { TweetList_tweets } from "@generated/TweetList_tweets.graphql"
 import TweetCard from "components/TweetCard"
 
-interface Props {
+const TweetList: React.FC<{
   description: (count: number) => React.ReactNode
   emptyDescription: React.ReactNode
   tweets: TweetList_tweets
   relay: RelayPaginationProp
-}
-
-const TweetList = ({
+}> = ({
   description,
   emptyDescription,
   tweets,
   relay: { hasMore, loadMore },
-}: Props) => {
+}) => {
   const [isLoading, setLoading] = React.useState(false)
   const { edges, totalCount } = tweets.allTweets
 

@@ -1,12 +1,13 @@
 import React from "react"
+import { Environment,graphql } from "react-relay"
 
 import { NextPage } from "next"
-import { graphql, Environment } from "react-relay"
+
+import { FeedsPageQueryResponse } from "@generated/FeedsPageQuery.graphql"
+import FeedList from "components/FeedList"
 import Head from "components/Head"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-import FeedList from "components/FeedList"
-import { FeedsPageQueryResponse } from "@generated/FeedsPageQuery.graphql"
 
 const FeedsPage: NextPage<FeedsPageQueryResponse & {
   environment: Environment

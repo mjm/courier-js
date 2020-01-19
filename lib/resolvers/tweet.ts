@@ -1,14 +1,17 @@
+import { IdPrefix,toExternalId } from "lib/data/id"
+
+import {
+  Post,
+  SubscribedFeed,
+  TweetAction as TweetActionRepo,
+  TweetStatus as TweetStatusRepo,
+} from "../data/types"
 import {
   EnumMap,
+  TweetAction as TweetActionGQL,
   TweetResolvers,
   TweetStatus as TweetStatusGQL,
-  TweetAction as TweetActionGQL,
 } from "../generated/graphql"
-import {
-  TweetStatus as TweetStatusRepo,
-  TweetAction as TweetActionRepo,
-} from "../data/types"
-import { toExternalId, IdPrefix } from "lib/data/id"
 
 export const TweetAction: EnumMap<TweetActionGQL, TweetActionRepo> = {
   TWEET: "tweet",
@@ -26,11 +29,13 @@ export const Tweet: TweetResolvers = {
     return toExternalId(IdPrefix.Tweet, id)
   },
 
-  async post({ postId }, {}, { loaders }) {
-    return (await loaders.posts.load(postId))!
+  async post({ postId }, _, { loaders }) {
+    return (await loaders.posts.load(postId)) as Post
   },
 
-  async feed({ feedSubscriptionId }, {}, { loaders }) {
-    return (await loaders.subscribedFeeds.load(feedSubscriptionId))!
+  async feed({ feedSubscriptionId }, _, { loaders }) {
+    return (await loaders.subscribedFeeds.load(
+      feedSubscriptionId
+    )) as SubscribedFeed
   },
 }

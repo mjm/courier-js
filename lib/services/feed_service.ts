@@ -1,23 +1,25 @@
+import { locateFeed } from "feed-locator"
+import { inject,injectable } from "inversify"
+import { normalizeURL,scrapeFeed } from "scrape-feed"
+
+import { PagerEdge } from "../data/pager"
+import {
+  Feed,
+  FeedId,
+  FeedSubscriptionId,
+  PagingOptions,
+  PreviewFeed,
+  SubscribedFeed,
+  UserId,
+} from "../data/types"
+import * as keys from "../key"
 import FeedRepository, { FeedLoader } from "../repositories/feed_repository"
 import FeedSubscriptionRepository, {
+  FeedSubscriptionPager,
   SubscribedFeedLoader,
 } from "../repositories/feed_subscription_repository"
-import {
-  SubscribedFeed,
-  PagingOptions,
-  FeedId,
-  Feed,
-  FeedSubscriptionId,
-  UserId,
-  PreviewFeed,
-} from "../data/types"
-import { Pager, PagerEdge } from "../data/pager"
-import { scrapeFeed, normalizeURL } from "scrape-feed"
-import { locateFeed } from "feed-locator"
-import ImportService from "./import_service"
-import { injectable, inject } from "inversify"
-import * as keys from "../key"
 import EventService from "./event_service"
+import ImportService from "./import_service"
 import PublishService from "./publish_service"
 
 @injectable()
@@ -33,13 +35,11 @@ class FeedService {
     private publish: PublishService
   ) {}
 
-  async paged(
-    options: PagingOptions = {}
-  ): Promise<Pager<SubscribedFeed, any>> {
+  async paged(options: PagingOptions = {}): Promise<FeedSubscriptionPager> {
     return this.feedSubscriptions.paged(await this.getUserId(), options)
   }
 
-  async refreshAllByHomePageURL(url: string) {
+  async refreshAllByHomePageURL(url: string): Promise<void> {
     const homePageURL = normalizeURL(url)
 
     const feeds = await this.feeds.findAllByHomePageURL(homePageURL)

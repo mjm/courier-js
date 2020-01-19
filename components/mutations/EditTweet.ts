@@ -1,4 +1,5 @@
-import { graphql, Environment, commitMutation } from "react-relay"
+import { commitMutation,Environment, graphql } from "react-relay"
+
 import { EditTweetMutationResponse } from "@generated/EditTweetMutation.graphql"
 
 const mutation = graphql`
@@ -31,7 +32,10 @@ function getOptimisticResponse(
   }
 }
 
-export function editTweet(environment: Environment, input: EditTweetInput) {
+export function editTweet(
+  environment: Environment,
+  input: EditTweetInput
+): void {
   const variables = { input }
 
   commitMutation(environment, {

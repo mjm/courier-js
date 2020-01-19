@@ -1,21 +1,25 @@
 import React from "react"
-
+import { ReactRelayContext } from "react-relay"
 import {
-  FetchFunction,
   Environment,
-  Network,
-  Store,
-  RecordSource,
+  FetchFunction,
   fetchQuery,
   GraphQLTaggedNode,
+  Network,
   OperationType,
+  RecordSource,
+  Store,
 } from "relay-runtime"
-import { ReactRelayContext } from "react-relay"
-import fetch from "isomorphic-unfetch"
-import { IncomingMessage } from "http"
-import { NextPageContext, NextPage } from "next"
-import { getToken } from "utils/auth0"
+import { RecordMap } from "relay-runtime/lib/store/RelayStoreTypes"
+
+import { NextPage, NextPageContext } from "next"
 import Router from "next/router"
+
+import { IncomingMessage } from "http"
+
+import fetch from "isomorphic-unfetch"
+
+import { getToken } from "utils/auth0"
 
 let relayEnvironment: Environment | null = null
 
@@ -33,16 +37,16 @@ type WithDataWrapped<P, IP> = NextPage<
 
 type DataPage<P, IP> = NextPage<
   P & {
-    queryRecords: any
+    queryRecords: RecordMap
   },
   IP & {
-    queryRecords: any
+    queryRecords: RecordMap
   }
 >
 
 function withData<
   Operation extends OperationType,
-  P extends Operation["response"] & Object,
+  P extends Operation["response"] & {},
   IP = P
 >(
   Page: WithDataWrapped<P, IP>,
@@ -68,20 +72,19 @@ function withData<
   }
 
   dataPage.getInitialProps = async ctx => {
-    // @ts-ignore
-    let composedInitialProps: IP = {}
+    let composedInitialProps = {}
     if (Page.getInitialProps) {
       composedInitialProps = await Page.getInitialProps(ctx)
     }
 
-    let queryProps: any = {}
-    let queryRecords: any = {}
+    let queryProps: Operation["response"] = {}
+    let queryRecords: RecordMap = {}
     const environment = initEnvironment(ctx)
 
     if (options.query) {
       let variables = {}
       if (options.getVariables) {
-        variables = options.getVariables(composedInitialProps)
+        variables = options.getVariables(composedInitialProps as IP)
       }
 
       try {
@@ -115,8 +118,8 @@ function withData<
     }
 
     return {
-      ...composedInitialProps,
-      ...queryProps,
+      ...(composedInitialProps as IP),
+      ...(queryProps as {}),
       queryRecords,
     }
   }
@@ -152,7 +155,10 @@ function makeFetchQuery(ctx?: NextPageContext): FetchFunction {
   }
 }
 
-function initEnvironment(ctx?: NextPageContext, records?: any): Environment {
+function initEnvironment(
+  ctx?: NextPageContext,
+  records?: RecordMap
+): Environment {
   const fetchQuery = makeFetchQuery(ctx)
   const network = Network.create(fetchQuery)
   const store = new Store(new RecordSource(records))

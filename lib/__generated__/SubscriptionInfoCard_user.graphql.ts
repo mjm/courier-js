@@ -8,7 +8,6 @@ export type SubscriptionInfoCard_user = {
         readonly creditCard: {
             readonly brand: string;
             readonly lastFour: string;
-            readonly " $fragmentRefs": FragmentRefs<"CreditCard_card">;
         } | null;
     } | null;
     readonly subscription: {
@@ -16,7 +15,6 @@ export type SubscriptionInfoCard_user = {
         readonly periodEnd: any;
     } | null;
     readonly subscriptionStatusOverride: SubscriptionStatus | null;
-    readonly " $fragmentRefs": FragmentRefs<"SubscriptionStatus_user">;
     readonly " $refType": "SubscriptionInfoCard_user";
 };
 export type SubscriptionInfoCard_user$data = SubscriptionInfoCard_user;
@@ -65,11 +63,6 @@ const node: ReaderFragment = {
               "name": "lastFour",
               "args": null,
               "storageKey": null
-            },
-            {
-              "kind": "FragmentSpread",
-              "name": "CreditCard_card",
-              "args": null
             }
           ]
         }
@@ -106,13 +99,8 @@ const node: ReaderFragment = {
       "name": "subscriptionStatusOverride",
       "args": null,
       "storageKey": null
-    },
-    {
-      "kind": "FragmentSpread",
-      "name": "SubscriptionStatus_user",
-      "args": null
     }
   ]
 };
-(node as any).hash = '1f0e9fc2bebd0a440f74d13775c3ab14';
+(node as any).hash = '4e4dd90b8c39e7864f237d4e9a3b511c';
 export default node;

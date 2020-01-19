@@ -1,12 +1,14 @@
-import jwksClient from "jwks-rsa"
-import * as jwt from "jsonwebtoken"
-import { AuthenticationClient, ManagementClient, User } from "auth0"
-import { AuthenticationError } from "apollo-server-core"
-import { UserInfo, UserId, UserToken, UserAppMetadata } from "../data/types"
-import Environment from "../env"
-import { injectable, inject } from "inversify"
-import { Token } from "../key"
 import * as crypto from "crypto"
+
+import { AuthenticationError } from "apollo-server-core"
+import { AuthenticationClient, ManagementClient, User } from "auth0"
+import { inject, injectable } from "inversify"
+import * as jwt from "jsonwebtoken"
+import jwksClient from "jwks-rsa"
+
+import { UserAppMetadata, UserId, UserInfo, UserToken } from "../data/types"
+import Environment from "../env"
+import { Token } from "../key"
 
 export type UserIdProvider = () => Promise<UserId>
 
@@ -100,11 +102,12 @@ class UserService {
     }
 
     return {
-      access_token: twitterIdentity.access_token!,
+      access_token: twitterIdentity.access_token as string,
       // I guess this isn't a universal property, because Auth0 doesn't have it
       // declared in their types.
-      // @ts-ignore
-      access_token_secret: twitterIdentity.access_token_secret,
+      access_token_secret: ((twitterIdentity as unknown) as {
+        access_token_secret: string
+      }).access_token_secret,
     }
   }
 
@@ -206,7 +209,7 @@ class UserService {
     )
   }
 
-  async update(metadata: UserAppMetadata): Promise<any> {
+  async update(metadata: UserAppMetadata): Promise<User> {
     return await this.managementClient.updateAppMetadata(
       { id: await this.requireUserId() },
       metadata

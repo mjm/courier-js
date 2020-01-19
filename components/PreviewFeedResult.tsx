@@ -1,5 +1,6 @@
 import React from "react"
-import { QueryRenderer, graphql, ReactRelayContext } from "react-relay"
+import { graphql, QueryRenderer, ReactRelayContext } from "react-relay"
+
 import { PreviewFeedResultQuery } from "@generated/PreviewFeedResultQuery.graphql"
 import { ErrorBox } from "components/ErrorBox"
 import Loading from "components/Loading"

@@ -1,16 +1,26 @@
 import Moment from "react-moment"
 import { createFragmentContainer, graphql, RelayProp } from "react-relay"
+
+import Link from "next/link"
+
 import { SubscriptionInfoCard_user } from "@generated/SubscriptionInfoCard_user.graphql"
 import { cancelSubscription } from "@mutations/CancelSubscription"
-import Link from "next/link"
-import CreditCardIcon from "components/CreditCardIcon"
 import AsyncButton from "components/AsyncButton"
+import CreditCardIcon from "components/CreditCardIcon"
 
 const SubscriptionInfoCard: React.FC<{
   user: SubscriptionInfoCard_user
   relay: RelayProp
 }> = ({ user, relay: { environment } }) => {
   const { customer, subscription, subscriptionStatusOverride } = user
+
+  async function cancel(): Promise<void> {
+    try {
+      await cancelSubscription(environment)
+    } catch (err) {
+      console.error(err)
+    }
+  }
 
   if (!subscription && !subscriptionStatusOverride) {
     return (
@@ -24,14 +34,6 @@ const SubscriptionInfoCard: React.FC<{
 
   const status = subscription?.status ?? subscriptionStatusOverride
   if (status === "ACTIVE") {
-    async function cancel() {
-      try {
-        await cancelSubscription(environment)
-      } catch (err) {
-        console.error(err)
-      }
-    }
-
     return (
       <div className="rounded-lg shadow-md bg-neutral-1 p-4 text-neutral-7 text-sm mb-4">
         <div>
@@ -106,7 +108,6 @@ export default createFragmentContainer(SubscriptionInfoCard, {
         creditCard {
           brand
           lastFour
-          ...CreditCard_card
         }
       }
       subscription {
@@ -114,7 +115,6 @@ export default createFragmentContainer(SubscriptionInfoCard, {
         periodEnd
       }
       subscriptionStatusOverride
-      ...SubscriptionStatus_user
     }
   `,
 })

@@ -1,9 +1,11 @@
 import React from "react"
-import Link from "next/link"
-import Head from "components/Head"
-import withDefaultPage from "hocs/withDefaultPage"
-import Router from "next/router"
+
 import { NextPage } from "next"
+import Link from "next/link"
+import Router from "next/router"
+
+import Head from "components/Head"
+import withDefaultPage, { DefaultPageContext } from "hocs/withDefaultPage"
 
 const Home: NextPage<{}> = () => {
   return (
@@ -60,8 +62,8 @@ const Home: NextPage<{}> = () => {
   )
 }
 
-Home.getInitialProps = async ({ res, ...ctx }) => {
-  if (!(ctx as any).user) {
+Home.getInitialProps = ({ res, ...ctx }: DefaultPageContext) => {
+  if (!ctx.user) {
     return {}
   }
 
@@ -77,11 +79,11 @@ Home.getInitialProps = async ({ res, ...ctx }) => {
 
 export default withDefaultPage(Home)
 
-const FeatureCard = (props: { title: string; children: React.ReactNode }) => (
+const FeatureCard: React.FC<{ title: string }> = ({ title, children }) => (
   <div className="w-full md:w-1/3 px-4 mb-8">
     <h3 className="text-lg leading-snug font-medium mb-2 text-primary-10">
-      {props.title}
+      {title}
     </h3>
-    <div className="leading-relaxed">{props.children}</div>
+    <div className="leading-relaxed">{children}</div>
   </div>
 )

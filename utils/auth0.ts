@@ -1,8 +1,23 @@
-import Cookie from "js-cookie"
-import jwtDecode from "jwt-decode"
 import { IncomingMessage } from "http"
 
-export function getUser(req?: IncomingMessage): any {
+import Cookie from "js-cookie"
+import jwtDecode from "jwt-decode"
+
+export interface IdToken {
+  nickname: string
+  name: string
+  picture: string
+  updated_at: string
+  iss: string
+  sub: string
+  aud: string
+  iat: number
+  exp: number
+  at_hash: string
+  nonce: string
+}
+
+export function getUser(req?: IncomingMessage): IdToken | undefined {
   if (req) {
     const jwt = getToken(req)
     if (!jwt) {

@@ -1,28 +1,32 @@
+import { IncomingMessage } from "http"
+
 import "reflect-metadata"
-import { FeedLoader } from "./repositories/feed_repository"
+
+import { parse as parseCookies } from "cookie"
+import { Container, injectable } from "inversify"
+import Stripe from "stripe"
+
+import { DeviceTokenLoader } from "lib/repositories/device_token_repository"
+import { EventLoader } from "lib/repositories/event_repository"
+
 import defaultDb, { DatabasePoolType } from "./db"
+import Environment from "./env"
+import * as keys from "./key"
+import { CustomerLoader } from "./repositories/customer_repository"
+import { FeedLoader } from "./repositories/feed_repository"
 import { SubscribedFeedLoader } from "./repositories/feed_subscription_repository"
-import FeedService from "./services/feed_service"
 import { PostLoader } from "./repositories/post_repository"
-import PostService from "./services/post_service"
+import { SubscriptionLoader } from "./repositories/subscription_repository"
 import { TweetLoader } from "./repositories/tweet_repository"
+import BillingEventService from "./services/billing_event_service"
+import BillingService from "./services/billing_service"
+import EventService from "./services/event_service"
+import FeedService from "./services/feed_service"
+import NotificationService from "./services/notification_service"
+import PostService from "./services/post_service"
+import PublishService from "./services/publish_service"
 import TweetService from "./services/tweet_service"
 import UserService, { UserIdProvider } from "./services/user_service"
-import { Container, injectable } from "inversify"
-import * as keys from "./key"
-import EventService from "./services/event_service"
-import Stripe from "stripe"
-import Environment from "./env"
-import BillingService from "./services/billing_service"
-import { CustomerLoader } from "./repositories/customer_repository"
-import { SubscriptionLoader } from "./repositories/subscription_repository"
-import { parse as parseCookies } from "cookie"
-import { IncomingMessage } from "http"
-import BillingEventService from "./services/billing_event_service"
-import PublishService from "./services/publish_service"
-import NotificationService from "./services/notification_service"
-import { EventLoader } from "lib/repositories/event_repository"
-import { DeviceTokenLoader } from "lib/repositories/device_token_repository"
 
 const container = new Container({
   autoBindInjectable: true,
@@ -40,12 +44,10 @@ container
     const env = context.container.get(Environment)
     const stripe = new Stripe(env.stripeKey)
 
-    // @ts-ignore
     stripe.on("request", req => {
       console.log(req)
     })
 
-    // @ts-ignore
     stripe.on("response", res => {
       console.log(res)
     })
@@ -77,7 +79,7 @@ export class CourierContext {
   publish: PublishService
   notifications: NotificationService
 
-  static async createForRequest(req: IncomingMessage): Promise<CourierContext> {
+  static createForRequest(req: IncomingMessage): CourierContext {
     const child = container.createChild()
     child.bind<string | null>(keys.Token).toConstantValue(getToken(req))
 

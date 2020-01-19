@@ -1,18 +1,25 @@
-import TweetRepository, {
-  TweetPagingOptions,
-  TweetLoader,
-} from "../repositories/tweet_repository"
-import { UserId, Tweet, TweetId, UpdateTweetInput } from "../data/types"
 import { UserInputError } from "apollo-server-core"
-import { Pager } from "../data/pager"
-import { SubscribedFeedLoader } from "../repositories/feed_subscription_repository"
-import TwitterService from "./twitter_service"
-import { injectable, inject } from "inversify"
+import { inject,injectable } from "inversify"
+
+import {
+  SubscribedFeed,
+  Tweet,
+  TweetId,
+  UpdateTweetInput,
+  UserId,
+} from "../data/types"
 import * as keys from "../key"
-import EventService from "./event_service"
+import { SubscribedFeedLoader } from "../repositories/feed_subscription_repository"
+import TweetRepository, {
+  TweetLoader,
+  TweetPager,
+  TweetPagingOptions,
+} from "../repositories/tweet_repository"
 import BillingService from "./billing_service"
-import PublishService from "./publish_service"
+import EventService from "./event_service"
 import NotificationService from "./notification_service"
+import PublishService from "./publish_service"
+import TwitterService from "./twitter_service"
 
 export interface PostQueuedResult {
   succeeded: number
@@ -33,7 +40,7 @@ class TweetService {
     private notifications: NotificationService
   ) {}
 
-  async paged(options: TweetPagingOptions = {}): Promise<Pager<Tweet, any>> {
+  async paged(options: TweetPagingOptions = {}): Promise<TweetPager> {
     return this.tweets.paged(await this.getUserId(), options)
   }
 
@@ -117,7 +124,7 @@ class TweetService {
       try {
         const feed = (await this.subscribedFeedLoader.load(
           tweet.feedSubscriptionId
-        ))!
+        )) as SubscribedFeed
 
         if (!(await this.billing.isUserSubscribed(feed.userId))) {
           console.log(
@@ -155,7 +162,7 @@ class TweetService {
       // this is probably fine: Twitter silently rejects duplicate posts that are
       // close together.
       // just refetch the tweet and return that as if we did it here.
-      return (await this.tweetLoader.reload(tweet.id))!
+      return (await this.tweetLoader.reload(tweet.id)) as Tweet
     }
 
     await this.notifications.sendTweetPosted(userId, tweet)

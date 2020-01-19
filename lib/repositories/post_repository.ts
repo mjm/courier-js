@@ -1,17 +1,18 @@
-import { sql, DatabasePoolType } from "../db"
+import { inject,injectable } from "inversify"
+import moment from "moment"
+
 import * as table from "../data/dbTypes"
+import { LoaderQueryFn, QueryLoader } from "../data/loader"
+import { Pager } from "../data/pager"
 import {
   FeedId,
+  NewPostInput,
   PagingOptions,
   Post,
   PostId,
-  NewPostInput,
   UpdatePostInput,
 } from "../data/types"
-import { Pager } from "../data/pager"
-import moment from "moment"
-import { injectable, inject } from "inversify"
-import { LoaderQueryFn, QueryLoader } from "../data/loader"
+import { DatabasePoolType,sql } from "../db"
 import { DB } from "../key"
 
 @injectable()
@@ -123,7 +124,7 @@ export class PostLoader extends QueryLoader<Post, table.posts> {
     super(db)
   }
 
-  query: LoaderQueryFn<table.posts> = async cond =>
+  query: LoaderQueryFn<table.posts> = cond =>
     sql`SELECT * FROM posts WHERE ${cond("posts")}`
   fromRow = PostRepository.fromRow
 }

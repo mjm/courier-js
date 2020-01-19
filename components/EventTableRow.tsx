@@ -1,7 +1,9 @@
 import Moment from "react-moment"
 import { createFragmentContainer, graphql } from "react-relay"
-import { EventTableRow_event } from "@generated/EventTableRow_event.graphql"
+
 import Link from "next/link"
+
+import { EventTableRow_event } from "@generated/EventTableRow_event.graphql"
 
 const EventTableRow: React.FC<{
   event: EventTableRow_event
@@ -43,34 +45,32 @@ const EventDescription: React.FC<{
   event: EventTableRow_event
 }> = ({ event }) => {
   const tweetBody = event.tweet?.body
+  const feed = event.feed as EventTableRow_event["feed"] & {}
 
   switch (event.eventType) {
     case "FEED_SET_AUTOPOST":
       return (
         <>
           You turned {event.boolValue ? "on" : "off"} autoposting for{" "}
-          <FeedLink id={event.feed!.id} title={event.feed!.title} />
+          <FeedLink id={feed.id} title={feed.title} />
         </>
       )
     case "FEED_REFRESH":
       return (
         <>
-          You refreshed{" "}
-          <FeedLink id={event.feed!.id} title={event.feed!.title} />
+          You refreshed <FeedLink id={feed.id} title={feed.title} />
         </>
       )
     case "FEED_SUBSCRIBE":
       return (
         <>
-          You subscribed to{" "}
-          <FeedLink id={event.feed!.id} title={event.feed!.title} />
+          You subscribed to <FeedLink id={feed.id} title={feed.title} />
         </>
       )
     case "FEED_UNSUBSCRIBE":
       return (
         <>
-          You unsubscribed from{" "}
-          <FeedLink id={event.feed!.id} title={event.feed!.title} />
+          You unsubscribed from <FeedLink id={feed.id} title={feed.title} />
         </>
       )
     case "TWEET_CANCEL":

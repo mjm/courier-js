@@ -1,10 +1,10 @@
-import { getToken } from "utils/auth0"
 import { useAuth0 } from "components/Auth0Provider"
+import { getToken } from "utils/auth0"
 
 const UserActionsCard: React.FC = () => {
   const { logout } = useAuth0()
 
-  async function copyAPIToken() {
+  async function copyAPIToken(): Promise<void> {
     const token = getToken(undefined, "accessToken")
     if (token) {
       await navigator.clipboard.writeText(token)

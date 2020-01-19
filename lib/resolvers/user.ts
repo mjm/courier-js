@@ -1,17 +1,19 @@
-import {
-  UserResolvers,
-  CustomerResolvers,
-  CreditCardResolvers,
-  UserSubscriptionResolvers,
-  SubscriptionStatus,
-} from "../generated/graphql"
+/* eslint-disable @typescript-eslint/no-namespace */
 import moment from "moment"
 
+import {
+  CreditCardResolvers,
+  CustomerResolvers,
+  SubscriptionStatus,
+  UserResolvers,
+  UserSubscriptionResolvers,
+} from "../generated/graphql"
+
 export const User: UserResolvers = {
-  async customer({ stripe_customer_id }, {}, { loaders }) {
+  async customer({ stripe_customer_id }, _, { loaders }) {
     if (stripe_customer_id) {
       const customer = await loaders.customers.load(stripe_customer_id)
-      if (customer && !(customer as any).deleted) {
+      if (customer && !("deleted" in customer)) {
         return customer
       }
     }
@@ -19,7 +21,7 @@ export const User: UserResolvers = {
     return null
   },
 
-  async subscription({ stripe_subscription_id }, {}, { loaders }) {
+  async subscription({ stripe_subscription_id }, _, { loaders }) {
     if (stripe_subscription_id) {
       return await loaders.subscriptions.load(stripe_subscription_id)
     } else {

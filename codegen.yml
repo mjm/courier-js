@@ -19,17 +19,17 @@ generates:
         CreditCard: Stripe.cards.ICard
         Customer: Stripe.customers.ICustomer
         Event: types.Event
-        EventConnection: Pager<types.Event>
+        EventConnection: Pager<types.Event, any>
         Feed: types.Feed
-        FeedConnection: Pager<types.Feed>
+        FeedConnection: Pager<types.Feed, any>
         MicroformatPage: MicroformatDocument
         Post: types.Post
-        PostConnection: Pager<types.Post>
+        PostConnection: Pager<types.Post, any>
         SubscribedFeed: types.SubscribedFeed
         SubscribedFeedEdge: PagerEdge<types.SubscribedFeed>
-        SubscribedFeedConnection: Pager<types.SubscribedFeed>
+        SubscribedFeedConnection: Pager<types.SubscribedFeed, any>
         Tweet: types.Tweet
-        TweetConnection: Pager<types.Tweet>
+        TweetConnection: Pager<types.Tweet, any>
         TweetPreview: types.PreviewTweet
         User: types.UserInfo
         UserSubscription: Stripe.subscriptions.ISubscription

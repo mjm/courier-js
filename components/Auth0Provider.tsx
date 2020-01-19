@@ -1,8 +1,11 @@
 import React from "react"
+
 import dynamic from "next/dynamic"
+
 import Cookie from "js-cookie"
 import jwtDecode from "jwt-decode"
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const Auth0Context = React.createContext<Auth0Helpers>(null!)
 
 // Use a dynamic import to let us avoid loading auth0-js on the server side.
@@ -38,12 +41,12 @@ export function useAuth0(): Auth0Helpers {
   return React.useContext(Auth0Context)
 }
 
-let tokenRenewalTimeout: any
+let tokenRenewalTimeout: number | undefined
 
 class Auth0Helpers {
   constructor(private client?: auth0.WebAuth) {}
 
-  authorize = () => {
+  authorize = (): void => {
     if (!this.client) {
       return
     }
@@ -85,7 +88,7 @@ class Auth0Helpers {
     })
   }
 
-  logout = () => {
+  logout = (): void => {
     if (!this.client) {
       return
     }
@@ -117,31 +120,35 @@ class Auth0Helpers {
     })
   }
 
-  private _setToken(result: auth0.Auth0DecodedHash) {
+  private _setToken(result: auth0.Auth0DecodedHash): void {
     if (!this.client) {
       return
     }
 
-    Cookie.set("user", jwtDecode(result.idToken!))
-    Cookie.set("idToken", result.idToken!)
-    Cookie.set("accessToken", result.accessToken!)
+    Cookie.set("user", jwtDecode(result.idToken as string))
+    Cookie.set("idToken", result.idToken as string)
+    Cookie.set("accessToken", result.accessToken as string)
 
-    const expiresAt = result.expiresIn! * 1000 + Date.now()
+    const expiresAt = (result.expiresIn as number) * 1000 + Date.now()
     Cookie.set("expiresAt", `${expiresAt}`)
 
     this._scheduleRenewal(expiresAt)
   }
 
-  private _scheduleRenewal(expiresAt: number) {
+  private _scheduleRenewal(expiresAt: number): void {
     const timeout = expiresAt - Date.now()
     if (timeout > 0) {
-      tokenRenewalTimeout = setTimeout(async () => {
-        try {
-          await this.renewSession()
-        } catch (err) {
-          this.logout()
-        }
-      }, timeout)
+      tokenRenewalTimeout = (setTimeout(() => {
+        this._attemptRenewToken()
+      }, timeout) as unknown) as number
+    }
+  }
+
+  private async _attemptRenewToken(): Promise<void> {
+    try {
+      await this.renewSession()
+    } catch (err) {
+      this.logout()
     }
   }
 }

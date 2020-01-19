@@ -1,25 +1,25 @@
 import React from "react"
 import { createFragmentContainer, graphql, RelayProp } from "react-relay"
-import { Formik, FieldArray, Field, Form, useFormikContext } from "formik"
+
 import { faPlus, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
-import { ErrorBox } from "components/ErrorBox"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { Field, FieldArray, Form, Formik, useFormikContext } from "formik"
+
 import { EditTweetForm_tweet } from "@generated/EditTweetForm_tweet.graphql"
 import { editTweet } from "@mutations/EditTweet"
 import { postTweet } from "@mutations/PostTweet"
+import { ErrorBox } from "components/ErrorBox"
 import TweetCardActions from "components/TweetCardActions"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-
-interface Props {
-  tweet: EditTweetForm_tweet
-  onStopEditing: () => void
-  relay: RelayProp
-}
 
 type FormValues = Pick<EditTweetForm_tweet, "body" | "mediaURLs"> & {
   action: "save" | "post"
 }
 
-const EditTweetForm = ({ tweet, onStopEditing, relay }: Props) => {
+const EditTweetForm: React.FC<{
+  tweet: EditTweetForm_tweet
+  onStopEditing: () => void
+  relay: RelayProp
+}> = ({ tweet, onStopEditing, relay }) => {
   const initialValues: FormValues = {
     body: tweet.body,
     mediaURLs: [...tweet.mediaURLs],
@@ -48,10 +48,12 @@ const EditTweetForm = ({ tweet, onStopEditing, relay }: Props) => {
       }}
     >
       {({ isSubmitting, setFieldValue, submitForm, status, values }) => {
-        function submit(action: FormValues["action"]) {
+        function submit(action: FormValues["action"]): void {
           setFieldValue("action", action)
           // allow the previous line to rerender the component before doing this
-          setTimeout(() => submitForm(), 0)
+          setTimeout(() => {
+            submitForm()
+          }, 0)
         }
 
         return (
@@ -136,7 +138,7 @@ const MediaURLFields: React.FC<MediaURLFieldsProps> = ({ urls }) => {
   return (
     <FieldArray name="mediaURLs">
       {({ insert, remove, pop }) => {
-        function realInsert(index: number) {
+        function realInsert(index: number): void {
           insert(index, "")
           if (urls.length === 4 && urls[3] === "") {
             pop()

@@ -1,19 +1,14 @@
 import React from "react"
-import Notice from "components/Notice"
-import { useErrors } from "components/ErrorContainer"
 
-interface ErrorBoxProps {
+import { useErrors } from "components/ErrorContainer"
+import Notice from "components/Notice"
+
+export const ErrorBox: React.FC<{
   title?: string
   className?: string
   error?: Error
   errors?: Error[]
-}
-export const ErrorBox = ({
-  title,
-  className,
-  error,
-  errors,
-}: ErrorBoxProps) => {
+}> = ({ title, className, error, errors }) => {
   // pull errors from the ErrorContainer if none are passed in
   const { errors: ctxErrors, clearErrors } = useErrors()
   let onClose: undefined | (() => void)
@@ -53,9 +48,18 @@ export const ErrorBox = ({
   )
 }
 
-function unwrapRelayError(error: any): Error[] {
+interface RelayError extends Error {
+  name: "RelayNetwork"
+  source: {
+    errors: { message: string }[]
+  }
+}
+
+function unwrapRelayError(error: Error): Error[] {
   if (error.name === "RelayNetwork") {
-    return error.source.errors.map(({ message }: any) => new Error(message))
+    return (error as RelayError).source.errors.map(
+      ({ message }) => new Error(message)
+    )
   }
   return [error]
 }

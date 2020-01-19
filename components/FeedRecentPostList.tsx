@@ -1,6 +1,8 @@
 import Moment from "react-moment"
-import striptags from "striptags"
 import { createFragmentContainer, graphql } from "react-relay"
+
+import striptags from "striptags"
+
 import { FeedRecentPostList_feed } from "@generated/FeedRecentPostList_feed.graphql"
 
 const FeedRecentPostList: React.FC<{

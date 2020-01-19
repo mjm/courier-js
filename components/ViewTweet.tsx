@@ -1,38 +1,38 @@
 import React from "react"
+import Moment from "react-moment"
 import {
   createFragmentContainer,
-  graphql,
   Environment,
+  graphql,
   RelayProp,
 } from "react-relay"
-import Moment from "react-moment"
-import Linkify from "linkifyjs/react"
-import * as linkify from "linkifyjs"
-import mention from "linkifyjs/plugins/mention"
-import {
-  ViewTweet_tweet,
-  TweetStatus,
-} from "@generated/ViewTweet_tweet.graphql"
-import { cancelTweet } from "@mutations/CancelTweet"
-import { uncancelTweet } from "@mutations/UncancelTweet"
-import { useErrors } from "components/ErrorContainer"
-import { postTweet } from "@mutations/PostTweet"
-import { useSubscription } from "components/SubscriptionProvider"
-import TweetCardActions from "components/TweetCardActions"
-import AsyncButton from "components/AsyncButton"
-import { useAuth } from "components/AuthProvider"
+
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import * as linkify from "linkifyjs"
+import mention from "linkifyjs/plugins/mention"
+import Linkify from "linkifyjs/react"
+
+import {
+  TweetStatus,
+  ViewTweet_tweet,
+} from "@generated/ViewTweet_tweet.graphql"
+import { cancelTweet } from "@mutations/CancelTweet"
+import { postTweet } from "@mutations/PostTweet"
+import { uncancelTweet } from "@mutations/UncancelTweet"
+import AsyncButton from "components/AsyncButton"
+import { useAuth } from "components/AuthProvider"
+import { useErrors } from "components/ErrorContainer"
+import { useSubscription } from "components/SubscriptionProvider"
+import TweetCardActions from "components/TweetCardActions"
 
 mention(linkify)
 
-interface Props {
+const ViewTweet: React.FC<{
   tweet: ViewTweet_tweet
   onEdit: () => void
   relay: RelayProp
-}
-
-const ViewTweet = ({ tweet, onEdit, relay }: Props) => {
+}> = ({ tweet, onEdit, relay }) => {
   return (
     <>
       {tweet.action === "TWEET" ? (
@@ -171,7 +171,7 @@ const DraftActions: React.FC<DraftActionsProps> = ({
             className="btn btn-first btn-first-primary mr-2"
             onClick={async () => {
               try {
-                await postTweet(environment, { id: tweet.id! })
+                await postTweet(environment, { id: tweet.id as string })
               } catch (e) {
                 setError(e)
               }
@@ -190,7 +190,7 @@ const DraftActions: React.FC<DraftActionsProps> = ({
       right={
         <button
           className="btn btn-third btn-third-neutral"
-          onClick={() => cancelTweet(environment, tweet.id!)}
+          onClick={() => cancelTweet(environment, tweet.id as string)}
         >
           Don't post
         </button>
@@ -214,7 +214,7 @@ const CanceledActions: React.FC<CanceledActionsProps> = ({
       left={
         <button
           className="btn btn-first btn-first-neutral"
-          onClick={() => uncancelTweet(environment, tweet.id!)}
+          onClick={() => uncancelTweet(environment, tweet.id as string)}
         >
           Restore draft
         </button>
@@ -234,7 +234,9 @@ const PostedActions: React.FC<PostedActionsProps> = ({ tweet }) => {
     <TweetCardActions
       left={
         <a
-          href={`https://twitter.com/${user.nickname}/status/${tweet.postedTweetID}`}
+          href={`https://twitter.com/${user?.nickname ?? "user"}/status/${
+            tweet.postedTweetID
+          }`}
           target="_blank"
           className="btn btn-third btn-third-secondary"
         >

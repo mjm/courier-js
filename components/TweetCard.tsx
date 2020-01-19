@@ -1,19 +1,18 @@
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
-import { ErrorContainer } from "components/ErrorContainer"
-import { ErrorBox } from "components/ErrorBox"
+
 import {
   TweetCard_tweet,
   TweetStatus,
 } from "@generated/TweetCard_tweet.graphql"
 import EditTweetForm from "components/EditTweetForm"
+import { ErrorBox } from "components/ErrorBox"
+import { ErrorContainer } from "components/ErrorContainer"
 import ViewTweet from "components/ViewTweet"
 
-interface Props {
+const TweetCard: React.FC<{
   tweet: TweetCard_tweet
-}
-
-const TweetCard = ({ tweet }: Props) => {
+}> = ({ tweet }) => {
   const [editing, setEditing] = React.useState(false)
   const statusClass = tweet.status ? cardTypeStyles[tweet.status].container : ""
 

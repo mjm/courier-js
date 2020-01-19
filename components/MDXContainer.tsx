@@ -1,11 +1,13 @@
-import { MDXProvider } from "@mdx-js/react"
-import Nav from "components/Nav"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons"
 import Link from "next/link"
 
-const components = {
-  wrapper: ({ children }: any) => (
+import { faCheckCircle } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { MDXProvider, MDXProviderComponents } from "@mdx-js/react"
+
+import Nav from "components/Nav"
+
+const components: MDXProviderComponents = {
+  wrapper: ({ children }) => (
     <>
       <Nav />
       <main className="max-w-2xl mx-auto px-8 my-8 text-neutral-10">
@@ -13,18 +15,14 @@ const components = {
       </main>
     </>
   ),
-  h1: (props: any) => (
-    <h1 className="text-3xl text-primary-10 mt-4 mb-2" {...props} />
-  ),
-  h2: (props: any) => (
-    <h2 className="text-xl text-primary-10 mt-4 mb-1" {...props} />
-  ),
-  h3: (props: any) => (
+  h1: props => <h1 className="text-3xl text-primary-10 mt-4 mb-2" {...props} />,
+  h2: props => <h2 className="text-xl text-primary-10 mt-4 mb-1" {...props} />,
+  h3: props => (
     <h2 className="font-medium text-primary-10 mt-3 mb-1" {...props} />
   ),
-  p: (props: any) => <p className="mb-2" {...props} />,
-  ul: (props: any) => <ul className="fa-ul leading-loose" {...props} />,
-  li: ({ children, ...props }: any) => (
+  p: props => <p className="mb-2" {...props} />,
+  ul: props => <ul className="fa-ul leading-loose" {...props} />,
+  li: ({ children, ...props }) => (
     <li {...props}>
       <span className="fa-li text-primary-10">
         <FontAwesomeIcon icon={faCheckCircle} />
@@ -32,7 +30,7 @@ const components = {
       {children}
     </li>
   ),
-  a: ({ href, ...props }: any) => {
+  a: ({ href, ...props }) => {
     if (href[0] === "/") {
       return (
         <Link href={href}>
@@ -43,7 +41,7 @@ const components = {
       return <a href={href} target="_blank" {...props} />
     }
   },
-  inlineCode: (props: any) => <code className="text-sm" {...props} />,
+  inlineCode: props => <code className="text-sm" {...props} />,
 }
 
 const MDXContainer: React.FC = ({ children }) => (

@@ -1,4 +1,5 @@
 import { createFragmentContainer, graphql } from "react-relay"
+
 import { UserInfoCard_user } from "@generated/UserInfoCard_user.graphql"
 
 const UserInfoCard: React.FC<{

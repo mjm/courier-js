@@ -1,10 +1,11 @@
-import { injectable, inject } from "inversify"
+import { inject,injectable } from "inversify"
 import Stripe from "stripe"
+
+import { UserAppMetadata,UserId } from "../data/types"
 import Environment from "../env"
 import { CustomerLoader } from "../repositories/customer_repository"
-import UserService from "./user_service"
 import { SubscriptionLoader } from "../repositories/subscription_repository"
-import { UserId, UserAppMetadata } from "../data/types"
+import UserService from "./user_service"
 
 @injectable()
 class BillingService {
@@ -23,7 +24,7 @@ class BillingService {
   async subscribe(
     email?: string | null,
     tokenId?: string | null
-  ): Promise<any> {
+  ): Promise<void> {
     const createNewCustomer = email && tokenId
     const existingSubscription = await this.getSubscription()
     if (existingSubscription) {
@@ -53,7 +54,7 @@ class BillingService {
     }
 
     const customerId = createNewCustomer
-      ? await this.createCustomer(email!, tokenId!)
+      ? await this.createCustomer(email as string, tokenId as string)
       : await this.requireExistingCustomer()
 
     const subscription = await this.stripe.subscriptions.create({

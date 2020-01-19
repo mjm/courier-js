@@ -1,19 +1,20 @@
+import Moment from "react-moment"
 import {
   createFragmentContainer,
-  graphql,
-  RelayProp,
   Environment,
   fetchQuery,
+  graphql,
+  RelayProp,
 } from "react-relay"
+
 import { FeedInfoCard_feed } from "@generated/FeedInfoCard_feed.graphql"
 import { FeedInfoCard_user } from "@generated/FeedInfoCard_user.graphql"
 import { FeedInfoCardEndpointsQuery } from "@generated/FeedInfoCardEndpointsQuery.graphql"
-import { beginIndieAuth } from "utils/indieauth"
-import AsyncButton from "components/AsyncButton"
-import Moment from "react-moment"
 import { refreshFeed } from "@mutations/RefreshFeed"
-import { useErrors } from "components/ErrorContainer"
 import { setFeedOptions } from "@mutations/SetFeedOptions"
+import AsyncButton from "components/AsyncButton"
+import { useErrors } from "components/ErrorContainer"
+import { beginIndieAuth } from "utils/indieauth"
 
 interface Props {
   feed: FeedInfoCard_feed
@@ -88,7 +89,7 @@ const LastCheckedSection: React.FC<{
 }> = ({ feed, environment }) => {
   const { setError, clearErrors } = useErrors()
 
-  async function onClick() {
+  async function onClick(): Promise<void> {
     try {
       await refreshFeed(environment, feed.id)
       clearErrors()
@@ -119,7 +120,7 @@ const AutopostSection: React.FC<{
 }> = ({ feed, environment }) => {
   const { setError, clearErrors } = useErrors()
 
-  async function onClick() {
+  async function onClick(): Promise<void> {
     try {
       await setFeedOptions(environment, {
         id: feed.id,
@@ -169,7 +170,7 @@ export const MicropubSection: React.FC<{
     feed.homePageURL.replace(/\./g, "-")
   )
 
-  async function onClick() {
+  async function onClick(): Promise<void> {
     const variables = { url: feed.homePageURL }
     const { microformats } = await fetchQuery<FeedInfoCardEndpointsQuery>(
       environment,

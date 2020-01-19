@@ -1,16 +1,19 @@
 import React from "react"
-import { NextPage } from "next"
-import withData from "hocs/withData"
-import withSecurePage from "hocs/withSecurePage"
 import { graphql } from "react-relay"
+
+import { NextPage } from "next"
+import Link from "next/link"
+
+import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
 import Head from "components/Head"
-import TweetList from "components/TweetList"
 import Loading from "components/Loading"
+import Notice from "components/Notice"
 import SubscriptionProvider, {
   useSubscription,
 } from "components/SubscriptionProvider"
-import Notice from "components/Notice"
-import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
+import TweetList from "components/TweetList"
+import withData from "hocs/withData"
+import withSecurePage from "hocs/withSecurePage"
 
 const TweetsPage: NextPage<TweetsPageQueryResponse> = ({
   upcoming,
@@ -91,7 +94,7 @@ const pastDescription = (count: number): React.ReactNode => {
   )
 }
 
-const SubscribeBanner = () => {
+const SubscribeBanner: React.FC = () => {
   const { isSubscribed } = useSubscription()
 
   if (isSubscribed) {
@@ -99,9 +102,18 @@ const SubscribeBanner = () => {
   }
 
   return (
-    <Notice variant="warning">
-      You are not currently subscribed to Courier. You cannot post tweets until
-      you subscribe.
+    <Notice variant="warning" className="mb-6">
+      <div className="flex items-baseline">
+        <div>
+          You are not currently subscribed to Courier. You cannot post tweets
+          until you subscribe.
+        </div>
+        <Link href="/subscribe">
+          <a className="ml-auto flex-shrink-0 btn btn-first bg-yellow-7 border-yellow-7 text-yellow-1">
+            Subscribe now
+          </a>
+        </Link>
+      </div>
     </Notice>
   )
 }

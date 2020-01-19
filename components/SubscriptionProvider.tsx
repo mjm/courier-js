@@ -1,5 +1,6 @@
 import React from "react"
 import { createFragmentContainer, graphql } from "react-relay"
+
 import { SubscriptionProvider_user } from "@generated/SubscriptionProvider_user.graphql"
 
 interface SubscriptionState {
@@ -10,7 +11,8 @@ const SubscriptionContext = React.createContext<SubscriptionState>({
   isSubscribed: false,
 })
 
-export const useSubscription = () => React.useContext(SubscriptionContext)
+export const useSubscription = (): SubscriptionState =>
+  React.useContext(SubscriptionContext)
 
 interface Props {
   user: SubscriptionProvider_user

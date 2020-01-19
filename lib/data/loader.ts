@@ -1,19 +1,16 @@
 import DataLoader from "dataloader"
-import {
-  sql,
-  DatabasePoolType,
-  TaggedTemplateLiteralInvocationType,
-  SqlTokenType,
-} from "../db"
-import keyBy from "lodash/keyBy"
 import { injectable } from "inversify"
+import keyBy from "lodash/keyBy"
+import { SqlSqlTokenType } from "slonik"
+
+import { DatabasePoolType, sql, SqlTokenType } from "../db"
 
 export type LoaderBatch<T> = Promise<(T | null)[]>
 
 type LoaderIDConditional = (table: string) => SqlTokenType
 export type LoaderQueryFn<T> = (
   cond: LoaderIDConditional
-) => Promise<TaggedTemplateLiteralInvocationType<T>>
+) => SqlSqlTokenType<T> | Promise<SqlSqlTokenType<T>>
 
 @injectable()
 abstract class Loader<ValueType, IdType> {
@@ -55,7 +52,7 @@ export abstract class QueryLoader<
   }
 
   async fetch(ids: IdType[]): LoaderBatch<ValueType> {
-    const condition = (table: string) =>
+    const condition = (table: string): SqlSqlTokenType<RowType> =>
       sql`${sql.identifier([table, "id"])} = ANY(${sql.array(ids, "int4")})`
     const rows = await this.db.any(await this.query(condition))
     const byId = keyBy(rows.map(this.fromRow), x => x.id.toString())

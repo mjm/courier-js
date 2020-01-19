@@ -1,25 +1,27 @@
 import React from "react"
+
 import Link from "next/link"
-import {
-  faPaperPlane,
-  faRss,
-  IconDefinition,
-  faSignInAlt,
-  faDollarSign,
-  faQuestion,
-  faStar,
-  faBars,
-} from "@fortawesome/free-solid-svg-icons"
-import { faTwitter } from "@fortawesome/free-brands-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useRouter } from "next/router"
 
-interface Props {
-  user?: any
-  isAuthenticating?: boolean
-}
+import { faTwitter } from "@fortawesome/free-brands-svg-icons"
+import {
+  faBars,
+  faDollarSign,
+  faPaperPlane,
+  faQuestion,
+  faRss,
+  faSignInAlt,
+  faStar,
+  IconDefinition,
+} from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-const Nav = ({ user, isAuthenticating = false }: Props) => {
+import { IdToken } from "utils/auth0"
+
+const Nav: React.FC<{
+  user?: IdToken
+  isAuthenticating?: boolean
+}> = ({ user, isAuthenticating = false }) => {
   const [menuVisible, setMenuVisible] = React.useState(false)
 
   return (
@@ -81,13 +83,12 @@ const Nav = ({ user, isAuthenticating = false }: Props) => {
 
 export default Nav
 
-interface NavItemProps {
+const NavItem: React.FC<{
   href: string
   icon?: IconDefinition
   children?: React.ReactNode
   brand?: boolean
-}
-const NavItem = ({ href, icon, children, brand = false }: NavItemProps) => {
+}> = ({ href, icon, children, brand = false }) => {
   const router = useRouter()
 
   const brandClass = brand ? "font-display text-2xl text-primary-9" : ""
