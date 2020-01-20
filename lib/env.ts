@@ -2,6 +2,7 @@ import { injectable } from "inversify"
 
 @injectable()
 class Environment {
+  databaseUrl: string
   authDomain: string
   apiIdentifier: string
   clientId: string
@@ -16,8 +17,13 @@ class Environment {
     certificate: string
     passphrase: string
   }
+  honey: {
+    writeKey: string
+    dataset: string
+  }
 
   constructor() {
+    this.databaseUrl = requireEnv("DATABASE_URL")
     this.authDomain = requireEnv("AUTH_DOMAIN")
     this.apiIdentifier = requireEnv("API_IDENTIFIER")
     this.clientId = requireEnv("CLIENT_ID")
@@ -31,6 +37,10 @@ class Environment {
     this.apns = {
       certificate: requireEnv("APNS_CERTIFICATE"),
       passphrase: requireEnv("APNS_PASSPHRASE"),
+    }
+    this.honey = {
+      writeKey: requireEnv("HONEY_WRITE_KEY"),
+      dataset: requireEnv("HONEY_DATASET"),
     }
   }
 }

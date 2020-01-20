@@ -4,12 +4,14 @@ import "reflect-metadata"
 
 import { parse as parseCookies } from "cookie"
 import { Container, injectable } from "inversify"
+import Libhoney from "libhoney"
 import Stripe from "stripe"
 
+import { createDatabase, DatabasePoolType } from "lib/db"
+import { createHoney, EventContext } from "lib/events"
 import { DeviceTokenLoader } from "lib/repositories/device_token_repository"
 import { EventLoader } from "lib/repositories/event_repository"
 
-import defaultDb, { DatabasePoolType } from "./db"
 import Environment from "./env"
 import * as keys from "./key"
 import { CustomerLoader } from "./repositories/customer_repository"
@@ -32,8 +34,15 @@ const container = new Container({
   autoBindInjectable: true,
   defaultScope: "Request",
 })
+container
+  .bind(Libhoney)
+  .toDynamicValue(createHoney)
+  .inSingletonScope()
 container.bind<string | null>(keys.Token).toConstantValue(null)
-container.bind<DatabasePoolType>(keys.DB).toConstantValue(defaultDb)
+container
+  .bind<DatabasePoolType>(keys.DB)
+  .toDynamicValue(createDatabase)
+  .inRequestScope()
 container.bind<UserIdProvider>(keys.UserId).toProvider(context => {
   const user = context.container.get(UserService)
   return () => user.requireUserId()
@@ -78,6 +87,7 @@ export class CourierContext {
   billingEvents: BillingEventService
   publish: PublishService
   notifications: NotificationService
+  evt: EventContext
 
   static createForRequest(req: IncomingMessage): CourierContext {
     const child = container.createChild()
@@ -100,6 +110,7 @@ export class CourierContext {
     billingEvents: BillingEventService,
     publish: PublishService,
     notifications: NotificationService,
+    evt: EventContext,
     feedLoader: FeedLoader,
     subscribedFeedLoader: SubscribedFeedLoader,
     postLoader: PostLoader,
@@ -118,6 +129,7 @@ export class CourierContext {
     this.billingEvents = billingEvents
     this.publish = publish
     this.notifications = notifications
+    this.evt = evt
 
     this.loaders = {
       feeds: feedLoader,

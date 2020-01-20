@@ -21,6 +21,8 @@ module.exports = withMDX({
       ...config.resolve.alias,
       "@mutations": path.join(__dirname, "components/mutations"),
       "@pages": path.join(__dirname, "components/pages"),
+      "@repositories": path.join(__dirname, "lib/repositories"),
+      "@services": path.join(__dirname, "lib/services"),
     }
 
     config.node = {

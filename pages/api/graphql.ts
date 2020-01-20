@@ -1,7 +1,8 @@
-import { ApolloServer, gql,makeExecutableSchema } from "apollo-server-micro"
+import { ApolloServer, gql, makeExecutableSchema } from "apollo-server-micro"
 
 import { CourierContext } from "lib/context"
 import resolvers from "lib/resolvers"
+import serverEventsPlugin from "lib/server_events"
 
 const schemaText = require("schema.graphql").default
 
@@ -15,6 +16,7 @@ const schema = makeExecutableSchema({ typeDefs, resolvers: resolvers as any })
 const server = new ApolloServer({
   schema,
   context: ({ req }) => CourierContext.createForRequest(req),
+  plugins: [serverEventsPlugin],
   introspection: true,
   playground: {
     settings: {

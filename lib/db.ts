@@ -1,6 +1,32 @@
+import { interfaces } from "inversify"
 import moment from "moment"
-import { createPool, InterceptorType } from "slonik"
+import { createPool, DatabasePoolType, InterceptorType } from "slonik"
 import { createInterceptors } from "slonik-interceptor-preset"
+
+import Environment from "lib/env"
+
+export function createDatabase(context: interfaces.Context): DatabasePoolType {
+  const env = context.container.get(Environment)
+  return createPool(env.databaseUrl, {
+    typeParsers: [
+      {
+        name: "timestamp",
+        parse(value) {
+          return value && moment.utc(value).toDate()
+        },
+      },
+    ],
+    interceptors: [
+      ...createInterceptors({
+        benchmarkQueries: false,
+        logQueries: false,
+        transformFieldNames: false,
+      }),
+      createLoggingInterceptor(),
+    ],
+    captureStackTrace: false,
+  })
+}
 
 const pool = createPool(process.env.DATABASE_URL || "", {
   typeParsers: [
