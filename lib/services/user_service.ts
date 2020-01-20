@@ -6,6 +6,8 @@ import { inject, injectable } from "inversify"
 import * as jwt from "jsonwebtoken"
 import jwksClient from "jwks-rsa"
 
+import { EventContext } from "lib/events"
+
 import { UserAppMetadata, UserId, UserInfo, UserToken } from "../data/types"
 import Environment from "../env"
 import { Token } from "../key"
@@ -29,7 +31,11 @@ class UserService {
   private verifyPromise: Promise<UserToken>
   private userInfoPromise: Promise<UserInfo> | null = null
 
-  constructor(@inject(Token) private token: string | null, env: Environment) {
+  constructor(
+    @inject(Token) private token: string | null,
+    private evt: EventContext,
+    env: Environment
+  ) {
     this.jwtOptions = {
       audience: env.apiIdentifier,
       issuer: `https://${env.authDomain}/`,
@@ -240,7 +246,16 @@ class UserService {
         if (err) {
           reject(new AuthenticationError(err.message))
         } else {
-          resolve(decoded as UserToken)
+          const token = decoded as UserToken
+          this.evt.current.add({
+            user: token.sub,
+            "user.subscription_id":
+              token["https://courier.blog/subscription_id"],
+            "user.customer_id": token["https://courier.blog/customer_id"],
+            "user.subscription_status_override":
+              token["https://courier.blog/status"],
+          })
+          resolve(token)
         }
       })
     })
