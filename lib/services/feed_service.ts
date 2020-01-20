@@ -1,6 +1,11 @@
 import { locateFeed } from "feed-locator"
 import { inject, injectable } from "inversify"
-import { normalizeURL, scrapeFeed } from "scrape-feed"
+import {
+  CachingHeaders,
+  normalizeURL,
+  ScrapedFeed,
+  scrapeFeed,
+} from "scrape-feed"
 
 import { EventContext } from "lib/events"
 
@@ -60,54 +65,57 @@ class FeedService {
       "feed.force_refresh": !!options.force,
     })
 
-    const feed = await this.feedLoader.load(id)
-    if (!feed) {
-      throw new Error(`could not find feed with id ${id}`)
-    }
+    try {
+      const feed = await this.feedLoader.load(id)
+      if (!feed) {
+        throw new Error(`could not find feed with id ${id}`)
+      }
 
-    evt.add({
-      "feed.url": feed.url,
-      "feed.has_caching_headers": !!feed.cachingHeaders,
-    })
+      evt.add({
+        "feed.url": feed.url,
+        "feed.has_caching_headers": !!feed.cachingHeaders,
+      })
 
-    const currentHeaders = options.force ? {} : feed.cachingHeaders || {}
-    const feedContents = await scrapeFeed(feed.url, currentHeaders)
-    evt.add({ "feed.has_changes": !!feedContents })
-    if (!feedContents) {
+      const currentHeaders = options.force ? {} : feed.cachingHeaders || {}
+      const feedContents = await this.scrapeFeed(feed.url, currentHeaders)
+      evt.add({ "feed.has_changes": !!feedContents })
+      if (!feedContents) {
+        // feed is already up-to-date
+        return feed
+      }
+
+      const { title, homePageURL, cachingHeaders, entries } = feedContents
+
+      // Import the posts from the feed first
+      const result = await this.importService.importPosts(id, entries)
+      console.log(result)
+
+      const micropubEndpoint =
+        (await this.getMicropubEndpoint(homePageURL)) || ""
+
+      // Only after importing posts should we update feed details. Otherwise, the
+      // caching headers will stop us from getting any missed posts again until the
+      // feed is updated again.
+      const updatedFeed = await this.feeds.update(id, {
+        title,
+        homePageURL,
+        cachingHeaders,
+        micropubEndpoint,
+      })
+      this.feedLoader.replace(id, updatedFeed)
+
+      await this.events.record("feed_refresh", { feedId: id })
+
+      return updatedFeed
+    } finally {
       this.evt.pop()
-
-      // feed is already up-to-date
-      return feed
     }
-
-    const { title, homePageURL, cachingHeaders, entries } = feedContents
-
-    // Import the posts from the feed first
-    const result = await this.importService.importPosts(id, entries)
-    console.log(result)
-
-    const micropubEndpoint = (await this.getMicropubEndpoint(homePageURL)) || ""
-
-    // Only after importing posts should we update feed details. Otherwise, the
-    // caching headers will stop us from getting any missed posts again until the
-    // feed is updated again.
-    const updatedFeed = await this.feeds.update(id, {
-      title,
-      homePageURL,
-      cachingHeaders,
-      micropubEndpoint,
-    })
-    this.feedLoader.replace(id, updatedFeed)
-
-    await this.events.record("feed_refresh", { feedId: id })
-
-    return updatedFeed
   }
 
   async preview(url: string): Promise<PreviewFeed> {
     const feedURL = await locateFeed(url)
 
-    const feedContents = await scrapeFeed(feedURL)
+    const feedContents = await this.scrapeFeed(feedURL)
     if (!feedContents) {
       throw new Error("Couldn't load feed contents")
     }
@@ -193,6 +201,28 @@ class FeedService {
     }
 
     return null
+  }
+
+  private async scrapeFeed(
+    url: string,
+    cachingHeaders?: CachingHeaders
+  ): Promise<ScrapedFeed | null> {
+    const evt = this.evt.startSpan("scrape_feed")
+    evt.add({
+      "feed.url": url,
+      "feed.has_caching_headers": !!cachingHeaders,
+    })
+
+    try {
+      const feed = await scrapeFeed(url, cachingHeaders)
+      evt.add({
+        "feed.has_changes": !!feed,
+        "feed.entry_count": feed?.entries.length,
+      })
+      return feed
+    } finally {
+      this.evt.stopSpan(evt)
+    }
   }
 }
 

@@ -6,7 +6,7 @@
       "@pages/*": ["components/pages/*"],
       "@mutations/*": ["components/mutations/*"],
       "@repositories/*": ["lib/repositories/*"],
-      "@services/*": ["lib/services"],
+      "@services/*": ["lib/services/*"],
       "*": ["*", "types/*"]
     },
     "allowJs": true,

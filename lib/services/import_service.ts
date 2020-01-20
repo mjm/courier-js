@@ -1,10 +1,14 @@
 import { translate } from "html-to-tweets"
 import { injectable } from "inversify"
-import { countBy, zip } from "lodash"
+import { zip } from "lodash"
 import { ScrapedEntry } from "scrape-feed"
 
-import { EventContext } from "lib/events"
-
+import FeedSubscriptionRepository, {
+  SubscribedFeedLoader,
+} from "@repositories/feed_subscription_repository"
+import PostRepository, { PostLoader } from "@repositories/post_repository"
+import TweetRepository, { TweetLoader } from "@repositories/tweet_repository"
+import NotificationService from "@services/notification_service"
 import {
   FeedId,
   FeedSubscriptionId,
@@ -15,14 +19,19 @@ import {
   PreviewTweet,
   SubscribedFeed,
   UpdatePostInput,
-} from "../data/types"
-import { isSameDate } from "../data/util"
-import FeedSubscriptionRepository, {
-  SubscribedFeedLoader,
-} from "../repositories/feed_subscription_repository"
-import PostRepository, { PostLoader } from "../repositories/post_repository"
-import TweetRepository, { TweetLoader } from "../repositories/tweet_repository"
-import NotificationService from "./notification_service"
+} from "lib/data/types"
+import { isSameDate } from "lib/data/util"
+import { EventContext } from "lib/events"
+
+interface CreatePostPlan extends NewPostInput {
+  result: "created"
+}
+
+interface UpdatePostPlan extends UpdatePostInput {
+  result: "updated"
+  id: PostId
+  itemId: string
+}
 
 @injectable()
 class ImportService {
@@ -41,32 +50,128 @@ class ImportService {
     feedId: FeedId,
     entries: ScrapedEntry[]
   ): Promise<PostImportResult> {
-    const importPromises = entries.map(entry => this.importPost(feedId, entry))
-    const imports = await Promise.all(importPromises)
+    const evt = this.evt.push("import_posts")
+    evt.add({
+      "feed.id": feedId,
+      "import.entry_count": entries.length,
+    })
 
-    // Ensure that we have zeros for any types that aren't used
-    const defaultResult = { created: 0, updated: 0, unchanged: 0 }
-    return { ...defaultResult, ...countBy(imports) }
+    try {
+      const entryIds = entries.map(e => e.id)
+      const existingPosts = await this.posts.findByItemIDs(feedId, entryIds)
+
+      const createPlans: CreatePostPlan[] = []
+      const updatePlans: UpdatePostPlan[] = []
+      let unchanged = 0
+
+      for (const [entry, post] of zip(entries, existingPosts)) {
+        if (!entry) {
+          break
+        }
+
+        if (post) {
+          const input: UpdatePostInput = {
+            title: entry.title,
+            url: entry.url,
+            textContent: entry.textContent,
+            htmlContent: entry.htmlContent,
+            publishedAt: entry.publishedAt,
+            modifiedAt: entry.modifiedAt,
+          }
+
+          if (!this.hasChanges(input, post)) {
+            unchanged++
+          } else {
+            updatePlans.push({
+              ...input,
+              result: "updated",
+              id: post.id,
+              itemId: entry.id,
+            })
+          }
+        } else {
+          createPlans.push({
+            result: "created",
+            feedId,
+            itemId: entry.id,
+            title: entry.title,
+            url: entry.url,
+            textContent: entry.textContent,
+            htmlContent: entry.htmlContent,
+            publishedAt: entry.publishedAt,
+            modifiedAt: entry.modifiedAt,
+          })
+        }
+      }
+
+      evt.add({
+        "import.created_count": createPlans.length,
+        "import.updated_count": updatePlans.length,
+        "import.unchanged_count": unchanged,
+      })
+
+      const changedPosts: Post[] = []
+
+      // perform all the creates
+      const createdPosts = await this.posts.bulkCreate(createPlans)
+      for (const post of createdPosts) {
+        this.postLoader.prime(post.id, post)
+        changedPosts.push(post)
+      }
+
+      // perform all the updates
+      const updatedPosts = await this.posts.bulkUpdate(updatePlans)
+      for (const post of updatedPosts) {
+        this.postLoader.prime(post.id, post)
+        changedPosts.push(post)
+      }
+
+      // create all the tweets
+      if (changedPosts.length) {
+        const subscriptions = await this.feedSubscriptions.findAllByFeed(feedId)
+        await Promise.all(
+          changedPosts.map(post => this.createTweets(subscriptions, post))
+        )
+      }
+
+      return {
+        created: createPlans.length,
+        updated: updatePlans.length,
+        unchanged,
+      }
+    } finally {
+      this.evt.pop()
+    }
   }
 
   async importRecentPosts(
     feedSubscriptionId: FeedSubscriptionId
   ): Promise<void> {
-    const feed = (await this.subscribedFeedLoader.load(
-      feedSubscriptionId
-    )) as SubscribedFeed
+    const evt = this.evt.push("import_recent_posts")
+    evt.add({ "feed.subscription_id": feedSubscriptionId })
 
-    // translating every post for the new subscription could be an excessive amount of work,
-    // and probably isn't what someone expects anyway, so we just grab the last few.
-    const recentPosts = await this.posts
-      .pagedByFeed(feed.feedId, { last: 10 })
-      .nodes()
+    try {
+      const feed = (await this.subscribedFeedLoader.load(
+        feedSubscriptionId
+      )) as SubscribedFeed
+      evt.add({ "feed.id": feed.id })
 
-    await Promise.all(
-      recentPosts.map(async post => {
-        await this.createSubscriptionTweets(feed, post)
-      })
-    )
+      // translating every post for the new subscription could be an excessive amount of work,
+      // and probably isn't what someone expects anyway, so we just grab the last few.
+      const recentPosts = await this.posts
+        .pagedByFeed(feed.feedId, { first: 10 })
+        .nodes()
+
+      evt.add({ "import.recent_post_count": recentPosts.length })
+
+      await Promise.all(
+        recentPosts.map(async post => {
+          await this.createSubscriptionTweets(feed, post)
+        })
+      )
+    } finally {
+      this.evt.pop()
+    }
   }
 
   generatePreviewTweets(entries: ScrapedEntry[]): PreviewTweet[] {
@@ -100,75 +205,10 @@ class ImportService {
     return results
   }
 
-  private async importPost(
-    feedId: FeedId,
-    entry: ScrapedEntry
-  ): Promise<keyof PostImportResult> {
-    const evt = this.evt.startSpan("import_post")
-    evt.add({
-      "feed.id": feedId,
-      "entry.id": entry.id,
-      "entry.url": entry.url,
-    })
-
-    let importResult: keyof PostImportResult
-    const existingPost = await this.posts.findByItemID(feedId, entry.id)
-    if (existingPost) {
-      const input: UpdatePostInput = {
-        title: entry.title,
-        url: entry.url,
-        textContent: entry.textContent,
-        htmlContent: entry.htmlContent,
-        publishedAt: entry.publishedAt,
-        modifiedAt: entry.modifiedAt,
-      }
-
-      if (!this.hasChanges(input, existingPost)) {
-        importResult = "unchanged"
-      } else {
-        await this.updatePost(existingPost.id, input)
-        importResult = "updated"
-      }
-    } else {
-      const input: NewPostInput = {
-        feedId,
-        itemId: entry.id,
-        title: entry.title,
-        url: entry.url,
-        textContent: entry.textContent,
-        htmlContent: entry.htmlContent,
-        publishedAt: entry.publishedAt,
-        modifiedAt: entry.modifiedAt,
-      }
-
-      await this.createPost(input)
-      importResult = "created"
-    }
-
-    evt.add({ import_result: importResult })
-    this.evt.stopSpan(evt)
-    return importResult
-  }
-
-  private async updatePost(id: PostId, input: UpdatePostInput): Promise<void> {
-    const post = await this.posts.update(id, input)
-    this.postLoader.replace(id, post)
-
-    await this.createTweets(post)
-  }
-
-  private async createPost(input: NewPostInput): Promise<void> {
-    const post = await this.posts.create(input)
-    this.postLoader.prime(post.id, post)
-
-    await this.createTweets(post)
-  }
-
-  private async createTweets(post: Post): Promise<void> {
-    const subscriptions = await this.feedSubscriptions.findAllByFeed(
-      post.feedId
-    )
-
+  private async createTweets(
+    subscriptions: SubscribedFeed[],
+    post: Post
+  ): Promise<void> {
     await Promise.all(
       subscriptions.map(async sub => {
         return await this.createSubscriptionTweets(sub, post)

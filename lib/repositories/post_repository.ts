@@ -1,9 +1,10 @@
-import { inject,injectable } from "inversify"
+import { inject, injectable } from "inversify"
+import keyBy from "lodash/keyBy"
 import moment from "moment"
 
-import * as table from "../data/dbTypes"
-import { LoaderQueryFn, QueryLoader } from "../data/loader"
-import { Pager } from "../data/pager"
+import * as table from "lib/data/dbTypes"
+import { LoaderQueryFn, QueryLoader } from "lib/data/loader"
+import { Pager } from "lib/data/pager"
 import {
   FeedId,
   NewPostInput,
@@ -11,9 +12,9 @@ import {
   Post,
   PostId,
   UpdatePostInput,
-} from "../data/types"
-import { DatabasePoolType,sql } from "../db"
-import { DB } from "../key"
+} from "lib/data/types"
+import { DatabasePoolType, sql } from "lib/db"
+import { DB } from "lib/key"
 
 @injectable()
 class PostRepository {
@@ -53,6 +54,20 @@ class PostRepository {
     return row && PostRepository.fromRow(row)
   }
 
+  async findByItemIDs(
+    feedId: FeedId,
+    itemIds: string[]
+  ): Promise<(Post | null)[]> {
+    const rows = await this.db.any(sql<table.posts>`
+      SELECT *
+        FROM posts
+       WHERE feed_id = ${feedId}
+         AND item_id = ANY(${sql.array(itemIds, "text")})
+    `)
+    const byId = keyBy(rows.map(PostRepository.fromRow), x => x.itemId)
+    return itemIds.map(id => byId[id] || null)
+  }
+
   async create(input: NewPostInput): Promise<Post> {
     const row = await this.db.one(sql<table.posts>`
       INSERT INTO posts(
@@ -80,6 +95,50 @@ class PostRepository {
     return PostRepository.fromRow(row)
   }
 
+  async bulkCreate(inputs: NewPostInput[]): Promise<Post[]> {
+    if (!inputs.length) {
+      return []
+    }
+
+    const rows = await this.db.any<table.posts>(sql`
+      INSERT INTO posts (
+        feed_id,
+        item_id,
+        url,
+        title,
+        text_content,
+        html_content,
+        published_at,
+        modified_at
+      )
+      SELECT * FROM ${sql.unnest(
+        inputs.map(i => [
+          i.feedId,
+          i.itemId,
+          i.url,
+          i.title,
+          i.textContent,
+          i.htmlContent,
+          i.publishedAt?.toISOString() ?? null,
+          i.modifiedAt?.toISOString() ?? null,
+        ]),
+        [
+          "int4",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "timestamp",
+          "timestamp",
+        ]
+      )}
+      RETURNING *
+    `)
+
+    return rows.map(PostRepository.fromRow)
+  }
+
   async update(id: PostId, input: UpdatePostInput): Promise<Post> {
     const row = await this.db.one(sql<table.posts>`
       UPDATE posts
@@ -97,6 +156,44 @@ class PostRepository {
     `)
 
     return PostRepository.fromRow(row)
+  }
+
+  async bulkUpdate(
+    inputs: ({ id: PostId } & UpdatePostInput)[]
+  ): Promise<Post[]> {
+    if (!inputs.length) {
+      return []
+    }
+
+    const rows = await this.db.any<table.posts>(sql`
+      UPDATE posts
+         SET url = v.url,
+             title = v.title,
+             text_content = v.text_content,
+             html_content = v.html_content,
+             published_at = v.published_at,
+             modified_at = v.modified_at,
+             updated_at = CURRENT_TIMESTAMP
+        FROM (
+          SELECT * FROM ${sql.unnest(
+            inputs.map(i => [
+              i.id,
+              i.url,
+              i.title,
+              i.textContent,
+              i.htmlContent,
+              i.publishedAt?.toISOString() ?? null,
+              i.modifiedAt?.toISOString() ?? null,
+            ]),
+            ["int4", "text", "text", "text", "text", "timestamp", "timestamp"]
+          )}
+        )
+        v(id, url, title, text_content, html_content, published_at, modified_at)
+       WHERE posts.id = v.id
+       RETURNING *
+    `)
+
+    return rows.map(PostRepository.fromRow)
   }
 
   static fromRow(row: table.posts): Post {
