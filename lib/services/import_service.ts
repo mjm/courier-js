@@ -3,6 +3,8 @@ import { injectable } from "inversify"
 import { countBy, zip } from "lodash"
 import { ScrapedEntry } from "scrape-feed"
 
+import { EventContext } from "lib/events"
+
 import {
   FeedId,
   FeedSubscriptionId,
@@ -31,7 +33,8 @@ class ImportService {
     private subscribedFeedLoader: SubscribedFeedLoader,
     private postLoader: PostLoader,
     private tweetLoader: TweetLoader,
-    private notifications: NotificationService
+    private notifications: NotificationService,
+    private evt: EventContext
   ) {}
 
   async importPosts(
@@ -101,6 +104,14 @@ class ImportService {
     feedId: FeedId,
     entry: ScrapedEntry
   ): Promise<keyof PostImportResult> {
+    const evt = this.evt.startSpan("import_post")
+    evt.add({
+      "feed.id": feedId,
+      "entry.id": entry.id,
+      "entry.url": entry.url,
+    })
+
+    let importResult: keyof PostImportResult
     const existingPost = await this.posts.findByItemID(feedId, entry.id)
     if (existingPost) {
       const input: UpdatePostInput = {
@@ -113,11 +124,11 @@ class ImportService {
       }
 
       if (!this.hasChanges(input, existingPost)) {
-        return "unchanged"
+        importResult = "unchanged"
+      } else {
+        await this.updatePost(existingPost.id, input)
+        importResult = "updated"
       }
-
-      await this.updatePost(existingPost.id, input)
-      return "updated"
     } else {
       const input: NewPostInput = {
         feedId,
@@ -131,8 +142,12 @@ class ImportService {
       }
 
       await this.createPost(input)
-      return "created"
+      importResult = "created"
     }
+
+    evt.add({ import_result: importResult })
+    this.evt.stopSpan(evt)
+    return importResult
   }
 
   private async updatePost(id: PostId, input: UpdatePostInput): Promise<void> {
