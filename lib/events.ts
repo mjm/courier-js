@@ -93,24 +93,32 @@ export class EventContext {
     fn: (req: NextApiRequest, res: NextApiResponse, evt: Event) => Promise<T>
   ): (req: NextApiRequest, res: NextApiResponse) => Promise<T> {
     return async (req, res) => {
-      const evt = this.push("http_request")
-      evt.add({
-        "http.method": req.method,
-        "http.url": req.url,
-      })
+      return await this.handleHttp(req, res, evt => fn(req, res, evt))
+    }
+  }
 
-      try {
-        return await fn(req, res, evt)
-      } catch (err) {
-        evt.add({ err: err.message })
-        throw err
-      } finally {
-        evt.add({
-          "http.status": res.statusCode,
-        })
-        this.pop()
-        await this.flush()
-      }
+  async handleHttp<T>(
+    req: NextApiRequest,
+    res: NextApiResponse,
+    fn: (evt: Event) => Promise<T>
+  ): Promise<T> {
+    const evt = this.push("http_request")
+    evt.add({
+      "http.method": req.method,
+      "http.url": req.url,
+    })
+
+    try {
+      return await fn(evt)
+    } catch (err) {
+      evt.add({ err: err.message })
+      throw err
+    } finally {
+      evt.add({
+        "http.status": res.statusCode,
+      })
+      this.pop()
+      await this.flush()
     }
   }
 

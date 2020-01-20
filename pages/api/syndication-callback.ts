@@ -7,9 +7,11 @@ export default async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> => {
-  const { user } = CourierContext.createForRequest(req)
-  const { origin, url, token } = await completeIndieAuth(req)
-  await user.setMicropubToken(null, url, token)
-  res.writeHead(301, { Location: origin })
-  res.end()
+  const { user, evt } = CourierContext.createForRequest(req)
+  return await evt.handleHttp(req, res, async _evt => {
+    const { origin, url, token } = await completeIndieAuth(req)
+    await user.setMicropubToken(null, url, token)
+    res.writeHead(301, { Location: origin })
+    res.end()
+  })
 }
