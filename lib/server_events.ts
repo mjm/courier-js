@@ -49,6 +49,7 @@ const serverEventsPlugin: ApolloServerPlugin<CourierContext> = {
       async willSendResponse(ctx) {
         ctx.context.evt.current.add({
           "gql.operation_name": ctx.operationName,
+          "http.status": ctx.response.http?.status,
         })
         ctx.context.evt.pop()
 

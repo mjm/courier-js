@@ -1,7 +1,7 @@
 import { CourierContext } from "lib/context"
 import { xmlrpc, XMLRPCRequestHandler } from "lib/xmlrpc"
 
-const { feeds } = CourierContext.create()
+const { feeds, evt: events } = CourierContext.create()
 
 interface XMLRPCError extends Error {
   faultCode: number
@@ -9,23 +9,43 @@ interface XMLRPCError extends Error {
 }
 
 const handler: XMLRPCRequestHandler = async ({ methodName, params }) => {
-  if (methodName === "weblogUpdates.ping") {
-    const [title, homePageURL] = params
-    console.log(`Received ping for [${title}](${homePageURL})`)
+  const evt = events.push("xmlrpc_request")
+  evt.add({
+    "xmlrpc.method_name": methodName,
+  })
 
-    await feeds.refreshAllByHomePageURL(homePageURL)
+  try {
+    if (methodName === "weblogUpdates.ping") {
+      const [title, homePageURL] = params
+      evt.add({
+        "ping.title": title,
+        "ping.home_page_url": homePageURL,
+      })
 
-    return {
-      flerror: false,
-      message: "Thanks for the ping.",
+      console.log(`Received ping for [${title}](${homePageURL})`)
+
+      await feeds.refreshAllByHomePageURL(homePageURL)
+
+      events.pop()
+      return {
+        flerror: false,
+        message: "Thanks for the ping.",
+      }
+    } else {
+      const err = new Error(
+        `This server doesn't understand the '${methodName}' method`
+      ) as XMLRPCError
+      err.faultCode = 404
+      err.faultString = err.message
+
+      throw err
     }
-  } else {
-    const err = new Error(
-      `This server doesn't understand the '${methodName}' method`
-    ) as XMLRPCError
-    err.faultCode = 404
-    err.faultString = err.message
+  } catch (err) {
+    evt.add({ err: err.message })
     throw err
+  } finally {
+    events.pop()
+    events.flush()
   }
 }
 
