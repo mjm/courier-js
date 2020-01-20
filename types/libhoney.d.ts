@@ -1,5 +1,7 @@
 export default class Libhoney {
   constructor(options: HoneyOptions)
+  transmission: TransmissionBase
+
   add(data: Record<string, any> | Map<string, any>): Libhoney
   addDynamicField(name: string, fn: () => any): Libhoney
   addField(key: string, value: any): Libhoney
@@ -74,4 +76,10 @@ export class Builder {
   ): Builder
   newEvent(): Event
   sendNow(data?: Record<string, any> | Map<string, any>): void
+}
+
+export interface TransmissionBase {
+  sendEvent(ev: Event): void
+  sendPresampledEvent(ev: Event): void
+  flush?(): Promise<void>
 }

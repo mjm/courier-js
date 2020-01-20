@@ -87,6 +87,13 @@ export class EventContext {
     evt.send()
   }
 
+  async flush(): Promise<void> {
+    const transmission = this.honey.transmission
+    if (transmission.flush) {
+      await transmission.flush()
+    }
+  }
+
   private _makeEvent(parent?: Event): Event {
     const evt = this.builder.newEvent()
     if (parent) {

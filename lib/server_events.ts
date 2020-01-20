@@ -46,11 +46,15 @@ const serverEventsPlugin: ApolloServerPlugin<CourierContext> = {
           ctx.context.evt.pop()
         }
       },
-      willSendResponse(ctx) {
+      async willSendResponse(ctx) {
         ctx.context.evt.current.add({
           "gql.operation_name": ctx.operationName,
         })
         ctx.context.evt.pop()
+
+        // flush the event context or the serverless function may get suspended before
+        // all the events get sent.
+        await ctx.context.evt.flush()
       },
     }
   },
