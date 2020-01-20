@@ -89,6 +89,32 @@ export class EventContext {
     evt.send()
   }
 
+  async with<T>(name: string, fn: (evt: Event) => Promise<T>): Promise<T> {
+    const evt = this.push(name)
+
+    try {
+      return await fn(evt)
+    } catch (err) {
+      evt.add({ err: err.message })
+      throw err
+    } finally {
+      this.pop()
+    }
+  }
+
+  async withLeaf<T>(name: string, fn: (evt: Event) => Promise<T>): Promise<T> {
+    const evt = this.startSpan(name)
+
+    try {
+      return await fn(evt)
+    } catch (err) {
+      evt.add({ err: err.message })
+      throw err
+    } finally {
+      this.stopSpan(evt)
+    }
+  }
+
   httpHandler<T>(
     fn: (req: NextApiRequest, res: NextApiResponse, evt: Event) => Promise<T>
   ): (req: NextApiRequest, res: NextApiResponse) => Promise<T> {
@@ -102,22 +128,19 @@ export class EventContext {
     res: NextApiResponse,
     fn: (evt: Event) => Promise<T>
   ): Promise<T> {
-    const evt = this.push("http_request")
-    evt.add({
-      "http.method": req.method,
-      "http.url": req.url,
-    })
-
     try {
-      return await fn(evt)
-    } catch (err) {
-      evt.add({ err: err.message })
-      throw err
-    } finally {
-      evt.add({
-        "http.status": res.statusCode,
+      return await this.with("http_request", async evt => {
+        evt.add({
+          "http.method": req.method,
+          "http.url": req.url,
+        })
+        try {
+          return await fn(evt)
+        } finally {
+          evt.add({ "http.status": res.statusCode })
+        }
       })
-      this.pop()
+    } finally {
       await this.flush()
     }
   }

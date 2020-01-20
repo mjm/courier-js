@@ -50,13 +50,12 @@ class ImportService {
     feedId: FeedId,
     entries: ScrapedEntry[]
   ): Promise<PostImportResult> {
-    const evt = this.evt.push("import_posts")
-    evt.add({
-      "feed.id": feedId,
-      "import.entry_count": entries.length,
-    })
+    return await this.evt.with("import_posts", async evt => {
+      evt.add({
+        "feed.id": feedId,
+        "import.entry_count": entries.length,
+      })
 
-    try {
       const entryIds = entries.map(e => e.id)
       const existingPosts = await this.posts.findByItemIDs(feedId, entryIds)
 
@@ -139,18 +138,15 @@ class ImportService {
         updated: updatePlans.length,
         unchanged,
       }
-    } finally {
-      this.evt.pop()
-    }
+    })
   }
 
   async importRecentPosts(
     feedSubscriptionId: FeedSubscriptionId
   ): Promise<void> {
-    const evt = this.evt.push("import_recent_posts")
-    evt.add({ "feed.subscription_id": feedSubscriptionId })
+    await this.evt.with("import_recent_posts", async evt => {
+      evt.add({ "feed.subscription_id": feedSubscriptionId })
 
-    try {
       const feed = (await this.subscribedFeedLoader.load(
         feedSubscriptionId
       )) as SubscribedFeed
@@ -169,9 +165,7 @@ class ImportService {
           await this.createSubscriptionTweets(feed, post)
         })
       )
-    } finally {
-      this.evt.pop()
-    }
+    })
   }
 
   generatePreviewTweets(entries: ScrapedEntry[]): PreviewTweet[] {

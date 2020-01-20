@@ -59,13 +59,12 @@ class FeedService {
   }
 
   async refresh(id: FeedId, options: { force?: boolean } = {}): Promise<Feed> {
-    const evt = this.evt.push("refresh_feed")
-    evt.add({
-      "feed.id": id,
-      "feed.force_refresh": !!options.force,
-    })
+    return await this.evt.with("refresh_feed", async evt => {
+      evt.add({
+        "feed.id": id,
+        "feed.force_refresh": !!options.force,
+      })
 
-    try {
       const feed = await this.feedLoader.load(id)
       if (!feed) {
         throw new Error(`could not find feed with id ${id}`)
@@ -107,9 +106,7 @@ class FeedService {
       await this.events.record("feed_refresh", { feedId: id })
 
       return updatedFeed
-    } finally {
-      this.evt.pop()
-    }
+    })
   }
 
   async preview(url: string): Promise<PreviewFeed> {
@@ -207,22 +204,20 @@ class FeedService {
     url: string,
     cachingHeaders?: CachingHeaders
   ): Promise<ScrapedFeed | null> {
-    const evt = this.evt.startSpan("scrape_feed")
-    evt.add({
-      "feed.url": url,
-      "feed.has_caching_headers": !!cachingHeaders,
-    })
+    return await this.evt.withLeaf("scrape_feed", async evt => {
+      evt.add({
+        "feed.url": url,
+        "feed.has_caching_headers": !!cachingHeaders,
+      })
 
-    try {
       const feed = await scrapeFeed(url, cachingHeaders)
       evt.add({
         "feed.has_changes": !!feed,
         "feed.entry_count": feed?.entries.length,
       })
+
       return feed
-    } finally {
-      this.evt.stopSpan(evt)
-    }
+    })
   }
 }
 
