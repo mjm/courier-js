@@ -110,26 +110,34 @@ class FeedService {
   }
 
   async preview(url: string): Promise<PreviewFeed> {
-    const feedURL = await locateFeed(url)
+    return await this.evt.with("preview_feed", async evt => {
+      evt.add({ "preview.url": url })
+      const feedURL = await this.locateFeed(url)
+      evt.add({ "feed.url": feedURL })
 
-    const feedContents = await this.scrapeFeed(feedURL)
-    if (!feedContents) {
-      throw new Error("Couldn't load feed contents")
-    }
+      const feedContents = await this.scrapeFeed(feedURL)
+      if (!feedContents) {
+        throw new Error("Couldn't load feed contents")
+      }
 
-    const { title, homePageURL, entries } = feedContents
-    const tweets = this.importService.generatePreviewTweets(entries)
+      evt.add({ "feed.entry_count": feedContents.entries.length })
 
-    return {
-      url: feedURL,
-      title,
-      homePageURL,
-      tweets,
-    }
+      const { title, homePageURL, entries } = feedContents
+      const tweets = this.importService.generatePreviewTweets(entries)
+
+      evt.add({ "preview.tweet_count": tweets.length })
+
+      return {
+        url: feedURL,
+        title,
+        homePageURL,
+        tweets,
+      }
+    })
   }
 
   async subscribe(url: string): Promise<PagerEdge<SubscribedFeed>> {
-    const feedURL = await locateFeed(url)
+    const feedURL = await this.locateFeed(url)
 
     let feed = await this.feeds.findByURL(feedURL)
     if (!feed) {
@@ -198,6 +206,16 @@ class FeedService {
     }
 
     return null
+  }
+
+  private async locateFeed(url: string): Promise<string> {
+    return await this.evt.withLeaf("locate_feed", async evt => {
+      evt.add({ "locate.url": url })
+
+      const feedUrl = locateFeed(url)
+      evt.add({ "feed.url": feedUrl })
+      return feedUrl
+    })
   }
 
   private async scrapeFeed(
