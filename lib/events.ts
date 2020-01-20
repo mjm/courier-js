@@ -1,3 +1,5 @@
+import { NextApiRequest, NextApiResponse } from "next"
+
 import * as os from "os"
 
 import { injectable, interfaces } from "inversify"
@@ -85,6 +87,31 @@ export class EventContext {
       evt.timestamp ? Date.now() - evt.timestamp.getTime() : null
     )
     evt.send()
+  }
+
+  httpHandler<T>(
+    fn: (req: NextApiRequest, res: NextApiResponse, evt: Event) => Promise<T>
+  ): (req: NextApiRequest, res: NextApiResponse) => Promise<T> {
+    return async (req, res) => {
+      const evt = this.push("http_request")
+      evt.add({
+        "http.method": req.method,
+        "http.url": req.url,
+      })
+
+      try {
+        return await fn(req, res, evt)
+      } catch (err) {
+        evt.add({ err: err.message })
+        throw err
+      } finally {
+        evt.add({
+          "http.status": res.statusCode,
+        })
+        this.pop()
+        await this.flush()
+      }
+    }
   }
 
   async flush(): Promise<void> {
