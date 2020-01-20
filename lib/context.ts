@@ -4,7 +4,7 @@ import "reflect-metadata"
 
 import { parse as parseCookies } from "cookie"
 import { Container, injectable } from "inversify"
-import Libhoney from "libhoney"
+import Libhoney, { Event } from "libhoney"
 import Stripe from "stripe"
 
 import { createDatabase, DatabasePoolType } from "lib/db"
@@ -38,11 +38,15 @@ container
   .bind(Libhoney)
   .toDynamicValue(createHoney)
   .inSingletonScope()
+container
+  .bind(EventContext)
+  .toSelf()
+  .inSingletonScope()
 container.bind<string | null>(keys.Token).toConstantValue(null)
 container
   .bind<DatabasePoolType>(keys.DB)
   .toDynamicValue(createDatabase)
-  .inRequestScope()
+  .inSingletonScope()
 container.bind<UserIdProvider>(keys.UserId).toProvider(context => {
   const user = context.container.get(UserService)
   return () => user.requireUserId()
@@ -52,13 +56,33 @@ container
   .toDynamicValue(context => {
     const env = context.container.get(Environment)
     const stripe = new Stripe(env.stripeKey)
+    const events = context.container.get(EventContext)
+    const evts = new Map<string, Event>()
 
     stripe.on("request", req => {
+      const evt = events.startSpan("stripe_request")
+      evt.add({
+        "stripe.method": req.method,
+        "stripe.path": req.path,
+      })
+      evts.set(`${req.method}__${req.path}__${req.request_start_time}`, evt)
       console.log(req)
     })
 
     stripe.on("response", res => {
       console.log(res)
+      const evt = evts.get(
+        `${res.method}__${res.path}__${res.request_start_time}`
+      )
+      if (!evt) {
+        return
+      }
+      evt.add({
+        "stripe.api_version": res.api_version,
+        "stripe.status": res.status,
+        "stripe.request_id": res.request_id,
+      })
+      events.stopSpan(evt)
     })
 
     return stripe

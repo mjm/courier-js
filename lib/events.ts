@@ -52,11 +52,8 @@ export class EventContext {
     return this.eventStack[this.eventStack.length - 1]
   }
 
-  push(name: string): Event {
-    const parent = this.eventStack.length > 0 ? this.current : undefined
-    const evt = this._makeEvent(parent)
-    evt.timestamp = new Date()
-    evt.addField(EventKeys.SpanName, name)
+  push(name?: string): Event {
+    const evt = this.startSpan(name)
     this.eventStack.push(evt)
     return evt
   }
@@ -67,6 +64,22 @@ export class EventContext {
       throw new Error("Tried to pop event when there was none on the stack.")
     }
 
+    this.stopSpan(evt)
+  }
+
+  startSpan(name?: string, parent?: Event): Event {
+    if (!parent) {
+      parent = this.eventStack.length > 0 ? this.current : undefined
+    }
+    const evt = this._makeEvent(parent)
+    evt.timestamp = new Date()
+    if (name) {
+      evt.addField(EventKeys.SpanName, name)
+    }
+    return evt
+  }
+
+  stopSpan(evt: Event): void {
     evt.addField(
       EventKeys.Duration,
       evt.timestamp ? Date.now() - evt.timestamp.getTime() : null
