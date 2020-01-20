@@ -1,6 +1,8 @@
 import { locateFeed } from "feed-locator"
-import { inject,injectable } from "inversify"
-import { normalizeURL,scrapeFeed } from "scrape-feed"
+import { inject, injectable } from "inversify"
+import { normalizeURL, scrapeFeed } from "scrape-feed"
+
+import { EventContext } from "lib/events"
 
 import { PagerEdge } from "../data/pager"
 import {
@@ -32,7 +34,8 @@ class FeedService {
     @inject(keys.UserId) private getUserId: () => Promise<UserId>,
     private importService: ImportService,
     private events: EventService,
-    private publish: PublishService
+    private publish: PublishService,
+    private evt: EventContext
   ) {}
 
   async paged(options: PagingOptions = {}): Promise<FeedSubscriptionPager> {
@@ -51,14 +54,28 @@ class FeedService {
   }
 
   async refresh(id: FeedId, options: { force?: boolean } = {}): Promise<Feed> {
+    const evt = this.evt.push("refresh_feed")
+    evt.add({
+      "feed.id": id,
+      "feed.force_refresh": !!options.force,
+    })
+
     const feed = await this.feedLoader.load(id)
     if (!feed) {
       throw new Error(`could not find feed with id ${id}`)
     }
 
+    evt.add({
+      "feed.url": feed.url,
+      "feed.has_caching_headers": !!feed.cachingHeaders,
+    })
+
     const currentHeaders = options.force ? {} : feed.cachingHeaders || {}
     const feedContents = await scrapeFeed(feed.url, currentHeaders)
+    evt.add({ "feed.has_changes": !!feedContents })
     if (!feedContents) {
+      this.evt.pop()
+
       // feed is already up-to-date
       return feed
     }
