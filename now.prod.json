@@ -19,7 +19,9 @@
     "STRIPE_SECRET_KEY": "@courier-prod-stripe-secret-key",
     "AUTH_ENCRYPT_KEY": "@courier-prod-auth-encrypt-key",
     "APNS_CERTIFICATE": "courier-push-prod.p12",
-    "APNS_PASSPHRASE": "@courier-prod-push-passphrase"
+    "APNS_PASSPHRASE": "@courier-prod-push-passphrase",
+    "HONEY_WRITE_KEY": "@courier-honey-write-key",
+    "HONEY_DATASET": "courier"
   },
   "build": {
     "env": {
