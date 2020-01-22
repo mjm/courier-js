@@ -80,18 +80,22 @@ class BillingService {
   }
 
   async cancel(): Promise<void> {
-    const userInfo = await this.userService.getUserInfo()
-    if (!userInfo.stripe_subscription_id) {
-      throw new Error(
-        "Cannot cancel subscription: you are not currently subscribed"
-      )
-    }
+    await this.evt.with("cancel_subscription", async evt => {
+      const userInfo = await this.userService.getUserInfo()
+      if (!userInfo.stripe_subscription_id) {
+        throw new Error(
+          "Cannot cancel subscription: you are not currently subscribed"
+        )
+      }
 
-    const subscription = await this.stripe.subscriptions.update(
-      userInfo.stripe_subscription_id,
-      { cancel_at_period_end: true }
-    )
-    this.subscriptionLoader.replace(subscription.id, subscription)
+      evt.add({ "billing.subscription_id": userInfo.stripe_subscription_id })
+
+      const subscription = await this.stripe.subscriptions.update(
+        userInfo.stripe_subscription_id,
+        { cancel_at_period_end: true }
+      )
+      this.subscriptionLoader.replace(subscription.id, subscription)
+    })
   }
 
   async isSubscribed(): Promise<boolean> {
