@@ -1,11 +1,12 @@
-import { inject,injectable } from "inversify"
+import { inject, injectable } from "inversify"
 import Stripe from "stripe"
 
-import { UserAppMetadata,UserId } from "../data/types"
-import Environment from "../env"
-import { CustomerLoader } from "../repositories/customer_repository"
-import { SubscriptionLoader } from "../repositories/subscription_repository"
-import UserService from "./user_service"
+import { CustomerLoader } from "@repositories/customer_repository"
+import { SubscriptionLoader } from "@repositories/subscription_repository"
+import UserService from "@services/user_service"
+import { UserAppMetadata, UserId } from "lib/data/types"
+import Environment from "lib/env"
+import { EventContext } from "lib/events"
 
 @injectable()
 class BillingService {
@@ -16,7 +17,8 @@ class BillingService {
     @inject(Stripe) private stripe: Stripe,
     private customerLoader: CustomerLoader,
     private subscriptionLoader: SubscriptionLoader,
-    private userService: UserService
+    private userService: UserService,
+    private evt: EventContext
   ) {
     this.planId = env.monthlyPlanId
   }
@@ -25,46 +27,56 @@ class BillingService {
     email?: string | null,
     tokenId?: string | null
   ): Promise<void> {
-    const createNewCustomer = email && tokenId
-    const existingSubscription = await this.getSubscription()
-    if (existingSubscription) {
-      // TODO handle create new customer with existing subscription
-      if (existingSubscription.status === "active") {
-        if (existingSubscription.cancel_at_period_end) {
-          console.log(
-            "Reactivating user's canceled but unexpired subscription."
+    await this.evt.with("subscribe_user", async evt => {
+      const createNewCustomer = email && tokenId
+      evt.add({ "billing.create_new_customer": !!createNewCustomer })
+
+      const existingSubscription = await this.getSubscription()
+      evt.add({ "billing.has_subscription": !!existingSubscription })
+
+      if (existingSubscription) {
+        evt.add({
+          "billing.status": existingSubscription.status,
+          "billing.cancel_at_period_end":
+            existingSubscription.cancel_at_period_end,
+        })
+
+        // TODO handle create new customer with existing subscription
+        if (existingSubscription.status === "active") {
+          if (existingSubscription.cancel_at_period_end) {
+            const subscription = await this.stripe.subscriptions.update(
+              existingSubscription.id,
+              { cancel_at_period_end: false }
+            )
+            this.subscriptionLoader.replace(subscription.id, subscription)
+            return
+          }
+
+          throw new Error(
+            "Cannot subscribe: you already have an active subscription"
           )
-          const subscription = await this.stripe.subscriptions.update(
-            existingSubscription.id,
-            { cancel_at_period_end: false }
-          )
-          this.subscriptionLoader.replace(subscription.id, subscription)
-          return
         }
 
-        throw new Error(
-          "Cannot subscribe: you already have an active subscription"
-        )
+        if (existingSubscription.status !== "canceled") {
+          await this.stripe.subscriptions.del(existingSubscription.id)
+        }
       }
 
-      if (existingSubscription.status !== "canceled") {
-        console.log("User has existing non-active subscription, deleting it.")
-        await this.stripe.subscriptions.del(existingSubscription.id)
-      }
-    }
+      const customerId = createNewCustomer
+        ? await this.createCustomer(email as string, tokenId as string)
+        : await this.requireExistingCustomer()
+      evt.add({ "billing.customer_id": customerId })
 
-    const customerId = createNewCustomer
-      ? await this.createCustomer(email as string, tokenId as string)
-      : await this.requireExistingCustomer()
+      const subscription = await this.stripe.subscriptions.create({
+        customer: customerId,
+        items: [{ plan: this.planId }],
+        expand: ["latest_invoice.payment_intent"],
+      })
+      this.subscriptionLoader.prime(subscription.id, subscription)
+      evt.add({ "billing.subscription_id": subscription.id })
 
-    const subscription = await this.stripe.subscriptions.create({
-      customer: customerId,
-      items: [{ plan: this.planId }],
-      expand: ["latest_invoice.payment_intent"],
+      await this.userService.update({ stripe_subscription_id: subscription.id })
     })
-    this.subscriptionLoader.prime(subscription.id, subscription)
-
-    await this.userService.update({ stripe_subscription_id: subscription.id })
   }
 
   async cancel(): Promise<void> {
@@ -121,15 +133,19 @@ class BillingService {
     email: string,
     tokenId: string
   ): Promise<string> {
-    console.log("Creating new subscription with token", tokenId)
-    const customer = await this.stripe.customers.create({
-      email,
-      source: tokenId,
-    })
-    this.customerLoader.prime(customer.id, customer)
+    return await this.evt.with("create_customer", async evt => {
+      evt.add({ "billing.token_id": tokenId })
 
-    await this.userService.update({ stripe_customer_id: customer.id })
-    return customer.id
+      const customer = await this.stripe.customers.create({
+        email,
+        source: tokenId,
+      })
+      this.customerLoader.prime(customer.id, customer)
+      evt.add({ "billing.customer_id": customer.id })
+
+      await this.userService.update({ stripe_customer_id: customer.id })
+      return customer.id
+    })
   }
 
   private async requireExistingCustomer(): Promise<string> {
@@ -138,10 +154,6 @@ class BillingService {
       throw new Error("There is no existing payment method to subscribe with")
     }
 
-    console.log(
-      "Creating subscription for existing customer",
-      userInfo.stripe_customer_id
-    )
     return userInfo.stripe_customer_id
   }
 
