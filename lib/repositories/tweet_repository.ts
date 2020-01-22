@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify"
+import groupBy from "lodash/groupBy"
 import moment from "moment"
 import { DatabasePoolType, sql, ValueExpressionType } from "slonik"
 
@@ -89,6 +90,29 @@ class TweetRepository {
     `)
 
     return rows.map(TweetRepository.fromRow)
+  }
+
+  /**
+   * Find all of the tweets in a feed subscription for each of a given list of post IDs.
+   *
+   * @param feedSubscriptionId The ID of the feed subscription the tweets belong to.
+   * @param postIds The IDs of the posts whose tweets should be found.
+   * @returns A list of lists of tweets. Each list of tweets corresponds to the post
+   * at the same index in `postIds`.
+   */
+  async findAllByPosts(
+    feedSubscriptionId: FeedSubscriptionId,
+    postIds: PostId[]
+  ): Promise<Tweet[][]> {
+    const rows = await this.db.any<table.tweets>(sql`
+      SELECT *
+        FROM tweets
+       WHERE feed_subscription_id = ${feedSubscriptionId}
+         AND post_id = ANY(${sql.array(postIds, "int4")})
+    ORDER BY post_id, position
+    `)
+    const byId = groupBy(rows.map(TweetRepository.fromRow), x => x.postId)
+    return postIds.map(id => byId[id] || [])
   }
 
   async findAllPostable(): Promise<Tweet[]> {

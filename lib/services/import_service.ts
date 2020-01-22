@@ -19,6 +19,7 @@ import {
   PostImportResult,
   PreviewTweet,
   SubscribedFeed,
+  Tweet,
   UpdatePostInput,
 } from "lib/data/types"
 import { isSameDate } from "lib/data/util"
@@ -233,10 +234,20 @@ class ImportService {
         post_count: posts.length,
       })
 
+      // Fetch all the existing tweets for these posts in one go
+      const existingTweets = await this.tweets.findAllByPosts(
+        feedSubscription.id,
+        posts.map(p => p.id)
+      )
+
       const tweetsToCreate = (
         await Promise.all(
-          posts.map(async post => {
-            return await this.planTweets(feedSubscription, post)
+          zip(posts, existingTweets).map(async ([post, tweets]) => {
+            if (!post || !tweets) {
+              return []
+            }
+
+            return await this.planTweets(post, tweets)
           })
         )
       ).flat()
@@ -262,8 +273,8 @@ class ImportService {
   }
 
   private async planTweets(
-    feedSubscription: SubscribedFeed,
-    post: Post
+    post: Post,
+    existingTweets: Tweet[]
   ): Promise<BulkNewTweetInput[]> {
     // Generate the expected tweets
     const tweets = translate({
@@ -271,12 +282,6 @@ class ImportService {
       title: post.title,
       html: post.htmlContent,
     })
-
-    // Get the existing tweets for this post/subscription combo
-    const existingTweets = await this.tweets.findAllByPost(
-      feedSubscription.id,
-      post.id
-    )
 
     // Either create or update as needed
     const tweetsToCreate: BulkNewTweetInput[] = []
