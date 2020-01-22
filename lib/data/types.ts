@@ -182,6 +182,15 @@ export interface NewTweetRetweetInput extends NewTweetInputBase {
 
 export type NewTweetInput = NewTweetTweetInput | NewTweetRetweetInput
 
+export interface BulkNewTweetInput {
+  postId: PostId
+  position: number
+  action: "tweet" | "retweet"
+  body?: string
+  mediaURLs?: string[]
+  retweetID?: string
+}
+
 export interface UpdateTweetInput {
   action?: TweetAction
   body: string

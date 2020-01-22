@@ -10,6 +10,7 @@ import PostRepository, { PostLoader } from "@repositories/post_repository"
 import TweetRepository, { TweetLoader } from "@repositories/tweet_repository"
 import NotificationService from "@services/notification_service"
 import {
+  BulkNewTweetInput,
   FeedId,
   FeedSubscriptionId,
   NewPostInput,
@@ -46,6 +47,22 @@ class ImportService {
     private evt: EventContext
   ) {}
 
+  /**
+   * Import posts that were scraped from a site's feed.
+   *
+   * When refreshing a feed, if the content changes, all of the entries found in the
+   * feed will be imported. The entries will be checked against already imported posts
+   * with the same IDs to determine whether updates or creations of posts are needed.
+   *
+   * Creating or updating posts will cause us to create or update tweets for those posts
+   * on any subscriptions the feed has. Effort is taken to batch these operations
+   * together to avoid repeating work or excessively querying the database.
+   *
+   * @param feedId The ID of the feed the posts will belong to.
+   * @param entries The entries that were scraped from the feed.
+   * @returns An object with counts of how many posts were created, updated, and
+   * left unchanged.
+   */
   async importPosts(
     feedId: FeedId,
     entries: ScrapedEntry[]
@@ -129,7 +146,7 @@ class ImportService {
       if (changedPosts.length) {
         const subscriptions = await this.feedSubscriptions.findAllByFeed(feedId)
         await Promise.all(
-          changedPosts.map(post => this.createTweets(subscriptions, post))
+          subscriptions.map(sub => this.createTweets(sub, changedPosts))
         )
       }
 
@@ -141,6 +158,15 @@ class ImportService {
     })
   }
 
+  /**
+   * Creates tweets for a subscription using the most recent posts imported for the
+   * feed.
+   *
+   * This is done when a user first subscribes to a new feed, as it lets us give a
+   * consistent experience for how much content is created when subscribing.
+   *
+   * @param feedSubscriptionId The ID of the feed subscription to create tweets for.
+   */
   async importRecentPosts(
     feedSubscriptionId: FeedSubscriptionId
   ): Promise<void> {
@@ -150,7 +176,7 @@ class ImportService {
       const feed = (await this.subscribedFeedLoader.load(
         feedSubscriptionId
       )) as SubscribedFeed
-      evt.add({ "feed.id": feed.id })
+      evt.add({ "feed.id": feed.feedId })
 
       // translating every post for the new subscription could be an excessive amount of work,
       // and probably isn't what someone expects anyway, so we just grab the last few.
@@ -160,11 +186,7 @@ class ImportService {
 
       evt.add({ "import.recent_post_count": recentPosts.length })
 
-      await Promise.all(
-        recentPosts.map(async post => {
-          await this.createSubscriptionTweets(feed, post)
-        })
-      )
+      await this.createTweets(feed, recentPosts)
     })
   }
 
@@ -200,20 +222,49 @@ class ImportService {
   }
 
   private async createTweets(
-    subscriptions: SubscribedFeed[],
-    post: Post
+    feedSubscription: SubscribedFeed,
+    posts: Post[]
   ): Promise<void> {
-    await Promise.all(
-      subscriptions.map(async sub => {
-        return await this.createSubscriptionTweets(sub, post)
+    await this.evt.withLeaf("create_tweets", async evt => {
+      evt.add({
+        "feed.id": feedSubscription.feedId,
+        "feed.subscription_id": feedSubscription.id,
+        "feed.autopost": feedSubscription.autopost,
+        post_count: posts.length,
       })
-    )
+
+      const tweetsToCreate = (
+        await Promise.all(
+          posts.map(async post => {
+            return await this.planTweets(feedSubscription, post)
+          })
+        )
+      ).flat()
+
+      evt.add({ "tweet.create_count": tweetsToCreate.length })
+
+      const tweets = await this.tweets.bulkCreate(
+        feedSubscription.id,
+        feedSubscription.autopost,
+        tweetsToCreate
+      )
+
+      await this.notifications.sendTweetsImported(
+        feedSubscription.userId,
+        tweets,
+        feedSubscription.autopost
+      )
+
+      for (const tweet of tweets) {
+        this.tweetLoader.prime(tweet.id, tweet)
+      }
+    })
   }
 
-  private async createSubscriptionTweets(
+  private async planTweets(
     feedSubscription: SubscribedFeed,
     post: Post
-  ): Promise<void> {
+  ): Promise<BulkNewTweetInput[]> {
     // Generate the expected tweets
     const tweets = translate({
       url: post.url,
@@ -228,6 +279,7 @@ class ImportService {
     )
 
     // Either create or update as needed
+    const tweetsToCreate: BulkNewTweetInput[] = []
     const zippedTweets = zip(tweets, existingTweets).map(
       ([nt, et], i) => [i, nt, et] as const
     )
@@ -236,13 +288,11 @@ class ImportService {
         // we need to make a new tweet here
 
         const tweetBase = {
-          feedSubscriptionId: feedSubscription.id,
           postId: post.id,
           position: i,
-          autopost: feedSubscription.autopost,
         }
 
-        const newTweet = await this.tweets.create(
+        tweetsToCreate.push(
           tweet.action === "tweet"
             ? {
                 ...tweetBase,
@@ -256,13 +306,6 @@ class ImportService {
                 retweetID: tweet.tweetID,
               }
         )
-
-        await this.notifications.sendTweetImported(
-          feedSubscription.userId,
-          newTweet
-        )
-
-        this.tweetLoader.prime(newTweet.id, newTweet)
       } else if (!tweet && existingTweet) {
         // we need to delete the tweet that already exists?
         // I'm not actually sure what to do here.
@@ -272,6 +315,8 @@ class ImportService {
           continue
         }
 
+        // TODO if the creates are just plans, the updates should probably also happen
+        // out of band.
         const updatedTweet = await this.tweets.update(
           existingTweet.id,
           tweet.action === "tweet"
@@ -294,6 +339,8 @@ class ImportService {
         }
       }
     }
+
+    return tweetsToCreate
   }
 
   private hasChanges(input: UpdatePostInput, existingPost: Post): boolean {

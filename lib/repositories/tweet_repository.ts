@@ -1,10 +1,12 @@
-import { inject,injectable } from "inversify"
+import { inject, injectable } from "inversify"
 import moment from "moment"
+import { DatabasePoolType, sql, ValueExpressionType } from "slonik"
 
-import * as table from "../data/dbTypes"
-import { LoaderQueryFn, QueryLoader } from "../data/loader"
-import { Pager } from "../data/pager"
+import * as table from "lib/data/dbTypes"
+import { LoaderQueryFn, QueryLoader } from "lib/data/loader"
+import { Pager } from "lib/data/pager"
 import {
+  BulkNewTweetInput,
   FeedSubscriptionId,
   NewTweetInput,
   PagingOptions,
@@ -13,9 +15,8 @@ import {
   TweetId,
   UpdateTweetInput,
   UserId,
-} from "../data/types"
-import { DatabasePoolType, sql, ValueExpressionType } from "../db"
-import * as keys from "../key"
+} from "lib/data/types"
+import * as keys from "lib/key"
 
 type TweetRow = table.tweets & Pick<table.posts, "published_at">
 export type TweetPagingOptions = PagingOptions & {
@@ -154,6 +155,67 @@ class TweetRepository {
     }
 
     return TweetRepository.fromRow(row)
+  }
+
+  /**
+   * Create many new tweets with one query.
+   *
+   * This supports creating tweets across many different posts, which is useful for
+   * reducing the number of queries involved when importing a new feed.
+   *
+   * @param feedSubscriptionId The ID of the feed subscription that the tweets belong to.
+   * @param autopost Whether the new tweets should be autoposted.
+   * @param inputs The list of new tweet data to create.
+   *
+   * @returns The list of created tweets.
+   */
+  async bulkCreate(
+    feedSubscriptionId: FeedSubscriptionId,
+    autopost: boolean,
+    inputs: BulkNewTweetInput[]
+  ): Promise<Tweet[]> {
+    if (!inputs.length) {
+      return []
+    }
+
+    const postAfter = autopost
+      ? sql`CURRENT TIMESTAMP + interval '5 minutes'`
+      : null
+
+    const rows = await this.db.any<table.tweets>(sql`
+      INSERT INTO tweets (
+        feed_subscription_id,
+        post_after,
+        post_id,
+        action,
+        body,
+        media_urls,
+        retweet_id,
+        position
+      )
+      SELECT ${feedSubscriptionId},
+             ${postAfter},
+             v.post_id,
+             v.action,
+             v.body,
+             ARRAY(SELECT json_array_elements_text(v.media_urls)),
+             v.retweet_id,
+             v.position
+        FROM ${sql.unnest(
+          inputs.map(i => [
+            i.postId,
+            i.action,
+            i.body ?? "",
+            JSON.stringify(i.mediaURLs ?? []),
+            i.retweetID ?? "",
+            i.position,
+          ]),
+          ["int8", "tweet_action", "text", "json", "text", "int4"]
+        )} v(post_id, action, body, media_urls, retweet_id, position)
+      RETURNING *
+    `)
+
+    return rows.map(TweetRepository.fromRow)
   }
 
   async update(id: TweetId, input: UpdateTweetInput): Promise<Tweet | null> {
