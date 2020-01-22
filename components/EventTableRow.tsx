@@ -45,32 +45,31 @@ const EventDescription: React.FC<{
   event: EventTableRow_event
 }> = ({ event }) => {
   const tweetBody = event.tweet?.body
-  const feed = event.feed as EventTableRow_event["feed"] & {}
 
   switch (event.eventType) {
     case "FEED_SET_AUTOPOST":
       return (
         <>
           You turned {event.boolValue ? "on" : "off"} autoposting for{" "}
-          <FeedLink id={feed.id} title={feed.title} />
+          <FeedLink feed={event.feed} />
         </>
       )
     case "FEED_REFRESH":
       return (
         <>
-          You refreshed <FeedLink id={feed.id} title={feed.title} />
+          You refreshed <FeedLink feed={event.feed} />
         </>
       )
     case "FEED_SUBSCRIBE":
       return (
         <>
-          You subscribed to <FeedLink id={feed.id} title={feed.title} />
+          You subscribed to <FeedLink feed={event.feed} />
         </>
       )
     case "FEED_UNSUBSCRIBE":
       return (
         <>
-          You unsubscribed from <FeedLink id={feed.id} title={feed.title} />
+          You unsubscribed from <FeedLink feed={event.feed} />
         </>
       )
     case "TWEET_CANCEL":
@@ -118,10 +117,16 @@ const EventDescription: React.FC<{
   }
 }
 
-const FeedLink: React.FC<{ id: string; title: string }> = ({ id, title }) => {
+const FeedLink: React.FC<{ feed: EventTableRow_event["feed"] }> = ({
+  feed,
+}) => {
+  if (!feed) {
+    return <>an unknown feed</>
+  }
+
   return (
-    <Link href="/feeds/[id]" as={`/feeds/${id}`}>
-      <a className="font-medium text-primary-9 hover:underline">{title}</a>
+    <Link href="/feeds/[id]" as={`/feeds/${feed.id}`}>
+      <a className="font-medium text-primary-9 hover:underline">{feed.title}</a>
     </Link>
   )
 }
