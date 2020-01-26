@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"os"
 
 	"github.com/graph-gophers/graphql-go"
+	"github.com/graph-gophers/graphql-go/errors"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/resolvers"
@@ -27,8 +29,13 @@ func init() {
 
 	schema = graphql.MustParseSchema(string(s), &resolvers.Root{}, graphql.Tracer(trace.GraphQLTracer{}))
 
-	auther = &auth.Authenticator{
-		AuthDomain: os.Getenv("AUTH_DOMAIN"),
+	auther, err = auth.NewAuthenticator(auth.Config{
+		AuthDomain:   os.Getenv("AUTH_DOMAIN"),
+		ClientID:     os.Getenv("BACKEND_CLIENT_ID"),
+		ClientSecret: os.Getenv("BACKEND_CLIENT_SECRET"),
+	})
+	if err != nil {
+		panic(err)
 	}
 }
 
@@ -54,10 +61,27 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	childCtx := auther.Authenticate(ctx, r)
+	childCtx, err := auther.Authenticate(ctx, r)
+	if err != nil {
+		trace.Error(ctx, err)
+		response := &graphql.Response{
+			Data: json.RawMessage("null"),
+			Errors: []*errors.QueryError{
+				&errors.QueryError{
+					Message: err.Error(),
+				},
+			},
+		}
+		writeResponse(ctx, w, response)
+		return
+	}
 
 	response := schema.Exec(childCtx, params.Query, params.OperationName, params.Variables)
-	responseJSON, err := json.Marshal(response)
+	writeResponse(ctx, w, response)
+}
+
+func writeResponse(ctx context.Context, w http.ResponseWriter, resp *graphql.Response) {
+	responseJSON, err := json.Marshal(resp)
 	if err != nil {
 		trace.Error(ctx, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

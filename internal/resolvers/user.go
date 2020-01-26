@@ -1,8 +1,6 @@
 package resolvers
 
 import (
-	"context"
-
 	"github.com/mjm/courier-js/internal/auth"
 )
 
@@ -10,10 +8,14 @@ type User struct {
 	user auth.User
 }
 
-func (*User) Name(ctx context.Context) string {
-	return "Matt Moriarity"
+func (u *User) Name() string {
+	return u.user.Name()
 }
 
-func (*User) Nickname() string {
-	return "mjm"
+func (u *User) Nickname() string {
+	return u.user.Nickname()
+}
+
+func (u *User) Picture() string {
+	return u.user.Picture()
 }
