@@ -12,4 +12,5 @@ require (
 	github.com/klauspost/compress v1.9.8 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
+	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0
 )
