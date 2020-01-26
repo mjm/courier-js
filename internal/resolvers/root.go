@@ -11,6 +11,10 @@ import (
 type Root struct {
 }
 
+func New() *Root {
+	return &Root{}
+}
+
 // CurrentUser gets the user who is accessing the API.
 func (*Root) CurrentUser(ctx context.Context) *User {
 	u := auth.GetUser(ctx)
