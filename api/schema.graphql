@@ -1,5 +1,6 @@
 scalar Cursor
 scalar DateTime
+scalar Time
 
 type Query {
   # currentUser: User
@@ -76,7 +77,7 @@ type User {
   nickname: String!
   picture: String!
   customer: Customer
-  # subscription: UserSubscription
+  subscription: UserSubscription
   # subscriptionStatusOverride: SubscriptionStatus
   # micropubSites: [String!]!
 
@@ -103,7 +104,7 @@ type CreditCard {
 
 type UserSubscription {
   status: SubscriptionStatus!
-  periodEnd: DateTime!
+  periodEnd: Time!
 }
 
 enum SubscriptionStatus {

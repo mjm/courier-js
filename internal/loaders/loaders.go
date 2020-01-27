@@ -15,14 +15,16 @@ import (
 var AllLoaders = wire.NewSet(
 	tweet.NewLoader,
 	billing.NewCustomerLoader,
-	wire.Struct(new(Loaders), "Tweets", "Customers"))
+	billing.NewSubscriptionLoader,
+	wire.Struct(new(Loaders), "Tweets", "Customers", "Subscriptions"))
 
 // Loaders contains all of the different data loaders for the app.
 //
 // Because loaders cache results, they should be recreated for each request.
 type Loaders struct {
-	Tweets    tweet.Loader
-	Customers billing.CustomerLoader
+	Tweets        tweet.Loader
+	Customers     billing.CustomerLoader
+	Subscriptions billing.SubscriptionLoader
 }
 
 type loadersKey struct{}

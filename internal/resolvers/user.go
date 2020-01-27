@@ -40,3 +40,19 @@ func (u *User) Customer(ctx context.Context) (*Customer, error) {
 
 	return &Customer{customer: cus.(*stripe.Customer)}, nil
 }
+
+func (u *User) Subscription(ctx context.Context) (*Subscription, error) {
+	subID := u.user.SubscriptionID()
+	if subID == "" {
+		return nil, nil
+	}
+
+	l := loaders.Get(ctx)
+	thunk := l.Subscriptions.Load(ctx, dataloader.StringKey(subID))
+	sub, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Subscription{sub: sub.(*stripe.Subscription)}, nil
+}

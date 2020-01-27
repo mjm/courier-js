@@ -17,9 +17,11 @@ import (
 func CreateLoaders(db2 *db.DB, sc *client.API) Loaders {
 	loader := tweet.NewLoader(db2)
 	customerLoader := billing.NewCustomerLoader(sc)
+	subscriptionLoader := billing.NewSubscriptionLoader(sc)
 	loaders := Loaders{
-		Tweets:    loader,
-		Customers: customerLoader,
+		Tweets:        loader,
+		Customers:     customerLoader,
+		Subscriptions: subscriptionLoader,
 	}
 	return loaders
 }
