@@ -6,16 +6,20 @@
 package loaders
 
 import (
+	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/models/tweet"
+	"github.com/stripe/stripe-go/client"
 )
 
 // Injectors from wire.go:
 
-func CreateLoaders(db2 *db.DB) Loaders {
+func CreateLoaders(db2 *db.DB, sc *client.API) Loaders {
 	loader := tweet.NewLoader(db2)
+	customerLoader := billing.NewCustomerLoader(sc)
 	loaders := Loaders{
-		Tweets: loader,
+		Tweets:    loader,
+		Customers: customerLoader,
 	}
 	return loaders
 }

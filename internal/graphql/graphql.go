@@ -7,6 +7,7 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/errors"
+	"github.com/stripe/stripe-go/client"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
@@ -18,13 +19,15 @@ type Handler struct {
 	Schema        *graphql.Schema
 	Authenticator *auth.Authenticator
 	DB            *db.DB
+	Stripe        *client.API
 }
 
-func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, db *db.DB) *Handler {
+func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, db *db.DB, sc *client.API) *Handler {
 	return &Handler{
 		Schema:        schema,
 		Authenticator: auther,
 		DB:            db,
+		Stripe:        sc,
 	}
 }
 
@@ -66,7 +69,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	childCtx = loaders.WithLoaders(childCtx, h.DB)
+	childCtx = loaders.WithLoaders(childCtx, h.DB, h.Stripe)
 
 	response := h.Schema.Exec(childCtx, params.Query, params.OperationName, params.Variables)
 	writeResponse(ctx, w, response)

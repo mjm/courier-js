@@ -16,6 +16,7 @@ type User interface {
 	Name() string
 	Nickname() string
 	Picture() string
+	CustomerID() string
 }
 
 type AnonymousUser struct{}
@@ -27,6 +28,7 @@ func (AnonymousUser) Authenticated() bool { return false }
 func (AnonymousUser) Name() string        { return "" }
 func (AnonymousUser) Nickname() string    { return "" }
 func (AnonymousUser) Picture() string     { return "" }
+func (AnonymousUser) CustomerID() string  { return "" }
 
 type TokenUser struct {
 	token         *jwt.Token
@@ -69,6 +71,10 @@ func (u *TokenUser) Picture() string {
 	}
 
 	return info.GetPicture()
+}
+
+func (u *TokenUser) CustomerID() string {
+	return u.claims().StripeCustomerID
 }
 
 func (u *TokenUser) getUserInfo() (*management.User, error) {

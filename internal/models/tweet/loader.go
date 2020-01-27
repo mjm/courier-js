@@ -9,7 +9,6 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/loader"
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 // Loader loads one or more tweets by ID.
@@ -27,21 +26,18 @@ SELECT tweets.*
 `
 
 func NewLoader(db *db.DB) Loader {
-	loaderFn := func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-		userID, err := auth.GetUser(ctx).MustID()
-		if err != nil {
-			return nil
-		}
-
-		rows, err := db.QueryxContext(ctx, userTweetsQuery, userID, loader.IntArray(keys))
-		var tweet Tweet
-		return loader.Gather(keys, rows, &tweet, func(tweet interface{}) string {
-			return strconv.Itoa(tweet.(*Tweet).ID)
-		})
-	}
 	return Loader{
-		dataloader.NewBatchedLoader(loaderFn, dataloader.WithTracer(trace.DataloaderTracer{
-			Label: "Tweet Loader",
-		})),
+		loader.New("Tweet Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+			userID, err := auth.GetUser(ctx).MustID()
+			if err != nil {
+				return nil
+			}
+
+			rows, err := db.QueryxContext(ctx, userTweetsQuery, userID, loader.IntArray(keys))
+			var tweet Tweet
+			return loader.Gather(keys, rows, &tweet, func(tweet interface{}) string {
+				return strconv.Itoa(tweet.(*Tweet).ID)
+			})
+		}),
 	}
 }

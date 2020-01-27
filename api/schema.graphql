@@ -75,7 +75,7 @@ type User {
   name: String!
   nickname: String!
   picture: String!
-  # customer: Customer
+  customer: Customer
   # subscription: UserSubscription
   # subscriptionStatusOverride: SubscriptionStatus
   # micropubSites: [String!]!

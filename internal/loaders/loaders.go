@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/google/wire"
+	"github.com/stripe/stripe-go/client"
 
+	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/models/tweet"
 )
@@ -12,20 +14,22 @@ import (
 // AllLoaders is a Wire provider set that can create a Loaders with all the necessary loaders.
 var AllLoaders = wire.NewSet(
 	tweet.NewLoader,
-	wire.Struct(new(Loaders), "Tweets"))
+	billing.NewCustomerLoader,
+	wire.Struct(new(Loaders), "Tweets", "Customers"))
 
 // Loaders contains all of the different data loaders for the app.
 //
 // Because loaders cache results, they should be recreated for each request.
 type Loaders struct {
-	Tweets tweet.Loader
+	Tweets    tweet.Loader
+	Customers billing.CustomerLoader
 }
 
 type loadersKey struct{}
 
 // WithLoaders creates a new context that has a new set of loaders using the given database.
-func WithLoaders(ctx context.Context, db *db.DB) context.Context {
-	l := CreateLoaders(db)
+func WithLoaders(ctx context.Context, db *db.DB, sc *client.API) context.Context {
+	l := CreateLoaders(db, sc)
 	return context.WithValue(ctx, loadersKey{}, &l)
 }
 

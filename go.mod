@@ -27,6 +27,7 @@ require (
 	github.com/lib/pq v1.3.0
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
 	github.com/stretchr/testify v1.2.2 // indirect
+	github.com/stripe/stripe-go v68.13.0+incompatible
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/auth0.v3 v3.0.3

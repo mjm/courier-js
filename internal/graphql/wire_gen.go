@@ -7,13 +7,14 @@ package graphql
 
 import (
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/resolvers"
 )
 
 // Injectors from wire.go:
 
-func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.Config) (*Handler, error) {
+func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.Config, stripeConfig billing.Config) (*Handler, error) {
 	root := resolvers.New()
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
@@ -27,6 +28,7 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	if err != nil {
 		return nil, err
 	}
-	handler := NewHandler(schema, authenticator, dbDB)
+	api := billing.NewClient(stripeConfig)
+	handler := NewHandler(schema, authenticator, dbDB, api)
 	return handler, nil
 }
