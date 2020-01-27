@@ -15,7 +15,10 @@ var handler *graphql.Handler
 
 func init() {
 	// TODO provide real config values
-	trace.Init(trace.Config{})
+	trace.Init(trace.Config{
+		Dataset:  os.Getenv("HONEY_DATASET"),
+		WriteKey: os.Getenv("HONEY_WRITE_KEY"),
+	})
 
 	s, err := ioutil.ReadFile("schema.graphql")
 	if err != nil {

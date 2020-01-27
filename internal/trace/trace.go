@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/honeycombio/libhoney-go"
-	"github.com/honeycombio/libhoney-go/transmission"
 )
 
 type contextKey struct{}
@@ -35,9 +34,9 @@ type Config struct {
 // Init initializes tracing support so it is correctly configured.
 func Init(cfg Config) {
 	libhoney.Init(libhoney.Config{
-		WriteKey:     cfg.WriteKey,
-		Dataset:      cfg.Dataset,
-		Transmission: &transmission.WriterSender{},
+		WriteKey: cfg.WriteKey,
+		Dataset:  cfg.Dataset,
+		// Transmission: &transmission.WriterSender{},
 	})
 }
 
@@ -90,6 +89,7 @@ func Finish(ctx context.Context) {
 	trace.sent = true
 }
 
+// AddField sets a single field on the current span.
 func AddField(ctx context.Context, key string, value interface{}) {
 	trace := getTraceContext(ctx)
 	if trace == nil {
@@ -99,6 +99,7 @@ func AddField(ctx context.Context, key string, value interface{}) {
 	trace.fields[key] = value
 }
 
+// Add sets a map of fields on the current span.
 func Add(ctx context.Context, fields Fields) {
 	trace := getTraceContext(ctx)
 	if trace == nil {
@@ -110,6 +111,7 @@ func Add(ctx context.Context, fields Fields) {
 	}
 }
 
+// Error sets the error on the current span.
 func Error(ctx context.Context, err error) {
 	AddField(ctx, "error", err.Error())
 }
