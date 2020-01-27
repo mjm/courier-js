@@ -9,18 +9,22 @@ import (
 	"github.com/graph-gophers/graphql-go/errors"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
 type Handler struct {
 	Schema        *graphql.Schema
 	Authenticator *auth.Authenticator
+	DB            *db.DB
 }
 
-func NewHandler(schema *graphql.Schema, auther *auth.Authenticator) *Handler {
+func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, db *db.DB) *Handler {
 	return &Handler{
 		Schema:        schema,
 		Authenticator: auther,
+		DB:            db,
 	}
 }
 
@@ -61,6 +65,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeResponse(ctx, w, response)
 		return
 	}
+
+	childCtx = loaders.WithLoaders(childCtx, h.DB)
 
 	response := h.Schema.Exec(childCtx, params.Query, params.OperationName, params.Variables)
 	writeResponse(ctx, w, response)

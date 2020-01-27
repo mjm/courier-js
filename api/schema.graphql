@@ -2,8 +2,8 @@ scalar Cursor
 scalar DateTime
 
 type Query {
-  currentUser: User
-  # viewer: User
+  # currentUser: User
+  viewer: User
 
   # node(id: ID!): Node
 
@@ -24,7 +24,7 @@ type Query {
   #   after: Cursor
   # ): TweetConnection!
 
-  # tweet(id: ID!): Tweet
+  tweet(id: ID!): Tweet
 
   # allEvents(
   #   first: Int
@@ -218,16 +218,16 @@ type SubscribedFeedEdge {
 
 type Tweet implements Node & TweetContent {
   id: ID!
-  feed: SubscribedFeed!
-  post: Post!
+  # feed: SubscribedFeed!
+  # post: Post!
   action: TweetAction!
   body: String!
   mediaURLs: [String!]!
   retweetID: String!
-  status: TweetStatus!
-  postAfter: DateTime
-  postedAt: DateTime
-  postedTweetID: String
+  # status: TweetStatus!
+  # postAfter: DateTime
+  # postedAt: DateTime
+  # postedTweetID: String
 }
 
 enum TweetAction {

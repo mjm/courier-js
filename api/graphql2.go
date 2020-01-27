@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/graphql"
 	"github.com/mjm/courier-js/internal/trace"
 )
@@ -25,6 +26,8 @@ func init() {
 		AuthDomain:   os.Getenv("AUTH_DOMAIN"),
 		ClientID:     os.Getenv("BACKEND_CLIENT_ID"),
 		ClientSecret: os.Getenv("BACKEND_CLIENT_SECRET"),
+	}, db.Config{
+		URL: os.Getenv("DATABASE_URL"),
 	})
 	if err != nil {
 		panic(err)

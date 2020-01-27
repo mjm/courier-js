@@ -1,13 +1,17 @@
 package auth
 
 import (
+	"errors"
 	"sync"
 
 	"gopkg.in/auth0.v3/management"
 	"gopkg.in/dgrijalva/jwt-go.v3"
 )
 
+var ErrUnauthorized = errors.New("no user credentials were provided")
+
 type User interface {
+	MustID() (string, error)
 	Authenticated() bool
 	Name() string
 	Nickname() string
@@ -16,6 +20,9 @@ type User interface {
 
 type AnonymousUser struct{}
 
+func (AnonymousUser) MustID() (string, error) {
+	return "", ErrUnauthorized
+}
 func (AnonymousUser) Authenticated() bool { return false }
 func (AnonymousUser) Name() string        { return "" }
 func (AnonymousUser) Nickname() string    { return "" }
@@ -27,6 +34,10 @@ type TokenUser struct {
 
 	userInfo *management.User
 	lock     sync.Mutex
+}
+
+func (u *TokenUser) MustID() (string, error) {
+	return u.claims().Subject, nil
 }
 
 func (*TokenUser) Authenticated() bool {

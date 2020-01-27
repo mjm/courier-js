@@ -12,7 +12,7 @@ import (
 	"github.com/mjm/courier-js/internal/trace"
 )
 
-var userContextKey struct{}
+type userContextKey struct{}
 
 // Authenticator is responsible for populating a context with a User that can be used by
 // resolvers and other downstream logic.
@@ -54,7 +54,7 @@ func (a *Authenticator) Authenticate(parentCtx context.Context, r *http.Request)
 	tokenStr := getTokenString(r)
 	if tokenStr == "" {
 		trace.AddField(ctx, "token_present", false)
-		return context.WithValue(parentCtx, &userContextKey, AnonymousUser{}), nil
+		return context.WithValue(parentCtx, userContextKey{}, AnonymousUser{}), nil
 	}
 
 	trace.AddField(ctx, "token_present", true)
@@ -69,7 +69,7 @@ func (a *Authenticator) Authenticate(parentCtx context.Context, r *http.Request)
 		trace.Error(ctx, err)
 		return parentCtx, fmt.Errorf("invalid token: %w", err)
 	}
-	return context.WithValue(parentCtx, &userContextKey, &TokenUser{
+	return context.WithValue(parentCtx, userContextKey{}, &TokenUser{
 		token:         token,
 		authenticator: a,
 	}), nil
@@ -77,7 +77,7 @@ func (a *Authenticator) Authenticate(parentCtx context.Context, r *http.Request)
 
 // GetUser retrieves the user for the current request from the context.
 func GetUser(ctx context.Context) User {
-	u := ctx.Value(&userContextKey)
+	u := ctx.Value(userContextKey{})
 	if u == nil {
 		return nil
 	}
