@@ -39,27 +39,27 @@ type Query {
   # feedPreview(url: String!): FeedPreview
 }
 
-# type Mutation {
-#   addFeed(input: AddFeedInput!): AddFeedPayload!
-#   refreshFeed(input: RefreshFeedInput!): RefreshFeedPayload!
-#   setFeedOptions(input: SetFeedOptionsInput!): SetFeedOptionsPayload!
-#   deleteFeed(input: DeleteFeedInput!): DeleteFeedPayload!
+type Mutation {
+  #   addFeed(input: AddFeedInput!): AddFeedPayload!
+  #   refreshFeed(input: RefreshFeedInput!): RefreshFeedPayload!
+  #   setFeedOptions(input: SetFeedOptionsInput!): SetFeedOptionsPayload!
+  #   deleteFeed(input: DeleteFeedInput!): DeleteFeedPayload!
 
-#   cancelTweet(input: CancelTweetInput!): CancelTweetPayload!
-#   uncancelTweet(input: UncancelTweetInput!): UncancelTweetPayload!
-#   postTweet(input: PostTweetInput!): PostTweetPayload!
-#   editTweet(input: EditTweetInput!): EditTweetPayload!
+  cancelTweet(input: CancelTweetInput!): CancelTweetPayload!
+  #   uncancelTweet(input: UncancelTweetInput!): UncancelTweetPayload!
+  #   postTweet(input: PostTweetInput!): PostTweetPayload!
+  #   editTweet(input: EditTweetInput!): EditTweetPayload!
 
-#   subscribe(input: SubscribeInput!): SubscribePayload!
-#   cancelSubscription(
-#     input: CancelSubscriptionInput!
-#   ): CancelSubscriptionPayload!
+  #   subscribe(input: SubscribeInput!): SubscribePayload!
+  #   cancelSubscription(
+  #     input: CancelSubscriptionInput!
+  #   ): CancelSubscriptionPayload!
 
-#   addDevice(input: AddDeviceInput!): AddDevicePayload!
-#   sendTestNotification(
-#     input: SendTestNotificationInput!
-#   ): SendTestNotificationPayload!
-# }
+  #   addDevice(input: AddDeviceInput!): AddDevicePayload!
+  #   sendTestNotification(
+  #     input: SendTestNotificationInput!
+  #   ): SendTestNotificationPayload!
+}
 
 interface Node {
   id: ID!

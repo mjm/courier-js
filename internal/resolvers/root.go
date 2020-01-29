@@ -71,3 +71,29 @@ func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet,
 		tweet: t.(*tweet.Tweet),
 	}, nil
 }
+
+type cancelTweetInput struct {
+	ID graphql.ID
+}
+
+type CancelTweetPayload struct {
+	Tweet *Tweet
+}
+
+func (r *Root) CancelTweet(ctx context.Context, args struct {
+	Input cancelTweetInput
+}) (*CancelTweetPayload, error) {
+	var id int
+	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+		return nil, err
+	}
+
+	t, err := tweet.Cancel(ctx, r.db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &CancelTweetPayload{
+		Tweet: &Tweet{tweet: t},
+	}, nil
+}

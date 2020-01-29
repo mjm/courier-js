@@ -8,5 +8,7 @@ import (
 )
 
 func NewSchema(schemaString string, resolver *resolvers.Root) (*graphql.Schema, error) {
-	return graphql.ParseSchema(schemaString, resolver, graphql.Tracer(trace.GraphQLTracer{}))
+	return graphql.ParseSchema(schemaString, resolver,
+		graphql.Tracer(trace.GraphQLTracer{}),
+		graphql.UseFieldResolvers())
 }
