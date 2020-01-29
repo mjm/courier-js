@@ -7,6 +7,7 @@ import (
 	"github.com/graph-gophers/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/models/tweet"
@@ -15,14 +16,15 @@ import (
 
 // Root is the root resolver for queries and mutations.
 type Root struct {
+	db *db.DB
 }
 
-func New() *Root {
-	return &Root{}
+func New(db *db.DB) *Root {
+	return &Root{db: db}
 }
 
 // Viewer gets the user who is accessing the API.
-func (*Root) Viewer(ctx context.Context) *User {
+func (r *Root) Viewer(ctx context.Context) *User {
 	u := auth.GetUser(ctx)
 	trace.AddField(ctx, "authenticated", u.Authenticated())
 
@@ -30,7 +32,7 @@ func (*Root) Viewer(ctx context.Context) *User {
 		return nil
 	}
 
-	return &User{user: u}
+	return &User{db: r.db, user: u}
 }
 
 func (r *Root) Tweet(ctx context.Context, args struct {

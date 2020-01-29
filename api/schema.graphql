@@ -81,13 +81,13 @@ type User {
   # subscriptionStatusOverride: SubscriptionStatus
   # micropubSites: [String!]!
 
-  # allTweets(
-  #   filter: TweetFilter
-  #   first: Int
-  #   last: Int
-  #   before: Cursor
-  #   after: Cursor
-  # ): TweetConnection!
+  allTweets(
+    filter: TweetFilter
+    first: Int
+    last: Int
+    before: Cursor
+    after: Cursor
+  ): TweetConnection!
 }
 
 type Customer {

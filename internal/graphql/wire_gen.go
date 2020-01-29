@@ -15,16 +15,16 @@ import (
 // Injectors from wire.go:
 
 func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.Config, stripeConfig billing.Config) (*Handler, error) {
-	root := resolvers.New()
+	dbDB, err := db.New(dbConfig)
+	if err != nil {
+		return nil, err
+	}
+	root := resolvers.New(dbDB)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err
 	}
 	authenticator, err := auth.NewAuthenticator(authConfig)
-	if err != nil {
-		return nil, err
-	}
-	dbDB, err := db.New(dbConfig)
 	if err != nil {
 		return nil, err
 	}

@@ -36,5 +36,24 @@ func (db *DB) QueryxContext(ctx context.Context, query string, args ...interface
 		"sql.query": query,
 	})
 
-	return db.DB.QueryxContext(ctx, query, args...)
+	rows, err := db.DB.QueryxContext(ctx, query, args...)
+	if err != nil {
+		trace.Error(ctx, err)
+	}
+	return rows, err
+}
+
+func (db *DB) NamedQueryContext(ctx context.Context, query string, arg interface{}) (*sqlx.Rows, error) {
+	ctx = trace.Start(ctx, "SQL query")
+	defer trace.Finish(ctx)
+
+	trace.Add(ctx, trace.Fields{
+		"sql.query": query,
+	})
+
+	rows, err := db.DB.NamedQueryContext(ctx, query, arg)
+	if err != nil {
+		trace.Error(ctx, err)
+	}
+	return rows, err
 }
