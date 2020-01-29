@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/graph-gophers/dataloader"
+	"github.com/jmoiron/sqlx"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
@@ -34,9 +35,13 @@ func NewLoader(db *db.DB) Loader {
 			}
 
 			rows, err := db.QueryxContext(ctx, userTweetsQuery, userID, loader.IntArray(keys))
-			var tweet Tweet
-			return loader.Gather(keys, rows, &tweet, func(tweet interface{}) string {
-				return strconv.Itoa(tweet.(*Tweet).ID)
+			return loader.Gather(keys, rows, func(rows *sqlx.Rows) (interface{}, string, error) {
+				var tweet Tweet
+				if err := rows.StructScan(&tweet); err != nil {
+					return nil, "", err
+				}
+
+				return &tweet, strconv.Itoa(tweet.ID), nil
 			})
 		}),
 	}

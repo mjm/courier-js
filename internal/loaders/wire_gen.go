@@ -8,6 +8,7 @@ package loaders
 import (
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/stripe/stripe-go/client"
 )
@@ -16,12 +17,16 @@ import (
 
 func CreateLoaders(db2 *db.DB, sc *client.API) Loaders {
 	loader := tweet.NewLoader(db2)
+	feedLoader := feed.NewLoader(db2)
+	subscriptionLoader := feed.NewSubscriptionLoader(db2)
 	customerLoader := billing.NewCustomerLoader(sc)
-	subscriptionLoader := billing.NewSubscriptionLoader(sc)
+	billingSubscriptionLoader := billing.NewSubscriptionLoader(sc)
 	loaders := Loaders{
-		Tweets:        loader,
-		Customers:     customerLoader,
-		Subscriptions: subscriptionLoader,
+		Tweets:            loader,
+		Feeds:             feedLoader,
+		FeedSubscriptions: subscriptionLoader,
+		Customers:         customerLoader,
+		Subscriptions:     billingSubscriptionLoader,
 	}
 	return loaders
 }

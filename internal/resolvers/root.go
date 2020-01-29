@@ -11,6 +11,7 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/loaders"
+	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/trace"
 )
@@ -42,6 +43,21 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	var n nodeResolver
 	var err error
 	switch kind {
+	case FeedNode:
+		var id int
+		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
+			return nil, err
+		}
+
+		l := loaders.Get(ctx)
+		thunk := l.Feeds.Load(ctx, loader.IntKey(id))
+		var f interface{}
+		f, err = thunk()
+		if err == nil {
+			n = &Feed{feed: f.(*feed.Feed)}
+		}
+	case SubscribedFeedNode:
+		n, err = r.SubscribedFeed(ctx, args)
 	case TweetNode:
 		n, err = r.Tweet(ctx, args)
 	default:
@@ -52,6 +68,22 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 		return nil, err
 	}
 	return &Node{n}, nil
+}
+
+func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID }) (*SubscribedFeed, error) {
+	var id int
+	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
+		return nil, err
+	}
+
+	l := loaders.Get(ctx)
+	thunk := l.FeedSubscriptions.Load(ctx, loader.IntKey(id))
+	sub, err := thunk()
+	if err != nil {
+		return nil, err
+	}
+
+	return &SubscribedFeed{sub: sub.(*feed.Subscription)}, nil
 }
 
 func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet, error) {

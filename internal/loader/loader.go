@@ -3,7 +3,6 @@ package loader
 import (
 	"database/sql"
 	"database/sql/driver"
-	"reflect"
 	"strconv"
 
 	"github.com/graph-gophers/dataloader"
@@ -20,22 +19,24 @@ func New(label string, batchLoadFn dataloader.BatchFunc) *dataloader.Loader {
 	}))
 }
 
+// GatherFunc is a function passed to Gather that scans a single row and its keys from a result
+// set.
+type GatherFunc func(rows *sqlx.Rows) (interface{}, string, error)
+
 // Gather assembles the results for a batch load from the rows in a query result. The dataloader
 // needs the results to be returned in the same order as the keys that were requested, which will
 // be different than the order the DB returns them. Gather reorders the elements in the correct
 // order and bundles them as dataloader.Result structures.
-func Gather(keys dataloader.Keys, rows *sqlx.Rows, dest interface{}, keyFn func(interface{}) string) []*dataloader.Result {
+func Gather(keys dataloader.Keys, rows *sqlx.Rows, fn GatherFunc) []*dataloader.Result {
 	valueByKey := make(map[string]interface{})
 
 	for rows.Next() {
-		if err := rows.StructScan(dest); err != nil {
+		row, key, err := fn(rows)
+		if err != nil {
 			// TODO expand to all rows, since we won't know what this goes with
 			panic(err)
 		} else {
-			v := reflect.ValueOf(dest)
-			copied := reflect.New(v.Elem().Type())
-			copied.Elem().Set(v.Elem())
-			valueByKey[keyFn(dest)] = copied.Interface()
+			valueByKey[key] = row
 		}
 	}
 

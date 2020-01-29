@@ -8,23 +8,29 @@ import (
 
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/models/tweet"
 )
 
 // AllLoaders is a Wire provider set that can create a Loaders with all the necessary loaders.
 var AllLoaders = wire.NewSet(
 	tweet.NewLoader,
+	feed.NewLoader,
+	feed.NewSubscriptionLoader,
 	billing.NewCustomerLoader,
 	billing.NewSubscriptionLoader,
-	wire.Struct(new(Loaders), "Tweets", "Customers", "Subscriptions"))
+	wire.Struct(new(Loaders),
+		"Tweets", "Feeds", "FeedSubscriptions", "Customers", "Subscriptions"))
 
 // Loaders contains all of the different data loaders for the app.
 //
 // Because loaders cache results, they should be recreated for each request.
 type Loaders struct {
-	Tweets        tweet.Loader
-	Customers     billing.CustomerLoader
-	Subscriptions billing.SubscriptionLoader
+	Tweets            tweet.Loader
+	Feeds             feed.Loader
+	FeedSubscriptions feed.SubscriptionLoader
+	Customers         billing.CustomerLoader
+	Subscriptions     billing.SubscriptionLoader
 }
 
 type loadersKey struct{}

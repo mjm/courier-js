@@ -15,7 +15,7 @@ type Query {
   #   after: Cursor
   # ): SubscribedFeedConnection!
 
-  # subscribedFeed(id: ID!): SubscribedFeed
+  subscribedFeed(id: ID!): SubscribedFeed
 
   # allTweets(
   #   filter: TweetFilter
@@ -126,18 +126,17 @@ type FeedEdge {
   node: Feed!
 }
 
-# type Feed implements Node {
-type Feed {
+type Feed implements Node {
   id: ID!
   url: String!
   title: String!
   homePageURL: String!
   micropubEndpoint: String!
-  refreshedAt: DateTime
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  refreshedAt: Time
+  createdAt: Time!
+  updatedAt: Time!
 
-  posts(first: Int, last: Int, before: Cursor, after: Cursor): PostConnection!
+  # posts(first: Int, last: Int, before: Cursor, after: Cursor): PostConnection!
 }
 
 input AddFeedInput {
@@ -201,8 +200,7 @@ type Post {
   updatedAt: DateTime!
 }
 
-# type SubscribedFeed implements Node {
-type SubscribedFeed {
+type SubscribedFeed implements Node {
   id: ID!
   feed: Feed!
   autopost: Boolean!
@@ -222,7 +220,7 @@ type SubscribedFeedEdge {
 
 type Tweet implements Node & TweetContent {
   id: ID!
-  # feed: SubscribedFeed!
+  feed: SubscribedFeed!
   # post: Post!
   action: TweetAction!
   body: String!
