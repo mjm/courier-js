@@ -6,6 +6,7 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
+
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/models/feed"
@@ -45,4 +46,29 @@ func (t *Tweet) MediaURLS() []string {
 
 func (t *Tweet) RetweetID() string {
 	return t.tweet.RetweetID
+}
+
+func (t *Tweet) Status() string {
+	return strings.ToUpper(string(t.tweet.Status))
+}
+
+func (t *Tweet) PostAfter() *graphql.Time {
+	if t.tweet.PostAfter.Valid {
+		return &graphql.Time{Time: t.tweet.PostAfter.Time}
+	}
+	return nil
+}
+
+func (t *Tweet) PostedAt() *graphql.Time {
+	if t.tweet.PostedAt.Valid {
+		return &graphql.Time{Time: t.tweet.PostedAt.Time}
+	}
+	return nil
+}
+
+func (t *Tweet) PostedTweetID() *string {
+	if t.tweet.PostedTweetID == "" {
+		return nil
+	}
+	return &t.tweet.PostedTweetID
 }

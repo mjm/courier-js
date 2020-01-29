@@ -226,10 +226,10 @@ type Tweet implements Node & TweetContent {
   body: String!
   mediaURLs: [String!]!
   retweetID: String!
-  # status: TweetStatus!
-  # postAfter: DateTime
-  # postedAt: DateTime
-  # postedTweetID: String
+  status: TweetStatus!
+  postAfter: Time
+  postedAt: Time
+  postedTweetID: String
 }
 
 enum TweetAction {
