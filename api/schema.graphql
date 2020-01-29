@@ -6,7 +6,7 @@ type Query {
   # currentUser: User
   viewer: User
 
-  # node(id: ID!): Node
+  node(id: ID!): Node
 
   # allSubscribedFeeds(
   #   first: Int
@@ -126,7 +126,8 @@ type FeedEdge {
   node: Feed!
 }
 
-type Feed implements Node {
+# type Feed implements Node {
+type Feed {
   id: ID!
   url: String!
   title: String!
@@ -185,7 +186,8 @@ type PostEdge {
   node: Post!
 }
 
-type Post implements Node {
+# type Post implements Node {
+type Post {
   id: ID!
   feed: Feed!
   itemId: String!
@@ -199,7 +201,8 @@ type Post implements Node {
   updatedAt: DateTime!
 }
 
-type SubscribedFeed implements Node {
+# type SubscribedFeed implements Node {
+type SubscribedFeed {
   id: ID!
   feed: Feed!
   autopost: Boolean!
@@ -324,7 +327,8 @@ type EventEdge {
   node: Event!
 }
 
-type Event implements Node {
+# type Event implements Node {
+type Event {
   id: ID!
   eventType: EventType!
   createdAt: DateTime!
@@ -356,7 +360,8 @@ type MicroformatPage {
   tokenEndpoint: String
 }
 
-type DeviceToken implements Node {
+# type DeviceToken implements Node {
+type DeviceToken {
   id: ID!
   token: String!
 }

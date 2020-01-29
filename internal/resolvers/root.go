@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
@@ -35,9 +36,25 @@ func (r *Root) Viewer(ctx context.Context) *User {
 	return &User{db: r.db, user: u}
 }
 
-func (r *Root) Tweet(ctx context.Context, args struct {
-	ID graphql.ID `json:"id"`
-}) (*Tweet, error) {
+func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, error) {
+	kind := relay.UnmarshalKind(args.ID)
+
+	var n nodeResolver
+	var err error
+	switch kind {
+	case TweetNode:
+		n, err = r.Tweet(ctx, args)
+	default:
+		err = fmt.Errorf("unrecognized ID kind %q", kind)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return &Node{n}, nil
+}
+
+func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet, error) {
 	var id int
 	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 		return nil, err

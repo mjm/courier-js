@@ -13,7 +13,7 @@ type Tweet struct {
 }
 
 func (t *Tweet) ID() graphql.ID {
-	return relay.MarshalID("twt", t.tweet.ID)
+	return relay.MarshalID(TweetNode, t.tweet.ID)
 }
 
 func (t *Tweet) Action() string {
