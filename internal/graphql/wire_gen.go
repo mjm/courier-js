@@ -10,6 +10,7 @@ import (
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/resolvers"
+	"github.com/mjm/courier-js/internal/service"
 )
 
 // Injectors from wire.go:
@@ -19,7 +20,8 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	if err != nil {
 		return nil, err
 	}
-	root := resolvers.New(dbDB)
+	tweetService := service.NewTweetService(dbDB)
+	root := resolvers.New(dbDB, tweetService)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err

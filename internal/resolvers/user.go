@@ -68,7 +68,7 @@ func (u *User) AllTweets(ctx context.Context, args struct {
 	Last   *int32
 	Before *pager.Cursor
 }) (*TweetConnection, error) {
-	userID, err := u.user.MustID()
+	userID, err := u.user.ID()
 	if err != nil {
 		return nil, err
 	}

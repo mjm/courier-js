@@ -14,16 +14,23 @@ import (
 	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/service"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
 // Root is the root resolver for queries and mutations.
 type Root struct {
 	db *db.DB
+
+	tweetService *service.TweetService
 }
 
-func New(db *db.DB) *Root {
-	return &Root{db: db}
+// New creates a new root resolver.
+func New(db *db.DB, tweetService *service.TweetService) *Root {
+	return &Root{
+		db:           db,
+		tweetService: tweetService,
+	}
 }
 
 // Viewer gets the user who is accessing the API.
@@ -38,6 +45,7 @@ func (r *Root) Viewer(ctx context.Context) *User {
 	return &User{db: r.db, user: u}
 }
 
+// Node fetches any kind of node in the app by ID.
 func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, error) {
 	kind := relay.UnmarshalKind(args.ID)
 
@@ -71,6 +79,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	return &Node{n}, nil
 }
 
+// SubscribedFeed gets a feed subscription for the current user by ID.
 func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID }) (*SubscribedFeed, error) {
 	var id int
 	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
@@ -87,6 +96,7 @@ func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID })
 	return &SubscribedFeed{sub: sub.(*feed.Subscription)}, nil
 }
 
+// Tweet gets a tweet for the current user by ID.
 func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet, error) {
 	var id int
 	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
@@ -105,8 +115,9 @@ func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet,
 	}, nil
 }
 
+// AllSubscribedFeeds gets a paged list of feed subscriptions for the current user.
 func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*SubscribedFeedConnection, error) {
-	userID, err := auth.GetUser(ctx).MustID()
+	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
 		return nil, err
 	}
@@ -122,23 +133,20 @@ func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*Sub
 	return &SubscribedFeedConnection{conn: conn}, nil
 }
 
-type cancelTweetInput struct {
-	ID graphql.ID
-}
-
 type CancelTweetPayload struct {
 	Tweet *Tweet
 }
 
+// CancelTweet marks a tweet as not to be posted.
 func (r *Root) CancelTweet(ctx context.Context, args struct {
-	Input cancelTweetInput
+	Input struct{ ID graphql.ID }
 }) (*CancelTweetPayload, error) {
 	var id int
 	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return nil, err
 	}
 
-	t, err := tweet.Cancel(ctx, r.db, id)
+	t, err := r.tweetService.Cancel(ctx, id)
 	if err != nil {
 		return nil, err
 	}

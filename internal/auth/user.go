@@ -11,7 +11,7 @@ import (
 var ErrUnauthorized = errors.New("no user credentials were provided")
 
 type User interface {
-	MustID() (string, error)
+	ID() (string, error)
 	Authenticated() bool
 	Name() string
 	Nickname() string
@@ -22,7 +22,7 @@ type User interface {
 
 type AnonymousUser struct{}
 
-func (AnonymousUser) MustID() (string, error) {
+func (AnonymousUser) ID() (string, error) {
 	return "", ErrUnauthorized
 }
 func (AnonymousUser) Authenticated() bool    { return false }
@@ -40,7 +40,7 @@ type TokenUser struct {
 	lock     sync.Mutex
 }
 
-func (u *TokenUser) MustID() (string, error) {
+func (u *TokenUser) ID() (string, error) {
 	return u.claims().Subject, nil
 }
 

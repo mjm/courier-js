@@ -49,7 +49,7 @@ const subscriptionsQuery = `
 func NewSubscriptionLoader(db *db.DB) SubscriptionLoader {
 	return SubscriptionLoader{
 		loader.New("Feed Subscription Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-			userID, err := auth.GetUser(ctx).MustID()
+			userID, err := auth.GetUser(ctx).ID()
 			if err != nil {
 				return nil
 			}

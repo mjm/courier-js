@@ -29,7 +29,7 @@ SELECT tweets.*
 func NewLoader(db *db.DB) Loader {
 	return Loader{
 		loader.New("Tweet Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-			userID, err := auth.GetUser(ctx).MustID()
+			userID, err := auth.GetUser(ctx).ID()
 			if err != nil {
 				return nil
 			}
