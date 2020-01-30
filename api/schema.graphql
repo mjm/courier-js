@@ -8,12 +8,12 @@ type Query {
 
   node(id: ID!): Node
 
-  # allSubscribedFeeds(
-  #   first: Int
-  #   last: Int
-  #   before: Cursor
-  #   after: Cursor
-  # ): SubscribedFeedConnection!
+  allSubscribedFeeds(
+    first: Int
+    last: Int
+    before: Cursor
+    after: Cursor
+  ): SubscribedFeedConnection!
 
   subscribedFeed(id: ID!): SubscribedFeed
 

@@ -13,6 +13,7 @@ import (
 	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/models/tweet"
+	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -102,6 +103,23 @@ func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet,
 	return &Tweet{
 		tweet: t.(*tweet.Tweet),
 	}, nil
+}
+
+func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*SubscribedFeedConnection, error) {
+	userID, err := auth.GetUser(ctx).MustID()
+	if err != nil {
+		return nil, err
+	}
+
+	p := &feed.SubscriptionPager{
+		UserID: userID,
+	}
+	conn, err := pager.Paged(ctx, r.db, p, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SubscribedFeedConnection{conn: conn}, nil
 }
 
 type cancelTweetInput struct {
