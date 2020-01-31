@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/DataDog/zstd v1.4.4 // indirect
+	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/aybabtme/iocontrol v0.0.0-20150809002002-ad15bcfc95a0 // indirect
 	github.com/benbjohnson/clock v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -26,9 +27,12 @@ require (
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/lib/pq v1.3.0
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
+	github.com/mmcdole/gofeed v1.0.0-beta2
+	github.com/mmcdole/goxpp v0.0.0-20181012175147-0068e33feabf // indirect
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/stripe/stripe-go v68.13.0+incompatible
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
+	golang.org/x/net v0.0.0-20190311183353-d8887717615a
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/auth0.v3 v3.0.3
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
