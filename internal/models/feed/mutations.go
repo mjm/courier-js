@@ -16,7 +16,7 @@ func Create(ctx context.Context, db *db.DB, url string) (*Feed, error) {
 			$1
 		)
 		RETURNING *
-	`).StructScan(&feed); err != nil {
+	`, url).StructScan(&feed); err != nil {
 		return nil, err
 	}
 

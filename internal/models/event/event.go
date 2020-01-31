@@ -58,7 +58,7 @@ func (p Params) Value() (driver.Value, error) {
 	return json.Marshal(p)
 }
 
-func (p Params) Scan(value interface{}) error {
+func (p *Params) Scan(value interface{}) error {
 	b, ok := value.([]byte)
 	if !ok {
 		return fmt.Errorf("CachingHeaders must be scanned from []byte")
