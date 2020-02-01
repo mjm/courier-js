@@ -23,13 +23,15 @@ type Root struct {
 	db *db.DB
 
 	tweetService *service.TweetService
+	feedService  *service.FeedService
 }
 
 // New creates a new root resolver.
-func New(db *db.DB, tweetService *service.TweetService) *Root {
+func New(db *db.DB, tweetService *service.TweetService, feedService *service.FeedService) *Root {
 	return &Root{
 		db:           db,
 		tweetService: tweetService,
+		feedService:  feedService,
 	}
 }
 
@@ -131,6 +133,32 @@ func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*Sub
 	}
 
 	return &SubscribedFeedConnection{conn: conn}, nil
+}
+
+type AddFeedPayload struct {
+	Feed     *SubscribedFeed
+	FeedEdge *SubscribedFeedEdge
+}
+
+// AddFeed subscribes the user to a new feed, creating the feed if needed.
+func (r *Root) AddFeed(ctx context.Context, args struct {
+	Input struct{ URL string }
+}) (*AddFeedPayload, error) {
+	sub, err := r.feedService.Subscribe(ctx, args.Input.URL)
+	if err != nil {
+		return nil, err
+	}
+
+	// load the edge so that Relay can update its store
+	edge, err := feed.GetSubscriptionEdge(ctx, r.db, sub.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &AddFeedPayload{
+		Feed:     &SubscribedFeed{sub: sub},
+		FeedEdge: &SubscribedFeedEdge{edge: edge},
+	}, nil
 }
 
 type CancelTweetPayload struct {

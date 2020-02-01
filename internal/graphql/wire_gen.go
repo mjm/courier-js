@@ -21,7 +21,8 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 		return nil, err
 	}
 	tweetService := service.NewTweetService(dbDB)
-	root := resolvers.New(dbDB, tweetService)
+	feedService := service.NewFeedService(dbDB)
+	root := resolvers.New(dbDB, tweetService, feedService)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err
