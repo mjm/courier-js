@@ -81,3 +81,15 @@ func (i IntKey) Raw() interface{} {
 func (i IntKey) String() string {
 	return strconv.Itoa(int(i))
 }
+
+// StringArray transforms an array of keys into a string array that PostgreSQL will accept.
+func StringArray(keys dataloader.Keys) interface {
+	driver.Value
+	sql.Scanner
+} {
+	vals := make([]string, 0, len(keys))
+	for _, key := range keys {
+		vals = append(vals, key.String())
+	}
+	return (*pq.StringArray)(&vals)
+}
