@@ -55,7 +55,10 @@ func NewSubscriptionLoader(db *db.DB) SubscriptionLoader {
 				return nil
 			}
 
-			rows, _ := db.QueryxContext(ctx, subscriptionsQuery, userID, loader.IntArray(keys))
+			rows, err := db.QueryxContext(ctx, subscriptionsQuery, userID, loader.IntArray(keys))
+			if err != nil {
+				panic(err)
+			}
 			return loader.Gather(keys, rows, func(rows *sqlx.Rows) (interface{}, string, error) {
 				var sub Subscription
 				if err := rows.StructScan(&sub); err != nil {

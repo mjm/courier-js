@@ -1,4 +1,4 @@
-package handler
+package courier
 
 import (
 	"io/ioutil"
@@ -15,13 +15,12 @@ import (
 var handler *graphql.Handler
 
 func init() {
-	// TODO provide real config values
 	trace.Init(trace.Config{
 		Dataset:  os.Getenv("HONEY_DATASET"),
 		WriteKey: os.Getenv("HONEY_WRITE_KEY"),
 	})
 
-	s, err := ioutil.ReadFile("schema.graphql")
+	s, err := ioutil.ReadFile("schema2.graphql")
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +39,7 @@ func init() {
 	}
 }
 
-// Handler handles GraphQL requests.
-func Handler(w http.ResponseWriter, r *http.Request) {
+// GraphQL handles GraphQL requests.
+func GraphQL(w http.ResponseWriter, r *http.Request) {
 	handler.ServeHTTP(w, r)
 }
