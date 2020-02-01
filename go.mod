@@ -7,6 +7,8 @@ require (
 	github.com/DataDog/zstd v1.4.4 // indirect
 	github.com/GoogleCloudPlatform/functions-framework-go v1.0.0
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
+	github.com/PuerkitoBio/purell v1.1.1
+	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/alexflint/go-filemutex v1.0.0 // indirect
 	github.com/aybabtme/iocontrol v0.0.0-20150809002002-ad15bcfc95a0 // indirect
 	github.com/benbjohnson/clock v1.0.0 // indirect

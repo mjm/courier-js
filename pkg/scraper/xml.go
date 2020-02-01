@@ -18,7 +18,7 @@ func parseXMLFeed(ctx context.Context, res *http.Response) (*Feed, error) {
 
 	var f Feed
 	f.Title = feed.Title
-	f.HomePageURL = feed.Link
+	f.HomePageURL = normalizeURL(feed.Link)
 
 	for _, item := range feed.Items {
 		var entry Entry

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -35,11 +36,11 @@ func parseJSONFeed(ctx context.Context, res *http.Response) (*Feed, error) {
 
 	var f Feed
 	f.Title = feed.Title
-	f.HomePageURL = feed.HomePageURL
+	f.HomePageURL = normalizeURL(feed.HomePageURL)
 
 	for _, item := range feed.Items {
 		var entry Entry
-		entry.ID = fmt.Sprintf("%s", item.ID)
+		entry.ID = parseItemID(item.ID)
 		entry.URL = item.URL
 		entry.Title = item.Title
 		entry.TextContent = item.ContentText
@@ -50,6 +51,7 @@ func parseJSONFeed(ctx context.Context, res *http.Response) (*Feed, error) {
 			if err != nil {
 				return nil, err
 			}
+			t = t.UTC()
 			entry.PublishedAt = &t
 		}
 
@@ -58,6 +60,7 @@ func parseJSONFeed(ctx context.Context, res *http.Response) (*Feed, error) {
 			if err != nil {
 				return nil, err
 			}
+			t = t.UTC()
 			entry.ModifiedAt = &t
 		}
 
@@ -65,4 +68,17 @@ func parseJSONFeed(ctx context.Context, res *http.Response) (*Feed, error) {
 	}
 
 	return &f, nil
+}
+
+func parseItemID(v interface{}) string {
+	switch v := v.(type) {
+	case string:
+		return v
+	case int:
+		return strconv.Itoa(v)
+	case float64:
+		return fmt.Sprintf("%.0f", v)
+	}
+
+	return ""
 }
