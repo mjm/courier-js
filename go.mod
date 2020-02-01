@@ -22,6 +22,7 @@ require (
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/graph-gophers/graphql-go v0.0.0-20191115155744-f33e81362277
 	github.com/honeycombio/libhoney-go v1.12.2
+	github.com/jarcoal/httpmock v1.0.4
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/khaiql/dbcleaner v2.3.0+incompatible
 	github.com/klauspost/compress v1.9.8 // indirect

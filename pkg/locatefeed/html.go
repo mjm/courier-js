@@ -36,7 +36,7 @@ func handleHTML(ctx context.Context, u *url.URL, res *http.Response) (*url.URL, 
 
 					newURL = u.ResolveReference(newURL)
 					resolved, err := Locate(ctx, newURL)
-					if err != nil {
+					if err == nil {
 						return resolved, nil
 					}
 				}
@@ -49,7 +49,8 @@ func handleHTML(ctx context.Context, u *url.URL, res *http.Response) (*url.URL, 
 
 func linkNodes(doc *html.Node) []*html.Node {
 	var linkNodes []*html.Node
-	for n := doc.FirstChild; n != nil; n = n.NextSibling {
+	n := doc.FirstChild
+	for n != nil {
 		if n.Type == html.ElementNode {
 			if n.Data == "link" {
 				if getAttr(n, "rel") == "alternate" {
@@ -57,8 +58,10 @@ func linkNodes(doc *html.Node) []*html.Node {
 				}
 			} else if n.Data == "head" || n.Data == "html" {
 				n = n.FirstChild
+				continue
 			}
 		}
+		n = n.NextSibling
 	}
 	return linkNodes
 }

@@ -2,7 +2,6 @@ package event
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/khaiql/dbcleaner/engine"
@@ -40,7 +39,6 @@ func (suite *recordSuite) TestRecordEventAsUser() {
 	suite.NoError(err)
 
 	e := suite.getLastEvent(ctx, "test_user")
-	fmt.Println(e)
 	suite.Equal("test_user", e.UserID)
 	suite.Equal(TweetCancel, e.EventType)
 	suite.Equal("123", e.Params.TweetID)
@@ -52,7 +50,6 @@ func (suite *recordSuite) TestRecordEventAsCurrentUser() {
 	suite.NoError(err)
 
 	e := suite.getLastEvent(ctx, "test_user")
-	fmt.Println(e)
 	suite.Equal("test_user", e.UserID)
 	suite.Equal(TweetCancel, e.EventType)
 	suite.Equal("123", e.Params.TweetID)
