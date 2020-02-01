@@ -44,3 +44,17 @@ func CreateSubscription(ctx context.Context, db *db.DB, userID string, feedID in
 
 	return &sub, nil
 }
+
+// DeleteSubscription marks a feed subscription as discarded, so it will no longer show
+// up for the user. It remains around so tweets can still reference it and stay connected
+// to the user.
+func DeleteSubscription(ctx context.Context, db *db.DB, userID string, subID int) error {
+	_, err := db.ExecContext(ctx, `
+		UPDATE
+			feed_subscriptions
+		SET discarded_at = CURRENT_TIMESTAMP
+		WHERE id = $1
+		  AND user_id = $2
+	`, subID, userID)
+	return err
+}

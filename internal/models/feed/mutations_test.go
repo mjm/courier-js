@@ -8,7 +8,9 @@ import (
 	"github.com/stretchr/testify/suite"
 	"gopkg.in/khaiql/dbcleaner.v2"
 
+	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/loader"
 )
 
 var cleaner = dbcleaner.New()
@@ -94,7 +96,39 @@ func (suite *mutationsSuite) TestCreateSubscriptionAnotherUserSubscribed() {
 	suite.NotEqual(sub1.ID, sub2.ID)
 }
 
-// TODO test reactivates old subscription
+func (suite *mutationsSuite) TestCreateSubscriptionUnsubscribed() {
+	ctx := context.Background()
+	f, err := Create(ctx, suite.db, "http://www.example.org/feed.json")
+	suite.NoError(err)
+
+	sub, err := CreateSubscription(ctx, suite.db, "test_user", f.ID)
+	suite.NoError(err)
+
+	err = DeleteSubscription(ctx, suite.db, "test_user", sub.ID)
+	suite.NoError(err)
+
+	sub2, err := CreateSubscription(ctx, suite.db, "test_user", f.ID)
+	suite.NoError(err)
+	suite.Equal(sub.ID, sub2.ID)
+}
+
+func (suite *mutationsSuite) TestDeleteSubscription() {
+	ctx := auth.WithMockUser(context.Background(), "test_user")
+	f, err := Create(ctx, suite.db, "http://www.example.org/feed.json")
+	suite.NoError(err)
+
+	sub, err := CreateSubscription(ctx, suite.db, "test_user", f.ID)
+	suite.NoError(err)
+
+	err = DeleteSubscription(ctx, suite.db, "test_user", sub.ID)
+	suite.NoError(err)
+
+	l := NewSubscriptionLoader(suite.db)
+	key := loader.IntKey(sub.ID)
+	val, err := l.Load(ctx, key)()
+	suite.NoError(err)
+	suite.Nil(val)
+}
 
 func TestMutationsSuite(t *testing.T) {
 	suite.Run(t, new(mutationsSuite))

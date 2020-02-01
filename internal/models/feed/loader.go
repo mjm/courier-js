@@ -43,6 +43,7 @@ const subscriptionsQuery = `
 	FROM
 		feed_subscriptions
 	WHERE user_id = $1
+		AND discarded_at IS NULL
 		AND id = ANY($2)
 `
 

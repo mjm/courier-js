@@ -39,6 +39,7 @@ func (srv *FeedService) Subscribe(ctx context.Context, feedURL string) (*feed.Su
 		trace.Error(ctx, err)
 		return nil, err
 	}
+	trace.AddField(ctx, "user_id", userID)
 
 	u, err := url.Parse(feedURL)
 	if err != nil {
@@ -102,4 +103,29 @@ func locateFeed(ctx context.Context, u *url.URL) (*url.URL, error) {
 	}
 
 	return u, nil
+}
+
+// Unsubscribe removes a feed subscription from the user's account.
+func (srv *FeedService) Unsubscribe(ctx context.Context, id int) error {
+	ctx = trace.Start(ctx, "Unsubscribe from feed")
+	defer trace.Finish(ctx)
+
+	trace.AddField(ctx, "feed.subscription_id", id)
+
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		trace.Error(ctx, err)
+		return err
+	}
+	trace.AddField(ctx, "user_id", userID)
+
+	if err := feed.DeleteSubscription(ctx, srv.db, userID, id); err != nil {
+		trace.Error(ctx, err)
+		return err
+	}
+
+	event.Record(ctx, srv.db, event.FeedUnsubscribe, event.Params{
+		FeedSubscriptionID: strconv.Itoa(id),
+	})
+	return nil
 }
