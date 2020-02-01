@@ -68,7 +68,7 @@ func Scrape(ctx context.Context, u *url.URL, cachingHeaders *CachingHeaders) (*F
 	return nil, fmt.Errorf("not a valid feed")
 }
 
-func normalizeURL(url string) string {
+func NormalizeURL(url string) string {
 	normalized, err := purell.NormalizeURLString(url, purell.FlagsSafe|purell.FlagAddTrailingSlash|purell.FlagRemoveDotSegments)
 	if err != nil {
 		return url

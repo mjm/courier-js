@@ -36,7 +36,7 @@ func parseJSONFeed(ctx context.Context, res *http.Response) (*Feed, error) {
 
 	var f Feed
 	f.Title = feed.Title
-	f.HomePageURL = normalizeURL(feed.HomePageURL)
+	f.HomePageURL = NormalizeURL(feed.HomePageURL)
 
 	for _, item := range feed.Items {
 		var entry Entry
