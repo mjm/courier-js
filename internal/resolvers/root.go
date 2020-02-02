@@ -12,6 +12,7 @@ import (
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/models/feed"
+	"github.com/mjm/courier-js/internal/models/post"
 	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/service"
@@ -61,9 +62,8 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 		}
 
 		l := loaders.Get(ctx)
-		thunk := l.Feeds.Load(ctx, loader.IntKey(id))
 		var f interface{}
-		f, err = thunk()
+		f, err = l.Feeds.Load(ctx, loader.IntKey(id))()
 		if err == nil {
 			n = &Feed{feed: f.(*feed.Feed)}
 		}
@@ -71,6 +71,18 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 		n, err = r.SubscribedFeed(ctx, args)
 	case TweetNode:
 		n, err = r.Tweet(ctx, args)
+	case PostNode:
+		var id int
+		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
+			return nil, err
+		}
+
+		l := loaders.Get(ctx)
+		var p interface{}
+		p, err = l.Posts.Load(ctx, loader.IntKey(id))()
+		if err == nil {
+			n = &Post{post: p.(*post.Post)}
+		}
 	default:
 		err = fmt.Errorf("unrecognized ID kind %q", kind)
 	}

@@ -6,6 +6,7 @@ import (
 
 const (
 	TweetNode          string = "twt"
+	PostNode           string = "post"
 	FeedNode           string = "feed"
 	SubscribedFeedNode string = "sub"
 )
@@ -31,4 +32,9 @@ func (n *Node) ToSubscribedFeed() (*SubscribedFeed, bool) {
 func (n *Node) ToTweet() (*Tweet, bool) {
 	t, ok := n.nodeResolver.(*Tweet)
 	return t, ok
+}
+
+func (n *Node) ToPost() (*Post, bool) {
+	p, ok := n.nodeResolver.(*Post)
+	return p, ok
 }
