@@ -19,6 +19,7 @@ func ByURL(ctx context.Context, db *db.DB, url string) (*Feed, error) {
 	return &feed, nil
 }
 
+// GetSubscriptionEdge constructs a pager edge for a particular feed subscription.
 func GetSubscriptionEdge(ctx context.Context, db *db.DB, id int) (pager.Edge, error) {
 	var row struct {
 		Subscription
@@ -41,4 +42,29 @@ func GetSubscriptionEdge(ctx context.Context, db *db.DB, id int) (pager.Edge, er
 		Node:   &row.Subscription,
 		Cursor: pager.Cursor(row.URL),
 	}, nil
+}
+
+// Subscriptions gets all of the active subscriptions for a particular feed.
+func Subscriptions(ctx context.Context, db *db.DB, feedID int) ([]*Subscription, error) {
+	rows, err := db.QueryxContext(ctx, `
+		SELECT
+			*
+		FROM
+			feed_subscriptions
+		WHERE feed_id = $1
+		  AND discarded_at IS NULL
+	`, feedID)
+	if err != nil {
+		return nil, err
+	}
+
+	var subs []*Subscription
+	for rows.Next() {
+		var sub Subscription
+		if err := rows.StructScan(&sub); err != nil {
+			return nil, err
+		}
+		subs = append(subs, &sub)
+	}
+	return subs, nil
 }

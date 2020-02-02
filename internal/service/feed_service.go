@@ -14,6 +14,7 @@ import (
 	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/locatefeed"
+	"github.com/mjm/courier-js/pkg/scraper"
 )
 
 type FeedService struct {
@@ -128,4 +129,88 @@ func (srv *FeedService) Unsubscribe(ctx context.Context, id int) error {
 		FeedSubscriptionID: strconv.Itoa(id),
 	})
 	return nil
+}
+
+func (srv *FeedService) Refresh(ctx context.Context, id int, force bool) (*feed.Feed, error) {
+	ctx = trace.Start(ctx, "Refresh feed")
+	defer trace.Finish(ctx)
+
+	trace.Add(ctx, trace.Fields{
+		"feed.id":            id,
+		"feed.force_refresh": force,
+	})
+
+	l := loaders.Get(ctx)
+	v, err := l.Feeds.Load(ctx, loader.IntKey(id))()
+	if err != nil {
+		trace.Error(ctx, err)
+		return nil, err
+	}
+	f := v.(*feed.Feed)
+
+	var headers *scraper.CachingHeaders
+	if !force && f.CachingHeaders != nil {
+		headers.Etag = f.CachingHeaders.Etag
+		headers.LastModified = f.CachingHeaders.LastModified
+	}
+	scraped, err := scrapeFeed(ctx, f.URL, headers)
+	if err != nil {
+		trace.Error(ctx, err)
+		return nil, err
+	}
+
+	if scraped == nil {
+		trace.AddField(ctx, "feed.up_to_date", true)
+		return f, nil
+	}
+	trace.AddField(ctx, "feed.up_to_date", false)
+
+	// TODO import posts
+
+	// TODO get micropub endpoint
+
+	f.Title = scraped.Title
+	f.HomePageURL = scraped.HomePageURL
+	f.CachingHeaders = &feed.CachingHeaders{
+		Etag:         scraped.CachingHeaders.Etag,
+		LastModified: scraped.CachingHeaders.LastModified,
+	}
+	// TODO MPEndpoint
+	f, err = feed.Update(ctx, srv.db, f)
+	if err != nil {
+		trace.Error(ctx, err)
+		return nil, err
+	}
+
+	// TODO find the subscription for the current user and record its ID in the event
+	event.Record(ctx, srv.db, event.FeedRefresh, event.Params{FeedID: strconv.Itoa(f.ID)})
+
+	return f, nil
+}
+
+func scrapeFeed(ctx context.Context, urlStr string, headers *scraper.CachingHeaders) (*scraper.Feed, error) {
+	ctx = trace.Start(ctx, "Scrape feed")
+	defer trace.Finish(ctx)
+
+	trace.AddField(ctx, "scrape.url", urlStr)
+	if headers != nil {
+		trace.Add(ctx, trace.Fields{
+			"scrape.etag":          headers.Etag,
+			"scrape.last_modified": headers.LastModified,
+		})
+	}
+
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		trace.Error(ctx, err)
+		return nil, err
+	}
+
+	feed, err := scraper.Scrape(ctx, u, headers)
+	if err != nil {
+		trace.Error(ctx, err)
+		return nil, err
+	}
+
+	return feed, nil
 }

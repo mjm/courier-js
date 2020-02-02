@@ -42,6 +42,7 @@ require (
 	github.com/stripe/stripe-go v68.13.0+incompatible
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/auth0.v3 v3.0.3
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
