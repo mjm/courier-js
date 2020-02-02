@@ -94,7 +94,27 @@ func Paged(ctx context.Context, db *db.DB, p Pager, opts Options) (*Connection, 
 	fmt.Fprintf(&q, "\nORDER BY %s %s", orderBy, dir)
 	fmt.Fprintf(&q, "\nLIMIT %d", opts.limit()+1)
 
-	rows, err := db.NamedQueryContext(ctx, q.String(), params)
+	var rows *sqlx.Rows
+	rowDone := make(chan error)
+	go func() {
+		var err error
+		rows, err = db.NamedQueryContext(ctx, q.String(), params)
+		rowDone <- err
+	}()
+
+	var totalResult *sqlx.Rows
+	totalDone := make(chan error)
+	go func() {
+		var err error
+		totalResult, err = db.NamedQueryContext(ctx, p.TotalQuery(), params)
+		totalDone <- err
+	}()
+
+	err := <-rowDone
+	if err != nil {
+		return nil, err
+	}
+	err = <-totalDone
 	if err != nil {
 		return nil, err
 	}
@@ -121,11 +141,6 @@ func Paged(ctx context.Context, db *db.DB, p Pager, opts Options) (*Connection, 
 	if len(edges) > 0 {
 		pageInfo.StartCursor = &edges[0].Cursor
 		pageInfo.EndCursor = &edges[len(edges)-1].Cursor
-	}
-
-	totalResult, err := db.NamedQueryContext(ctx, p.TotalQuery(), params)
-	if err != nil {
-		return nil, err
 	}
 
 	if !totalResult.Next() {
