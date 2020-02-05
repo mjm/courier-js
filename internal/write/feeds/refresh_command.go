@@ -55,7 +55,13 @@ func (h *CommandHandler) HandleRefresh(ctx context.Context, cmd RefreshCommand) 
 	}
 	trace.AddField(ctx, "feed.up_to_date", false)
 
-	// TODO import posts
+	_, err = h.bus.Run(ctx, ImportPostsCommand{
+		FeedID:  f.ID,
+		Entries: scraped.Entries,
+	})
+	if err != nil {
+		return err
+	}
 
 	// TODO get micropub endpoint
 

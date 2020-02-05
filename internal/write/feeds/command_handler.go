@@ -11,23 +11,37 @@ import (
 )
 
 // DefaultSet is a provider set for creating a command handler and its dependencies.
-var DefaultSet = wire.NewSet(NewCommandHandler, NewFeedRepository, NewSubscriptionRepository)
+var DefaultSet = wire.NewSet(
+	NewCommandHandler,
+	NewFeedRepository,
+	NewSubscriptionRepository,
+	NewPostRepository)
 
 // CommandHandler processes feed-related commands and updates the data store appropriately.
 type CommandHandler struct {
 	bus      *write.CommandBus
 	feedRepo *FeedRepository
 	subRepo  *SubscriptionRepository
+	postRepo *PostRepository
 }
 
 // NewCommandHandler creates a new command handler for feed commands.
-func NewCommandHandler(bus *write.CommandBus, feedRepo *FeedRepository, subRepo *SubscriptionRepository) *CommandHandler {
+func NewCommandHandler(
+	bus *write.CommandBus,
+	feedRepo *FeedRepository,
+	subRepo *SubscriptionRepository,
+	postRepo *PostRepository) *CommandHandler {
 	h := &CommandHandler{
 		bus:      bus,
 		feedRepo: feedRepo,
 		subRepo:  subRepo,
+		postRepo: postRepo,
 	}
-	bus.Register(h, SubscribeCommand{}, RefreshCommand{}, UnsubscribeCommand{})
+	bus.Register(h,
+		SubscribeCommand{},
+		RefreshCommand{},
+		UnsubscribeCommand{},
+		ImportPostsCommand{})
 	return h
 }
 
@@ -45,6 +59,10 @@ func (h *CommandHandler) Handle(ctx context.Context, cmd interface{}) (interface
 
 	case UnsubscribeCommand:
 		err := h.HandleUnsubscribe(ctx, cmd)
+		return nil, err
+
+	case ImportPostsCommand:
+		err := h.HandleImportPosts(ctx, cmd)
 		return nil, err
 
 	}
