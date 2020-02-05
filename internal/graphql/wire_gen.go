@@ -11,6 +11,8 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/service"
+	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 // Injectors from wire.go:
@@ -20,9 +22,12 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	if err != nil {
 		return nil, err
 	}
+	commandBus := write.NewCommandBus()
+	feedRepository := feeds.NewFeedRepository(dbDB)
+	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
+	commandHandler := feeds.NewCommandHandler(commandBus, feedRepository, subscriptionRepository)
 	tweetService := service.NewTweetService(dbDB)
-	feedService := service.NewFeedService(dbDB)
-	root := resolvers.New(dbDB, tweetService, feedService)
+	root := resolvers.New(dbDB, commandBus, commandHandler, tweetService)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err

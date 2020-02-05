@@ -10,8 +10,23 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/service"
+	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
-func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.Config, stripeConfig billing.Config) (*Handler, error) {
-	panic(wire.Build(NewHandler, NewSchema, resolvers.New, auth.NewAuthenticator, db.New, billing.NewClient, service.All))
+func InitializeHandler(
+	schemaString string,
+	authConfig auth.Config,
+	dbConfig db.Config,
+	stripeConfig billing.Config) (*Handler, error) {
+	panic(wire.Build(
+		NewHandler,
+		NewSchema,
+		resolvers.New,
+		auth.NewAuthenticator,
+		db.New,
+		billing.NewClient,
+		service.All,
+		write.NewCommandBus,
+		feeds.DefaultSet))
 }

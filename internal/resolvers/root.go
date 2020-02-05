@@ -17,22 +17,29 @@ import (
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/service"
 	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 // Root is the root resolver for queries and mutations.
 type Root struct {
 	db *db.DB
 
+	commandBus *write.CommandBus
+
 	tweetService *service.TweetService
-	feedService  *service.FeedService
 }
 
 // New creates a new root resolver.
-func New(db *db.DB, tweetService *service.TweetService, feedService *service.FeedService) *Root {
+func New(
+	db *db.DB,
+	commandBus *write.CommandBus,
+	_ *feeds.CommandHandler,
+	tweetService *service.TweetService) *Root {
 	return &Root{
 		db:           db,
+		commandBus:   commandBus,
 		tweetService: tweetService,
-		feedService:  feedService,
 	}
 }
 
@@ -145,53 +152,4 @@ func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*Sub
 	}
 
 	return &SubscribedFeedConnection{conn: conn}, nil
-}
-
-type AddFeedPayload struct {
-	Feed     *SubscribedFeed
-	FeedEdge *SubscribedFeedEdge
-}
-
-// AddFeed subscribes the user to a new feed, creating the feed if needed.
-func (r *Root) AddFeed(ctx context.Context, args struct {
-	Input struct{ URL string }
-}) (*AddFeedPayload, error) {
-	sub, err := r.feedService.Subscribe(ctx, args.Input.URL)
-	if err != nil {
-		return nil, err
-	}
-
-	// load the edge so that Relay can update its store
-	edge, err := feed.GetSubscriptionEdge(ctx, r.db, sub.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return &AddFeedPayload{
-		Feed:     &SubscribedFeed{sub: sub},
-		FeedEdge: &SubscribedFeedEdge{edge: edge},
-	}, nil
-}
-
-type CancelTweetPayload struct {
-	Tweet *Tweet
-}
-
-// CancelTweet marks a tweet as not to be posted.
-func (r *Root) CancelTweet(ctx context.Context, args struct {
-	Input struct{ ID graphql.ID }
-}) (*CancelTweetPayload, error) {
-	var id int
-	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
-		return nil, err
-	}
-
-	t, err := r.tweetService.Cancel(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return &CancelTweetPayload{
-		Tweet: &Tweet{tweet: t},
-	}, nil
 }
