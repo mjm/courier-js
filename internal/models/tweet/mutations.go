@@ -9,7 +9,7 @@ import (
 // Cancel marks a tweet as canceled as long as it is not already posted. It also clears
 // the post_after field to prevent the tweet from being autoposted if it is uncanceled
 // later.
-func Cancel(ctx context.Context, db *db.DB, id int) (*Tweet, error) {
+func Cancel(ctx context.Context, db db.DB, id int) (*Tweet, error) {
 	var tweet Tweet
 	err := db.QueryRowxContext(ctx, `
 		UPDATE tweets SET

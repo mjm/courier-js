@@ -10,6 +10,6 @@ import (
 )
 
 // CreateLoaders creates all of the loaders for the application.
-func CreateLoaders(db *db.DB, sc *client.API) Loaders {
+func CreateLoaders(db db.DB, sc *client.API) Loaders {
 	panic(wire.Build(AllLoaders))
 }

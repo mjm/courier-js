@@ -7,7 +7,7 @@ import (
 )
 
 // Create adds one or more posts to the database.
-func Create(ctx context.Context, conn *db.DB, newPosts []*Post) ([]*Post, error) {
+func Create(ctx context.Context, conn db.DB, newPosts []*Post) ([]*Post, error) {
 	// avoid a query if there are no values
 	if len(newPosts) == 0 {
 		return nil, nil

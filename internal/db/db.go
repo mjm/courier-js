@@ -12,24 +12,34 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// Config is configuration for the application's database.
 type Config struct {
 	URL string
 }
 
-type DB struct {
-	*sqlx.DB
+// DB is an interface of supported operations for performing SQL queries.
+type DB interface {
+	ExecContext(context.Context, string, ...interface{}) (sql.Result, error)
+	NamedQueryContext(context.Context, string, interface{}) (*sqlx.Rows, error)
+	QueryxContext(context.Context, string, ...interface{}) (*sqlx.Rows, error)
+	QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row
 }
 
-func New(cfg Config) (*DB, error) {
+type tracingDB struct {
+	DB *sqlx.DB
+}
+
+// New creates a new database connection for the application.
+func New(cfg Config) (DB, error) {
 	db, err := sqlx.Open("postgres", cfg.URL)
 	if err != nil {
 		return nil, err
 	}
 
-	return &DB{DB: db}, nil
+	return &tracingDB{DB: db}, nil
 }
 
-func (db *DB) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (db *tracingDB) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
 	ctx = trace.Start(ctx, "SQL query")
 	defer trace.Finish(ctx)
 
@@ -44,7 +54,7 @@ func (db *DB) ExecContext(ctx context.Context, query string, args ...interface{}
 	return res, err
 }
 
-func (db *DB) QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error) {
+func (db *tracingDB) QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error) {
 	ctx = trace.Start(ctx, "SQL query")
 	defer trace.Finish(ctx)
 
@@ -59,7 +69,7 @@ func (db *DB) QueryxContext(ctx context.Context, query string, args ...interface
 	return rows, err
 }
 
-func (db *DB) QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row {
+func (db *tracingDB) QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row {
 	ctx = trace.Start(ctx, "SQL query")
 	defer trace.Finish(ctx)
 
@@ -74,7 +84,7 @@ func (db *DB) QueryRowxContext(ctx context.Context, query string, args ...interf
 	return row
 }
 
-func (db *DB) NamedQueryContext(ctx context.Context, query string, arg interface{}) (*sqlx.Rows, error) {
+func (db *tracingDB) NamedQueryContext(ctx context.Context, query string, arg interface{}) (*sqlx.Rows, error) {
 	ctx = trace.Start(ctx, "SQL query")
 	defer trace.Finish(ctx)
 

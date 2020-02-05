@@ -18,11 +18,11 @@ import (
 type Handler struct {
 	Schema        *graphql.Schema
 	Authenticator *auth.Authenticator
-	DB            *db.DB
+	DB            db.DB
 	Stripe        *client.API
 }
 
-func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, db *db.DB, sc *client.API) *Handler {
+func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, db db.DB, sc *client.API) *Handler {
 	return &Handler{
 		Schema:        schema,
 		Authenticator: auther,

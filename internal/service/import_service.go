@@ -17,10 +17,10 @@ import (
 )
 
 type ImportService struct {
-	db *db.DB
+	db db.DB
 }
 
-func NewImportService(db *db.DB) *ImportService {
+func NewImportService(db db.DB) *ImportService {
 	return &ImportService{
 		db: db,
 	}

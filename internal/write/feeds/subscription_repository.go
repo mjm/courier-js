@@ -8,11 +8,11 @@ import (
 
 // SubscriptionRepository fetches and stores information about feed subscriptions.
 type SubscriptionRepository struct {
-	db *db.DB
+	db db.DB
 }
 
 // NewSubscriptionRepository creates a new subscription repository targeting a given database.
-func NewSubscriptionRepository(db *db.DB) *SubscriptionRepository {
+func NewSubscriptionRepository(db db.DB) *SubscriptionRepository {
 	return &SubscriptionRepository{db: db}
 }
 

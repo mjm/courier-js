@@ -19,7 +19,7 @@ var cleaner = dbcleaner.New()
 
 type mutationsSuite struct {
 	suite.Suite
-	db *db.DB
+	db db.DB
 }
 
 func (suite *mutationsSuite) SetupSuite() {

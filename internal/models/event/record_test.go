@@ -17,7 +17,7 @@ var cleaner = dbcleaner.New()
 
 type recordSuite struct {
 	suite.Suite
-	db *db.DB
+	db db.DB
 }
 
 func (suite *recordSuite) SetupSuite() {

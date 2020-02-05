@@ -23,7 +23,7 @@ const postsQuery = `
 	WHERE id = ANY($1)
 `
 
-func NewLoader(db *db.DB) Loader {
+func NewLoader(db db.DB) Loader {
 	return Loader{
 		loader.New("Post Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 			rows, err := db.QueryxContext(ctx, postsQuery, loader.IntArray(keys))
@@ -55,7 +55,7 @@ const postsByItemIDQuery = `
 		AND item_id = ANY($2)
 `
 
-func NewByItemIDLoader(db *db.DB, feedID int) ByItemIDLoader {
+func NewByItemIDLoader(db db.DB, feedID int) ByItemIDLoader {
 	return ByItemIDLoader{
 		loader.New("Post by Item ID Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 			rows, _ := db.QueryxContext(ctx, postsByItemIDQuery, feedID, loader.StringArray(keys))

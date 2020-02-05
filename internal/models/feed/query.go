@@ -8,7 +8,7 @@ import (
 )
 
 // ByURL gets the feed with a given URL. Returns sql.ErrNoRows if no such feed exists.
-func ByURL(ctx context.Context, db *db.DB, url string) (*Feed, error) {
+func ByURL(ctx context.Context, db db.DB, url string) (*Feed, error) {
 	var feed Feed
 	if err := db.QueryRowxContext(ctx, `
 		SELECT * FROM feeds WHERE url = $1
@@ -20,7 +20,7 @@ func ByURL(ctx context.Context, db *db.DB, url string) (*Feed, error) {
 }
 
 // GetSubscriptionEdge constructs a pager edge for a particular feed subscription.
-func GetSubscriptionEdge(ctx context.Context, db *db.DB, id int) (pager.Edge, error) {
+func GetSubscriptionEdge(ctx context.Context, db db.DB, id int) (pager.Edge, error) {
 	var row struct {
 		Subscription
 		URL string `db:"url"`
@@ -45,7 +45,7 @@ func GetSubscriptionEdge(ctx context.Context, db *db.DB, id int) (pager.Edge, er
 }
 
 // Subscriptions gets all of the active subscriptions for a particular feed.
-func Subscriptions(ctx context.Context, db *db.DB, feedID int) ([]*Subscription, error) {
+func Subscriptions(ctx context.Context, db db.DB, feedID int) ([]*Subscription, error) {
 	rows, err := db.QueryxContext(ctx, `
 		SELECT
 			*

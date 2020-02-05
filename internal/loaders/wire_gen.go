@@ -16,7 +16,7 @@ import (
 
 // Injectors from wire.go:
 
-func CreateLoaders(db2 *db.DB, sc *client.API) Loaders {
+func CreateLoaders(db2 db.DB, sc *client.API) Loaders {
 	loader := tweet.NewLoader(db2)
 	postLoader := post.NewLoader(db2)
 	feedLoader := feed.NewLoader(db2)

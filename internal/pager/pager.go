@@ -63,7 +63,7 @@ type Options struct {
 }
 
 // Paged loads a single page of results from a pager.
-func Paged(ctx context.Context, db *db.DB, p Pager, opts Options) (*Connection, error) {
+func Paged(ctx context.Context, db db.DB, p Pager, opts Options) (*Connection, error) {
 	params := make(map[string]interface{})
 	for k, v := range p.Params() {
 		params[k] = v

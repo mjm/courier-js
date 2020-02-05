@@ -13,10 +13,10 @@ import (
 )
 
 type TweetService struct {
-	db *db.DB
+	db db.DB
 }
 
-func NewTweetService(db *db.DB) *TweetService {
+func NewTweetService(db db.DB) *TweetService {
 	return &TweetService{
 		db: db,
 	}

@@ -18,7 +18,7 @@ import (
 
 type loaderSuite struct {
 	suite.Suite
-	db *db.DB
+	db db.DB
 }
 
 func (suite *loaderSuite) SetupSuite() {

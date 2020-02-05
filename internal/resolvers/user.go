@@ -13,7 +13,7 @@ import (
 )
 
 type User struct {
-	db   *db.DB
+	db   db.DB
 	user auth.User
 }
 

@@ -17,7 +17,7 @@ type Loader struct {
 
 const feedsQuery = `SELECT * FROM feeds WHERE id = ANY($1)`
 
-func NewLoader(db *db.DB) Loader {
+func NewLoader(db db.DB) Loader {
 	return Loader{
 		loader.New("Feed Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 			rows, _ := db.QueryxContext(ctx, feedsQuery, loader.IntArray(keys))
@@ -47,7 +47,7 @@ const subscriptionsQuery = `
 		AND id = ANY($2)
 `
 
-func NewSubscriptionLoader(db *db.DB) SubscriptionLoader {
+func NewSubscriptionLoader(db db.DB) SubscriptionLoader {
 	return SubscriptionLoader{
 		loader.New("Feed Subscription Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 			userID, err := auth.GetUser(ctx).ID()

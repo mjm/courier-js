@@ -39,8 +39,10 @@ func (h *CommandHandler) HandleRefresh(ctx context.Context, cmd RefreshCommand) 
 
 	var headers *scraper.CachingHeaders
 	if !cmd.Force && f.CachingHeaders != nil {
-		headers.Etag = f.CachingHeaders.Etag
-		headers.LastModified = f.CachingHeaders.LastModified
+		headers = &scraper.CachingHeaders{
+			Etag:         f.CachingHeaders.Etag,
+			LastModified: f.CachingHeaders.LastModified,
+		}
 	}
 	scraped, err := scrapeFeed(ctx, f.URL, headers)
 	if err != nil {

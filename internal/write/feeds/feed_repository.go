@@ -15,11 +15,11 @@ var (
 
 // FeedRepository fetches and stores information about feeds.
 type FeedRepository struct {
-	db *db.DB
+	db db.DB
 }
 
 // NewFeedRepository creates a new feed repository targeting a given database.
-func NewFeedRepository(db *db.DB) *FeedRepository {
+func NewFeedRepository(db db.DB) *FeedRepository {
 	return &FeedRepository{db: db}
 }
 

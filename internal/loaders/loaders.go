@@ -39,7 +39,7 @@ type Loaders struct {
 type loadersKey struct{}
 
 // WithLoaders creates a new context that has a new set of loaders using the given database.
-func WithLoaders(ctx context.Context, db *db.DB, sc *client.API) context.Context {
+func WithLoaders(ctx context.Context, db db.DB, sc *client.API) context.Context {
 	l := CreateLoaders(db, sc)
 	return context.WithValue(ctx, loadersKey{}, &l)
 }

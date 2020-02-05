@@ -23,7 +23,7 @@ import (
 
 // Root is the root resolver for queries and mutations.
 type Root struct {
-	db *db.DB
+	db db.DB
 
 	commandBus *write.CommandBus
 
@@ -32,7 +32,7 @@ type Root struct {
 
 // New creates a new root resolver.
 func New(
-	db *db.DB,
+	db db.DB,
 	commandBus *write.CommandBus,
 	_ *feeds.CommandHandler,
 	tweetService *service.TweetService) *Root {

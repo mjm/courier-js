@@ -13,7 +13,7 @@ import (
 
 type pagerSuite struct {
 	suite.Suite
-	db *db.DB
+	db db.DB
 }
 
 func (suite *pagerSuite) SetupSuite() {

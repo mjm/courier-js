@@ -26,7 +26,7 @@ SELECT tweets.*
    AND tweets.id = ANY($2)
 `
 
-func NewLoader(db *db.DB) Loader {
+func NewLoader(db db.DB) Loader {
 	return Loader{
 		loader.New("Tweet Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 			userID, err := auth.GetUser(ctx).ID()
