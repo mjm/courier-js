@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/lib/pq"
+	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/scraper"
 )
@@ -42,6 +43,17 @@ func (h *CommandHandler) HandleImportPosts(ctx context.Context, cmd ImportPostsC
 	}
 
 	trace.AddField(ctx, "import.changed_count", len(changed))
+	if len(changed) > 0 {
+		var ids []int
+		for _, p := range changed {
+			ids = append(ids, p.ID)
+		}
+
+		h.eventBus.Fire(ctx, feedevent.PostsImported{
+			FeedID:  cmd.FeedID,
+			PostIDs: ids,
+		})
+	}
 
 	// // create tweets for each subscription
 	// if len(changed) > 0 {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/url"
 
+	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/locatefeed"
 )
@@ -44,6 +45,11 @@ func (h *CommandHandler) HandleSubscribe(ctx context.Context, cmd SubscribeComma
 				return 0, err
 			}
 
+			h.eventBus.Fire(ctx, feedevent.FeedCreated{
+				FeedID: feedID,
+				URL:    u.String(),
+			})
+
 			_, err = h.bus.Run(ctx, RefreshCommand{
 				UserID: cmd.UserID,
 				FeedID: feedID,
@@ -59,26 +65,17 @@ func (h *CommandHandler) HandleSubscribe(ctx context.Context, cmd SubscribeComma
 
 	trace.AddField(ctx, "feed.id", feedID)
 
-	// l := loaders.Get(ctx)
-	// key := loader.IntKey(f.ID)
-	// l.Feeds.Clear(ctx, key).Prime(ctx, key, f)
-
 	subID, err := h.subRepo.Create(ctx, cmd.UserID, feedID)
 	if err != nil {
 		return 0, err
 	}
 
 	trace.AddField(ctx, "feed.subscription_id", subID)
-	// key = loader.IntKey(sub.ID)
-	// l.FeedSubscriptions.Clear(ctx, key).Prime(ctx, key, sub)
-
-	// TODO publish event: feed subscription created
-	// that event should trigger creating tweets
-
-	// event.Record(ctx, h.db, event.FeedSubscribe, event.Params{
-	// 	FeedID:             strconv.Itoa(feedID),
-	// 	FeedSubscriptionID: strconv.Itoa(subID),
-	// })
+	h.eventBus.Fire(ctx, feedevent.FeedSubscribed{
+		UserID:         cmd.UserID,
+		FeedID:         feedID,
+		SubscriptionID: subID,
+	})
 
 	return subID, nil
 }

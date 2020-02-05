@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/url"
 
+	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/scraper"
 )
@@ -79,8 +80,10 @@ func (h *CommandHandler) HandleRefresh(ctx context.Context, cmd RefreshCommand) 
 		return err
 	}
 
-	// TODO find the subscription for the current user and record its ID in the event
-	// event.Record(ctx, srv.db, event.FeedRefresh, event.Params{FeedID: strconv.Itoa(f.ID)})
+	h.eventBus.Fire(ctx, feedevent.FeedRefreshed{
+		FeedID: f.ID,
+		UserID: cmd.UserID,
+	})
 
 	return nil
 }

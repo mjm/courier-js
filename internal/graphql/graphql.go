@@ -13,6 +13,7 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/write/user"
 )
 
 type Handler struct {
@@ -22,7 +23,7 @@ type Handler struct {
 	Stripe        *client.API
 }
 
-func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, db db.DB, sc *client.API) *Handler {
+func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, db db.DB, sc *client.API, _ *user.EventRecorder) *Handler {
 	return &Handler{
 		Schema:        schema,
 		Authenticator: auther,

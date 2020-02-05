@@ -9,10 +9,12 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/service"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/user"
 )
 
 // Injectors from wire.go:
@@ -23,10 +25,11 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 		return nil, err
 	}
 	commandBus := write.NewCommandBus()
+	bus := event.NewBus()
 	feedRepository := feeds.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
 	postRepository := feeds.NewPostRepository(dbDB)
-	commandHandler := feeds.NewCommandHandler(commandBus, feedRepository, subscriptionRepository, postRepository)
+	commandHandler := feeds.NewCommandHandler(commandBus, bus, feedRepository, subscriptionRepository, postRepository)
 	tweetService := service.NewTweetService(dbDB)
 	root := resolvers.New(dbDB, commandBus, commandHandler, tweetService)
 	schema, err := NewSchema(schemaString, root)
@@ -38,6 +41,7 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 		return nil, err
 	}
 	api := billing.NewClient(stripeConfig)
-	handler := NewHandler(schema, authenticator, dbDB, api)
+	eventRecorder := user.NewEventRecorder(dbDB, bus)
+	handler := NewHandler(schema, authenticator, dbDB, api, eventRecorder)
 	return handler, nil
 }

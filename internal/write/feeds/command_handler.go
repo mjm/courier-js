@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/wire"
 
+	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/write"
 )
 
@@ -20,6 +21,7 @@ var DefaultSet = wire.NewSet(
 // CommandHandler processes feed-related commands and updates the data store appropriately.
 type CommandHandler struct {
 	bus      *write.CommandBus
+	eventBus *event.Bus
 	feedRepo *FeedRepository
 	subRepo  *SubscriptionRepository
 	postRepo *PostRepository
@@ -28,11 +30,13 @@ type CommandHandler struct {
 // NewCommandHandler creates a new command handler for feed commands.
 func NewCommandHandler(
 	bus *write.CommandBus,
+	eventBus *event.Bus,
 	feedRepo *FeedRepository,
 	subRepo *SubscriptionRepository,
 	postRepo *PostRepository) *CommandHandler {
 	h := &CommandHandler{
 		bus:      bus,
+		eventBus: eventBus,
 		feedRepo: feedRepo,
 		subRepo:  subRepo,
 		postRepo: postRepo,

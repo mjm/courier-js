@@ -8,10 +8,12 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/service"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/user"
 )
 
 func InitializeHandler(
@@ -28,5 +30,7 @@ func InitializeHandler(
 		billing.NewClient,
 		service.All,
 		write.NewCommandBus,
-		feeds.DefaultSet))
+		event.NewBus,
+		feeds.DefaultSet,
+		user.NewEventRecorder))
 }
