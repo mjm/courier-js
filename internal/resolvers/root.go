@@ -15,10 +15,10 @@ import (
 	"github.com/mjm/courier-js/internal/models/post"
 	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/pager"
-	"github.com/mjm/courier-js/internal/service"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/tweets"
 )
 
 // Root is the root resolver for queries and mutations.
@@ -26,8 +26,6 @@ type Root struct {
 	db db.DB
 
 	commandBus *write.CommandBus
-
-	tweetService *service.TweetService
 }
 
 // New creates a new root resolver.
@@ -35,11 +33,11 @@ func New(
 	db db.DB,
 	commandBus *write.CommandBus,
 	_ *feeds.CommandHandler,
-	tweetService *service.TweetService) *Root {
+	_ *tweets.CommandHandler,
+) *Root {
 	return &Root{
-		db:           db,
-		commandBus:   commandBus,
-		tweetService: tweetService,
+		db:         db,
+		commandBus: commandBus,
 	}
 }
 

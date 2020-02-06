@@ -7,8 +7,12 @@ import (
 	"github.com/graph-gophers/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/loader"
+	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/models/feed"
+	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/tweets"
 )
 
 type AddFeedPayload struct {
@@ -55,15 +59,30 @@ type CancelTweetPayload struct {
 func (r *Root) CancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (*CancelTweetPayload, error) {
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return nil, err
+	}
+
 	var id int
 	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return nil, err
 	}
 
-	t, err := r.tweetService.Cancel(ctx, id)
+	cmd := tweets.CancelCommand{
+		UserID:  userID,
+		TweetID: id,
+	}
+	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	l := loaders.Get(ctx)
+	v, err := l.Tweets.Load(ctx, loader.IntKey(id))()
 	if err != nil {
 		return nil, err
 	}
+	t := v.(*tweet.Tweet)
 
 	return &CancelTweetPayload{
 		Tweet: &Tweet{tweet: t},

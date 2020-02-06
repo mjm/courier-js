@@ -8,6 +8,7 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/event/feedevent"
+	"github.com/mjm/courier-js/internal/event/tweetevent"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -21,7 +22,9 @@ func NewEventRecorder(db db.DB, eventBus *event.Bus) *EventRecorder {
 	}
 	eventBus.Notify(r,
 		feedevent.FeedSubscribed{},
-		feedevent.FeedRefreshed{})
+		feedevent.FeedRefreshed{},
+		tweetevent.TweetCanceled{},
+	)
 	return r
 }
 
@@ -43,6 +46,11 @@ func (r *EventRecorder) Handle(ctx context.Context, evt interface{}) {
 		r.record(ctx, evt.UserID, FeedRefresh, EventParams{
 			FeedID: strconv.Itoa(evt.FeedID),
 			// TODO fetch subscription from user ID
+		})
+
+	case tweetevent.TweetCanceled:
+		r.record(ctx, evt.UserID, TweetCancel, EventParams{
+			TweetID: strconv.Itoa(evt.TweetID),
 		})
 
 	}

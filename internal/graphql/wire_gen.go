@@ -11,9 +11,9 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/resolvers"
-	"github.com/mjm/courier-js/internal/service"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/tweets"
 	"github.com/mjm/courier-js/internal/write/user"
 )
 
@@ -30,8 +30,9 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
 	postRepository := feeds.NewPostRepository(dbDB)
 	commandHandler := feeds.NewCommandHandler(commandBus, bus, feedRepository, subscriptionRepository, postRepository)
-	tweetService := service.NewTweetService(dbDB)
-	root := resolvers.New(dbDB, commandBus, commandHandler, tweetService)
+	tweetRepository := tweets.NewTweetRepository(dbDB)
+	tweetsCommandHandler := tweets.NewCommandHandler(commandBus, bus, tweetRepository)
+	root := resolvers.New(dbDB, commandBus, commandHandler, tweetsCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err
