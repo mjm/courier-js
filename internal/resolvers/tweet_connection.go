@@ -13,7 +13,7 @@ type TweetConnection struct {
 func (c *TweetConnection) Edges() []*TweetEdge {
 	var edges []*TweetEdge
 	for _, edge := range c.conn.Edges {
-		edges = append(edges, &TweetEdge{q: c.q, edge: edge})
+		edges = append(edges, &TweetEdge{q: c.q, edge: edge.(*tweet.TweetEdge)})
 	}
 	return edges
 }
@@ -21,7 +21,7 @@ func (c *TweetConnection) Edges() []*TweetEdge {
 func (c *TweetConnection) Nodes() []*Tweet {
 	var nodes []*Tweet
 	for _, edge := range c.conn.Edges {
-		t := edge.Node.(*tweet.Tweet)
+		t := &edge.(*tweet.TweetEdge).Tweet
 		nodes = append(nodes, NewTweet(c.q, t))
 	}
 	return nodes
@@ -37,13 +37,13 @@ func (c *TweetConnection) TotalCount() int32 {
 
 type TweetEdge struct {
 	q    Queries
-	edge pager.Edge
+	edge *tweet.TweetEdge
 }
 
 func (e *TweetEdge) Node() *Tweet {
-	return NewTweet(e.q, e.edge.Node.(*tweet.Tweet))
+	return NewTweet(e.q, &e.edge.Tweet)
 }
 
 func (e *TweetEdge) Cursor() pager.Cursor {
-	return e.edge.Cursor
+	return e.edge.Cursor()
 }

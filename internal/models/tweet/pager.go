@@ -1,10 +1,11 @@
 package tweet
 
 import (
+	"time"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 	"github.com/mjm/courier-js/internal/pager"
-	"time"
 )
 
 type Filter string
@@ -14,6 +15,18 @@ const (
 	UpcomingFilter Filter = "UPCOMING"
 	PastFilter     Filter = "PAST"
 )
+
+type TweetEdge struct {
+	Tweet
+	PublishedAt pq.NullTime `db:"published_at"`
+}
+
+func (e *TweetEdge) Cursor() pager.Cursor {
+	if e.PublishedAt.Valid {
+		return pager.Cursor(e.PublishedAt.Time.UTC().Format(time.RFC3339))
+	}
+	return pager.Cursor("")
+}
 
 type Pager struct {
 	UserID string
@@ -72,19 +85,11 @@ func (p *Pager) FromCursor(cursor pager.Cursor) interface{} {
 }
 
 func (p *Pager) ScanEdge(rows *sqlx.Rows) (pager.Edge, error) {
-	var edge pager.Edge
-	var row struct {
-		Tweet
-		PublishedAt pq.NullTime `db:"published_at"`
-	}
+	var row TweetEdge
 
 	if err := rows.StructScan(&row); err != nil {
-		return edge, err
+		return nil, err
 	}
 
-	edge.Node = &row.Tweet
-	if row.PublishedAt.Valid {
-		edge.Cursor = pager.Cursor(row.PublishedAt.Time.UTC().Format(time.RFC3339))
-	}
-	return edge, nil
+	return &row, nil
 }

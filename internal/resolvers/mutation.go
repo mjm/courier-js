@@ -10,7 +10,6 @@ import (
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/models/tweet"
-	readfeeds "github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
 )
@@ -46,7 +45,7 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	}
 
 	return &AddFeedPayload{
-		Feed:     NewSubscribedFeed(r.q, edge.Node.(*readfeeds.Subscription)),
+		Feed:     NewSubscribedFeed(r.q, &edge.Subscription),
 		FeedEdge: &SubscribedFeedEdge{q: r.q, edge: edge},
 	}, nil
 }

@@ -20,7 +20,9 @@ type SubscriptionQueries interface {
 	// Get fetches a feed subscription by ID.
 	Get(context.Context, int) (*Subscription, error)
 	// GetEdge fetches a pager edge for a feed subscription by ID.
-	GetEdge(context.Context, int) (pager.Edge, error)
+	GetEdge(context.Context, int) (*SubscriptionEdge, error)
+	// Paged fetches a paged subset of a user's feed subscriptions.
+	Paged(context.Context, string, pager.Options) (*pager.Connection, error)
 }
 
 type subscriptionQueries struct {
@@ -79,11 +81,8 @@ func (q *subscriptionQueries) Get(ctx context.Context, id int) (*Subscription, e
 	return v.(*Subscription), nil
 }
 
-func (q *subscriptionQueries) GetEdge(ctx context.Context, id int) (pager.Edge, error) {
-	var row struct {
-		Subscription
-		URL string `db:"url"`
-	}
+func (q *subscriptionQueries) GetEdge(ctx context.Context, id int) (*SubscriptionEdge, error) {
+	var row SubscriptionEdge
 	if err := q.db.QueryRowxContext(ctx, `
 		SELECT
 			feed_subscriptions.*,
@@ -94,13 +93,14 @@ func (q *subscriptionQueries) GetEdge(ctx context.Context, id int) (pager.Edge, 
 		WHERE
 			feed_subscriptions.id = $1
 	`, id).StructScan(&row); err != nil {
-		return pager.Edge{}, nil
+		return nil, err
 	}
 
-	return pager.Edge{
-		Node:   &row.Subscription,
-		Cursor: pager.Cursor(row.URL),
-	}, nil
+	return &row, nil
+}
+
+func (q *subscriptionQueries) Paged(ctx context.Context, userID string, opts pager.Options) (*pager.Connection, error) {
+	return pager.Paged(ctx, q.db, &subscriptionPager{UserID: userID}, opts)
 }
 
 func (q *subscriptionQueries) Handle(ctx context.Context, evt interface{}) {

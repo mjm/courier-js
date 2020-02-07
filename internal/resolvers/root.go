@@ -11,7 +11,6 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/loaders"
-	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/models/post"
 	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/pager"
@@ -140,10 +139,7 @@ func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*Sub
 		return nil, err
 	}
 
-	p := &feed.SubscriptionPager{
-		UserID: userID,
-	}
-	conn, err := pager.Paged(ctx, r.db, p, args)
+	conn, err := r.q.FeedSubscriptions.Paged(ctx, userID, args)
 	if err != nil {
 		return nil, err
 	}

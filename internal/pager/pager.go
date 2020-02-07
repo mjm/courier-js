@@ -38,11 +38,9 @@ type Connection struct {
 }
 
 // Edge is a single entry of a paged result.
-type Edge struct {
-	// Node is the row that was fetched from the database.
-	Node interface{}
+type Edge interface {
 	// Cursor is the value that can be used to fetch more results from this edge's position.
-	Cursor Cursor
+	Cursor() Cursor
 }
 
 // PageInfo includes information about whether and how to fetch more results after this
@@ -139,8 +137,10 @@ func Paged(ctx context.Context, db db.DB, p Pager, opts Options) (*Connection, e
 	}
 
 	if len(edges) > 0 {
-		pageInfo.StartCursor = &edges[0].Cursor
-		pageInfo.EndCursor = &edges[len(edges)-1].Cursor
+		start := edges[0].Cursor()
+		pageInfo.StartCursor = &start
+		end := edges[len(edges)-1].Cursor()
+		pageInfo.EndCursor = &end
 	}
 
 	if !totalResult.Next() {

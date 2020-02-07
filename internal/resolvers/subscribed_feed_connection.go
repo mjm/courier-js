@@ -13,7 +13,10 @@ type SubscribedFeedConnection struct {
 func (c *SubscribedFeedConnection) Edges() []*SubscribedFeedEdge {
 	var edges []*SubscribedFeedEdge
 	for _, edge := range c.conn.Edges {
-		edges = append(edges, &SubscribedFeedEdge{q: c.q, edge: edge})
+		edges = append(edges, &SubscribedFeedEdge{
+			q:    c.q,
+			edge: edge.(*feeds.SubscriptionEdge),
+		})
 	}
 	return edges
 }
@@ -21,7 +24,7 @@ func (c *SubscribedFeedConnection) Edges() []*SubscribedFeedEdge {
 func (c *SubscribedFeedConnection) Nodes() []*SubscribedFeed {
 	var nodes []*SubscribedFeed
 	for _, edge := range c.conn.Edges {
-		node := edge.Node.(*feeds.Subscription)
+		node := &edge.(*feeds.SubscriptionEdge).Subscription
 		nodes = append(nodes, NewSubscribedFeed(c.q, node))
 	}
 	return nodes
@@ -37,13 +40,13 @@ func (c *SubscribedFeedConnection) TotalCount() int32 {
 
 type SubscribedFeedEdge struct {
 	q    Queries
-	edge pager.Edge
+	edge *feeds.SubscriptionEdge
 }
 
 func (e *SubscribedFeedEdge) Node() *SubscribedFeed {
-	return NewSubscribedFeed(e.q, e.edge.Node.(*feeds.Subscription))
+	return NewSubscribedFeed(e.q, &e.edge.Subscription)
 }
 
 func (e *SubscribedFeedEdge) Cursor() pager.Cursor {
-	return e.edge.Cursor
+	return e.edge.Cursor()
 }
