@@ -2,6 +2,7 @@ package feeds
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	"github.com/graph-gophers/dataloader"
@@ -10,6 +11,11 @@ import (
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/loader"
+)
+
+var (
+	// ErrNoFeed is returned when a specific feed cannot be found.
+	ErrNoFeed = errors.New("no feed found")
 )
 
 // FeedQueries is an interface for reading information about feeds.
@@ -54,6 +60,9 @@ func (q *feedQueries) Get(ctx context.Context, id int) (*Feed, error) {
 	v, err := q.loader.Load(ctx, loader.IntKey(id))()
 	if err != nil {
 		return nil, err
+	}
+	if v == nil {
+		return nil, ErrNoFeed
 	}
 	return v.(*Feed), nil
 }

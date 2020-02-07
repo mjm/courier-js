@@ -60,6 +60,16 @@ type Options struct {
 	Before *Cursor
 }
 
+// First returns pager options for paging from the beginning of the results.
+func First(n int32, after *Cursor) Options {
+	return Options{First: &n, After: after}
+}
+
+// Last returns pager options for paging from the end of the results.
+func Last(n int32, before *Cursor) Options {
+	return Options{Last: &n, Before: before}
+}
+
 // Paged loads a single page of results from a pager.
 func Paged(ctx context.Context, db db.DB, p Pager, opts Options) (*Connection, error) {
 	params := make(map[string]interface{})

@@ -8,7 +8,6 @@ import (
 
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/models/post"
 	"github.com/mjm/courier-js/internal/models/tweet"
 )
@@ -17,23 +16,18 @@ import (
 var AllLoaders = wire.NewSet(
 	tweet.NewLoader,
 	post.NewLoader,
-	feed.NewLoader,
-	feed.NewSubscriptionLoader,
 	billing.NewCustomerLoader,
 	billing.NewSubscriptionLoader,
-	wire.Struct(new(Loaders),
-		"Tweets", "Posts", "Feeds", "FeedSubscriptions", "Customers", "Subscriptions"))
+	wire.Struct(new(Loaders), "*"))
 
 // Loaders contains all of the different data loaders for the app.
 //
 // Because loaders cache results, they should be recreated for each request.
 type Loaders struct {
-	Tweets            tweet.Loader
-	Posts             post.Loader
-	Feeds             feed.Loader
-	FeedSubscriptions feed.SubscriptionLoader
-	Customers         billing.CustomerLoader
-	Subscriptions     billing.SubscriptionLoader
+	Tweets        tweet.Loader
+	Posts         post.Loader
+	Customers     billing.CustomerLoader
+	Subscriptions billing.SubscriptionLoader
 }
 
 type loadersKey struct{}

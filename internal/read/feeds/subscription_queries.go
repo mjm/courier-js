@@ -2,6 +2,7 @@ package feeds
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	"github.com/graph-gophers/dataloader"
@@ -13,6 +14,11 @@ import (
 	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/pager"
+)
+
+var (
+	// ErrNoSubscription is returned when a specific feed subscription cannot be found.
+	ErrNoSubscription = errors.New("no feed subscription found")
 )
 
 // SubscriptionQueries is an interface for reading information about a user's subscribed feeds.
@@ -77,6 +83,9 @@ func (q *subscriptionQueries) Get(ctx context.Context, id int) (*Subscription, e
 	v, err := q.loader.Load(ctx, loader.IntKey(id))()
 	if err != nil {
 		return nil, err
+	}
+	if v == nil {
+		return nil, ErrNoSubscription
 	}
 	return v.(*Subscription), nil
 }
