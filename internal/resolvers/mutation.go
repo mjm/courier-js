@@ -9,8 +9,8 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/loaders"
-	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/models/tweet"
+	readfeeds "github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
 )
@@ -40,14 +40,14 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	subID := v.(int)
 
 	// load the edge so that Relay can update its store
-	edge, err := feed.GetSubscriptionEdge(ctx, r.db, subID)
+	edge, err := r.q.FeedSubscriptions.GetEdge(ctx, subID)
 	if err != nil {
 		return nil, err
 	}
 
 	return &AddFeedPayload{
-		Feed:     NewSubscribedFeed(r.q, edge.Node.(*feed.Subscription)),
-		FeedEdge: &SubscribedFeedEdge{edge: edge},
+		Feed:     NewSubscribedFeed(r.q, edge.Node.(*readfeeds.Subscription)),
+		FeedEdge: &SubscribedFeedEdge{q: r.q, edge: edge},
 	}, nil
 }
 

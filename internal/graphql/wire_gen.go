@@ -27,8 +27,10 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	}
 	bus := event.NewBus()
 	feedQueries := feeds.NewFeedQueries(dbDB, bus)
+	subscriptionQueries := feeds.NewSubscriptionQueries(dbDB, bus)
 	queries := resolvers.Queries{
-		Feeds: feedQueries,
+		Feeds:             feedQueries,
+		FeedSubscriptions: subscriptionQueries,
 	}
 	commandBus := write.NewCommandBus()
 	feedRepository := feeds2.NewFeedRepository(dbDB)

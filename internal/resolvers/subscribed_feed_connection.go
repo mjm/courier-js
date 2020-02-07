@@ -1,8 +1,8 @@
 package resolvers
 
 import (
-	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/read/feeds"
 )
 
 type SubscribedFeedConnection struct {
@@ -21,7 +21,7 @@ func (c *SubscribedFeedConnection) Edges() []*SubscribedFeedEdge {
 func (c *SubscribedFeedConnection) Nodes() []*SubscribedFeed {
 	var nodes []*SubscribedFeed
 	for _, edge := range c.conn.Edges {
-		node := edge.Node.(*feed.Subscription)
+		node := edge.Node.(*feeds.Subscription)
 		nodes = append(nodes, NewSubscribedFeed(c.q, node))
 	}
 	return nodes
@@ -41,7 +41,7 @@ type SubscribedFeedEdge struct {
 }
 
 func (e *SubscribedFeedEdge) Node() *SubscribedFeed {
-	return NewSubscribedFeed(e.q, e.edge.Node.(*feed.Subscription))
+	return NewSubscribedFeed(e.q, e.edge.Node.(*feeds.Subscription))
 }
 
 func (e *SubscribedFeedEdge) Cursor() pager.Cursor {

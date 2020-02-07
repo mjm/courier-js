@@ -9,7 +9,6 @@ import (
 
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/loaders"
-	"github.com/mjm/courier-js/internal/models/feed"
 	"github.com/mjm/courier-js/internal/models/post"
 	"github.com/mjm/courier-js/internal/models/tweet"
 )
@@ -31,14 +30,12 @@ func (t *Tweet) ID() graphql.ID {
 }
 
 func (t *Tweet) Feed(ctx context.Context) (*SubscribedFeed, error) {
-	l := loaders.Get(ctx)
-	thunk := l.FeedSubscriptions.Load(ctx, loader.IntKey(t.tweet.FeedSubscriptionID))
-	sub, err := thunk()
+	sub, err := t.q.FeedSubscriptions.Get(ctx, t.tweet.FeedSubscriptionID)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewSubscribedFeed(t.q, sub.(*feed.Subscription)), nil
+	return NewSubscribedFeed(t.q, sub), nil
 }
 
 func (t *Tweet) Post(ctx context.Context) (*Post, error) {

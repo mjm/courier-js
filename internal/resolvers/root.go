@@ -108,14 +108,12 @@ func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID })
 		return nil, err
 	}
 
-	l := loaders.Get(ctx)
-	thunk := l.FeedSubscriptions.Load(ctx, loader.IntKey(id))
-	sub, err := thunk()
+	sub, err := r.q.FeedSubscriptions.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewSubscribedFeed(r.q, sub.(*feed.Subscription)), nil
+	return NewSubscribedFeed(r.q, sub), nil
 }
 
 // Tweet gets a tweet for the current user by ID.

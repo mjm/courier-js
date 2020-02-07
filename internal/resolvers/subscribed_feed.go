@@ -6,15 +6,15 @@ import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 
-	"github.com/mjm/courier-js/internal/models/feed"
+	"github.com/mjm/courier-js/internal/read/feeds"
 )
 
 type SubscribedFeed struct {
 	q   Queries
-	sub *feed.Subscription
+	sub *feeds.Subscription
 }
 
-func NewSubscribedFeed(q Queries, sub *feed.Subscription) *SubscribedFeed {
+func NewSubscribedFeed(q Queries, sub *feeds.Subscription) *SubscribedFeed {
 	return &SubscribedFeed{
 		q:   q,
 		sub: sub,
