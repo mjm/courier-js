@@ -6,13 +6,19 @@ import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 
-	"github.com/mjm/courier-js/internal/loader"
-	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/models/feed"
 )
 
 type SubscribedFeed struct {
+	q   Queries
 	sub *feed.Subscription
+}
+
+func NewSubscribedFeed(q Queries, sub *feed.Subscription) *SubscribedFeed {
+	return &SubscribedFeed{
+		q:   q,
+		sub: sub,
+	}
 }
 
 func (sf *SubscribedFeed) ID() graphql.ID {
@@ -20,14 +26,12 @@ func (sf *SubscribedFeed) ID() graphql.ID {
 }
 
 func (sf *SubscribedFeed) Feed(ctx context.Context) (*Feed, error) {
-	l := loaders.Get(ctx)
-	thunk := l.Feeds.Load(ctx, loader.IntKey(sf.sub.FeedID))
-	f, err := thunk()
+	f, err := sf.q.Feeds.Get(ctx, sf.sub.FeedID)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Feed{feed: f.(*feed.Feed)}, nil
+	return &Feed{feed: f}, nil
 }
 
 func (sf *SubscribedFeed) Autopost() bool {

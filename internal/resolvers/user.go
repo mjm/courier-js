@@ -13,6 +13,7 @@ import (
 )
 
 type User struct {
+	q    Queries
 	db   db.DB
 	user auth.User
 }
@@ -89,5 +90,5 @@ func (u *User) AllTweets(ctx context.Context, args struct {
 		return nil, err
 	}
 
-	return &TweetConnection{conn: conn}, nil
+	return &TweetConnection{q: u.q, conn: conn}, nil
 }

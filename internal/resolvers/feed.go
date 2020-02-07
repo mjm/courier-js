@@ -4,11 +4,11 @@ import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 
-	"github.com/mjm/courier-js/internal/models/feed"
+	"github.com/mjm/courier-js/internal/read/feeds"
 )
 
 type Feed struct {
-	feed *feed.Feed
+	feed *feeds.Feed
 }
 
 func (f *Feed) ID() graphql.ID {

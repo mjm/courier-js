@@ -11,6 +11,7 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write/user"
@@ -71,6 +72,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	childCtx = loaders.WithLoaders(childCtx, h.DB, h.Stripe)
+	childCtx = loader.WithLoaderCache(childCtx)
 
 	response := h.Schema.Exec(childCtx, params.Query, params.OperationName, params.Variables)
 	writeResponse(ctx, w, response)

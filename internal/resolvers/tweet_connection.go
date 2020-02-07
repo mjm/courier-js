@@ -6,13 +6,14 @@ import (
 )
 
 type TweetConnection struct {
+	q    Queries
 	conn *pager.Connection
 }
 
 func (c *TweetConnection) Edges() []*TweetEdge {
 	var edges []*TweetEdge
 	for _, edge := range c.conn.Edges {
-		edges = append(edges, &TweetEdge{edge: edge})
+		edges = append(edges, &TweetEdge{q: c.q, edge: edge})
 	}
 	return edges
 }
@@ -21,7 +22,7 @@ func (c *TweetConnection) Nodes() []*Tweet {
 	var nodes []*Tweet
 	for _, edge := range c.conn.Edges {
 		t := edge.Node.(*tweet.Tweet)
-		nodes = append(nodes, &Tweet{tweet: t})
+		nodes = append(nodes, NewTweet(c.q, t))
 	}
 	return nodes
 }
@@ -35,11 +36,12 @@ func (c *TweetConnection) TotalCount() int32 {
 }
 
 type TweetEdge struct {
+	q    Queries
 	edge pager.Edge
 }
 
 func (e *TweetEdge) Node() *Tweet {
-	return &Tweet{tweet: e.edge.Node.(*tweet.Tweet)}
+	return NewTweet(e.q, e.edge.Node.(*tweet.Tweet))
 }
 
 func (e *TweetEdge) Cursor() pager.Cursor {

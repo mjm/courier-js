@@ -10,9 +10,10 @@ import (
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/write"
-	"github.com/mjm/courier-js/internal/write/feeds"
+	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
 	"github.com/mjm/courier-js/internal/write/user"
 )
@@ -24,15 +25,19 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	if err != nil {
 		return nil, err
 	}
-	commandBus := write.NewCommandBus()
 	bus := event.NewBus()
-	feedRepository := feeds.NewFeedRepository(dbDB)
-	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
-	postRepository := feeds.NewPostRepository(dbDB)
-	commandHandler := feeds.NewCommandHandler(commandBus, bus, feedRepository, subscriptionRepository, postRepository)
+	feedQueries := feeds.NewFeedQueries(dbDB, bus)
+	queries := resolvers.Queries{
+		Feeds: feedQueries,
+	}
+	commandBus := write.NewCommandBus()
+	feedRepository := feeds2.NewFeedRepository(dbDB)
+	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
+	postRepository := feeds2.NewPostRepository(dbDB)
+	commandHandler := feeds2.NewCommandHandler(commandBus, bus, feedRepository, subscriptionRepository, postRepository)
 	tweetRepository := tweets.NewTweetRepository(dbDB)
 	tweetsCommandHandler := tweets.NewCommandHandler(commandBus, bus, tweetRepository)
-	root := resolvers.New(dbDB, commandBus, commandHandler, tweetsCommandHandler)
+	root := resolvers.New(dbDB, queries, commandBus, commandHandler, tweetsCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err

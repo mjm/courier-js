@@ -5,6 +5,7 @@ import (
 	"database/sql/driver"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/graph-gophers/dataloader"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
@@ -14,9 +15,13 @@ import (
 
 // New creates a new loader that is set up correctly for tracing.
 func New(label string, batchLoadFn dataloader.BatchFunc) *dataloader.Loader {
-	return dataloader.NewBatchedLoader(batchLoadFn, dataloader.WithTracer(trace.DataloaderTracer{
-		Label: label,
-	}))
+	return dataloader.NewBatchedLoader(
+		batchLoadFn,
+		dataloader.WithTracer(trace.DataloaderTracer{
+			Label: label,
+		}),
+		dataloader.WithCache(&contextCache{prefix: uuid.New().String()}),
+	)
 }
 
 // GatherFunc is a function passed to Gather that scans a single row and its keys from a result

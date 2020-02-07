@@ -15,7 +15,15 @@ import (
 )
 
 type Tweet struct {
+	q     Queries
 	tweet *tweet.Tweet
+}
+
+func NewTweet(q Queries, t *tweet.Tweet) *Tweet {
+	return &Tweet{
+		q:     q,
+		tweet: t,
+	}
 }
 
 func (t *Tweet) ID() graphql.ID {
@@ -30,7 +38,7 @@ func (t *Tweet) Feed(ctx context.Context) (*SubscribedFeed, error) {
 		return nil, err
 	}
 
-	return &SubscribedFeed{sub: sub.(*feed.Subscription)}, nil
+	return NewSubscribedFeed(t.q, sub.(*feed.Subscription)), nil
 }
 
 func (t *Tweet) Post(ctx context.Context) (*Post, error) {

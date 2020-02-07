@@ -46,7 +46,7 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	}
 
 	return &AddFeedPayload{
-		Feed:     &SubscribedFeed{sub: edge.Node.(*feed.Subscription)},
+		Feed:     NewSubscribedFeed(r.q, edge.Node.(*feed.Subscription)),
 		FeedEdge: &SubscribedFeedEdge{edge: edge},
 	}, nil
 }
@@ -85,6 +85,6 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 	t := v.(*tweet.Tweet)
 
 	return &CancelTweetPayload{
-		Tweet: &Tweet{tweet: t},
+		Tweet: NewTweet(r.q, t),
 	}, nil
 }

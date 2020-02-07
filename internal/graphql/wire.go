@@ -27,6 +27,7 @@ func InitializeHandler(
 			NewHandler,
 			NewSchema,
 			resolvers.New,
+			resolvers.QueriesProvider,
 			auth.NewAuthenticator,
 			db.New,
 			billing.NewClient,

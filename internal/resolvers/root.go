@@ -25,18 +25,21 @@ import (
 type Root struct {
 	db db.DB
 
+	q          Queries
 	commandBus *write.CommandBus
 }
 
 // New creates a new root resolver.
 func New(
 	db db.DB,
+	q Queries,
 	commandBus *write.CommandBus,
 	_ *feeds.CommandHandler,
 	_ *tweets.CommandHandler,
 ) *Root {
 	return &Root{
 		db:         db,
+		q:          q,
 		commandBus: commandBus,
 	}
 }
@@ -50,7 +53,7 @@ func (r *Root) Viewer(ctx context.Context) *User {
 		return nil
 	}
 
-	return &User{db: r.db, user: u}
+	return &User{q: r.q, db: r.db, user: u}
 }
 
 // Node fetches any kind of node in the app by ID.
@@ -66,12 +69,12 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 			return nil, err
 		}
 
-		l := loaders.Get(ctx)
-		var f interface{}
-		f, err = l.Feeds.Load(ctx, loader.IntKey(id))()
-		if err == nil {
-			n = &Feed{feed: f.(*feed.Feed)}
+		f, err := r.q.Feeds.Get(ctx, id)
+		if err != nil {
+			return nil, err
 		}
+		n = &Feed{feed: f}
+
 	case SubscribedFeedNode:
 		n, err = r.SubscribedFeed(ctx, args)
 	case TweetNode:
@@ -112,7 +115,7 @@ func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID })
 		return nil, err
 	}
 
-	return &SubscribedFeed{sub: sub.(*feed.Subscription)}, nil
+	return NewSubscribedFeed(r.q, sub.(*feed.Subscription)), nil
 }
 
 // Tweet gets a tweet for the current user by ID.
@@ -129,9 +132,7 @@ func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet,
 		return nil, err
 	}
 
-	return &Tweet{
-		tweet: t.(*tweet.Tweet),
-	}, nil
+	return NewTweet(r.q, t.(*tweet.Tweet)), nil
 }
 
 // AllSubscribedFeeds gets a paged list of feed subscriptions for the current user.
@@ -149,5 +150,5 @@ func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*Sub
 		return nil, err
 	}
 
-	return &SubscribedFeedConnection{conn: conn}, nil
+	return &SubscribedFeedConnection{q: r.q, conn: conn}, nil
 }
