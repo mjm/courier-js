@@ -11,7 +11,6 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/loaders"
-	"github.com/mjm/courier-js/internal/models/post"
 	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/trace"
@@ -84,12 +83,11 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 			return nil, err
 		}
 
-		l := loaders.Get(ctx)
-		var p interface{}
-		p, err = l.Posts.Load(ctx, loader.IntKey(id))()
-		if err == nil {
-			n = &Post{post: p.(*post.Post)}
+		p, err := r.q.Posts.Get(ctx, id)
+		if err != nil {
+			return nil, err
 		}
+		n = NewPost(r.q, p)
 	default:
 		err = fmt.Errorf("unrecognized ID kind %q", kind)
 	}

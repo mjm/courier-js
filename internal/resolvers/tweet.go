@@ -7,9 +7,6 @@ import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 
-	"github.com/mjm/courier-js/internal/loader"
-	"github.com/mjm/courier-js/internal/loaders"
-	"github.com/mjm/courier-js/internal/models/post"
 	"github.com/mjm/courier-js/internal/models/tweet"
 )
 
@@ -19,10 +16,7 @@ type Tweet struct {
 }
 
 func NewTweet(q Queries, t *tweet.Tweet) *Tweet {
-	return &Tweet{
-		q:     q,
-		tweet: t,
-	}
+	return &Tweet{q: q, tweet: t}
 }
 
 func (t *Tweet) ID() graphql.ID {
@@ -39,13 +33,12 @@ func (t *Tweet) Feed(ctx context.Context) (*SubscribedFeed, error) {
 }
 
 func (t *Tweet) Post(ctx context.Context) (*Post, error) {
-	l := loaders.Get(ctx)
-	p, err := l.Posts.Load(ctx, loader.IntKey(t.tweet.PostID))()
+	p, err := t.q.Posts.Get(ctx, t.tweet.PostID)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Post{post: p.(*post.Post)}, nil
+	return NewPost(t.q, p), nil
 }
 
 func (t *Tweet) Action() string {

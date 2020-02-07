@@ -72,3 +72,73 @@ func (suite *feedsSuite) TestCreateMany() {
 		suite.Equal(fmt.Sprintf("https://example.com/item-%d", i), p.ItemID)
 	}
 }
+
+func (suite *feedsSuite) TestLoadByItemID() {
+	ctx := context.Background()
+	feedID, err := suite.feedRepo.Create(ctx, "https://example.com/feed.json")
+	suite.NoError(err)
+
+	var newPosts []CreatePostParams
+	for i := 0; i < 5; i++ {
+		url := fmt.Sprintf("https://example.com/item-%d", i)
+		t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
+		newPost := CreatePostParams{
+			ItemID:      url,
+			URL:         url,
+			Title:       "a post title",
+			TextContent: "text content",
+			HTMLContent: "<p>HTML content</p>",
+			PublishedAt: &t,
+		}
+		newPosts = append(newPosts, newPost)
+	}
+
+	created, err := suite.postRepo.Create(ctx, feedID, newPosts)
+	suite.NoError(err)
+
+	posts, err := suite.postRepo.FindByItemIDs(ctx, feedID, []string{
+		"https://example.com/item-2",
+		"https://example.com/item-0",
+		"https://example.com/item-4",
+	})
+	suite.NoError(err)
+
+	suite.Equal(created[2].ID, posts[0].ID)
+	suite.Equal(created[0].ID, posts[1].ID)
+	suite.Equal(created[4].ID, posts[2].ID)
+}
+
+func (suite *feedsSuite) TestLoadByItemIDWrongFeed() {
+	ctx := context.Background()
+	feedID, err := suite.feedRepo.Create(ctx, "https://example.com/feed.json")
+	suite.NoError(err)
+
+	var newPosts []CreatePostParams
+	for i := 0; i < 5; i++ {
+		url := fmt.Sprintf("https://example.com/item-%d", i)
+		t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
+		newPost := CreatePostParams{
+			ItemID:      url,
+			URL:         url,
+			Title:       "a post title",
+			TextContent: "text content",
+			HTMLContent: "<p>HTML content</p>",
+			PublishedAt: &t,
+		}
+		newPosts = append(newPosts, newPost)
+	}
+
+	_, err = suite.postRepo.Create(ctx, feedID, newPosts)
+	suite.NoError(err)
+
+	posts, err := suite.postRepo.FindByItemIDs(ctx, feedID+1000, []string{
+		"https://example.com/item-2",
+		"https://example.com/item-0",
+		"https://example.com/item-4",
+	})
+	suite.NoError(err)
+
+	for _, p := range posts {
+		suite.Nil(p)
+	}
+}

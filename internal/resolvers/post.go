@@ -5,12 +5,16 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
-
-	"github.com/mjm/courier-js/internal/models/post"
+	"github.com/mjm/courier-js/internal/read/feeds"
 )
 
 type Post struct {
-	post *post.Post
+	q    Queries
+	post *feeds.Post
+}
+
+func NewPost(q Queries, p *feeds.Post) *Post {
+	return &Post{q: q, post: p}
 }
 
 func (p *Post) ID() graphql.ID {
@@ -18,7 +22,11 @@ func (p *Post) ID() graphql.ID {
 }
 
 func (p *Post) Feed(ctx context.Context) (*Feed, error) {
-	return nil, nil
+	f, err := p.q.Feeds.Get(ctx, p.post.FeedID)
+	if err != nil {
+		return nil, err
+	}
+	return &Feed{feed: f}, nil
 }
 
 func (p *Post) ItemID() string {

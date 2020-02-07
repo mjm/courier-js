@@ -9,10 +9,12 @@ import (
 type Queries struct {
 	Feeds             feeds.FeedQueries
 	FeedSubscriptions feeds.SubscriptionQueries
+	Posts             feeds.PostQueries
 }
 
 var QueriesProvider = wire.NewSet(
 	wire.Struct(new(Queries), "*"),
 	feeds.NewFeedQueries,
 	feeds.NewSubscriptionQueries,
+	feeds.NewPostQueries,
 )
