@@ -1,8 +1,8 @@
 package resolvers
 
 import (
-	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/read/tweets"
 )
 
 type TweetConnection struct {
@@ -13,7 +13,7 @@ type TweetConnection struct {
 func (c *TweetConnection) Edges() []*TweetEdge {
 	var edges []*TweetEdge
 	for _, edge := range c.conn.Edges {
-		edges = append(edges, &TweetEdge{q: c.q, edge: edge.(*tweet.TweetEdge)})
+		edges = append(edges, &TweetEdge{q: c.q, edge: edge.(*tweets.TweetEdge)})
 	}
 	return edges
 }
@@ -21,7 +21,7 @@ func (c *TweetConnection) Edges() []*TweetEdge {
 func (c *TweetConnection) Nodes() []*Tweet {
 	var nodes []*Tweet
 	for _, edge := range c.conn.Edges {
-		t := &edge.(*tweet.TweetEdge).Tweet
+		t := &edge.(*tweets.TweetEdge).Tweet
 		nodes = append(nodes, NewTweet(c.q, t))
 	}
 	return nodes
@@ -37,7 +37,7 @@ func (c *TweetConnection) TotalCount() int32 {
 
 type TweetEdge struct {
 	q    Queries
-	edge *tweet.TweetEdge
+	edge *tweets.TweetEdge
 }
 
 func (e *TweetEdge) Node() *Tweet {

@@ -7,15 +7,15 @@ import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 
-	"github.com/mjm/courier-js/internal/models/tweet"
+	"github.com/mjm/courier-js/internal/read/tweets"
 )
 
 type Tweet struct {
 	q     Queries
-	tweet *tweet.Tweet
+	tweet *tweets.Tweet
 }
 
-func NewTweet(q Queries, t *tweet.Tweet) *Tweet {
+func NewTweet(q Queries, t *tweets.Tweet) *Tweet {
 	return &Tweet{q: q, tweet: t}
 }
 

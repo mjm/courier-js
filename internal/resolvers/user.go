@@ -7,8 +7,8 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/loaders"
-	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/stripe/stripe-go"
 )
 
@@ -63,29 +63,20 @@ func (u *User) Subscription(ctx context.Context) (*Subscription, error) {
 }
 
 func (u *User) AllTweets(ctx context.Context, args struct {
-	Filter *tweet.Filter
-	First  *int32
-	After  *pager.Cursor
-	Last   *int32
-	Before *pager.Cursor
+	pager.Options
+	Filter *tweets.Filter
 }) (*TweetConnection, error) {
 	userID, err := u.user.ID()
 	if err != nil {
 		return nil, err
 	}
 
-	p := &tweet.Pager{
-		UserID: userID,
-	}
+	var filter tweets.Filter
 	if args.Filter != nil {
-		p.Filter = *args.Filter
+		filter = *args.Filter
 	}
-	conn, err := pager.Paged(ctx, u.db, p, pager.Options{
-		First:  args.First,
-		After:  args.After,
-		Last:   args.Last,
-		Before: args.Before,
-	})
+
+	conn, err := u.q.Tweets.Paged(ctx, userID, filter, args.Options)
 	if err != nil {
 		return nil, err
 	}

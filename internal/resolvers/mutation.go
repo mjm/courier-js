@@ -7,9 +7,6 @@ import (
 	"github.com/graph-gophers/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/loader"
-	"github.com/mjm/courier-js/internal/loaders"
-	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
 )
@@ -76,12 +73,10 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 		return nil, err
 	}
 
-	l := loaders.Get(ctx)
-	v, err := l.Tweets.Load(ctx, loader.IntKey(id))()
+	t, err := r.q.Tweets.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	t := v.(*tweet.Tweet)
 
 	return &CancelTweetPayload{
 		Tweet: NewTweet(r.q, t),

@@ -9,9 +9,6 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/loader"
-	"github.com/mjm/courier-js/internal/loaders"
-	"github.com/mjm/courier-js/internal/models/tweet"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
@@ -120,14 +117,12 @@ func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet,
 		return nil, err
 	}
 
-	l := loaders.Get(ctx)
-	thunk := l.Tweets.Load(ctx, loader.IntKey(id))
-	t, err := thunk()
+	t, err := r.q.Tweets.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewTweet(r.q, t.(*tweet.Tweet)), nil
+	return NewTweet(r.q, t), nil
 }
 
 // AllSubscribedFeeds gets a paged list of feed subscriptions for the current user.
