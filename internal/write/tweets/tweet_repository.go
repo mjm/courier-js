@@ -32,8 +32,10 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, tweetID int
 		SET status = 'canceled',
 				post_after = NULL,
 				updated_at = CURRENT_TIMESTAMP
-		WHERE user_id = $1
-			AND id = $2
+		FROM feed_subscriptions
+		WHERE tweets.feed_subscription_id = feed_subscriptions.id
+			AND feed_subscriptions.user_id = $1
+			AND tweets.id = $2
 			AND status <> 'posted'
 	`, userID, tweetID)
 	if err != nil {

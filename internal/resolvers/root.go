@@ -144,3 +144,18 @@ func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*Sub
 
 	return &SubscribedFeedConnection{q: r.q, conn: conn}, nil
 }
+
+// AllEvents gets a paged list of events for the current user.
+func (r *Root) AllEvents(ctx context.Context, args pager.Options) (*EventConnection, error) {
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return nil, err
+	}
+
+	conn, err := r.q.Events.Paged(ctx, userID, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &EventConnection{q: r.q, conn: conn}, nil
+}

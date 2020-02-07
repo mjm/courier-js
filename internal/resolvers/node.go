@@ -9,6 +9,7 @@ const (
 	PostNode           string = "post"
 	FeedNode           string = "feed"
 	SubscribedFeedNode string = "sub"
+	EventNode          string = "evt"
 )
 
 type nodeResolver interface {
@@ -37,4 +38,9 @@ func (n *Node) ToTweet() (*Tweet, bool) {
 func (n *Node) ToPost() (*Post, bool) {
 	p, ok := n.nodeResolver.(*Post)
 	return p, ok
+}
+
+func (n *Node) ToEvent() (*Event, bool) {
+	e, ok := n.nodeResolver.(*Event)
+	return e, ok
 }

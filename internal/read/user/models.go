@@ -1,4 +1,4 @@
-package event
+package user
 
 import (
 	"database/sql/driver"
@@ -54,10 +54,12 @@ type Params struct {
 	SubscriptionID     string `json:"subscriptionId,omitempty"`
 }
 
+// Value implements driver.Value
 func (p Params) Value() (driver.Value, error) {
 	return json.Marshal(p)
 }
 
+// Scan implements sql.Scanner
 func (p *Params) Scan(value interface{}) error {
 	b, ok := value.([]byte)
 	if !ok {

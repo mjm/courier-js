@@ -27,12 +27,12 @@ type Query {
 
   tweet(id: ID!): Tweet
 
-  # allEvents(
-  #   first: Int
-  #   last: Int
-  #   before: Cursor
-  #   after: Cursor
-  # ): EventConnection!
+  allEvents(
+    first: Int
+    last: Int
+    before: Cursor
+    after: Cursor
+  ): EventConnection!
 
   # microformats(url: String!): MicroformatPage
 
@@ -324,11 +324,10 @@ type EventEdge {
   node: Event!
 }
 
-# type Event implements Node {
-type Event {
+type Event implements Node {
   id: ID!
   eventType: EventType!
-  createdAt: DateTime!
+  createdAt: Time!
 
   feed: Feed
   tweet: Tweet
