@@ -7,7 +7,7 @@ import (
 )
 
 type Handler interface {
-	Handle(ctx context.Context, evt interface{})
+	HandleEvent(ctx context.Context, evt interface{})
 }
 
 type Bus struct {
@@ -36,7 +36,7 @@ func (b *Bus) Fire(ctx context.Context, evt interface{}) {
 		wg.Add(1)
 		go func(h Handler) {
 			defer wg.Done()
-			h.Handle(ctx, evt)
+			h.HandleEvent(ctx, evt)
 		}(h)
 		wg.Wait()
 	}

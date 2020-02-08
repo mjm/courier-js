@@ -46,7 +46,9 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	postRepository := feeds2.NewPostRepository(dbDB)
 	commandHandler := feeds2.NewCommandHandler(commandBus, bus, feedRepository, subscriptionRepository, postRepository)
 	tweetRepository := tweets2.NewTweetRepository(dbDB)
-	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tweetRepository)
+	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
+	tweetsPostRepository := tweets2.NewPostRepository(dbDB)
+	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, tweetsPostRepository)
 	root := resolvers.New(dbDB, queries, commandBus, commandHandler, tweetsCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {

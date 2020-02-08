@@ -8,6 +8,7 @@ import (
 	"github.com/google/wire"
 
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/write"
 )
 
@@ -15,6 +16,8 @@ import (
 var DefaultSet = wire.NewSet(
 	NewCommandHandler,
 	NewTweetRepository,
+	NewFeedSubscriptionRepository,
+	NewPostRepository,
 )
 
 // CommandHandler processes tweet-related commands and updates the data store appropriately.
@@ -22,6 +25,8 @@ type CommandHandler struct {
 	bus       *write.CommandBus
 	eventBus  *event.Bus
 	tweetRepo *TweetRepository
+	subRepo   *FeedSubscriptionRepository
+	postRepo  *PostRepository
 }
 
 // NewCommandHandler creates a new command handler for tweet commands.
@@ -29,26 +34,44 @@ func NewCommandHandler(
 	bus *write.CommandBus,
 	eventBus *event.Bus,
 	tweetRepo *TweetRepository,
+	subRepo *FeedSubscriptionRepository,
+	postRepo *PostRepository,
 ) *CommandHandler {
 	h := &CommandHandler{
 		bus:       bus,
 		eventBus:  eventBus,
 		tweetRepo: tweetRepo,
+		subRepo:   subRepo,
+		postRepo:  postRepo,
 	}
 	bus.Register(h,
 		CancelCommand{},
+		ImportTweetsCommand{},
 	)
+	eventBus.Notify(h, feedevent.PostsImported{})
 	return h
 }
 
-// Handle dispatches a command to the appropriate handler function and returns the result.
-func (h *CommandHandler) Handle(ctx context.Context, cmd interface{}) (interface{}, error) {
+// HandleCommand dispatches a command to the appropriate handler function and returns the result.
+func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (interface{}, error) {
 	switch cmd := cmd.(type) {
 
 	case CancelCommand:
 		return nil, h.HandleCancel(ctx, cmd)
 
+	case ImportTweetsCommand:
+		return nil, h.handleImportTweets(ctx, cmd)
+
 	}
 
 	panic(fmt.Errorf("tweets.CommandHandler does not know how to handle command type %v", reflect.TypeOf(cmd)))
+}
+
+func (h *CommandHandler) HandleEvent(ctx context.Context, evt interface{}) {
+	switch evt := evt.(type) {
+
+	case feedevent.PostsImported:
+		h.handlePostsImported(ctx, evt)
+
+	}
 }

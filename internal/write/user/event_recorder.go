@@ -28,7 +28,7 @@ func NewEventRecorder(db db.DB, eventBus *event.Bus) *EventRecorder {
 	return r
 }
 
-func (r *EventRecorder) Handle(ctx context.Context, evt interface{}) {
+func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 	ctx = trace.Start(ctx, "Record event")
 	defer trace.Finish(ctx)
 
@@ -56,7 +56,7 @@ func (r *EventRecorder) Handle(ctx context.Context, evt interface{}) {
 	}
 }
 
-func (r *EventRecorder) record(ctx context.Context, userID string, t EventType, p EventParams) error {
+func (r *EventRecorder) record(ctx context.Context, userID string, t EventType, p EventParams) {
 	trace.Add(ctx, trace.Fields{
 		"event.type_external": string(t),
 		"event.user_id":       userID,
@@ -70,8 +70,5 @@ func (r *EventRecorder) record(ctx context.Context, userID string, t EventType, 
 		)
 	`, userID, t, p); err != nil {
 		trace.Error(ctx, err)
-		return err
 	}
-
-	return nil
 }

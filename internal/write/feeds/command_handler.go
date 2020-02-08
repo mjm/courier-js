@@ -49,8 +49,8 @@ func NewCommandHandler(
 	return h
 }
 
-// Handle dispatches a command to the appropriate handler function and returns the result.
-func (h *CommandHandler) Handle(ctx context.Context, cmd interface{}) (interface{}, error) {
+// HandleCommand dispatches a command to the appropriate handler function and returns the result.
+func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (interface{}, error) {
 	switch cmd := cmd.(type) {
 
 	case SubscribeCommand:

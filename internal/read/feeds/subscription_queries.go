@@ -112,7 +112,7 @@ func (q *subscriptionQueries) Paged(ctx context.Context, userID string, opts pag
 	return pager.Paged(ctx, q.db, &subscriptionPager{UserID: userID}, opts)
 }
 
-func (q *subscriptionQueries) Handle(ctx context.Context, evt interface{}) {
+func (q *subscriptionQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
 	case feedevent.FeedSubscribed:

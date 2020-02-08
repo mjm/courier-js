@@ -3,16 +3,17 @@ package write
 import (
 	"context"
 	"fmt"
-	"github.com/mjm/courier-js/internal/trace"
 	"reflect"
+
+	"github.com/mjm/courier-js/internal/trace"
 )
 
 // CommandHandler is a type that can handle executing one or more types of commands.
 type CommandHandler interface {
-	// Handle runs the given command and returns its result. The handler may have to
-	// dispatch on the type of the command if it registered for multiple command
-	// types.
-	Handle(ctx context.Context, cmd interface{}) (interface{}, error)
+	// HandleCommand runs the given command and returns its result. The handler may
+	// have to dispatch on the type of the command if it registered for multiple
+	// command types.
+	HandleCommand(ctx context.Context, cmd interface{}) (interface{}, error)
 }
 
 // CommandBus is a central dispatcher for commands for the application. It allows
@@ -54,7 +55,7 @@ func (b *CommandBus) Run(ctx context.Context, cmd interface{}) (interface{}, err
 		panic(fmt.Errorf("no command handler registered for command type %v", t))
 	}
 
-	res, err := h.Handle(ctx, cmd)
+	res, err := h.HandleCommand(ctx, cmd)
 	if err != nil {
 		trace.Error(ctx, err)
 	}

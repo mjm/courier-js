@@ -92,7 +92,7 @@ func (q *tweetQueries) Paged(ctx context.Context, userID string, filter Filter, 
 	return pager.Paged(ctx, q.db, &tweetPager{Filter: filter, UserID: userID}, opts)
 }
 
-func (q *tweetQueries) Handle(ctx context.Context, evt interface{}) {
+func (q *tweetQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
 	case tweetevent.TweetCanceled:

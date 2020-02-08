@@ -67,7 +67,7 @@ func (q *feedQueries) Get(ctx context.Context, id int) (*Feed, error) {
 	return v.(*Feed), nil
 }
 
-func (q *feedQueries) Handle(ctx context.Context, evt interface{}) {
+func (q *feedQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
 	case feedevent.FeedRefreshed:
