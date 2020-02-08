@@ -96,7 +96,7 @@ func Parse(tweet string, cfg Config) ParseResults {
 
 	normalizedOffset := len(tweet) - len(normalizedTweet)
 	scaledWeightedLength := weightedCount / cfg.Scale
-	isValid := !hasInvalidCharacters && scaledWeightedLength < cfg.MaxWeightedTweetLength
+	isValid := !hasInvalidCharacters && scaledWeightedLength <= cfg.MaxWeightedTweetLength
 	permillage := scaledWeightedLength * 1000 / cfg.MaxWeightedTweetLength
 	return ParseResults{
 		WeightedLength: scaledWeightedLength,
