@@ -5,6 +5,6 @@ indent_style = space
 indent_size = 2
 
 [*.go]
-indent_style = tabs
+indent_style = tab
 tab_width = 2
 indent_size = tab
