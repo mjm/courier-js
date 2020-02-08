@@ -1,8 +1,10 @@
 package htmltweets
 
 import (
-	"context"
 	"fmt"
+	"net/url"
+	"regexp"
+	"strings"
 )
 
 type Input struct {
@@ -25,7 +27,7 @@ const (
 	ActionRetweet Action = "retweet"
 )
 
-func Translate(ctx context.Context, input Input) ([]Tweet, error) {
+func Translate(input Input) ([]Tweet, error) {
 	if input.Title != "" {
 		return []Tweet{
 			{
@@ -35,8 +37,41 @@ func Translate(ctx context.Context, input Input) ([]Tweet, error) {
 		}, nil
 	}
 
-	// TODO convert
-	// TODO split
+	u, err := url.Parse(input.URL)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	p := &parser{baseURL: u}
+	res, err := p.parse(strings.NewReader(input.HTML))
+	if err != nil {
+		return nil, err
+	}
+
+	tweets := split(res)
+	if len(tweets) == 1 {
+		if retweetID := extractRetweetID(tweets[0]); retweetID != "" {
+			return []Tweet{
+				{
+					Action:    ActionRetweet,
+					RetweetID: retweetID,
+				},
+			}, nil
+		}
+	}
+
+	return tweets, nil
+}
+
+var tweetRegex = regexp.MustCompile("^https?://(?:www\\.)?twitter\\.com/[A-Za-z0-9_]+/status/([0-9]+)/?$")
+
+func extractRetweetID(tweet Tweet) string {
+	if len(tweet.MediaURLs) > 0 {
+		return ""
+	}
+
+	if match := tweetRegex.FindStringSubmatch(tweet.Body); match != nil {
+		return match[1]
+	}
+	return ""
 }
