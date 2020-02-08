@@ -43,6 +43,12 @@ func TestParse(t *testing.T) {
 		t.Run(c.Description, func(t *testing.T) {
 			results := Parse(c.Text, ConfigV3)
 			assert.Equal(t, exp.WeightedLength, results.WeightedLength)
+			assert.Equal(t, exp.Valid, results.Valid)
+			assert.Equal(t, exp.Permillage, results.Permillage)
+			assert.Equal(t, exp.DisplayRangeStart, results.DisplayTextRange.Start)
+			assert.Equal(t, exp.DisplayRangeEnd, results.DisplayTextRange.End)
+			assert.Equal(t, exp.ValidRangeStart, results.ValidTextRange.Start)
+			assert.Equal(t, exp.ValidRangeEnd, results.ValidTextRange.End)
 		})
 	}
 }
