@@ -14,6 +14,7 @@ import (
 	"github.com/mjm/courier-js/internal/event/tweetevent"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/read/tweets/queries"
 )
 
 var (
@@ -45,16 +46,6 @@ func NewTweetQueries(db db.DB, eventBus *event.Bus) TweetQueries {
 	return q
 }
 
-const tweetLoaderQuery = `
-SELECT
-	tweets.*
-FROM
-	tweets
-	JOIN feed_subscriptions ON tweets.feed_subscription_id = feed_subscriptions.id
-WHERE feed_subscriptions.user_id = $1
-	AND tweets.id = ANY($2)
-`
-
 func newTweetLoader(db db.DB) *dataloader.Loader {
 	return loader.New("Tweet Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		userID, err := auth.GetUser(ctx).ID()
@@ -62,7 +53,7 @@ func newTweetLoader(db db.DB) *dataloader.Loader {
 			return nil
 		}
 
-		rows, err := db.QueryxContext(ctx, tweetLoaderQuery, userID, loader.IntArray(keys))
+		rows, err := db.QueryxContext(ctx, queries.TweetsLoad, userID, loader.IntArray(keys))
 		if err != nil {
 			panic(err)
 		}

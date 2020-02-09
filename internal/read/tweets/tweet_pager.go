@@ -3,10 +3,12 @@ package tweets
 import (
 	"time"
 
+	"github.com/HnH/qry"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
 
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/read/tweets/queries"
 )
 
 // Filter is a predefined filter for which tweets to list in the pager.
@@ -43,37 +45,22 @@ type tweetPager struct {
 }
 
 func (p *tweetPager) EdgesQuery() string {
-	return `
-		SELECT tweets.*,
-					 posts.published_at
-			FROM tweets
-			JOIN posts
-				ON tweets.post_id = posts.id
-			JOIN feed_subscriptions
-				ON tweets.feed_subscription_id = feed_subscriptions.id
-		 WHERE feed_subscriptions.user_id = :user_id
-	` + p.filterCondition()
+	return string(qry.Query(queries.TweetsPagerEdges).Replace("__condition__", p.filterCondition()))
 }
 
 func (p *tweetPager) TotalQuery() string {
-	return `
-		SELECT COUNT(*)
-			FROM tweets
-			JOIN feed_subscriptions
-				ON tweets.feed_subscription_id = feed_subscriptions.id
-		 WHERE feed_subscriptions.user_id = :user_id
-	` + p.filterCondition()
+	return string(qry.Query(queries.TweetsPagerTotal).Replace("__condition__", p.filterCondition()))
 }
 
 func (p *tweetPager) filterCondition() string {
 	switch p.Filter {
 	case UpcomingFilter:
-		return " AND tweets.status = 'draft'"
+		return "tweets.status = 'draft'"
 	case PastFilter:
-		return " AND tweets.status <> 'draft'"
+		return "tweets.status <> 'draft'"
 	}
 
-	return ""
+	return "1 = 1"
 }
 
 func (p *tweetPager) Params() map[string]interface{} {
