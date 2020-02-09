@@ -4,8 +4,11 @@ import (
 	"context"
 	"time"
 
+	"github.com/HnH/qry"
 	"github.com/lib/pq"
+
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/write/feeds/queries"
 )
 
 // PostRepository fetches and stores information about posts imported from feeds.
@@ -23,14 +26,7 @@ func NewPostRepository(db db.DB) *PostRepository {
 // as the slice of item IDs passed in, with each Post having the item ID at the same
 // index. If no post exists with a given item ID, its position will be nil.
 func (r *PostRepository) FindByItemIDs(ctx context.Context, feedID int, itemIDs []string) ([]*Post, error) {
-	rows, err := r.db.QueryxContext(ctx, `
-		SELECT
-			*
-		FROM
-			posts
-		WHERE feed_id = $1
-			AND item_id = ANY($2)
-	`, feedID, pq.StringArray(itemIDs))
+	rows, err := r.db.QueryxContext(ctx, queries.PostsByItemIDs, feedID, pq.StringArray(itemIDs))
 	if err != nil {
 		return nil, err
 	}
@@ -79,21 +75,8 @@ func (r *PostRepository) Create(ctx context.Context, feedID int, ps []CreatePost
 		u.AppendRow(feedID, p.ItemID, p.URL, p.Title, p.TextContent, p.HTMLContent, published, modified)
 	}
 
-	rows, err := r.db.QueryxContext(ctx, `
-		INSERT INTO posts (
-			feed_id,
-			item_id,
-			url,
-			title,
-			text_content,
-			html_content,
-			published_at,
-			modified_at
-		)
-		SELECT *
-		FROM `+u.Unnest()+`
-		RETURNING *
-	`, u.Values()...)
+	q := qry.Query(queries.PostsCreate).Replace("__unnested__", u.Unnest())
+	rows, err := r.db.QueryxContext(ctx, string(q), u.Values()...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,23 +120,8 @@ func (r *PostRepository) Update(ctx context.Context, ps []UpdatePostParams) ([]*
 		u.AppendRow(p.ID, p.URL, p.Title, p.TextContent, p.HTMLContent, published, modified)
 	}
 
-	rows, err := r.db.QueryxContext(ctx, `
-		UPDATE
-			posts
-		SET url = v.url,
-				title = v.title,
-				text_content = v.text_content,
-				html_content = v.html_content,
-				published_at = v.published_at,
-				modified_at = v.modified_at,
-				updated_at = CURRENT_TIMESTAMP
-		FROM (
-			SELECT *
-			FROM `+u.Unnest()+`
-		) v(id, url, title, text_content, html_content, published_at, modified_at)
-		WHERE posts.id = v.id
-		RETURNING *
-	`, u.Values()...)
+	q := qry.Query(queries.PostsUpdate).Replace("__unnested__", u.Unnest())
+	rows, err := r.db.QueryxContext(ctx, string(q), u.Values()...)
 	if err != nil {
 		return nil, err
 	}

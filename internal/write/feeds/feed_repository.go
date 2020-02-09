@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/write/feeds/queries"
 )
 
 var (
@@ -26,9 +27,7 @@ func NewFeedRepository(db db.DB) *FeedRepository {
 // Get gets the feed with the given ID.
 func (r *FeedRepository) Get(ctx context.Context, id int) (*Feed, error) {
 	var feed Feed
-	if err := r.db.QueryRowxContext(ctx, `
-		SELECT * FROM feeds WHERE id = $1
-	`, id).StructScan(&feed); err != nil {
+	if err := r.db.QueryRowxContext(ctx, queries.FeedsGet, id).StructScan(&feed); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrNoFeed
 		}
@@ -41,9 +40,7 @@ func (r *FeedRepository) Get(ctx context.Context, id int) (*Feed, error) {
 // GetByURL gets the feed with the given URL, if it exists.
 func (r *FeedRepository) GetByURL(ctx context.Context, url string) (*Feed, error) {
 	var feed Feed
-	if err := r.db.QueryRowxContext(ctx, `
-		SELECT * FROM feeds WHERE url = $1
-	`, url).StructScan(&feed); err != nil {
+	if err := r.db.QueryRowxContext(ctx, queries.FeedsGetByURL, url).StructScan(&feed); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrNoFeed
 		}
@@ -56,9 +53,7 @@ func (r *FeedRepository) GetByURL(ctx context.Context, url string) (*Feed, error
 // Create adds a new feed with the given URL to the database.
 func (r *FeedRepository) Create(ctx context.Context, url string) (int, error) {
 	var id int
-	if err := r.db.QueryRowxContext(ctx, `
-		INSERT INTO feeds (url) VALUES ($1) RETURNING id
-	`, url).Scan(&id); err != nil {
+	if err := r.db.QueryRowxContext(ctx, queries.FeedsCreate, url).Scan(&id); err != nil {
 		return 0, err
 	}
 
@@ -76,19 +71,8 @@ type UpdateFeedParams struct {
 
 // Update saves new metadata about a feed.
 func (r *FeedRepository) Update(ctx context.Context, p UpdateFeedParams) error {
-	if _, err := r.db.ExecContext(ctx, `
-		UPDATE
-			feeds
-		SET
-			title = $1,
-			home_page_url = $2,
-			caching_headers = $3,
-			mp_endpoint = $4,
-			refreshed_at = CURRENT_TIMESTAMP,
-			updated_at = CURRENT_TIMESTAMP
-		WHERE id = $5
-		RETURNING *
-	`, p.Title, p.HomePageURL, p.CachingHeaders, p.MPEndpoint, p.ID); err != nil {
+	if _, err := r.db.ExecContext(ctx, queries.FeedsUpdate,
+		p.Title, p.HomePageURL, p.CachingHeaders, p.MPEndpoint, p.ID); err != nil {
 		return err
 	}
 
