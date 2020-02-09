@@ -2,10 +2,12 @@ package tweets
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"time"
 
 	"github.com/lib/pq"
+
 	"github.com/mjm/courier-js/internal/db"
 )
 
@@ -119,6 +121,136 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, tweetID int
 
 	if n == 0 {
 		return ErrNoTweet
+	}
+
+	return nil
+}
+
+type CreateTweetParams struct {
+	PostID    int
+	Action    TweetAction
+	Body      string
+	MediaURLs []string
+	RetweetID string
+	Position  int
+}
+
+func (r *TweetRepository) Create(ctx context.Context, subID int, autopost bool, ts []CreateTweetParams) ([]int, error) {
+	if len(ts) == 0 {
+		return nil, nil
+	}
+
+	postAfter := "NULL"
+	if autopost {
+		postAfter = "CURRENT_TIMESTAMP + interval '5 minutes'"
+	}
+
+	emptyMediaURLs := []byte("[]")
+	u := db.NewUnnester("int8", "tweet_action", "text", "json", "text", "int4")
+	for _, t := range ts {
+		mediaURLs := emptyMediaURLs
+		if len(t.MediaURLs) > 0 {
+			var err error
+			mediaURLs, err = json.Marshal(t.MediaURLs)
+			if err != nil {
+				return nil, err
+			}
+		}
+		u.AppendRow(t.PostID, t.Action, t.Body, mediaURLs, t.RetweetID, t.Position)
+	}
+
+	args := append([]interface{}{subID}, u.Values()...)
+	rows, err := r.db.QueryxContext(ctx, `
+		INSERT INTO tweets (
+			feed_subscription_id,
+			post_after,
+			post_id,
+			action,
+			body,
+			media_urls,
+			retweet_id,
+			position
+		)
+		SELECT
+			$1,
+      `+postAfter+`,
+		  v.post_id,
+		  v.action,
+		  v.body,
+		  ARRAY(SELECT json_array_elements_text(v.media_urls)),
+		  v.retweet_id,
+		  v.position
+		FROM
+			`+u.UnnestFrom(2)+`
+			v(post_id, action, body, media_urls, retweet_id, position)
+		RETURNING id
+	`, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	var ids []int
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+
+	return ids, nil
+}
+
+type UpdateTweetParams struct {
+	ID        int
+	Action    TweetAction
+	Body      string
+	MediaURLs []string
+	RetweetID string
+}
+
+func (r *TweetRepository) Update(ctx context.Context, ts []UpdateTweetParams) error {
+	// avoid a query if there are no values
+	if len(ts) == 0 {
+		return nil
+	}
+
+	emptyMediaURLs := []byte("[]")
+	u := db.NewUnnester("int4", "tweet_action", "text", "json", "text")
+	for _, t := range ts {
+		mediaURLs := emptyMediaURLs
+		if len(t.MediaURLs) > 0 {
+			var err error
+			mediaURLs, err = json.Marshal(t.MediaURLs)
+			if err != nil {
+				return err
+			}
+		}
+		u.AppendRow(t.ID, t.Action, t.Body, mediaURLs, t.RetweetID)
+	}
+
+	_, err := r.db.ExecContext(ctx, `
+		UPDATE
+			tweets
+		SET action = v.action,
+				body = v.body,
+				media_urls = v.media_urls,
+				retweet_id = v.retweet_id,
+				updated_at = CURRENT_TIMESTAMP
+		FROM (
+			SELECT
+				v.id,
+				v.action,
+				v.body,
+				ARRAY(SELECT json_array_elements_text(v.media_urls)),
+				v.retweet_id
+			FROM `+u.Unnest()+`
+				v(id, action, body, media_urls, retweet_id)
+		) v
+		WHERE posts.id = v.id
+	`, u.Values()...)
+	if err != nil {
+		return err
 	}
 
 	return nil

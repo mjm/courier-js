@@ -38,14 +38,18 @@ func (u *Unnester) AppendRow(vs ...driver.Value) {
 }
 
 func (u *Unnester) Unnest() string {
+	return u.UnnestFrom(1)
+}
+
+func (u *Unnester) UnnestFrom(i int) string {
 	var b strings.Builder
 	b.WriteString("unnest(")
 
-	for i, col := range u.cols {
-		if i > 0 {
+	for j, col := range u.cols {
+		if j > 0 {
 			b.WriteString(", ")
 		}
-		fmt.Fprintf(&b, "$%d::%s[]", i+1, col.colType)
+		fmt.Fprintf(&b, "$%d::%s[]", j+i, col.colType)
 	}
 
 	b.WriteString(")")

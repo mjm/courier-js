@@ -47,8 +47,12 @@ func NewCommandHandler(
 	bus.Register(h,
 		CancelCommand{},
 		ImportTweetsCommand{},
+		ImportRecentPostsCommand{},
 	)
-	eventBus.Notify(h, feedevent.PostsImported{})
+	eventBus.Notify(h,
+		feedevent.PostsImported{},
+		feedevent.FeedSubscribed{},
+	)
 	return h
 }
 
@@ -62,6 +66,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 	case ImportTweetsCommand:
 		return nil, h.handleImportTweets(ctx, cmd)
 
+	case ImportRecentPostsCommand:
+		return nil, h.handleImportRecentPosts(ctx, cmd)
+
 	}
 
 	panic(fmt.Errorf("tweets.CommandHandler does not know how to handle command type %v", reflect.TypeOf(cmd)))
@@ -72,6 +79,9 @@ func (h *CommandHandler) HandleEvent(ctx context.Context, evt interface{}) {
 
 	case feedevent.PostsImported:
 		h.handlePostsImported(ctx, evt)
+
+	case feedevent.FeedSubscribed:
+		h.handleFeedSubscribed(ctx, evt)
 
 	}
 }

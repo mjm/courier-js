@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/lib/pq"
+
 	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/scraper"
@@ -54,28 +55,6 @@ func (h *CommandHandler) HandleImportPosts(ctx context.Context, cmd ImportPostsC
 			PostIDs: ids,
 		})
 	}
-
-	// // create tweets for each subscription
-	// if len(changed) > 0 {
-	// 	subs, err := feed.Subscriptions(ctx, srv.db, cmd.FeedID)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	trace.AddField(ctx, "import.subscription_count", len(subs))
-
-	// 	wg, subCtx := errgroup.WithContext(ctx)
-	// 	for _, sub := range subs {
-	// 		sub := sub
-	// 		wg.Go(func() error {
-	// 			return h.createSubscriptionTweets(subCtx, sub, changed)
-	// 		})
-	// 	}
-	// 	if err := wg.Wait(); err != nil {
-	// 		trace.Error(ctx, err)
-	// 		return err
-	// 	}
-	// }
 
 	return nil
 }

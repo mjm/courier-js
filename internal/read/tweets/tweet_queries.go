@@ -41,7 +41,7 @@ func NewTweetQueries(db db.DB, eventBus *event.Bus) TweetQueries {
 		db:     db,
 		loader: newTweetLoader(db),
 	}
-	eventBus.Notify(q, tweetevent.TweetCanceled{})
+	eventBus.Notify(q, tweetevent.TweetCanceled{}, tweetevent.TweetsUpdated{})
 	return q
 }
 
@@ -97,6 +97,11 @@ func (q *tweetQueries) HandleEvent(ctx context.Context, evt interface{}) {
 
 	case tweetevent.TweetCanceled:
 		q.loader.Clear(ctx, loader.IntKey(evt.TweetID))
+
+	case tweetevent.TweetsUpdated:
+		for _, id := range evt.TweetIDs {
+			q.loader.Clear(ctx, loader.IntKey(id))
+		}
 
 	}
 }

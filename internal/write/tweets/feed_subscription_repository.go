@@ -47,3 +47,21 @@ func (r *FeedSubscriptionRepository) ByFeedID(ctx context.Context, feedID int) (
 	}
 	return subs, nil
 }
+
+func (r *FeedSubscriptionRepository) Get(ctx context.Context, id int) (*FeedSubscription, error) {
+	var sub FeedSubscription
+	if err := r.db.QueryRowxContext(ctx, `
+		SELECT
+			id,
+			feed_id,
+			user_id,
+			autopost
+		FROM
+			feed_subscriptions
+		WHERE	id = $1
+	`, id).StructScan(&sub); err != nil {
+		return nil, err
+	}
+
+	return &sub, nil
+}

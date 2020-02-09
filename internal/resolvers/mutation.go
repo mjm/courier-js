@@ -47,6 +47,42 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	}, nil
 }
 
+type RefreshFeedPayload struct {
+	Feed *Feed
+}
+
+func (r *Root) RefreshFeed(ctx context.Context, args struct {
+	Input struct{ ID graphql.ID }
+}) (*RefreshFeedPayload, error) {
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return nil, err
+	}
+
+	var id int
+	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+		return nil, err
+	}
+
+	cmd := feeds.RefreshCommand{
+		UserID: userID,
+		FeedID: id,
+		Force:  false,
+	}
+	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	f, err := r.q.Feeds.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &RefreshFeedPayload{
+		Feed: &Feed{feed: f},
+	}, nil
+}
+
 type CancelTweetPayload struct {
 	Tweet *Tweet
 }

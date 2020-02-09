@@ -5,7 +5,10 @@ import (
 	"sync"
 
 	"github.com/mjm/courier-js/internal/event/feedevent"
+	"github.com/mjm/courier-js/internal/event/tweetevent"
 	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/pkg/htmltweets"
+
 	"golang.org/x/sync/errgroup"
 )
 
@@ -36,7 +39,8 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	}
 
 	wg, subCtx := errgroup.WithContext(ctx)
-	var toCreate []interface{}
+	var toCreate []CreateTweetParams
+	var toUpdate []UpdateTweetParams
 	var lock sync.Mutex
 
 	for _, post := range cmd.Posts {
@@ -44,7 +48,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 		tweets := tweetsByPost[post.ID]
 
 		wg.Go(func() error {
-			newTweets, err := h.planTweets(subCtx, post, tweets)
+			newTweets, updateTweets, err := h.planTweets(subCtx, post, tweets)
 			if err != nil {
 				return err
 			}
@@ -52,6 +56,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 			lock.Lock()
 			defer lock.Unlock()
 			toCreate = append(toCreate, newTweets...)
+			toUpdate = append(toUpdate, updateTweets...)
 			return nil
 		})
 	}
@@ -60,21 +65,120 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 		return err
 	}
 
+	trace.Add(ctx, trace.Fields{
+		"import.tweet_create_count": len(toCreate),
+		"import.tweet_update_count": len(toUpdate),
+	})
+
+	createdIDs, err := h.tweetRepo.Create(ctx, cmd.Subscription.ID, cmd.Subscription.Autopost, toCreate)
+	if err != nil {
+		return err
+	}
+
+	if err := h.tweetRepo.Update(ctx, toUpdate); err != nil {
+		return err
+	}
+
+	eventBase := tweetevent.TweetsImported{
+		UserID:         cmd.Subscription.UserID,
+		SubscriptionID: cmd.Subscription.ID,
+	}
+
+	createdEvt := tweetevent.TweetsCreated{TweetsImported: eventBase}
+	createdEvt.TweetIDs = createdIDs
+	if len(createdEvt.TweetIDs) > 0 {
+		h.eventBus.Fire(ctx, createdEvt)
+	}
+
+	updatedEvt := tweetevent.TweetsUpdated{TweetsImported: eventBase}
+	for _, params := range toUpdate {
+		updatedEvt.TweetIDs = append(updatedEvt.TweetIDs, params.ID)
+	}
+	if len(updatedEvt.TweetIDs) > 0 {
+		h.eventBus.Fire(ctx, updatedEvt)
+	}
+
+	importedEvt := eventBase
+	importedEvt.TweetIDs = append([]int{}, createdEvt.TweetIDs...)
+	importedEvt.TweetIDs = append(importedEvt.TweetIDs, updatedEvt.TweetIDs...)
+	if len(importedEvt.TweetIDs) > 0 {
+		h.eventBus.Fire(ctx, importedEvt)
+	}
+
 	return nil
 }
 
-func (h *CommandHandler) planTweets(ctx context.Context, post *Post, tweets []*Tweet) ([]interface{}, error) {
+func (h *CommandHandler) planTweets(ctx context.Context, post *Post, tweets []*Tweet) ([]CreateTweetParams, []UpdateTweetParams, error) {
 	ctx = trace.Start(ctx, "Plan tweets")
 	defer trace.Finish(ctx)
 
 	trace.Add(ctx, trace.Fields{
-		"post.id":              post.ID,
-		"existing_tweet_count": len(tweets),
+		"post.id":                     post.ID,
+		"import.existing_tweet_count": len(tweets),
 	})
 
-	// TODO translate tweets from HTML
+	translated, err := htmltweets.Translate(htmltweets.Input{
+		Title: post.Title,
+		URL:   post.URL,
+		HTML:  post.HTMLContent,
+	})
+	if err != nil {
+		return nil, nil, err
+	}
 
-	return nil, nil
+	trace.Add(ctx, trace.Fields{
+		"import.translated_tweet_count": len(translated),
+	})
+
+	var toCreate []CreateTweetParams
+	var toUpdate []UpdateTweetParams
+
+	for i, newTweet := range translated {
+		if len(tweets) > i {
+			existingTweet := tweets[i]
+			if existingTweet.Status == Posted {
+				continue
+			}
+
+			t := UpdateTweetParams{ID: existingTweet.ID}
+
+			switch newTweet.Action {
+			case htmltweets.ActionTweet:
+				t.Action = ActionTweet
+				t.Body = newTweet.Body
+				t.MediaURLs = newTweet.MediaURLs
+			case htmltweets.ActionRetweet:
+				t.Action = ActionRetweet
+				t.RetweetID = newTweet.RetweetID
+			}
+
+			toUpdate = append(toUpdate, t)
+		} else {
+			t := CreateTweetParams{
+				PostID:   post.ID,
+				Position: i,
+			}
+
+			switch newTweet.Action {
+			case htmltweets.ActionTweet:
+				t.Action = ActionTweet
+				t.Body = newTweet.Body
+				t.MediaURLs = newTweet.MediaURLs
+			case htmltweets.ActionRetweet:
+				t.Action = ActionRetweet
+				t.RetweetID = newTweet.RetweetID
+			}
+
+			toCreate = append(toCreate, t)
+		}
+	}
+
+	trace.Add(ctx, trace.Fields{
+		"import.created_count": len(toCreate),
+		"import.updated_count": len(toUpdate),
+	})
+
+	return toCreate, toUpdate, nil
 }
 
 func (h *CommandHandler) handlePostsImported(ctx context.Context, evt feedevent.PostsImported) {
