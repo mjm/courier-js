@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/write/tweets/queries"
 )
 
 type FeedSubscription struct {
@@ -22,16 +23,7 @@ func NewFeedSubscriptionRepository(db db.DB) *FeedSubscriptionRepository {
 }
 
 func (r *FeedSubscriptionRepository) ByFeedID(ctx context.Context, feedID int) ([]*FeedSubscription, error) {
-	rows, err := r.db.QueryxContext(ctx, `
-		SELECT
-			id,
-			feed_id,
-			user_id,
-			autopost
-		FROM
-			feed_subscriptions
-		WHERE	feed_id = $1
-	`, feedID)
+	rows, err := r.db.QueryxContext(ctx, queries.FeedSubscriptionsByFeedID, feedID)
 	if err != nil {
 		return nil, err
 	}
@@ -50,16 +42,7 @@ func (r *FeedSubscriptionRepository) ByFeedID(ctx context.Context, feedID int) (
 
 func (r *FeedSubscriptionRepository) Get(ctx context.Context, id int) (*FeedSubscription, error) {
 	var sub FeedSubscription
-	if err := r.db.QueryRowxContext(ctx, `
-		SELECT
-			id,
-			feed_id,
-			user_id,
-			autopost
-		FROM
-			feed_subscriptions
-		WHERE	id = $1
-	`, id).StructScan(&sub); err != nil {
+	if err := r.db.QueryRowxContext(ctx, queries.FeedSubscriptionsGet, id).StructScan(&sub); err != nil {
 		return nil, err
 	}
 

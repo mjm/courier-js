@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/DataDog/zstd v1.4.4 // indirect
 	github.com/GoogleCloudPlatform/functions-framework-go v1.0.0
+	github.com/HnH/qry v1.1.0
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/PuerkitoBio/purell v1.1.1
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect

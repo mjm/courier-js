@@ -6,9 +6,11 @@ import (
 	"errors"
 	"time"
 
+	"github.com/HnH/qry"
 	"github.com/lib/pq"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/write/tweets/queries"
 )
 
 var (
@@ -98,18 +100,7 @@ func (r *TweetRepository) ByPostIDs(ctx context.Context, subID int, postIDs []in
 // the post_after field to prevent the tweet from being autoposted if it is uncanceled
 // later.
 func (r *TweetRepository) Cancel(ctx context.Context, userID string, tweetID int) error {
-	res, err := r.db.ExecContext(ctx, `
-		UPDATE
-			tweets
-		SET status = 'canceled',
-				post_after = NULL,
-				updated_at = CURRENT_TIMESTAMP
-		FROM feed_subscriptions
-		WHERE tweets.feed_subscription_id = feed_subscriptions.id
-			AND feed_subscriptions.user_id = $1
-			AND tweets.id = $2
-			AND status <> 'posted'
-	`, userID, tweetID)
+	res, err := r.db.ExecContext(ctx, queries.TweetsCancel, userID, tweetID)
 	if err != nil {
 		return err
 	}
@@ -140,9 +131,10 @@ func (r *TweetRepository) Create(ctx context.Context, subID int, autopost bool, 
 		return nil, nil
 	}
 
-	postAfter := "NULL"
+	var postAfter pq.NullTime
 	if autopost {
-		postAfter = "CURRENT_TIMESTAMP + interval '5 minutes'"
+		postAfter.Valid = true
+		postAfter.Time = time.Now().Add(5 * time.Minute)
 	}
 
 	emptyMediaURLs := []byte("[]")
@@ -159,32 +151,9 @@ func (r *TweetRepository) Create(ctx context.Context, subID int, autopost bool, 
 		u.AppendRow(t.PostID, t.Action, t.Body, mediaURLs, t.RetweetID, t.Position)
 	}
 
-	args := append([]interface{}{subID}, u.Values()...)
-	rows, err := r.db.QueryxContext(ctx, `
-		INSERT INTO tweets (
-			feed_subscription_id,
-			post_after,
-			post_id,
-			action,
-			body,
-			media_urls,
-			retweet_id,
-			position
-		)
-		SELECT
-			$1,
-      `+postAfter+`,
-		  v.post_id,
-		  v.action,
-		  v.body,
-		  ARRAY(SELECT json_array_elements_text(v.media_urls)),
-		  v.retweet_id,
-		  v.position
-		FROM
-			`+u.UnnestFrom(2)+`
-			v(post_id, action, body, media_urls, retweet_id, position)
-		RETURNING id
-	`, args...)
+	args := append([]interface{}{subID, postAfter}, u.Values()...)
+	q := qry.Query(queries.TweetsCreate).Replace("__unnested__", u.UnnestFrom(3))
+	rows, err := r.db.QueryxContext(ctx, string(q), args...)
 	if err != nil {
 		return nil, err
 	}
@@ -229,26 +198,8 @@ func (r *TweetRepository) Update(ctx context.Context, ts []UpdateTweetParams) er
 		u.AppendRow(t.ID, t.Action, t.Body, mediaURLs, t.RetweetID)
 	}
 
-	_, err := r.db.ExecContext(ctx, `
-		UPDATE
-			tweets
-		SET action = v.action,
-				body = v.body,
-				media_urls = v.media_urls,
-				retweet_id = v.retweet_id,
-				updated_at = CURRENT_TIMESTAMP
-		FROM (
-			SELECT
-				v.id,
-				v.action,
-				v.body,
-				ARRAY(SELECT json_array_elements_text(v.media_urls)),
-				v.retweet_id
-			FROM `+u.Unnest()+`
-				v(id, action, body, media_urls, retweet_id)
-		) v
-		WHERE posts.id = v.id
-	`, u.Values()...)
+	q := qry.Query(queries.TweetsUpdate).Replace("__unnested__", u.Unnest())
+	_, err := r.db.ExecContext(ctx, string(q), u.Values()...)
 	if err != nil {
 		return err
 	}

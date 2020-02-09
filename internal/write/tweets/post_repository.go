@@ -6,6 +6,7 @@ import (
 	"github.com/lib/pq"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/write/tweets/queries"
 )
 
 type Post struct {
@@ -27,24 +28,8 @@ func NewPostRepository(db db.DB) *PostRepository {
 	return &PostRepository{db: db}
 }
 
-const postColumns = `
-			id,
-			item_id,
-			text_content,
-			html_content,
-			title,
-			url,
-			published_at,
-			modified_at
-`
-
 func (r *PostRepository) ByIDs(ctx context.Context, ids []int) ([]*Post, error) {
-	rows, err := r.db.QueryxContext(ctx, `
-		SELECT`+postColumns+`
-		FROM
-			posts
-		WHERE id = ANY($1)
-	`, pq.Array(ids))
+	rows, err := r.db.QueryxContext(ctx, queries.PostsByIDs, pq.Array(ids))
 	if err != nil {
 		return nil, err
 	}
@@ -62,15 +47,7 @@ func (r *PostRepository) ByIDs(ctx context.Context, ids []int) ([]*Post, error) 
 }
 
 func (r *PostRepository) RecentPosts(ctx context.Context, feedID int) ([]*Post, error) {
-	rows, err := r.db.QueryxContext(ctx, `
-		SELECT`+postColumns+`
-		FROM
-			posts
-		WHERE feed_id = $1
-		ORDER BY
-			published_at DESC
-		LIMIT 10
-	`, feedID)
+	rows, err := r.db.QueryxContext(ctx, queries.PostsRecent, feedID)
 	if err != nil {
 		return nil, err
 	}
