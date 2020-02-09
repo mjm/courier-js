@@ -1,0 +1,5 @@
+BEGIN;
+
+ALTER TABLE tweets DROP COLUMN post_after;
+
+COMMIT;
