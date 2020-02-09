@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/mjm/courier-js/internal/db"
 )
 
@@ -79,7 +81,7 @@ func Paged(ctx context.Context, db db.DB, p Pager, opts Options) (*Connection, e
 
 	var pageInfo PageInfo
 
-	query := p.EdgesQuery()
+	query := fixQuery(p.EdgesQuery())
 	orderBy, ascending := p.OrderBy()
 	if opts.isReversed() {
 		ascending = !ascending
@@ -102,28 +104,23 @@ func Paged(ctx context.Context, db db.DB, p Pager, opts Options) (*Connection, e
 	fmt.Fprintf(&q, "\nORDER BY %s %s", orderBy, dir)
 	fmt.Fprintf(&q, "\nLIMIT %d", opts.limit()+1)
 
+	wg, subCtx := errgroup.WithContext(ctx)
+
 	var rows *sqlx.Rows
-	rowDone := make(chan error)
-	go func() {
+	wg.Go(func() error {
 		var err error
-		rows, err = db.NamedQueryContext(ctx, q.String(), params)
-		rowDone <- err
-	}()
+		rows, err = db.NamedQueryContext(subCtx, q.String(), params)
+		return err
+	})
 
 	var totalResult *sqlx.Rows
-	totalDone := make(chan error)
-	go func() {
+	wg.Go(func() error {
 		var err error
-		totalResult, err = db.NamedQueryContext(ctx, p.TotalQuery(), params)
-		totalDone <- err
-	}()
+		totalResult, err = db.NamedQueryContext(subCtx, p.TotalQuery(), params)
+		return err
+	})
 
-	err := <-rowDone
-	if err != nil {
-		return nil, err
-	}
-	err = <-totalDone
-	if err != nil {
+	if err := wg.Wait(); err != nil {
 		return nil, err
 	}
 
@@ -201,4 +198,10 @@ func reverse(edges []Edge) {
 	for left, right := 0, len(edges)-1; left < right; left, right = left+1, right-1 {
 		edges[left], edges[right] = edges[right], edges[left]
 	}
+}
+
+func fixQuery(q string) string {
+	// our query constants are semicolon-terminated, but we need to append things to the edges
+	// query.
+	return strings.TrimSuffix(q, ";")
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/read/feeds/queries"
 )
 
 type SubscriptionEdge struct {
@@ -22,27 +23,11 @@ type subscriptionPager struct {
 var _ pager.Pager = (*subscriptionPager)(nil)
 
 func (*subscriptionPager) EdgesQuery() string {
-	return `
-		SELECT
-			feed_subscriptions.*,
-			feeds.url
-		FROM
-			feed_subscriptions
-			JOIN feeds ON feed_subscriptions.feed_id = feeds.id
-		WHERE user_id = :user_id
-			AND discarded_at IS NULL
-	`
+	return queries.SubscriptionsPagerEdges
 }
 
 func (*subscriptionPager) TotalQuery() string {
-	return `
-		SELECT
-			COUNT(*)
-		FROM
-			feed_subscriptions
-		WHERE user_id = :user_id
-			AND discarded_at IS NULL
-	`
+	return queries.SubscriptionsPagerTotal
 }
 
 func (p *subscriptionPager) Params() map[string]interface{} {

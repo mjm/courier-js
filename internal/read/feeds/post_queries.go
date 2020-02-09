@@ -11,6 +11,7 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/loader"
+	"github.com/mjm/courier-js/internal/read/feeds/queries"
 )
 
 var (
@@ -40,17 +41,9 @@ func NewPostQueries(db db.DB, eventBus *event.Bus) PostQueries {
 	return q
 }
 
-const postLoaderQuery = `
-	SELECT
-		*
-	FROM
-		posts
-	WHERE id = ANY($1)
-`
-
 func newPostLoader(db db.DB) *dataloader.Loader {
 	return loader.New("Post Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-		rows, err := db.QueryxContext(ctx, postLoaderQuery, loader.IntArray(keys))
+		rows, err := db.QueryxContext(ctx, queries.PostsLoad, loader.IntArray(keys))
 		if err != nil {
 			panic(err)
 		}

@@ -14,6 +14,7 @@ import (
 	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/read/feeds/queries"
 )
 
 var (
@@ -47,16 +48,6 @@ func NewSubscriptionQueries(db db.DB, eventBus *event.Bus) SubscriptionQueries {
 	return q
 }
 
-const subscriptionLoaderQuery = `
-	SELECT
-		*
-	FROM
-		feed_subscriptions
-	WHERE user_id = $1
-		AND discarded_at IS NULL
-		AND id = ANY($2)
-`
-
 func newSubscriptionLoader(db db.DB) *dataloader.Loader {
 	return loader.New("Feed Subscription Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		userID, err := auth.GetUser(ctx).ID()
@@ -64,7 +55,7 @@ func newSubscriptionLoader(db db.DB) *dataloader.Loader {
 			return nil
 		}
 
-		rows, err := db.QueryxContext(ctx, subscriptionLoaderQuery, userID, loader.IntArray(keys))
+		rows, err := db.QueryxContext(ctx, queries.SubscriptionsLoad, userID, loader.IntArray(keys))
 		if err != nil {
 			panic(err)
 		}
@@ -92,16 +83,7 @@ func (q *subscriptionQueries) Get(ctx context.Context, id int) (*Subscription, e
 
 func (q *subscriptionQueries) GetEdge(ctx context.Context, id int) (*SubscriptionEdge, error) {
 	var row SubscriptionEdge
-	if err := q.db.QueryRowxContext(ctx, `
-		SELECT
-			feed_subscriptions.*,
-			feeds.url
-		FROM
-			feed_subscriptions
-			JOIN feeds ON feed_subscriptions.feed_id = feeds.id
-		WHERE
-			feed_subscriptions.id = $1
-	`, id).StructScan(&row); err != nil {
+	if err := q.db.QueryRowxContext(ctx, queries.SubscriptionsGetEdge, id).StructScan(&row); err != nil {
 		return nil, err
 	}
 

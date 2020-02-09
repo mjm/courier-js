@@ -7,10 +7,12 @@ import (
 
 	"github.com/graph-gophers/dataloader"
 	"github.com/jmoiron/sqlx"
+
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/loader"
+	"github.com/mjm/courier-js/internal/read/feeds/queries"
 )
 
 var (
@@ -40,11 +42,9 @@ func NewFeedQueries(db db.DB, eventBus *event.Bus) FeedQueries {
 	return q
 }
 
-const feedLoaderQuery = `SELECT * FROM feeds WHERE id = ANY($1)`
-
 func newFeedLoader(db db.DB) *dataloader.Loader {
 	return loader.New("Feed Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-		rows, _ := db.QueryxContext(ctx, feedLoaderQuery, loader.IntArray(keys))
+		rows, _ := db.QueryxContext(ctx, queries.FeedsLoad, loader.IntArray(keys))
 		return loader.Gather(keys, rows, func(rows *sqlx.Rows) (interface{}, string, error) {
 			var feed Feed
 			if err := rows.StructScan(&feed); err != nil {
