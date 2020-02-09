@@ -8,6 +8,7 @@ import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 
+	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/read/user"
 )
 
@@ -37,12 +38,7 @@ func (e *Event) Feed(ctx context.Context) (*Feed, error) {
 		return nil, nil
 	}
 
-	id, err := strconv.Atoi(e.event.Params.FeedID)
-	if err != nil {
-		return nil, err
-	}
-
-	f, err := e.q.Feeds.Get(ctx, id)
+	f, err := e.q.Feeds.Get(ctx, feeds.FeedID(e.event.Params.FeedID))
 	if err != nil {
 		return nil, err
 	}

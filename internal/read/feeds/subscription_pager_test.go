@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 func (suite *feedsSuite) TestSubscriptionsEmpty() {
@@ -114,7 +115,8 @@ func (suite *feedsSuite) TestSubscriptionsExcludeOtherUsers() {
 func (suite *feedsSuite) createSubscriptions(ctx context.Context, n int) error {
 	for i := 0; i < n; i++ {
 		url := fmt.Sprintf("https://www.example.com/feed%d.json", i)
-		feedID, err := suite.feedRepo.Create(ctx, url)
+		feedID := feeds.NewFeedID()
+		err := suite.feedRepo.Create(ctx, feedID, url)
 		if err != nil {
 			return err
 		}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 func (suite *feedsSuite) TestGetSubscriptionDoesNotExist() {
@@ -17,7 +18,8 @@ func (suite *feedsSuite) TestGetSubscriptionDoesNotExist() {
 func (suite *feedsSuite) TestGetSubscription() {
 	ctx := auth.WithMockUser(context.Background(), "test_user")
 
-	feedID, err := suite.feedRepo.Create(ctx, "https://www.example.org/feeds.json")
+	feedID := feeds.NewFeedID()
+	err := suite.feedRepo.Create(ctx, feedID, "https://www.example.org/feeds.json")
 	suite.NoError(err)
 	subID, err := suite.subRepo.Create(ctx, "test_user", feedID)
 	suite.NoError(err)
@@ -33,7 +35,8 @@ func (suite *feedsSuite) TestGetSubscription() {
 func (suite *feedsSuite) TestGetSubscriptionOtherUser() {
 	ctx := auth.WithMockUser(context.Background(), "test_user")
 
-	feedID, err := suite.feedRepo.Create(ctx, "https://www.example.org/feeds.json")
+	feedID := feeds.NewFeedID()
+	err := suite.feedRepo.Create(ctx, feedID, "https://www.example.org/feeds.json")
 	suite.NoError(err)
 	subID, err := suite.subRepo.Create(ctx, "test_user2", feedID)
 	suite.NoError(err)
@@ -46,7 +49,8 @@ func (suite *feedsSuite) TestGetSubscriptionOtherUser() {
 func (suite *feedsSuite) TestGetSubscriptionEdge() {
 	ctx := auth.WithMockUser(context.Background(), "test_user")
 
-	feedID, err := suite.feedRepo.Create(ctx, "https://www.example.org/feeds.json")
+	feedID := feeds.NewFeedID()
+	err := suite.feedRepo.Create(ctx, feedID, "https://www.example.org/feeds.json")
 	suite.NoError(err)
 	subID, err := suite.subRepo.Create(ctx, "test_user", feedID)
 	suite.NoError(err)

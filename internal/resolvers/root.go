@@ -59,7 +59,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	var err error
 	switch kind {
 	case FeedNode:
-		var id int
+		var id feeds.FeedID
 		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 			return nil, err
 		}

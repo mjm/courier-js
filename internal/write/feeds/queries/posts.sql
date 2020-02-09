@@ -2,14 +2,14 @@
 SELECT *
 FROM
   posts
-WHERE feed_id = $1
+WHERE feed_guid = $1
   AND item_id = ANY ($2);
 
 -- noinspection SqlInsertValues
 -- qry: PostsCreate
 INSERT INTO
   posts
-  (feed_id,
+  (feed_guid,
    item_id,
    url,
    title,

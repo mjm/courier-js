@@ -10,7 +10,8 @@ import (
 
 func (suite *feedsSuite) TestGetPost() {
 	ctx := context.Background()
-	feedID, err := suite.feedRepo.Create(ctx, "https://example.com/feed.json")
+	feedID := feeds.NewFeedID()
+	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
 	suite.NoError(err)
 
 	var newPosts []feeds.CreatePostParams

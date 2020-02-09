@@ -2,8 +2,8 @@ package queries
 
 const (
 	// feed_subscriptions.sql
-	FeedSubscriptionsByFeedID = "SELECT id, feed_id, user_id, autopost FROM feed_subscriptions WHERE feed_id = $1;"
-	FeedSubscriptionsGet      = "SELECT id, feed_id, user_id, autopost FROM feed_subscriptions WHERE	id = $1;"
+	FeedSubscriptionsByFeedID = "SELECT id, feed_guid, user_id, autopost FROM feed_subscriptions WHERE feed_guid = $1;"
+	FeedSubscriptionsGet      = "SELECT id, feed_guid, user_id, autopost FROM feed_subscriptions WHERE	id = $1;"
 
 	// posts.sql
 	PostsByIDs  = "SELECT id, item_id, text_content, html_content, title, url, published_at, modified_at FROM posts WHERE id = ANY ($1);"

@@ -2,4 +2,4 @@
 SELECT *
 FROM
   feeds
-WHERE id = ANY ($1);
+WHERE guid = ANY ($1);

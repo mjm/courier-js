@@ -1,11 +1,11 @@
 -- qry: SubscriptionsCreate
 INSERT INTO
   feed_subscriptions
-  (user_id, feed_id)
+  (user_id, feed_guid)
 VALUES
   ($1, $2)
 ON CONFLICT
-  (feed_id, user_id)
+  (feed_guid, user_id)
   DO UPDATE
   SET
     discarded_at = NULL

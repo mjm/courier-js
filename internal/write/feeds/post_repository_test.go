@@ -8,14 +8,15 @@ import (
 
 func (suite *feedsSuite) TestCreateNone() {
 	ctx := context.Background()
-	posts, err := suite.postRepo.Create(ctx, 123, nil)
+	posts, err := suite.postRepo.Create(ctx, NewFeedID(), nil)
 	suite.NoError(err)
 	suite.Nil(posts)
 }
 
 func (suite *feedsSuite) TestCreateOne() {
 	ctx := context.Background()
-	feedID, err := suite.feedRepo.Create(ctx, "https://example.com/feed.json")
+	feedID := NewFeedID()
+	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
 	suite.NoError(err)
 
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
@@ -45,7 +46,8 @@ func (suite *feedsSuite) TestCreateOne() {
 
 func (suite *feedsSuite) TestCreateMany() {
 	ctx := context.Background()
-	feedID, err := suite.feedRepo.Create(ctx, "https://example.com/feed.json")
+	feedID := NewFeedID()
+	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
 	suite.NoError(err)
 
 	var newPosts []CreatePostParams
@@ -75,7 +77,8 @@ func (suite *feedsSuite) TestCreateMany() {
 
 func (suite *feedsSuite) TestLoadByItemID() {
 	ctx := context.Background()
-	feedID, err := suite.feedRepo.Create(ctx, "https://example.com/feed.json")
+	feedID := NewFeedID()
+	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
 	suite.NoError(err)
 
 	var newPosts []CreatePostParams
@@ -110,7 +113,8 @@ func (suite *feedsSuite) TestLoadByItemID() {
 
 func (suite *feedsSuite) TestLoadByItemIDWrongFeed() {
 	ctx := context.Background()
-	feedID, err := suite.feedRepo.Create(ctx, "https://example.com/feed.json")
+	feedID := NewFeedID()
+	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
 	suite.NoError(err)
 
 	var newPosts []CreatePostParams
@@ -131,7 +135,7 @@ func (suite *feedsSuite) TestLoadByItemIDWrongFeed() {
 	_, err = suite.postRepo.Create(ctx, feedID, newPosts)
 	suite.NoError(err)
 
-	posts, err := suite.postRepo.FindByItemIDs(ctx, feedID+1000, []string{
+	posts, err := suite.postRepo.FindByItemIDs(ctx, NewFeedID(), []string{
 		"https://example.com/item-2",
 		"https://example.com/item-0",
 		"https://example.com/item-4",

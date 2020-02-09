@@ -18,7 +18,7 @@ func NewSubscriptionRepository(db db.DB) *SubscriptionRepository {
 }
 
 // Create adds a new subscription to a feed for a user to the database.
-func (r *SubscriptionRepository) Create(ctx context.Context, userID string, feedID int) (int, error) {
+func (r *SubscriptionRepository) Create(ctx context.Context, userID string, feedID FeedID) (int, error) {
 	var subID int
 	if err := r.db.QueryRowxContext(ctx, queries.SubscriptionsCreate, userID, feedID).Scan(&subID); err != nil {
 		return 0, err

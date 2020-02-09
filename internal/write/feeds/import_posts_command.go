@@ -14,7 +14,7 @@ import (
 // ImportPostsCommand is a request to import posts that were scraped from a feed into
 // the database.
 type ImportPostsCommand struct {
-	FeedID  int
+	FeedID  FeedID
 	Entries []*scraper.Entry
 }
 
@@ -27,7 +27,6 @@ func (h *CommandHandler) HandleImportPosts(ctx context.Context, cmd ImportPostsC
 
 	toCreate, toUpdate, unchanged, err := h.planPostChanges(ctx, cmd.FeedID, cmd.Entries)
 	if err != nil {
-		trace.Error(ctx, err)
 		return err
 	}
 
@@ -39,7 +38,6 @@ func (h *CommandHandler) HandleImportPosts(ctx context.Context, cmd ImportPostsC
 
 	changed, err := h.applyPostChanges(ctx, cmd.FeedID, toCreate, toUpdate)
 	if err != nil {
-		trace.Error(ctx, err)
 		return err
 	}
 
@@ -51,7 +49,7 @@ func (h *CommandHandler) HandleImportPosts(ctx context.Context, cmd ImportPostsC
 		}
 
 		h.eventBus.Fire(ctx, feedevent.PostsImported{
-			FeedID:  cmd.FeedID,
+			FeedID:  cmd.FeedID.String(),
 			PostIDs: ids,
 		})
 	}
@@ -59,7 +57,7 @@ func (h *CommandHandler) HandleImportPosts(ctx context.Context, cmd ImportPostsC
 	return nil
 }
 
-func (h *CommandHandler) planPostChanges(ctx context.Context, feedID int, entries []*scraper.Entry) (toCreate []CreatePostParams, toUpdate []UpdatePostParams, unchanged int, err error) {
+func (h *CommandHandler) planPostChanges(ctx context.Context, feedID FeedID, entries []*scraper.Entry) (toCreate []CreatePostParams, toUpdate []UpdatePostParams, unchanged int, err error) {
 	var existing []*Post
 	existing, err = h.postRepo.FindByItemIDs(ctx, feedID, entryIDs(entries))
 	if err != nil {
@@ -110,7 +108,7 @@ func (h *CommandHandler) planPostChanges(ctx context.Context, feedID int, entrie
 	return
 }
 
-func (h *CommandHandler) applyPostChanges(ctx context.Context, feedID int, toCreate []CreatePostParams, toUpdate []UpdatePostParams) ([]*Post, error) {
+func (h *CommandHandler) applyPostChanges(ctx context.Context, feedID FeedID, toCreate []CreatePostParams, toUpdate []UpdatePostParams) ([]*Post, error) {
 	var changed []*Post
 
 	created, err := h.postRepo.Create(ctx, feedID, toCreate)

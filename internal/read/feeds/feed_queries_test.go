@@ -1,10 +1,15 @@
 package feeds
 
-import "context"
+import (
+	"context"
+
+	"github.com/mjm/courier-js/internal/write/feeds"
+)
 
 func (suite *feedsSuite) TestGetFeedDoesNotExist() {
 	ctx := context.Background()
-	f, err := suite.feedQueries.Get(ctx, 123)
+	id := feeds.NewFeedID()
+	f, err := suite.feedQueries.Get(ctx, id)
 	suite.Nil(f)
 	suite.EqualError(err, "no feed found")
 }
@@ -13,7 +18,8 @@ func (suite *feedsSuite) TestGetFeed() {
 	ctx := context.Background()
 
 	// create a feed
-	feedID, err := suite.feedRepo.Create(ctx, "https://www.example.org/feed.json")
+	feedID := feeds.NewFeedID()
+	err := suite.feedRepo.Create(ctx, feedID, "https://www.example.org/feed.json")
 	suite.NoError(err)
 
 	f, err := suite.feedQueries.Get(ctx, feedID)

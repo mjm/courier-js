@@ -25,7 +25,7 @@ func NewPostRepository(db db.DB) *PostRepository {
 // there is no error, this will always return a slice of Posts that is the same length
 // as the slice of item IDs passed in, with each Post having the item ID at the same
 // index. If no post exists with a given item ID, its position will be nil.
-func (r *PostRepository) FindByItemIDs(ctx context.Context, feedID int, itemIDs []string) ([]*Post, error) {
+func (r *PostRepository) FindByItemIDs(ctx context.Context, feedID FeedID, itemIDs []string) ([]*Post, error) {
 	rows, err := r.db.QueryxContext(ctx, queries.PostsByItemIDs, feedID, pq.StringArray(itemIDs))
 	if err != nil {
 		return nil, err
@@ -62,13 +62,13 @@ type CreatePostParams struct {
 
 // Create adds a collection of posts to a feed. Since many posts are often imported
 // at once, we batch them into a single query.
-func (r *PostRepository) Create(ctx context.Context, feedID int, ps []CreatePostParams) ([]*Post, error) {
+func (r *PostRepository) Create(ctx context.Context, feedID FeedID, ps []CreatePostParams) ([]*Post, error) {
 	// avoid a query if there are no values
 	if len(ps) == 0 {
 		return nil, nil
 	}
 
-	u := db.NewUnnester("int4", "text", "text", "text", "text", "text", "timestamp", "timestamp")
+	u := db.NewUnnester("uuid", "text", "text", "text", "text", "text", "timestamp", "timestamp")
 	for _, p := range ps {
 		published := fromTimePtr(p.PublishedAt)
 		modified := fromTimePtr(p.ModifiedAt)

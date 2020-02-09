@@ -36,17 +36,18 @@ func (h *CommandHandler) HandleSubscribe(ctx context.Context, cmd SubscribeComma
 
 	trace.AddField(ctx, "feed.resolved_url", u.String())
 
-	var feedID int
+	var feedID FeedID
 	f, err := h.feedRepo.GetByURL(ctx, u.String())
 	if err != nil {
 		if err == ErrNoFeed {
-			feedID, err = h.feedRepo.Create(ctx, u.String())
+			feedID = NewFeedID()
+			err = h.feedRepo.Create(ctx, feedID, u.String())
 			if err != nil {
 				return 0, err
 			}
 
 			h.eventBus.Fire(ctx, feedevent.FeedCreated{
-				FeedID: feedID,
+				FeedID: feedID.String(),
 				URL:    u.String(),
 			})
 
@@ -73,7 +74,7 @@ func (h *CommandHandler) HandleSubscribe(ctx context.Context, cmd SubscribeComma
 	trace.AddField(ctx, "feed.subscription_id", subID)
 	h.eventBus.Fire(ctx, feedevent.FeedSubscribed{
 		UserID:         cmd.UserID,
-		FeedID:         feedID,
+		FeedID:         feedID.String(),
 		SubscriptionID: subID,
 	})
 

@@ -46,7 +46,7 @@ func (r *PostRepository) ByIDs(ctx context.Context, ids []int) ([]*Post, error) 
 	return posts, nil
 }
 
-func (r *PostRepository) RecentPosts(ctx context.Context, feedID int) ([]*Post, error) {
+func (r *PostRepository) RecentPosts(ctx context.Context, feedID FeedID) ([]*Post, error) {
 	rows, err := r.db.QueryxContext(ctx, queries.PostsRecent, feedID)
 	if err != nil {
 		return nil, err

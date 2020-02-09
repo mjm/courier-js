@@ -25,7 +25,7 @@ func NewFeedRepository(db db.DB) *FeedRepository {
 }
 
 // Get gets the feed with the given ID.
-func (r *FeedRepository) Get(ctx context.Context, id int) (*Feed, error) {
+func (r *FeedRepository) Get(ctx context.Context, id FeedID) (*Feed, error) {
 	var feed Feed
 	if err := r.db.QueryRowxContext(ctx, queries.FeedsGet, id).StructScan(&feed); err != nil {
 		if err == sql.ErrNoRows {
@@ -51,18 +51,17 @@ func (r *FeedRepository) GetByURL(ctx context.Context, url string) (*Feed, error
 }
 
 // Create adds a new feed with the given URL to the database.
-func (r *FeedRepository) Create(ctx context.Context, url string) (int, error) {
-	var id int
-	if err := r.db.QueryRowxContext(ctx, queries.FeedsCreate, url).Scan(&id); err != nil {
-		return 0, err
+func (r *FeedRepository) Create(ctx context.Context, id FeedID, url string) error {
+	if _, err := r.db.ExecContext(ctx, queries.FeedsCreate, id, url); err != nil {
+		return err
 	}
 
-	return id, nil
+	return nil
 }
 
 // UpdateFeedParams are values about a feed that can be updated when refreshing.
 type UpdateFeedParams struct {
-	ID             int
+	ID             FeedID
 	Title          string
 	HomePageURL    string
 	CachingHeaders *CachingHeaders

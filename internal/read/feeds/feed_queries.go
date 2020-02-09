@@ -3,7 +3,6 @@ package feeds
 import (
 	"context"
 	"errors"
-	"strconv"
 
 	"github.com/graph-gophers/dataloader"
 	"github.com/jmoiron/sqlx"
@@ -23,7 +22,7 @@ var (
 // FeedQueries is an interface for reading information about feeds.
 type FeedQueries interface {
 	// Get fetches a feed by ID.
-	Get(context.Context, int) (*Feed, error)
+	Get(context.Context, FeedID) (*Feed, error)
 }
 
 type feedQueries struct {
@@ -44,20 +43,20 @@ func NewFeedQueries(db db.DB, eventBus *event.Bus) FeedQueries {
 
 func newFeedLoader(db db.DB) *dataloader.Loader {
 	return loader.New("Feed Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-		rows, _ := db.QueryxContext(ctx, queries.FeedsLoad, loader.IntArray(keys))
+		rows, _ := db.QueryxContext(ctx, queries.FeedsLoad, loader.StringArray(keys))
 		return loader.Gather(keys, rows, func(rows *sqlx.Rows) (interface{}, string, error) {
 			var feed Feed
 			if err := rows.StructScan(&feed); err != nil {
 				return nil, "", err
 			}
 
-			return &feed, strconv.Itoa(feed.ID), nil
+			return &feed, feed.ID.String(), nil
 		})
 	})
 }
 
-func (q *feedQueries) Get(ctx context.Context, id int) (*Feed, error) {
-	v, err := q.loader.Load(ctx, loader.IntKey(id))()
+func (q *feedQueries) Get(ctx context.Context, id FeedID) (*Feed, error) {
+	v, err := q.loader.Load(ctx, dataloader.StringKey(id))()
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +70,7 @@ func (q *feedQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
 	case feedevent.FeedRefreshed:
-		q.loader.Clear(ctx, loader.IntKey(evt.FeedID))
+		q.loader.Clear(ctx, dataloader.StringKey(evt.FeedID))
 
 	}
 }

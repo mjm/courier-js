@@ -59,7 +59,7 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 		return nil, err
 	}
 
-	var id int
+	var id feeds.FeedID
 	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return nil, err
 	}

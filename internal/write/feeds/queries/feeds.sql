@@ -2,7 +2,7 @@
 SELECT *
 FROM
   feeds
-WHERE id = $1;
+WHERE guid = $1;
 
 -- qry: FeedsGetByURL
 SELECT *
@@ -13,9 +13,9 @@ WHERE url = $1;
 -- qry: FeedsCreate
 INSERT INTO
   feeds
-  (url)
+  (guid, url)
 VALUES
-  ($1)
+  ($1, $2)
 RETURNING id;
 
 -- qry: FeedsUpdate
@@ -28,5 +28,5 @@ SET
   mp_endpoint     = $4,
   refreshed_at    = CURRENT_TIMESTAMP,
   updated_at      = CURRENT_TIMESTAMP
-WHERE id = $5
+WHERE guid = $5
 RETURNING *;

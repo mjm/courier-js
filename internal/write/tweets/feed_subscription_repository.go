@@ -9,10 +9,12 @@ import (
 
 type FeedSubscription struct {
 	ID       int    `db:"id"`
-	FeedID   int    `db:"feed_id"`
+	FeedID   FeedID `db:"feed_guid"`
 	UserID   string `db:"user_id"`
 	Autopost bool   `db:"autopost"`
 }
+
+type FeedID string
 
 type FeedSubscriptionRepository struct {
 	db db.DB
@@ -22,7 +24,7 @@ func NewFeedSubscriptionRepository(db db.DB) *FeedSubscriptionRepository {
 	return &FeedSubscriptionRepository{db: db}
 }
 
-func (r *FeedSubscriptionRepository) ByFeedID(ctx context.Context, feedID int) ([]*FeedSubscription, error) {
+func (r *FeedSubscriptionRepository) ByFeedID(ctx context.Context, feedID FeedID) ([]*FeedSubscription, error) {
 	rows, err := r.db.QueryxContext(ctx, queries.FeedSubscriptionsByFeedID, feedID)
 	if err != nil {
 		return nil, err

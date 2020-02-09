@@ -19,7 +19,7 @@ type RefreshCommand struct {
 	// instead of a user action.
 	UserID string
 	// FeedID is the ID of the feed that should be refreshed.
-	FeedID int
+	FeedID FeedID
 	// Force causes scraping to ignore saved cache headers and always fetch and process
 	// the full contents of the feed.
 	Force bool
@@ -81,7 +81,7 @@ func (h *CommandHandler) HandleRefresh(ctx context.Context, cmd RefreshCommand) 
 	}
 
 	h.eventBus.Fire(ctx, feedevent.FeedRefreshed{
-		FeedID: f.ID,
+		FeedID: f.ID.String(),
 		UserID: cmd.UserID,
 	})
 

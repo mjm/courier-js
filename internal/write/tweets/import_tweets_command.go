@@ -182,7 +182,7 @@ func (h *CommandHandler) planTweets(ctx context.Context, post *Post, tweets []*T
 }
 
 func (h *CommandHandler) handlePostsImported(ctx context.Context, evt feedevent.PostsImported) {
-	subs, err := h.subRepo.ByFeedID(ctx, evt.FeedID)
+	subs, err := h.subRepo.ByFeedID(ctx, FeedID(evt.FeedID))
 	if err != nil {
 		trace.Error(ctx, err)
 		return
