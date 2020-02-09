@@ -106,56 +106,58 @@ func Paged(ctx context.Context, db db.DB, p Pager, opts Options) (*Connection, e
 
 	wg, subCtx := errgroup.WithContext(ctx)
 
-	var rows *sqlx.Rows
+	var edges []Edge
 	wg.Go(func() error {
-		var err error
-		rows, err = db.NamedQueryContext(subCtx, q.String(), params)
-		return err
+		rows, err := db.NamedQueryContext(subCtx, q.String(), params)
+		if err != nil {
+			return err
+		}
+
+		for rows.Next() {
+			edge, err := p.ScanEdge(rows)
+			if err != nil {
+				return err
+			}
+
+			edges = append(edges, edge)
+		}
+
+		if len(edges) > int(opts.limit()) {
+			if opts.isReversed() {
+				pageInfo.HasPreviousPage = true
+			} else {
+				pageInfo.HasNextPage = true
+			}
+			edges = edges[:opts.limit()]
+		}
+
+		if len(edges) > 0 {
+			start := edges[0].Cursor()
+			pageInfo.StartCursor = &start
+			end := edges[len(edges)-1].Cursor()
+			pageInfo.EndCursor = &end
+		}
+
+		return nil
 	})
 
-	var totalResult *sqlx.Rows
+	var total int32
 	wg.Go(func() error {
-		var err error
-		totalResult, err = db.NamedQueryContext(subCtx, p.TotalQuery(), params)
-		return err
+		res, err := db.NamedQueryContext(subCtx, p.TotalQuery(), params)
+		if err != nil {
+			return err
+		}
+		if !res.Next() {
+			return fmt.Errorf("total count query returned no results")
+		}
+		if err := res.Scan(&total); err != nil {
+			return err
+		}
+
+		return nil
 	})
 
 	if err := wg.Wait(); err != nil {
-		return nil, err
-	}
-
-	var edges []Edge
-	for rows.Next() {
-		edge, err := p.ScanEdge(rows)
-		if err != nil {
-			return nil, err
-		}
-
-		edges = append(edges, edge)
-	}
-
-	if len(edges) > int(opts.limit()) {
-		if opts.isReversed() {
-			pageInfo.HasPreviousPage = true
-		} else {
-			pageInfo.HasNextPage = true
-		}
-		edges = edges[:opts.limit()]
-	}
-
-	if len(edges) > 0 {
-		start := edges[0].Cursor()
-		pageInfo.StartCursor = &start
-		end := edges[len(edges)-1].Cursor()
-		pageInfo.EndCursor = &end
-	}
-
-	if !totalResult.Next() {
-		return nil, fmt.Errorf("total count query returned no results")
-	}
-
-	var total int32
-	if err := totalResult.Scan(&total); err != nil {
 		return nil, err
 	}
 
