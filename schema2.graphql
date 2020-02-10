@@ -135,7 +135,7 @@ type Feed implements Node {
   createdAt: Time!
   updatedAt: Time!
 
-  # posts(first: Int, last: Int, before: Cursor, after: Cursor): PostConnection!
+  posts(first: Int, last: Int, before: Cursor, after: Cursor): PostConnection!
 }
 
 input AddFeedInput {

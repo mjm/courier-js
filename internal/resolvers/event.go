@@ -43,7 +43,7 @@ func (e *Event) Feed(ctx context.Context) (*Feed, error) {
 		return nil, err
 	}
 
-	return &Feed{feed: f}, nil
+	return NewFeed(e.q, f), nil
 }
 
 func (e *Event) Tweet(ctx context.Context) (*Tweet, error) {

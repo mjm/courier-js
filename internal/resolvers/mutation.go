@@ -79,7 +79,7 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 	}
 
 	return &RefreshFeedPayload{
-		Feed: &Feed{feed: f},
+		Feed: NewFeed(r.q, f),
 	}, nil
 }
 

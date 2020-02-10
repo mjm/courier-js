@@ -5,7 +5,9 @@ const (
 	FeedsLoad = "SELECT * FROM feeds WHERE guid = ANY ($1);"
 
 	// posts.sql
-	PostsLoad = "SELECT * FROM posts WHERE guid = ANY ($1);"
+	PostsLoad       = "SELECT * FROM posts WHERE guid = ANY ($1);"
+	PostsPagerEdges = "SELECT * FROM posts WHERE feed_guid = :feed_id;"
+	PostsPagerTotal = "SELECT COUNT(*) FROM posts WHERE feed_guid = :feed_id;"
 
 	// subscriptions.sql
 	SubscriptionsLoad       = "SELECT * FROM feed_subscriptions WHERE user_id = $1 AND discarded_at IS NULL AND guid = ANY ($2);"

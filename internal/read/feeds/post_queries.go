@@ -10,6 +10,7 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/loader"
+	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/feeds/queries"
 )
 
@@ -22,6 +23,7 @@ var (
 type PostQueries interface {
 	// Get fetches a post by ID.
 	Get(context.Context, PostID) (*Post, error)
+	Paged(context.Context, FeedID, pager.Options) (*pager.Connection, error)
 }
 
 type postQueries struct {
@@ -66,4 +68,8 @@ func (q *postQueries) Get(ctx context.Context, id PostID) (*Post, error) {
 		return nil, ErrNoPost
 	}
 	return v.(*Post), nil
+}
+
+func (q *postQueries) Paged(ctx context.Context, feedID FeedID, opts pager.Options) (*pager.Connection, error) {
+	return pager.Paged(ctx, q.db, &postPager{feedID: feedID}, opts)
 }

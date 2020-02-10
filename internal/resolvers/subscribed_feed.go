@@ -31,7 +31,7 @@ func (sf *SubscribedFeed) Feed(ctx context.Context) (*Feed, error) {
 		return nil, err
 	}
 
-	return &Feed{feed: f}, nil
+	return NewFeed(sf.q, f), nil
 }
 
 func (sf *SubscribedFeed) Autopost() bool {

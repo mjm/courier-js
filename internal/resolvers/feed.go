@@ -1,14 +1,22 @@
 package resolvers
 
 import (
+	"context"
+
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 
+	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/feeds"
 )
 
 type Feed struct {
+	q    Queries
 	feed *feeds.Feed
+}
+
+func NewFeed(q Queries, feed *feeds.Feed) *Feed {
+	return &Feed{q: q, feed: feed}
 }
 
 func (f *Feed) ID() graphql.ID {
@@ -46,4 +54,16 @@ func (f *Feed) CreatedAt() graphql.Time {
 
 func (f *Feed) UpdatedAt() graphql.Time {
 	return graphql.Time{Time: f.feed.UpdatedAt}
+}
+
+func (f *Feed) Posts(ctx context.Context, args pager.Options) (*PostConnection, error) {
+	conn, err := f.q.Posts.Paged(ctx, f.feed.ID, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &PostConnection{
+		conn: conn,
+		q:    f.q,
+	}, nil
 }

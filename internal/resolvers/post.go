@@ -5,6 +5,7 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
+
 	"github.com/mjm/courier-js/internal/read/feeds"
 )
 
@@ -26,7 +27,7 @@ func (p *Post) Feed(ctx context.Context) (*Feed, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Feed{feed: f}, nil
+	return NewFeed(p.q, f), nil
 }
 
 func (p *Post) ItemID() string {

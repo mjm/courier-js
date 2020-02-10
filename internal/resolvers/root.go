@@ -68,7 +68,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 		if err != nil {
 			return nil, err
 		}
-		n = &Feed{feed: f}
+		n = NewFeed(r.q, f)
 
 	case SubscribedFeedNode:
 		n, err = r.SubscribedFeed(ctx, args)
