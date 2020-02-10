@@ -7,9 +7,9 @@ package graphql
 
 import (
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/read/billing"
 	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/read/user"
@@ -33,12 +33,17 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	postQueries := feeds.NewPostQueries(dbDB, bus)
 	tweetQueries := tweets.NewTweetQueries(dbDB, bus)
 	eventQueries := user.NewEventQueries(dbDB)
+	api := billing.NewClient(stripeConfig)
+	customerQueries := billing.NewCustomerQueries(api)
+	billingSubscriptionQueries := billing.NewSubscriptionQueries(api)
 	queries := resolvers.Queries{
 		Feeds:             feedQueries,
 		FeedSubscriptions: subscriptionQueries,
 		Posts:             postQueries,
 		Tweets:            tweetQueries,
 		Events:            eventQueries,
+		Customers:         customerQueries,
+		Subscriptions:     billingSubscriptionQueries,
 	}
 	commandBus := write.NewCommandBus()
 	feedRepository := feeds2.NewFeedRepository(dbDB)
@@ -58,8 +63,7 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	if err != nil {
 		return nil, err
 	}
-	api := billing.NewClient(stripeConfig)
 	eventRecorder := user2.NewEventRecorder(dbDB, bus)
-	handler := NewHandler(schema, authenticator, dbDB, api, eventRecorder)
+	handler := NewHandler(schema, authenticator, eventRecorder)
 	return handler, nil
 }

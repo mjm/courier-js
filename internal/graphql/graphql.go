@@ -7,12 +7,9 @@ import (
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/errors"
-	"github.com/stripe/stripe-go/client"
 
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/loader"
-	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write/user"
 )
@@ -20,16 +17,12 @@ import (
 type Handler struct {
 	Schema        *graphql.Schema
 	Authenticator *auth.Authenticator
-	DB            db.DB
-	Stripe        *client.API
 }
 
-func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, db db.DB, sc *client.API, _ *user.EventRecorder) *Handler {
+func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, _ *user.EventRecorder) *Handler {
 	return &Handler{
 		Schema:        schema,
 		Authenticator: auther,
-		DB:            db,
-		Stripe:        sc,
 	}
 }
 
@@ -62,7 +55,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		response := &graphql.Response{
 			Data: json.RawMessage("null"),
 			Errors: []*errors.QueryError{
-				&errors.QueryError{
+				{
 					Message: err.Error(),
 				},
 			},
@@ -71,7 +64,6 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	childCtx = loaders.WithLoaders(childCtx, h.DB, h.Stripe)
 	childCtx = loader.WithLoaderCache(childCtx)
 
 	response := h.Schema.Exec(childCtx, params.Query, params.OperationName, params.Variables)

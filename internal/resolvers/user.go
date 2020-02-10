@@ -3,13 +3,10 @@ package resolvers
 import (
 	"context"
 
-	"github.com/graph-gophers/dataloader"
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/loaders"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/tweets"
-	"github.com/stripe/stripe-go"
 )
 
 type User struct {
@@ -36,14 +33,12 @@ func (u *User) Customer(ctx context.Context) (*Customer, error) {
 		return nil, nil
 	}
 
-	l := loaders.Get(ctx)
-	thunk := l.Customers.Load(ctx, dataloader.StringKey(customerID))
-	cus, err := thunk()
+	cus, err := u.q.Customers.Get(ctx, customerID)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Customer{customer: cus.(*stripe.Customer)}, nil
+	return &Customer{customer: cus}, nil
 }
 
 func (u *User) Subscription(ctx context.Context) (*Subscription, error) {
@@ -52,14 +47,12 @@ func (u *User) Subscription(ctx context.Context) (*Subscription, error) {
 		return nil, nil
 	}
 
-	l := loaders.Get(ctx)
-	thunk := l.Subscriptions.Load(ctx, dataloader.StringKey(subID))
-	sub, err := thunk()
+	sub, err := u.q.Subscriptions.Get(ctx, subID)
 	if err != nil {
 		return nil, err
 	}
 
-	return &Subscription{sub: sub.(*stripe.Subscription)}, nil
+	return &Subscription{sub: sub}, nil
 }
 
 func (u *User) AllTweets(ctx context.Context, args struct {

@@ -3,6 +3,7 @@ package resolvers
 import (
 	"github.com/google/wire"
 
+	"github.com/mjm/courier-js/internal/read/billing"
 	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/read/user"
@@ -14,6 +15,8 @@ type Queries struct {
 	Posts             feeds.PostQueries
 	Tweets            tweets.TweetQueries
 	Events            user.EventQueries
+	Customers         billing.CustomerQueries
+	Subscriptions     billing.SubscriptionQueries
 }
 
 var QueriesProvider = wire.NewSet(
@@ -23,4 +26,6 @@ var QueriesProvider = wire.NewSet(
 	feeds.NewPostQueries,
 	tweets.NewTweetQueries,
 	user.NewEventQueries,
+	billing.NewCustomerQueries,
+	billing.NewSubscriptionQueries,
 )
