@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/mjm/courier-js/internal/pager"
+	"github.com/mjm/courier-js/internal/read/user/queries"
 )
 
 // Cursor implements pager.Edge
@@ -18,23 +19,11 @@ type eventPager struct {
 }
 
 func (*eventPager) EdgesQuery() string {
-	return `
-		SELECT
-			*
-		FROM
-			events
-		WHERE user_id = :user_id
-	`
+	return queries.EventsPagerEdges
 }
 
 func (*eventPager) TotalQuery() string {
-	return `
-		SELECT
-			COUNT(*)
-		FROM
-			events
-		WHERE user_id = :user_id
-	`
+	return queries.EventsPagerTotal
 }
 
 func (p *eventPager) Params() map[string]interface{} {
