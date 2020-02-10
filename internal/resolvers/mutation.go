@@ -64,7 +64,7 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 	}
 
 	var id feeds.FeedID
-	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
 
@@ -73,7 +73,7 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 		FeedID: id,
 		Force:  false,
 	}
-	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 
@@ -101,7 +101,7 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 	}
 
 	var id feeds.SubscriptionID
-	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
 
@@ -110,7 +110,7 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		SubscriptionID: id,
 		Autopost:       *args.Input.Autopost,
 	}
-	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 
@@ -139,7 +139,7 @@ func (r *Root) DeleteFeed(ctx context.Context, args struct {
 	}
 
 	var id feeds.SubscriptionID
-	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
 
@@ -147,7 +147,7 @@ func (r *Root) DeleteFeed(ctx context.Context, args struct {
 		UserID:         userID,
 		SubscriptionID: id,
 	}
-	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 
@@ -174,7 +174,7 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 	}
 
 	var id tweets.TweetID
-	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
 
@@ -182,7 +182,7 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 		UserID:  userID,
 		TweetID: id,
 	}
-	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 
@@ -213,7 +213,7 @@ func (r *Root) UncancelTweet(ctx context.Context, args struct {
 	}
 
 	var id tweets.TweetID
-	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
 
@@ -221,7 +221,7 @@ func (r *Root) UncancelTweet(ctx context.Context, args struct {
 		UserID:  userID,
 		TweetID: id,
 	}
-	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 
