@@ -19,10 +19,16 @@ type AddFeedPayload struct {
 // AddFeed subscribes the user to a new feed, creating the feed if needed.
 func (r *Root) AddFeed(ctx context.Context, args struct {
 	Input struct{ URL string }
-}) (*AddFeedPayload, error) {
+}) (
+	payload struct {
+		Feed     *SubscribedFeed
+		FeedEdge *SubscribedFeedEdge
+	},
+	err error,
+) {
 	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	cmd := feeds.SubscribeCommand{
@@ -31,37 +37,35 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	}
 	v, err := r.commandBus.Run(ctx, cmd)
 	if err != nil {
-		return nil, err
+		return
 	}
 	subID := v.(feeds.SubscriptionID)
 
 	// load the edge so that Relay can update its store
 	edge, err := r.q.FeedSubscriptions.GetEdge(ctx, subID)
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	return &AddFeedPayload{
-		Feed:     NewSubscribedFeed(r.q, &edge.Subscription),
-		FeedEdge: &SubscribedFeedEdge{q: r.q, edge: edge},
-	}, nil
-}
-
-type RefreshFeedPayload struct {
-	Feed *Feed
+	payload.Feed = NewSubscribedFeed(r.q, &edge.Subscription)
+	payload.FeedEdge = &SubscribedFeedEdge{q: r.q, edge: edge}
+	return
 }
 
 func (r *Root) RefreshFeed(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
-}) (*RefreshFeedPayload, error) {
+}) (
+	payload struct{ Feed *Feed },
+	err error,
+) {
 	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	var id feeds.FeedID
 	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
-		return nil, err
+		return
 	}
 
 	cmd := feeds.RefreshCommand{
@@ -70,21 +74,16 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 		Force:  false,
 	}
 	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
-		return nil, err
+		return
 	}
 
 	f, err := r.q.Feeds.Get(ctx, id)
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	return &RefreshFeedPayload{
-		Feed: NewFeed(r.q, f),
-	}, nil
-}
-
-type SetFeedOptionsPayload struct {
-	Feed *SubscribedFeed
+	payload.Feed = NewFeed(r.q, f)
+	return
 }
 
 func (r *Root) SetFeedOptions(ctx context.Context, args struct {
@@ -92,15 +91,18 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		ID       graphql.ID
 		Autopost *bool
 	}
-}) (*SetFeedOptionsPayload, error) {
+}) (
+	payload struct{ Feed *SubscribedFeed },
+	err error,
+) {
 	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	var id feeds.SubscriptionID
 	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
-		return nil, err
+		return
 	}
 
 	cmd := feeds.UpdateOptionsCommand{
@@ -109,17 +111,16 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		Autopost:       *args.Input.Autopost,
 	}
 	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
-		return nil, err
+		return
 	}
 
 	sub, err := r.q.FeedSubscriptions.Get(ctx, id)
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	return &SetFeedOptionsPayload{
-		Feed: NewSubscribedFeed(r.q, sub),
-	}, nil
+	payload.Feed = NewSubscribedFeed(r.q, sub)
+	return
 }
 
 type DeleteFeedPayload struct {
@@ -128,15 +129,18 @@ type DeleteFeedPayload struct {
 
 func (r *Root) DeleteFeed(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
-}) (*DeleteFeedPayload, error) {
+}) (
+	payload struct{ ID graphql.ID },
+	err error,
+) {
 	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	var id feeds.SubscriptionID
 	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
-		return nil, err
+		return
 	}
 
 	cmd := feeds.UnsubscribeCommand{
@@ -144,10 +148,11 @@ func (r *Root) DeleteFeed(ctx context.Context, args struct {
 		SubscriptionID: id,
 	}
 	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
-		return nil, err
+		return
 	}
 
-	return &DeleteFeedPayload{ID: args.Input.ID}, nil
+	payload.ID = args.Input.ID
+	return
 }
 
 type CancelTweetPayload struct {
@@ -157,15 +162,20 @@ type CancelTweetPayload struct {
 // CancelTweet marks a tweet as not to be posted.
 func (r *Root) CancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
-}) (*CancelTweetPayload, error) {
+}) (
+	payload struct {
+		Tweet *Tweet
+	},
+	err error,
+) {
 	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	var id tweets.TweetID
 	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
-		return nil, err
+		return
 	}
 
 	cmd := tweets.CancelCommand{
@@ -173,17 +183,16 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 		TweetID: id,
 	}
 	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
-		return nil, err
+		return
 	}
 
 	t, err := r.q.Tweets.Get(ctx, id)
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	return &CancelTweetPayload{
-		Tweet: NewTweet(r.q, t),
-	}, nil
+	payload.Tweet = NewTweet(r.q, t)
+	return
 }
 
 type UncancelTweetPayload struct {
@@ -192,15 +201,20 @@ type UncancelTweetPayload struct {
 
 func (r *Root) UncancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
-}) (*UncancelTweetPayload, error) {
+}) (
+	payload struct {
+		Tweet *Tweet
+	},
+	err error,
+) {
 	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	var id tweets.TweetID
 	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
-		return nil, err
+		return
 	}
 
 	cmd := tweets.UncancelCommand{
@@ -208,15 +222,14 @@ func (r *Root) UncancelTweet(ctx context.Context, args struct {
 		TweetID: id,
 	}
 	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
-		return nil, err
+		return
 	}
 
 	t, err := r.q.Tweets.Get(ctx, id)
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	return &UncancelTweetPayload{
-		Tweet: NewTweet(r.q, t),
-	}, nil
+	payload.Tweet = NewTweet(r.q, t)
+	return
 }
