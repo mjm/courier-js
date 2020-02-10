@@ -4,11 +4,13 @@ import (
 	"time"
 
 	"github.com/lib/pq"
+
+	"github.com/mjm/courier-js/internal/write/tweets"
 )
 
 // Tweet is a single tweet that was translated from a post for a particular user.
 type Tweet struct {
-	ID                 int                `db:"id"`
+	ID                 TweetID            `db:"guid"`
 	PostID             PostID             `db:"post_guid"`
 	FeedSubscriptionID FeedSubscriptionID `db:"feed_subscription_guid"`
 	Body               string             `db:"body"`
@@ -23,10 +25,12 @@ type Tweet struct {
 	Action             TweetAction        `db:"action"`
 	RetweetID          string             `db:"retweet_id"`
 
+	Unused_ID                 int  `db:"id"`
 	Unused_PostID             *int `db:"post_id"`
 	Unused_FeedSubscriptionID *int `db:"feed_subscription_id"`
 }
 
+type TweetID = tweets.TweetID
 type FeedSubscriptionID string
 type PostID string
 

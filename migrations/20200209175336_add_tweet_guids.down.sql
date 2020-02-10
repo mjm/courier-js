@@ -1,0 +1,2 @@
+ALTER TABLE tweets
+  DROP COLUMN guid;

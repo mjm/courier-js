@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"reflect"
-	"strconv"
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
@@ -50,7 +49,7 @@ func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 
 	case tweetevent.TweetCanceled:
 		r.record(ctx, evt.UserID, TweetCancel, EventParams{
-			TweetID: strconv.Itoa(evt.TweetID),
+			TweetID: evt.TweetID,
 		})
 
 	}

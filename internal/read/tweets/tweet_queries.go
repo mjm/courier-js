@@ -3,7 +3,6 @@ package tweets
 import (
 	"context"
 	"errors"
-	"strconv"
 
 	"github.com/graph-gophers/dataloader"
 	"github.com/jmoiron/sqlx"
@@ -25,7 +24,7 @@ var (
 // TweetQueries is an interface for reading information about a user's tweets.
 type TweetQueries interface {
 	// Get fetches a tweet by ID.
-	Get(context.Context, int) (*Tweet, error)
+	Get(context.Context, TweetID) (*Tweet, error)
 	// Paged fetches a paged and possibly filtered subset of a user's tweets.
 	Paged(context.Context, string, Filter, pager.Options) (*pager.Connection, error)
 }
@@ -53,7 +52,7 @@ func newTweetLoader(db db.DB) *dataloader.Loader {
 			return nil
 		}
 
-		rows, err := db.QueryxContext(ctx, queries.TweetsLoad, userID, loader.IntArray(keys))
+		rows, err := db.QueryxContext(ctx, queries.TweetsLoad, userID, loader.StringArray(keys))
 		if err != nil {
 			panic(err)
 		}
@@ -63,13 +62,13 @@ func newTweetLoader(db db.DB) *dataloader.Loader {
 				return nil, "", err
 			}
 
-			return &t, strconv.Itoa(t.ID), nil
+			return &t, string(t.ID), nil
 		})
 	})
 }
 
-func (q *tweetQueries) Get(ctx context.Context, id int) (*Tweet, error) {
-	v, err := q.loader.Load(ctx, loader.IntKey(id))()
+func (q *tweetQueries) Get(ctx context.Context, id TweetID) (*Tweet, error) {
+	v, err := q.loader.Load(ctx, dataloader.StringKey(id))()
 	if err != nil {
 		return nil, err
 	}
@@ -87,11 +86,11 @@ func (q *tweetQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
 	case tweetevent.TweetCanceled:
-		q.loader.Clear(ctx, loader.IntKey(evt.TweetID))
+		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetID))
 
 	case tweetevent.TweetsUpdated:
 		for _, id := range evt.TweetIDs {
-			q.loader.Clear(ctx, loader.IntKey(id))
+			q.loader.Clear(ctx, dataloader.StringKey(id))
 		}
 
 	}

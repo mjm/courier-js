@@ -112,7 +112,7 @@ func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID })
 
 // Tweet gets a tweet for the current user by ID.
 func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet, error) {
-	var id int
+	var id tweets.TweetID
 	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 		return nil, err
 	}

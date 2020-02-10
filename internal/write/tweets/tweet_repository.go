@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/HnH/qry"
+	"github.com/google/uuid"
 	"github.com/lib/pq"
 
 	"github.com/mjm/courier-js/internal/db"
@@ -20,7 +21,7 @@ var (
 
 // Tweet is a single tweet that was translated from a post for a particular user.
 type Tweet struct {
-	ID                 int                `db:"id"`
+	ID                 TweetID            `db:"guid"`
 	PostID             PostID             `db:"post_guid"`
 	FeedSubscriptionID FeedSubscriptionID `db:"feed_subscription_guid"`
 	Body               string             `db:"body"`
@@ -35,8 +36,19 @@ type Tweet struct {
 	Action             TweetAction        `db:"action"`
 	RetweetID          string             `db:"retweet_id"`
 
+	Unused_ID                 int  `db:"id"`
 	Unused_PostID             *int `db:"post_id"`
 	Unused_FeedSubscriptionID *int `db:"feed_subscription_id"`
+}
+
+type TweetID string
+
+func NewTweetID() TweetID {
+	return TweetID(uuid.New().String())
+}
+
+func (id TweetID) String() string {
+	return string(id)
 }
 
 // TweetStatus is a state that a tweet can be in.
@@ -92,7 +104,7 @@ func (r *TweetRepository) ByPostIDs(ctx context.Context, subID FeedSubscriptionI
 // Cancel marks a tweet as canceled as long as it is not already posted. It also clears
 // the post_after field to prevent the tweet from being autoposted if it is uncanceled
 // later.
-func (r *TweetRepository) Cancel(ctx context.Context, userID string, tweetID int) error {
+func (r *TweetRepository) Cancel(ctx context.Context, userID string, tweetID TweetID) error {
 	res, err := r.db.ExecContext(ctx, queries.TweetsCancel, userID, tweetID)
 	if err != nil {
 		return err
@@ -111,6 +123,7 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, tweetID int
 }
 
 type CreateTweetParams struct {
+	ID        TweetID
 	PostID    PostID
 	Action    TweetAction
 	Body      string
@@ -119,9 +132,9 @@ type CreateTweetParams struct {
 	Position  int
 }
 
-func (r *TweetRepository) Create(ctx context.Context, subID FeedSubscriptionID, autopost bool, ts []CreateTweetParams) ([]int, error) {
+func (r *TweetRepository) Create(ctx context.Context, subID FeedSubscriptionID, autopost bool, ts []CreateTweetParams) error {
 	if len(ts) == 0 {
-		return nil, nil
+		return nil
 	}
 
 	var postAfter pq.NullTime
@@ -131,40 +144,31 @@ func (r *TweetRepository) Create(ctx context.Context, subID FeedSubscriptionID, 
 	}
 
 	emptyMediaURLs := []byte("[]")
-	u := db.NewUnnester("uuid", "tweet_action", "text", "json", "text", "int4")
+	u := db.NewUnnester("uuid", "uuid", "tweet_action", "text", "json", "text", "int4")
 	for _, t := range ts {
 		mediaURLs := emptyMediaURLs
 		if len(t.MediaURLs) > 0 {
 			var err error
 			mediaURLs, err = json.Marshal(t.MediaURLs)
 			if err != nil {
-				return nil, err
+				return err
 			}
 		}
-		u.AppendRow(t.PostID, t.Action, t.Body, mediaURLs, t.RetweetID, t.Position)
+		u.AppendRow(t.ID, t.PostID, t.Action, t.Body, mediaURLs, t.RetweetID, t.Position)
 	}
 
 	args := append([]interface{}{subID, postAfter}, u.Values()...)
 	q := qry.Query(queries.TweetsCreate).Replace("__unnested__", u.UnnestFrom(3))
-	rows, err := r.db.QueryxContext(ctx, string(q), args...)
+	_, err := r.db.ExecContext(ctx, string(q), args...)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var ids []int
-	for rows.Next() {
-		var id int
-		if err := rows.Scan(&id); err != nil {
-			return nil, err
-		}
-		ids = append(ids, id)
-	}
-
-	return ids, nil
+	return nil
 }
 
 type UpdateTweetParams struct {
-	ID        int
+	ID        TweetID
 	Action    TweetAction
 	Body      string
 	MediaURLs []string
@@ -178,7 +182,7 @@ func (r *TweetRepository) Update(ctx context.Context, ts []UpdateTweetParams) er
 	}
 
 	emptyMediaURLs := []byte("[]")
-	u := db.NewUnnester("int4", "tweet_action", "text", "json", "text")
+	u := db.NewUnnester("uuid", "tweet_action", "text", "json", "text")
 	for _, t := range ts {
 		mediaURLs := emptyMediaURLs
 		if len(t.MediaURLs) > 0 {

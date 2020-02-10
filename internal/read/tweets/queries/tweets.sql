@@ -5,7 +5,7 @@ FROM
   tweets
   JOIN feed_subscriptions ON tweets.feed_subscription_guid = feed_subscriptions.guid
 WHERE feed_subscriptions.user_id = $1
-  AND tweets.id = ANY ($2);
+  AND tweets.guid = ANY ($2);
 
 -- qry: TweetsPagerEdges
 SELECT

@@ -12,7 +12,7 @@ type CancelCommand struct {
 	// UserID is the ID of the user that is canceling the tweet.
 	UserID string
 	// TweetID is the ID of the tweet that is being canceled.
-	TweetID int
+	TweetID TweetID
 }
 
 // HandleCancel handles a request from a user to cancel a tweet.
@@ -28,7 +28,7 @@ func (h *CommandHandler) HandleCancel(ctx context.Context, cmd CancelCommand) er
 
 	h.eventBus.Fire(ctx, tweetevent.TweetCanceled{
 		UserID:  cmd.UserID,
-		TweetID: cmd.TweetID,
+		TweetID: string(cmd.TweetID),
 	})
 
 	return nil

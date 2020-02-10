@@ -19,13 +19,14 @@ FROM
   feed_subscriptions
 WHERE tweets.feed_subscription_guid = feed_subscriptions.guid
   AND feed_subscriptions.user_id = $1
-  AND tweets.id = $2
+  AND tweets.guid = $2
   AND status <> 'posted';
 
 -- qry: TweetsCreate
 INSERT INTO
   tweets
-  (feed_subscription_guid,
+  (guid,
+   feed_subscription_guid,
    post_after,
    post_guid,
    action,
@@ -34,6 +35,7 @@ INSERT INTO
    retweet_id,
    position)
 SELECT
+  v.guid,
   $1,
   $2,
   v.post_guid,
@@ -43,8 +45,7 @@ SELECT
   v.retweet_id,
   v.position
 FROM
-  __unnested__ v(post_guid, action, body, media_urls, retweet_id, position)
-RETURNING id;
+  __unnested__ v(guid, post_guid, action, body, media_urls, retweet_id, position);
 
 -- qry: TweetsUpdate
 UPDATE
@@ -58,12 +59,12 @@ SET
 FROM
   (
     SELECT
-      v.id,
+      v.guid,
       v.action,
       v.body,
       ARRAY(SELECT json_array_elements_text(v.media_urls)),
       v.retweet_id
     FROM
-      __unnested__ v(id, action, body, media_urls, retweet_id)
+      __unnested__ v(guid, action, body, media_urls, retweet_id)
   ) v
-WHERE posts.id = v.id;
+WHERE tweets.guid = v.guid;
