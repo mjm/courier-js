@@ -97,7 +97,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 
 // SubscribedFeed gets a feed subscription for the current user by ID.
 func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID }) (*SubscribedFeed, error) {
-	var id int
+	var id feeds.SubscriptionID
 	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 		return nil, err
 	}

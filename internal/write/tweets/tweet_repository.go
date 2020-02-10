@@ -20,20 +20,22 @@ var (
 
 // Tweet is a single tweet that was translated from a post for a particular user.
 type Tweet struct {
-	ID                 int            `db:"id"`
-	PostID             int            `db:"post_id"`
-	FeedSubscriptionID int            `db:"feed_subscription_id"`
-	Body               string         `db:"body"`
-	MediaURLs          pq.StringArray `db:"media_urls"`
-	Status             TweetStatus    `db:"status"`
-	PostedAt           pq.NullTime    `db:"posted_at"`
-	PostedTweetID      string         `db:"posted_tweet_id"`
-	Position           int            `db:"position"`
-	CreatedAt          time.Time      `db:"created_at"`
-	UpdatedAt          time.Time      `db:"updated_at"`
-	PostAfter          pq.NullTime    `db:"post_after"`
-	Action             TweetAction    `db:"action"`
-	RetweetID          string         `db:"retweet_id"`
+	ID                 int                `db:"id"`
+	PostID             int                `db:"post_id"`
+	FeedSubscriptionID FeedSubscriptionID `db:"feed_subscription_guid"`
+	Body               string             `db:"body"`
+	MediaURLs          pq.StringArray     `db:"media_urls"`
+	Status             TweetStatus        `db:"status"`
+	PostedAt           pq.NullTime        `db:"posted_at"`
+	PostedTweetID      string             `db:"posted_tweet_id"`
+	Position           int                `db:"position"`
+	CreatedAt          time.Time          `db:"created_at"`
+	UpdatedAt          time.Time          `db:"updated_at"`
+	PostAfter          pq.NullTime        `db:"post_after"`
+	Action             TweetAction        `db:"action"`
+	RetweetID          string             `db:"retweet_id"`
+
+	Unused_FeedSubscriptionID *int `db:"feed_subscription_id"`
 }
 
 // TweetStatus is a state that a tweet can be in.
@@ -68,18 +70,8 @@ func NewTweetRepository(db db.DB) *TweetRepository {
 	return &TweetRepository{db: db}
 }
 
-func (r *TweetRepository) ByPostIDs(ctx context.Context, subID int, postIDs []int) (map[int][]*Tweet, error) {
-	rows, err := r.db.QueryxContext(ctx, `
-		SELECT
-			*
-		FROM
-			tweets
-		WHERE feed_subscription_id = $1
-			AND post_id = ANY($2)
-		ORDER BY
-			post_id,
-			position
-	`, subID, pq.Array(postIDs))
+func (r *TweetRepository) ByPostIDs(ctx context.Context, subID FeedSubscriptionID, postIDs []int) (map[int][]*Tweet, error) {
+	rows, err := r.db.QueryxContext(ctx, queries.TweetsByPostIDs, subID, pq.Array(postIDs))
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +118,7 @@ type CreateTweetParams struct {
 	Position  int
 }
 
-func (r *TweetRepository) Create(ctx context.Context, subID int, autopost bool, ts []CreateTweetParams) ([]int, error) {
+func (r *TweetRepository) Create(ctx context.Context, subID FeedSubscriptionID, autopost bool, ts []CreateTweetParams) ([]int, error) {
 	if len(ts) == 0 {
 		return nil, nil
 	}

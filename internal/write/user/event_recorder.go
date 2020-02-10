@@ -39,7 +39,7 @@ func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 	case feedevent.FeedSubscribed:
 		r.record(ctx, evt.UserID, FeedSubscribe, EventParams{
 			FeedID:             evt.FeedID,
-			FeedSubscriptionID: strconv.Itoa(evt.SubscriptionID),
+			FeedSubscriptionID: evt.SubscriptionID,
 		})
 
 	case feedevent.FeedRefreshed:

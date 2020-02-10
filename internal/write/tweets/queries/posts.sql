@@ -24,7 +24,7 @@ SELECT
   modified_at
 FROM
   posts
-WHERE feed_id = $1
+WHERE feed_guid = $1
 ORDER BY
   published_at DESC
 LIMIT 10;

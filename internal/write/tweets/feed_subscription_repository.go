@@ -8,12 +8,13 @@ import (
 )
 
 type FeedSubscription struct {
-	ID       int    `db:"id"`
-	FeedID   FeedID `db:"feed_guid"`
-	UserID   string `db:"user_id"`
-	Autopost bool   `db:"autopost"`
+	ID       FeedSubscriptionID `db:"guid"`
+	FeedID   FeedID             `db:"feed_guid"`
+	UserID   string             `db:"user_id"`
+	Autopost bool               `db:"autopost"`
 }
 
+type FeedSubscriptionID string
 type FeedID string
 
 type FeedSubscriptionRepository struct {
@@ -42,7 +43,7 @@ func (r *FeedSubscriptionRepository) ByFeedID(ctx context.Context, feedID FeedID
 	return subs, nil
 }
 
-func (r *FeedSubscriptionRepository) Get(ctx context.Context, id int) (*FeedSubscription, error) {
+func (r *FeedSubscriptionRepository) Get(ctx context.Context, id FeedSubscriptionID) (*FeedSubscription, error) {
 	var sub FeedSubscription
 	if err := r.db.QueryRowxContext(ctx, queries.FeedSubscriptionsGet, id).StructScan(&sub); err != nil {
 		return nil, err

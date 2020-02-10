@@ -1,6 +1,6 @@
 -- qry: FeedSubscriptionsByFeedID
 SELECT
-  id,
+  guid,
   feed_guid,
   user_id,
   autopost
@@ -10,10 +10,10 @@ WHERE feed_guid = $1;
 
 -- qry: FeedSubscriptionsGet
 SELECT
-  id,
+  guid,
   feed_guid,
   user_id,
   autopost
 FROM
   feed_subscriptions
-WHERE	id = $1;
+WHERE	guid = $1;

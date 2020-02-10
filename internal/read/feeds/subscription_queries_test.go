@@ -10,7 +10,7 @@ import (
 
 func (suite *feedsSuite) TestGetSubscriptionDoesNotExist() {
 	ctx := auth.WithMockUser(context.Background(), "test_user")
-	sub, err := suite.subQueries.Get(ctx, 123)
+	sub, err := suite.subQueries.Get(ctx, feeds.NewFeedSubscriptionID())
 	suite.Nil(sub)
 	suite.EqualError(err, "no feed subscription found")
 }

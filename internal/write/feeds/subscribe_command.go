@@ -20,18 +20,18 @@ type SubscribeCommand struct {
 }
 
 // HandleSubscribe handles a request from a user to subscribe to a feed.
-func (h *CommandHandler) HandleSubscribe(ctx context.Context, cmd SubscribeCommand) (int, error) {
+func (h *CommandHandler) HandleSubscribe(ctx context.Context, cmd SubscribeCommand) (SubscriptionID, error) {
 	trace.AddField(ctx, "feed.url", cmd.URL)
 	trace.AddField(ctx, "user_id", cmd.UserID)
 
 	u, err := url.Parse(cmd.URL)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	u, err = locateFeed(ctx, u)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	trace.AddField(ctx, "feed.resolved_url", u.String())
@@ -43,7 +43,7 @@ func (h *CommandHandler) HandleSubscribe(ctx context.Context, cmd SubscribeComma
 			feedID = NewFeedID()
 			err = h.feedRepo.Create(ctx, feedID, u.String())
 			if err != nil {
-				return 0, err
+				return "", err
 			}
 
 			h.eventBus.Fire(ctx, feedevent.FeedCreated{
@@ -58,7 +58,7 @@ func (h *CommandHandler) HandleSubscribe(ctx context.Context, cmd SubscribeComma
 		}
 
 		if err != nil {
-			return 0, err
+			return "", err
 		}
 	} else {
 		feedID = f.ID
@@ -68,14 +68,14 @@ func (h *CommandHandler) HandleSubscribe(ctx context.Context, cmd SubscribeComma
 
 	subID, err := h.subRepo.Create(ctx, cmd.UserID, feedID)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 
 	trace.AddField(ctx, "feed.subscription_id", subID)
 	h.eventBus.Fire(ctx, feedevent.FeedSubscribed{
 		UserID:         cmd.UserID,
 		FeedID:         feedID.String(),
-		SubscriptionID: subID,
+		SubscriptionID: subID.String(),
 	})
 
 	return subID, nil

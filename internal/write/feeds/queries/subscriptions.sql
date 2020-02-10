@@ -1,15 +1,15 @@
 -- qry: SubscriptionsCreate
 INSERT INTO
   feed_subscriptions
-  (user_id, feed_guid)
+  (guid, user_id, feed_guid)
 VALUES
-  ($1, $2)
+  ($1, $2, $3)
 ON CONFLICT
   (feed_guid, user_id)
   DO UPDATE
   SET
     discarded_at = NULL
-RETURNING id;
+RETURNING guid;
 
 -- qry: SubscriptionsDeactivate
 UPDATE
@@ -17,4 +17,4 @@ UPDATE
 SET
   discarded_at = CURRENT_TIMESTAMP
 WHERE user_id = $1
-  AND id = $2;
+  AND guid = $2;

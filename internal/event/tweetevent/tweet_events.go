@@ -22,6 +22,6 @@ type TweetsUpdated struct {
 // posts being imported.
 type TweetsImported struct {
 	UserID         string
-	SubscriptionID int
+	SubscriptionID string
 	TweetIDs       []int
 }

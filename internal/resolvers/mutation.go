@@ -33,7 +33,7 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	if err != nil {
 		return nil, err
 	}
-	subID := v.(int)
+	subID := v.(feeds.SubscriptionID)
 
 	// load the edge so that Relay can update its store
 	edge, err := r.q.FeedSubscriptions.GetEdge(ctx, subID)

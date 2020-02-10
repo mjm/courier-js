@@ -3,7 +3,7 @@ SELECT
   tweets.*
 FROM
   tweets
-  JOIN feed_subscriptions ON tweets.feed_subscription_id = feed_subscriptions.id
+  JOIN feed_subscriptions ON tweets.feed_subscription_guid = feed_subscriptions.guid
 WHERE feed_subscriptions.user_id = $1
   AND tweets.id = ANY ($2);
 
@@ -16,7 +16,7 @@ FROM
   JOIN posts
        ON tweets.post_id = posts.id
   JOIN feed_subscriptions
-       ON tweets.feed_subscription_id = feed_subscriptions.id
+       ON tweets.feed_subscription_guid = feed_subscriptions.guid
 WHERE feed_subscriptions.user_id = :user_id
   AND __condition__;
 
@@ -26,6 +26,6 @@ SELECT
 FROM
   tweets
   JOIN feed_subscriptions
-       ON tweets.feed_subscription_id = feed_subscriptions.id
+       ON tweets.feed_subscription_guid = feed_subscriptions.guid
 WHERE feed_subscriptions.user_id = :user_id
   AND __condition__;

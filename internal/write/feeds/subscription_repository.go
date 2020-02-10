@@ -18,10 +18,10 @@ func NewSubscriptionRepository(db db.DB) *SubscriptionRepository {
 }
 
 // Create adds a new subscription to a feed for a user to the database.
-func (r *SubscriptionRepository) Create(ctx context.Context, userID string, feedID FeedID) (int, error) {
-	var subID int
-	if err := r.db.QueryRowxContext(ctx, queries.SubscriptionsCreate, userID, feedID).Scan(&subID); err != nil {
-		return 0, err
+func (r *SubscriptionRepository) Create(ctx context.Context, userID string, feedID FeedID) (SubscriptionID, error) {
+	subID := NewFeedSubscriptionID()
+	if err := r.db.QueryRowxContext(ctx, queries.SubscriptionsCreate, subID, userID, feedID).Scan(&subID); err != nil {
+		return subID, err
 	}
 
 	return subID, nil
@@ -29,7 +29,7 @@ func (r *SubscriptionRepository) Create(ctx context.Context, userID string, feed
 
 // Deactivate marks a subscription as discarded. It still exists, but it won't generally
 // be shown, nor will it cause tweets to be created.
-func (r *SubscriptionRepository) Deactivate(ctx context.Context, userID string, subID int) error {
+func (r *SubscriptionRepository) Deactivate(ctx context.Context, userID string, subID SubscriptionID) error {
 	if _, err := r.db.ExecContext(ctx, queries.SubscriptionsDeactivate, userID, subID); err != nil {
 		return err
 	}

@@ -12,7 +12,7 @@ type UnsubscribeCommand struct {
 	// to ensure that a user is not deleting someone else's subscription.
 	UserID string
 	// SubscriptionID is the ID of the feed subscription to unsubscribe.
-	SubscriptionID int
+	SubscriptionID SubscriptionID
 }
 
 // HandleUnsubscribe handles a request from a user to unsubscribe from a feed.

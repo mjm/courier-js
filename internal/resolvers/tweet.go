@@ -7,6 +7,7 @@ import (
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 
+	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/read/tweets"
 )
 
@@ -24,7 +25,7 @@ func (t *Tweet) ID() graphql.ID {
 }
 
 func (t *Tweet) Feed(ctx context.Context) (*SubscribedFeed, error) {
-	sub, err := t.q.FeedSubscriptions.Get(ctx, t.tweet.FeedSubscriptionID)
+	sub, err := t.q.FeedSubscriptions.Get(ctx, feeds.SubscriptionID(t.tweet.FeedSubscriptionID))
 	if err != nil {
 		return nil, err
 	}

@@ -81,7 +81,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 
 	eventBase := tweetevent.TweetsImported{
 		UserID:         cmd.Subscription.UserID,
-		SubscriptionID: cmd.Subscription.ID,
+		SubscriptionID: string(cmd.Subscription.ID),
 	}
 
 	createdEvt := tweetevent.TweetsCreated{TweetsImported: eventBase}

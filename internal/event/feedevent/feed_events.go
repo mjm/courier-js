@@ -10,7 +10,7 @@ type FeedCreated struct {
 // FeedSubscribed occurs when a user subscribes to a feed.
 type FeedSubscribed struct {
 	FeedID         string
-	SubscriptionID int
+	SubscriptionID string
 	UserID         string
 }
 

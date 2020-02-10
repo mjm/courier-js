@@ -9,7 +9,7 @@ import (
 
 type ImportRecentPostsCommand struct {
 	UserID         string
-	SubscriptionID int
+	SubscriptionID FeedSubscriptionID
 }
 
 func (h *CommandHandler) handleImportRecentPosts(ctx context.Context, cmd ImportRecentPostsCommand) error {
@@ -44,8 +44,8 @@ func (h *CommandHandler) handleImportRecentPosts(ctx context.Context, cmd Import
 }
 
 func (h *CommandHandler) handleFeedSubscribed(ctx context.Context, evt feedevent.FeedSubscribed) {
-	h.bus.Run(ctx, ImportRecentPostsCommand{
+	_, _ = h.bus.Run(ctx, ImportRecentPostsCommand{
 		UserID:         evt.UserID,
-		SubscriptionID: evt.SubscriptionID,
+		SubscriptionID: FeedSubscriptionID(evt.SubscriptionID),
 	})
 }

@@ -3,7 +3,6 @@ package feeds
 import (
 	"context"
 	"errors"
-	"strconv"
 
 	"github.com/graph-gophers/dataloader"
 	"github.com/jmoiron/sqlx"
@@ -25,9 +24,9 @@ var (
 // SubscriptionQueries is an interface for reading information about a user's subscribed feeds.
 type SubscriptionQueries interface {
 	// Get fetches a feed subscription by ID.
-	Get(context.Context, int) (*Subscription, error)
+	Get(context.Context, SubscriptionID) (*Subscription, error)
 	// GetEdge fetches a pager edge for a feed subscription by ID.
-	GetEdge(context.Context, int) (*SubscriptionEdge, error)
+	GetEdge(context.Context, SubscriptionID) (*SubscriptionEdge, error)
 	// Paged fetches a paged subset of a user's feed subscriptions.
 	Paged(context.Context, string, pager.Options) (*pager.Connection, error)
 }
@@ -55,7 +54,7 @@ func newSubscriptionLoader(db db.DB) *dataloader.Loader {
 			return nil
 		}
 
-		rows, err := db.QueryxContext(ctx, queries.SubscriptionsLoad, userID, loader.IntArray(keys))
+		rows, err := db.QueryxContext(ctx, queries.SubscriptionsLoad, userID, loader.StringArray(keys))
 		if err != nil {
 			panic(err)
 		}
@@ -65,13 +64,13 @@ func newSubscriptionLoader(db db.DB) *dataloader.Loader {
 				return nil, "", err
 			}
 
-			return &sub, strconv.Itoa(sub.ID), nil
+			return &sub, string(sub.ID), nil
 		})
 	})
 }
 
-func (q *subscriptionQueries) Get(ctx context.Context, id int) (*Subscription, error) {
-	v, err := q.loader.Load(ctx, loader.IntKey(id))()
+func (q *subscriptionQueries) Get(ctx context.Context, id SubscriptionID) (*Subscription, error) {
+	v, err := q.loader.Load(ctx, dataloader.StringKey(id))()
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +80,7 @@ func (q *subscriptionQueries) Get(ctx context.Context, id int) (*Subscription, e
 	return v.(*Subscription), nil
 }
 
-func (q *subscriptionQueries) GetEdge(ctx context.Context, id int) (*SubscriptionEdge, error) {
+func (q *subscriptionQueries) GetEdge(ctx context.Context, id SubscriptionID) (*SubscriptionEdge, error) {
 	var row SubscriptionEdge
 	if err := q.db.QueryRowxContext(ctx, queries.SubscriptionsGetEdge, id).StructScan(&row); err != nil {
 		return nil, err
@@ -98,7 +97,7 @@ func (q *subscriptionQueries) HandleEvent(ctx context.Context, evt interface{}) 
 	switch evt := evt.(type) {
 
 	case feedevent.FeedSubscribed:
-		q.loader.Clear(ctx, loader.IntKey(evt.SubscriptionID))
+		q.loader.Clear(ctx, dataloader.StringKey(evt.SubscriptionID))
 
 	}
 }

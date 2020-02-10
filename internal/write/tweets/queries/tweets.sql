@@ -2,7 +2,7 @@
 SELECT *
 FROM
   tweets
-WHERE feed_subscription_id = $1
+WHERE feed_subscription_guid = $1
   AND post_id = ANY ($2)
 ORDER BY
   post_id,
@@ -17,7 +17,7 @@ SET
   updated_at = CURRENT_TIMESTAMP
 FROM
   feed_subscriptions
-WHERE tweets.feed_subscription_id = feed_subscriptions.id
+WHERE tweets.feed_subscription_guid = feed_subscriptions.guid
   AND feed_subscriptions.user_id = $1
   AND tweets.id = $2
   AND status <> 'posted';
@@ -25,7 +25,7 @@ WHERE tweets.feed_subscription_id = feed_subscriptions.id
 -- qry: TweetsCreate
 INSERT INTO
   tweets
-  (feed_subscription_id,
+  (feed_subscription_guid,
    post_after,
    post_id,
    action,
