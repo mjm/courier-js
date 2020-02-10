@@ -3,7 +3,6 @@ scalar DateTime
 scalar Time
 
 type Query {
-  # currentUser: User
   viewer: User
 
   node(id: ID!): Node
@@ -43,7 +42,7 @@ type Mutation {
   addFeed(input: AddFeedInput!): AddFeedPayload!
   refreshFeed(input: RefreshFeedInput!): RefreshFeedPayload!
   #   setFeedOptions(input: SetFeedOptionsInput!): SetFeedOptionsPayload!
-  #   deleteFeed(input: DeleteFeedInput!): DeleteFeedPayload!
+  deleteFeed(input: DeleteFeedInput!): DeleteFeedPayload!
 
   cancelTweet(input: CancelTweetInput!): CancelTweetPayload!
   #   uncancelTweet(input: UncancelTweetInput!): UncancelTweetPayload!

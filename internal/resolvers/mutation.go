@@ -83,6 +83,34 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 	}, nil
 }
 
+type DeleteFeedPayload struct {
+	ID graphql.ID
+}
+
+func (r *Root) DeleteFeed(ctx context.Context, args struct {
+	Input struct{ ID graphql.ID }
+}) (*DeleteFeedPayload, error) {
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return nil, err
+	}
+
+	var id feeds.SubscriptionID
+	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+		return nil, err
+	}
+
+	cmd := feeds.UnsubscribeCommand{
+		UserID:         userID,
+		SubscriptionID: id,
+	}
+	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	return &DeleteFeedPayload{ID: args.Input.ID}, nil
+}
+
 type CancelTweetPayload struct {
 	Tweet *Tweet
 }
