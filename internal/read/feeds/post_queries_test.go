@@ -19,6 +19,7 @@ func (suite *feedsSuite) TestGetPost() {
 		url := fmt.Sprintf("https://example.com/item-%d", i)
 		t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 		newPost := feeds.CreatePostParams{
+			ID:          feeds.NewPostID(),
 			ItemID:      url,
 			URL:         url,
 			Title:       "a post title",

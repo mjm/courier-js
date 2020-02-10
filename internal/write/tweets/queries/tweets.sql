@@ -3,9 +3,9 @@ SELECT *
 FROM
   tweets
 WHERE feed_subscription_guid = $1
-  AND post_id = ANY ($2)
+  AND post_guid = ANY ($2)
 ORDER BY
-  post_id,
+  post_guid,
   position;
 
 -- qry: TweetsCancel
@@ -27,7 +27,7 @@ INSERT INTO
   tweets
   (feed_subscription_guid,
    post_after,
-   post_id,
+   post_guid,
    action,
    body,
    media_urls,
@@ -36,14 +36,14 @@ INSERT INTO
 SELECT
   $1,
   $2,
-  v.post_id,
+  v.post_guid,
   v.action,
   v.body,
   ARRAY(SELECT json_array_elements_text(v.media_urls)),
   v.retweet_id,
   v.position
 FROM
-  __unnested__ v(post_id, action, body, media_urls, retweet_id, position)
+  __unnested__ v(post_guid, action, body, media_urls, retweet_id, position)
 RETURNING id;
 
 -- qry: TweetsUpdate

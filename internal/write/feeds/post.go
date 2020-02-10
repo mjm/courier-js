@@ -3,13 +3,14 @@ package feeds
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
 
 // Post is a single entry from a feed. A Post is shared between all users that are subscribed
 // to a feed.
 type Post struct {
-	ID          int         `db:"id"`
+	ID          PostID      `db:"guid"`
 	FeedID      FeedID      `db:"feed_guid"`
 	ItemID      string      `db:"item_id"`
 	TextContent string      `db:"text_content"`
@@ -21,5 +22,16 @@ type Post struct {
 	CreatedAt   time.Time   `db:"created_at"`
 	UpdatedAt   time.Time   `db:"updated_at"`
 
+	Unused_ID     int  `db:"id"`
 	Unused_FeedID *int `db:"feed_id"`
+}
+
+type PostID string
+
+func NewPostID() PostID {
+	return PostID(uuid.New().String())
+}
+
+func (id PostID) String() string {
+	return string(id)
 }

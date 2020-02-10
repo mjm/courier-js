@@ -3,7 +3,6 @@ package feeds
 import (
 	"context"
 	"errors"
-	"strconv"
 
 	"github.com/graph-gophers/dataloader"
 	"github.com/jmoiron/sqlx"
@@ -22,7 +21,7 @@ var (
 // PostQueries is an interface for reading information about posts.
 type PostQueries interface {
 	// Get fetches a post by ID.
-	Get(context.Context, int) (*Post, error)
+	Get(context.Context, PostID) (*Post, error)
 }
 
 type postQueries struct {
@@ -43,7 +42,7 @@ func NewPostQueries(db db.DB, eventBus *event.Bus) PostQueries {
 
 func newPostLoader(db db.DB) *dataloader.Loader {
 	return loader.New("Post Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-		rows, err := db.QueryxContext(ctx, queries.PostsLoad, loader.IntArray(keys))
+		rows, err := db.QueryxContext(ctx, queries.PostsLoad, loader.StringArray(keys))
 		if err != nil {
 			panic(err)
 		}
@@ -53,13 +52,13 @@ func newPostLoader(db db.DB) *dataloader.Loader {
 				return nil, "", err
 			}
 
-			return &post, strconv.Itoa(post.ID), nil
+			return &post, string(post.ID), nil
 		})
 	})
 }
 
-func (q *postQueries) Get(ctx context.Context, id int) (*Post, error) {
-	v, err := q.loader.Load(ctx, loader.IntKey(id))()
+func (q *postQueries) Get(ctx context.Context, id PostID) (*Post, error) {
+	v, err := q.loader.Load(ctx, dataloader.StringKey(id))()
 	if err != nil {
 		return nil, err
 	}

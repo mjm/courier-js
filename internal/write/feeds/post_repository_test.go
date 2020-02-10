@@ -21,6 +21,7 @@ func (suite *feedsSuite) TestCreateOne() {
 
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 	newPost := CreatePostParams{
+		ID:          NewPostID(),
 		ItemID:      "abc",
 		URL:         "https://example.com/abc",
 		Title:       "a post title",
@@ -32,7 +33,7 @@ func (suite *feedsSuite) TestCreateOne() {
 	suite.NoError(err)
 	suite.Equal(1, len(posts))
 
-	suite.NotEmpty(posts[0].ID)
+	suite.Equal(newPost.ID, posts[0].ID)
 	suite.Equal(feedID, posts[0].FeedID)
 	suite.Equal("abc", posts[0].ItemID)
 	suite.Equal("https://example.com/abc", posts[0].URL)
@@ -55,6 +56,7 @@ func (suite *feedsSuite) TestCreateMany() {
 		url := fmt.Sprintf("https://example.com/item-%d", i)
 		t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 		newPost := CreatePostParams{
+			ID:          NewPostID(),
 			ItemID:      url,
 			URL:         url,
 			Title:       "a post title",
@@ -70,7 +72,7 @@ func (suite *feedsSuite) TestCreateMany() {
 	suite.Equal(10, len(posts))
 
 	for i, p := range posts {
-		suite.NotEmpty(p.ID)
+		suite.Equal(newPosts[i].ID, p.ID)
 		suite.Equal(fmt.Sprintf("https://example.com/item-%d", i), p.ItemID)
 	}
 }
@@ -86,6 +88,7 @@ func (suite *feedsSuite) TestLoadByItemID() {
 		url := fmt.Sprintf("https://example.com/item-%d", i)
 		t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 		newPost := CreatePostParams{
+			ID:          NewPostID(),
 			ItemID:      url,
 			URL:         url,
 			Title:       "a post title",
@@ -122,6 +125,7 @@ func (suite *feedsSuite) TestLoadByItemIDWrongFeed() {
 		url := fmt.Sprintf("https://example.com/item-%d", i)
 		t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 		newPost := CreatePostParams{
+			ID:          NewPostID(),
 			ItemID:      url,
 			URL:         url,
 			Title:       "a post title",

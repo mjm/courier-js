@@ -21,7 +21,7 @@ var (
 // Tweet is a single tweet that was translated from a post for a particular user.
 type Tweet struct {
 	ID                 int                `db:"id"`
-	PostID             int                `db:"post_id"`
+	PostID             PostID             `db:"post_guid"`
 	FeedSubscriptionID FeedSubscriptionID `db:"feed_subscription_guid"`
 	Body               string             `db:"body"`
 	MediaURLs          pq.StringArray     `db:"media_urls"`
@@ -35,6 +35,7 @@ type Tweet struct {
 	Action             TweetAction        `db:"action"`
 	RetweetID          string             `db:"retweet_id"`
 
+	Unused_PostID             *int `db:"post_id"`
 	Unused_FeedSubscriptionID *int `db:"feed_subscription_id"`
 }
 
@@ -70,13 +71,13 @@ func NewTweetRepository(db db.DB) *TweetRepository {
 	return &TweetRepository{db: db}
 }
 
-func (r *TweetRepository) ByPostIDs(ctx context.Context, subID FeedSubscriptionID, postIDs []int) (map[int][]*Tweet, error) {
+func (r *TweetRepository) ByPostIDs(ctx context.Context, subID FeedSubscriptionID, postIDs []PostID) (map[PostID][]*Tweet, error) {
 	rows, err := r.db.QueryxContext(ctx, queries.TweetsByPostIDs, subID, pq.Array(postIDs))
 	if err != nil {
 		return nil, err
 	}
 
-	byPostID := make(map[int][]*Tweet)
+	byPostID := make(map[PostID][]*Tweet)
 	for rows.Next() {
 		var t Tweet
 		if err := rows.StructScan(&t); err != nil {
@@ -110,7 +111,7 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, tweetID int
 }
 
 type CreateTweetParams struct {
-	PostID    int
+	PostID    PostID
 	Action    TweetAction
 	Body      string
 	MediaURLs []string
@@ -130,7 +131,7 @@ func (r *TweetRepository) Create(ctx context.Context, subID FeedSubscriptionID, 
 	}
 
 	emptyMediaURLs := []byte("[]")
-	u := db.NewUnnester("int8", "tweet_action", "text", "json", "text", "int4")
+	u := db.NewUnnester("uuid", "tweet_action", "text", "json", "text", "int4")
 	for _, t := range ts {
 		mediaURLs := emptyMediaURLs
 		if len(t.MediaURLs) > 0 {

@@ -25,5 +25,5 @@ type FeedRefreshed struct {
 // referred to in PostIDs may have been created or updated.
 type PostsImported struct {
 	FeedID  string
-	PostIDs []int
+	PostIDs []string
 }

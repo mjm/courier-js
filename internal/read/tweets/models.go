@@ -9,7 +9,7 @@ import (
 // Tweet is a single tweet that was translated from a post for a particular user.
 type Tweet struct {
 	ID                 int                `db:"id"`
-	PostID             int                `db:"post_id"`
+	PostID             PostID             `db:"post_guid"`
 	FeedSubscriptionID FeedSubscriptionID `db:"feed_subscription_guid"`
 	Body               string             `db:"body"`
 	MediaURLs          pq.StringArray     `db:"media_urls"`
@@ -23,10 +23,12 @@ type Tweet struct {
 	Action             TweetAction        `db:"action"`
 	RetweetID          string             `db:"retweet_id"`
 
+	Unused_PostID             *int `db:"post_id"`
 	Unused_FeedSubscriptionID *int `db:"feed_subscription_id"`
 }
 
 type FeedSubscriptionID string
+type PostID string
 
 // TweetStatus is a state that a tweet can be in.
 type TweetStatus string

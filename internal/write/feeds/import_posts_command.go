@@ -43,9 +43,9 @@ func (h *CommandHandler) HandleImportPosts(ctx context.Context, cmd ImportPostsC
 
 	trace.AddField(ctx, "import.changed_count", len(changed))
 	if len(changed) > 0 {
-		var ids []int
+		var ids []string
 		for _, p := range changed {
-			ids = append(ids, p.ID)
+			ids = append(ids, p.ID.String())
 		}
 
 		h.eventBus.Fire(ctx, feedevent.PostsImported{
@@ -94,6 +94,7 @@ func (h *CommandHandler) planPostChanges(ctx context.Context, feedID FeedID, ent
 			}
 		} else {
 			toCreate = append(toCreate, CreatePostParams{
+				ID:          NewPostID(),
 				ItemID:      e.ID,
 				Title:       e.Title,
 				URL:         e.URL,

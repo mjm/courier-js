@@ -36,7 +36,7 @@ func (e *TweetEdge) Cursor() pager.Cursor {
 	if e.PublishedAt.Valid {
 		return pager.Cursor(e.PublishedAt.Time.UTC().Format(time.RFC3339))
 	}
-	return pager.Cursor("")
+	return ""
 }
 
 type tweetPager struct {

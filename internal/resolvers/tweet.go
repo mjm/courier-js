@@ -34,7 +34,7 @@ func (t *Tweet) Feed(ctx context.Context) (*SubscribedFeed, error) {
 }
 
 func (t *Tweet) Post(ctx context.Context) (*Post, error) {
-	p, err := t.q.Posts.Get(ctx, t.tweet.PostID)
+	p, err := t.q.Posts.Get(ctx, feeds.PostID(t.tweet.PostID))
 	if err != nil {
 		return nil, err
 	}

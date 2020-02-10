@@ -28,7 +28,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 		"import.post_count":    len(cmd.Posts),
 	})
 
-	var postIDs []int
+	var postIDs []PostID
 	for _, p := range cmd.Posts {
 		postIDs = append(postIDs, p.ID)
 	}
@@ -188,7 +188,12 @@ func (h *CommandHandler) handlePostsImported(ctx context.Context, evt feedevent.
 		return
 	}
 
-	posts, err := h.postRepo.ByIDs(ctx, evt.PostIDs)
+	var postIDs []PostID
+	for _, id := range evt.PostIDs {
+		postIDs = append(postIDs, PostID(id))
+	}
+
+	posts, err := h.postRepo.ByIDs(ctx, postIDs)
 	if err != nil {
 		trace.Error(ctx, err)
 		return

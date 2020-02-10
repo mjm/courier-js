@@ -10,7 +10,7 @@ import (
 )
 
 type Post struct {
-	ID          int         `db:"id"`
+	ID          PostID      `db:"guid"`
 	ItemID      string      `db:"item_id"`
 	TextContent string      `db:"text_content"`
 	HTMLContent string      `db:"html_content"`
@@ -20,6 +20,8 @@ type Post struct {
 	ModifiedAt  pq.NullTime `db:"modified_at"`
 }
 
+type PostID string
+
 type PostRepository struct {
 	db db.DB
 }
@@ -28,7 +30,7 @@ func NewPostRepository(db db.DB) *PostRepository {
 	return &PostRepository{db: db}
 }
 
-func (r *PostRepository) ByIDs(ctx context.Context, ids []int) ([]*Post, error) {
+func (r *PostRepository) ByIDs(ctx context.Context, ids []PostID) ([]*Post, error) {
 	rows, err := r.db.QueryxContext(ctx, queries.PostsByIDs, pq.Array(ids))
 	if err != nil {
 		return nil, err

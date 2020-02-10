@@ -75,7 +75,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	case TweetNode:
 		n, err = r.Tweet(ctx, args)
 	case PostNode:
-		var id int
+		var id feeds.PostID
 		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 			return nil, err
 		}

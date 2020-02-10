@@ -9,7 +9,8 @@ WHERE feed_guid = $1
 -- qry: PostsCreate
 INSERT INTO
   posts
-  (feed_guid,
+  (guid,
+   feed_guid,
    item_id,
    url,
    title,
@@ -38,6 +39,6 @@ FROM
     SELECT *
     FROM
       __unnested__
-  ) v(id, url, title, text_content, html_content, published_at, modified_at)
-WHERE posts.id = v.id
+  ) v(guid, url, title, text_content, html_content, published_at, modified_at)
+WHERE posts.guid = v.guid
 RETURNING *;

@@ -51,6 +51,7 @@ func (r *PostRepository) FindByItemIDs(ctx context.Context, feedID FeedID, itemI
 
 // CreatePostParams describes a single post that should be created.
 type CreatePostParams struct {
+	ID          PostID
 	ItemID      string
 	TextContent string
 	HTMLContent string
@@ -68,11 +69,11 @@ func (r *PostRepository) Create(ctx context.Context, feedID FeedID, ps []CreateP
 		return nil, nil
 	}
 
-	u := db.NewUnnester("uuid", "text", "text", "text", "text", "text", "timestamp", "timestamp")
+	u := db.NewUnnester("uuid", "uuid", "text", "text", "text", "text", "text", "timestamp", "timestamp")
 	for _, p := range ps {
 		published := fromTimePtr(p.PublishedAt)
 		modified := fromTimePtr(p.ModifiedAt)
-		u.AppendRow(feedID, p.ItemID, p.URL, p.Title, p.TextContent, p.HTMLContent, published, modified)
+		u.AppendRow(p.ID, feedID, p.ItemID, p.URL, p.Title, p.TextContent, p.HTMLContent, published, modified)
 	}
 
 	q := qry.Query(queries.PostsCreate).Replace("__unnested__", u.Unnest())
@@ -95,7 +96,7 @@ func (r *PostRepository) Create(ctx context.Context, feedID FeedID, ps []CreateP
 // UpdatePostParams describes a single post that should be updated with new data
 // from the feed.
 type UpdatePostParams struct {
-	ID          int
+	ID          PostID
 	TextContent string
 	HTMLContent string
 	Title       string
@@ -113,7 +114,7 @@ func (r *PostRepository) Update(ctx context.Context, ps []UpdatePostParams) ([]*
 		return nil, nil
 	}
 
-	u := db.NewUnnester("int4", "text", "text", "text", "text", "timestamp", "timestamp")
+	u := db.NewUnnester("uuid", "text", "text", "text", "text", "timestamp", "timestamp")
 	for _, p := range ps {
 		published := fromTimePtr(p.PublishedAt)
 		modified := fromTimePtr(p.ModifiedAt)

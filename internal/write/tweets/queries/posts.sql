@@ -1,6 +1,6 @@
 -- qry: PostsByIDs
 SELECT
-  id,
+  guid,
   item_id,
   text_content,
   html_content,
@@ -10,11 +10,11 @@ SELECT
   modified_at
 FROM
   posts
-WHERE id = ANY ($1);
+WHERE guid = ANY ($1);
 
 -- qry: PostsRecent
 SELECT
-  id,
+  guid,
   item_id,
   text_content,
   html_content,

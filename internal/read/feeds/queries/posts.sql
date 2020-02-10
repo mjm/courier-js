@@ -2,4 +2,4 @@
 SELECT *
 FROM
   posts
-WHERE id = ANY ($1);
+WHERE guid = ANY ($1);

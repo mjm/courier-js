@@ -14,7 +14,7 @@ SELECT
 FROM
   tweets
   JOIN posts
-       ON tweets.post_id = posts.id
+       ON tweets.post_guid = posts.guid
   JOIN feed_subscriptions
        ON tweets.feed_subscription_guid = feed_subscriptions.guid
 WHERE feed_subscriptions.user_id = :user_id
