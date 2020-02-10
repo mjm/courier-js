@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"reflect"
 
 	"github.com/jmoiron/sqlx"
 
@@ -19,6 +20,7 @@ type Config struct {
 
 // DB is an interface of supported operations for performing SQL queries.
 type DB interface {
+	SelectContext(context.Context, interface{}, string, ...interface{}) error
 	ExecContext(context.Context, string, ...interface{}) (sql.Result, error)
 	NamedQueryContext(context.Context, string, interface{}) (*sqlx.Rows, error)
 	QueryxContext(context.Context, string, ...interface{}) (*sqlx.Rows, error)
@@ -37,6 +39,25 @@ func New(cfg Config) (DB, error) {
 	}
 
 	return &tracingDB{DB: db}, nil
+}
+
+func (db *tracingDB) SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
+	ctx = trace.Start(ctx, "SQL query")
+	defer trace.Finish(ctx)
+
+	trace.Add(ctx, trace.Fields{
+		"sql.query": query,
+	})
+
+	if err := db.DB.SelectContext(ctx, dest, query, args...); err != nil {
+		trace.Error(ctx, err)
+		return err
+	}
+
+	trace.Add(ctx, trace.Fields{
+		"sql.row_count": reflect.ValueOf(dest).Len(),
+	})
+	return nil
 }
 
 func (db *tracingDB) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {

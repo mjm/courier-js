@@ -18,37 +18,17 @@ func NewPostRepository(db db.DB) *PostRepository {
 }
 
 func (r *PostRepository) ByIDs(ctx context.Context, ids []PostID) ([]*Post, error) {
-	rows, err := r.db.QueryxContext(ctx, queries.PostsByIDs, pq.Array(ids))
-	if err != nil {
-		return nil, err
-	}
-
 	var posts []*Post
-	for rows.Next() {
-		var post Post
-		if err := rows.StructScan(&post); err != nil {
-			return nil, err
-		}
-
-		posts = append(posts, &post)
+	if err := r.db.SelectContext(ctx, &posts, queries.PostsByIDs, pq.Array(ids)); err != nil {
+		return nil, err
 	}
 	return posts, nil
 }
 
 func (r *PostRepository) RecentPosts(ctx context.Context, feedID FeedID) ([]*Post, error) {
-	rows, err := r.db.QueryxContext(ctx, queries.PostsRecent, feedID)
-	if err != nil {
-		return nil, err
-	}
-
 	var posts []*Post
-	for rows.Next() {
-		var post Post
-		if err := rows.StructScan(&post); err != nil {
-			return nil, err
-		}
-
-		posts = append(posts, &post)
+	if err := r.db.SelectContext(ctx, &posts, queries.PostsRecent, feedID); err != nil {
+		return nil, err
 	}
 	return posts, nil
 }
