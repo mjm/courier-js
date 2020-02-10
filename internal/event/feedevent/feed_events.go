@@ -21,6 +21,17 @@ type FeedRefreshed struct {
 	UserID string
 }
 
+type FeedOptionsChanged struct {
+	SubscriptionID string
+	UserID         string
+	Autopost       bool
+}
+
+type FeedUnsubscribed struct {
+	SubscriptionID string
+	UserID         string
+}
+
 // PostsImported occurs when posts are imported during a feed refresh. The posts
 // referred to in PostIDs may have been created or updated.
 type PostsImported struct {

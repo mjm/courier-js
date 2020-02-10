@@ -27,6 +27,18 @@ func (r *SubscriptionRepository) Create(ctx context.Context, userID string, feed
 	return subID, nil
 }
 
+type UpdateSubscriptionParams struct {
+	ID       SubscriptionID
+	Autopost bool
+}
+
+func (r *SubscriptionRepository) Update(ctx context.Context, userID string, params UpdateSubscriptionParams) error {
+	if _, err := r.db.ExecContext(ctx, queries.SubscriptionsUpdate, params.ID, userID, params.Autopost); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Deactivate marks a subscription as discarded. It still exists, but it won't generally
 // be shown, nor will it cause tweets to be created.
 func (r *SubscriptionRepository) Deactivate(ctx context.Context, userID string, subID SubscriptionID) error {

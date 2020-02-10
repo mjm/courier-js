@@ -83,6 +83,45 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 	}, nil
 }
 
+type SetFeedOptionsPayload struct {
+	Feed *SubscribedFeed
+}
+
+func (r *Root) SetFeedOptions(ctx context.Context, args struct {
+	Input struct {
+		ID       graphql.ID
+		Autopost *bool
+	}
+}) (*SetFeedOptionsPayload, error) {
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return nil, err
+	}
+
+	var id feeds.SubscriptionID
+	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+		return nil, err
+	}
+
+	cmd := feeds.UpdateOptionsCommand{
+		UserID:         userID,
+		SubscriptionID: id,
+		Autopost:       *args.Input.Autopost,
+	}
+	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	sub, err := r.q.FeedSubscriptions.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SetFeedOptionsPayload{
+		Feed: NewSubscribedFeed(r.q, sub),
+	}, nil
+}
+
 type DeleteFeedPayload struct {
 	ID graphql.ID
 }

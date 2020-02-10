@@ -44,6 +44,7 @@ func NewCommandHandler(
 	bus.Register(h,
 		SubscribeCommand{},
 		RefreshCommand{},
+		UpdateOptionsCommand{},
 		UnsubscribeCommand{},
 		ImportPostsCommand{})
 	return h
@@ -60,6 +61,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 	case RefreshCommand:
 		err := h.HandleRefresh(ctx, cmd)
 		return nil, err
+
+	case UpdateOptionsCommand:
+		return nil, h.handleUpdateOptions(ctx, cmd)
 
 	case UnsubscribeCommand:
 		err := h.HandleUnsubscribe(ctx, cmd)

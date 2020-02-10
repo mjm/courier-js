@@ -41,7 +41,7 @@ type Query {
 type Mutation {
   addFeed(input: AddFeedInput!): AddFeedPayload!
   refreshFeed(input: RefreshFeedInput!): RefreshFeedPayload!
-  #   setFeedOptions(input: SetFeedOptionsInput!): SetFeedOptionsPayload!
+  setFeedOptions(input: SetFeedOptionsInput!): SetFeedOptionsPayload!
   deleteFeed(input: DeleteFeedInput!): DeleteFeedPayload!
 
   cancelTweet(input: CancelTweetInput!): CancelTweetPayload!

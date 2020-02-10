@@ -22,7 +22,10 @@ func NewEventRecorder(db db.DB, eventBus *event.Bus) *EventRecorder {
 	eventBus.Notify(r,
 		feedevent.FeedSubscribed{},
 		feedevent.FeedRefreshed{},
+		feedevent.FeedOptionsChanged{},
+		feedevent.FeedUnsubscribed{},
 		tweetevent.TweetCanceled{},
+		tweetevent.TweetUncanceled{},
 	)
 	return r
 }
@@ -47,8 +50,24 @@ func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 			// TODO fetch subscription from user ID
 		})
 
+	case feedevent.FeedOptionsChanged:
+		r.record(ctx, evt.UserID, FeedSetAutopost, EventParams{
+			FeedSubscriptionID: evt.SubscriptionID,
+			ParamValue:         &evt.Autopost,
+		})
+
+	case feedevent.FeedUnsubscribed:
+		r.record(ctx, evt.UserID, FeedUnsubscribe, EventParams{
+			FeedSubscriptionID: evt.SubscriptionID,
+		})
+
 	case tweetevent.TweetCanceled:
 		r.record(ctx, evt.UserID, TweetCancel, EventParams{
+			TweetID: evt.TweetID,
+		})
+
+	case tweetevent.TweetUncanceled:
+		r.record(ctx, evt.UserID, TweetUncancel, EventParams{
 			TweetID: evt.TweetID,
 		})
 

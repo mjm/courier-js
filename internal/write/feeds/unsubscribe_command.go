@@ -3,6 +3,7 @@ package feeds
 import (
 	"context"
 
+	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -24,8 +25,10 @@ func (h *CommandHandler) HandleUnsubscribe(ctx context.Context, cmd UnsubscribeC
 		return err
 	}
 
-	// event.Record(ctx, srv.db, event.FeedUnsubscribe, event.Params{
-	// 	FeedSubscriptionID: strconv.Itoa(id),
-	// })
+	h.eventBus.Fire(ctx, feedevent.FeedUnsubscribed{
+		SubscriptionID: string(cmd.SubscriptionID),
+		UserID:         cmd.UserID,
+	})
+
 	return nil
 }
