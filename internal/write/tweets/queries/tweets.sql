@@ -22,8 +22,23 @@ WHERE tweets.feed_subscription_guid = feed_subscriptions.guid
   AND tweets.guid = $2
   AND status <> 'posted';
 
+-- qry: TweetsUncancel
+UPDATE
+  tweets
+SET
+  status     = 'draft',
+  post_after = NULL,
+  updated_at = CURRENT_TIMESTAMP
+FROM
+  feed_subscriptions
+WHERE tweets.feed_subscription_guid = feed_subscriptions.guid
+  AND feed_subscriptions.user_id = $1
+  AND tweets.guid = $2
+  AND status = 'canceled';
+
 -- qry: TweetsCreate
-INSERT INTO
+INSERT
+  INTO
   tweets
   (guid,
    feed_subscription_guid,

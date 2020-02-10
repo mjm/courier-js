@@ -3,7 +3,6 @@ SELECT *
 FROM
   feed_subscriptions
 WHERE user_id = $1
-  AND discarded_at IS NULL
   AND guid = ANY ($2);
 
 -- qry: SubscriptionsGetEdge

@@ -10,7 +10,7 @@ const (
 	PostsPagerTotal = "SELECT COUNT(*) FROM posts WHERE feed_guid = :feed_id;"
 
 	// subscriptions.sql
-	SubscriptionsLoad       = "SELECT * FROM feed_subscriptions WHERE user_id = $1 AND discarded_at IS NULL AND guid = ANY ($2);"
+	SubscriptionsLoad       = "SELECT * FROM feed_subscriptions WHERE user_id = $1 AND guid = ANY ($2);"
 	SubscriptionsGetEdge    = "SELECT feed_subscriptions.*, feeds.url FROM feed_subscriptions JOIN feeds ON feed_subscriptions.feed_guid = feeds.guid WHERE feed_subscriptions.guid = $1;"
 	SubscriptionsPagerEdges = "SELECT feed_subscriptions.*, feeds.url FROM feed_subscriptions JOIN feeds ON feed_subscriptions.feed_guid = feeds.guid WHERE user_id = :user_id AND discarded_at IS NULL;"
 	SubscriptionsPagerTotal = "SELECT COUNT(*) FROM feed_subscriptions WHERE user_id = :user_id AND discarded_at IS NULL;"

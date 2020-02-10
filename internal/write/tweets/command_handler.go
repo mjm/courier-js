@@ -46,6 +46,7 @@ func NewCommandHandler(
 	}
 	bus.Register(h,
 		CancelCommand{},
+		UncancelCommand{},
 		ImportTweetsCommand{},
 		ImportRecentPostsCommand{},
 	)
@@ -62,6 +63,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 
 	case CancelCommand:
 		return nil, h.HandleCancel(ctx, cmd)
+
+	case UncancelCommand:
+		return nil, h.handleUncancel(ctx, cmd)
 
 	case ImportTweetsCommand:
 		return nil, h.handleImportTweets(ctx, cmd)

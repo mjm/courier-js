@@ -88,6 +88,9 @@ func (q *tweetQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	case tweetevent.TweetCanceled:
 		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetID))
 
+	case tweetevent.TweetUncanceled:
+		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetID))
+
 	case tweetevent.TweetsUpdated:
 		for _, id := range evt.TweetIDs {
 			q.loader.Clear(ctx, dataloader.StringKey(id))

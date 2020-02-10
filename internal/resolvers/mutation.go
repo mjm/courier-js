@@ -146,3 +146,38 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 		Tweet: NewTweet(r.q, t),
 	}, nil
 }
+
+type UncancelTweetPayload struct {
+	Tweet *Tweet
+}
+
+func (r *Root) UncancelTweet(ctx context.Context, args struct {
+	Input struct{ ID graphql.ID }
+}) (*UncancelTweetPayload, error) {
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return nil, err
+	}
+
+	var id tweets.TweetID
+	if err := relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+		return nil, err
+	}
+
+	cmd := tweets.UncancelCommand{
+		UserID:  userID,
+		TweetID: id,
+	}
+	if _, err := r.commandBus.Run(ctx, cmd); err != nil {
+		return nil, err
+	}
+
+	t, err := r.q.Tweets.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UncancelTweetPayload{
+		Tweet: NewTweet(r.q, t),
+	}, nil
+}

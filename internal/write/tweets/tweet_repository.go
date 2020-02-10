@@ -67,6 +67,24 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, tweetID Twe
 	return nil
 }
 
+func (r *TweetRepository) Uncancel(ctx context.Context, userID string, tweetID TweetID) error {
+	res, err := r.db.ExecContext(ctx, queries.TweetsUncancel, userID, tweetID)
+	if err != nil {
+		return err
+	}
+
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if n == 0 {
+		return ErrNoTweet
+	}
+
+	return nil
+}
+
 type CreateTweetParams struct {
 	ID        TweetID
 	PostID    PostID
