@@ -2,10 +2,13 @@ package trace
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/honeycombio/libhoney-go"
+
+	"github.com/mjm/courier-js/internal/secret"
 )
 
 type contextKey struct{}
@@ -29,6 +32,16 @@ type Fields map[string]interface{}
 type Config struct {
 	Dataset  string
 	WriteKey string
+}
+
+func NewConfigFromSecrets(sk secret.Keeper) (cfg Config, err error) {
+	cfg.WriteKey, err = sk.GetString(context.Background(), "honey-write-key")
+	if err != nil {
+		return
+	}
+
+	cfg.Dataset = os.Getenv("HONEY_DATASET")
+	return
 }
 
 // Init initializes tracing support so it is correctly configured.

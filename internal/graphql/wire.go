@@ -10,6 +10,8 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/resolvers"
+	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
@@ -19,18 +21,21 @@ import (
 
 func InitializeHandler(
 	schemaString string,
-	authConfig auth.Config,
-	dbConfig db.Config,
-	stripeConfig billing2.Config,
+	gcpConfig secret.GCPConfig,
 ) (*Handler, error) {
 	panic(
 		wire.Build(
 			NewHandler,
 			NewSchema,
+			secret.GCPSet,
+			trace.NewConfigFromSecrets,
 			resolvers.New,
 			resolvers.QueriesProvider,
+			auth.NewConfigFromSecrets,
 			auth.DefaultSet,
+			db.NewConfigFromSecrets,
 			db.New,
+			billing2.NewConfigFromSecrets,
 			billing2.NewClient,
 			write.NewCommandBus,
 			event.NewBus,

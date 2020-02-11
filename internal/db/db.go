@@ -7,6 +7,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 
+	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
 
 	// ensure the postgres driver is present
@@ -39,6 +40,12 @@ func New(cfg Config) (DB, error) {
 	}
 
 	return &tracingDB{DB: db}, nil
+}
+
+func NewConfigFromSecrets(sk secret.Keeper) (cfg Config, err error) {
+	cfg.URL, err = sk.GetString(context.Background(), "database-url")
+
+	return
 }
 
 func (db *tracingDB) SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error {

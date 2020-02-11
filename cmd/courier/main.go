@@ -5,7 +5,8 @@ import (
 	"os"
 
 	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	courier "github.com/mjm/courier-js"
+
+	"github.com/mjm/courier-js"
 )
 
 func main() {

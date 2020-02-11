@@ -15,6 +15,8 @@ import (
 	"github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/resolvers"
+	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	billing3 "github.com/mjm/courier-js/internal/write/billing"
 	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
@@ -24,7 +26,20 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.Config, stripeConfig billing.Config) (*Handler, error) {
+func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handler, error) {
+	client, err := secret.NewSecretManager(gcpConfig)
+	if err != nil {
+		return nil, err
+	}
+	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
+	config, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
+	if err != nil {
+		return nil, err
+	}
+	dbConfig, err := db.NewConfigFromSecrets(gcpSecretKeeper)
+	if err != nil {
+		return nil, err
+	}
 	dbDB, err := db.New(dbConfig)
 	if err != nil {
 		return nil, err
@@ -35,7 +50,11 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	postQueries := feeds.NewPostQueries(dbDB, bus)
 	tweetQueries := tweets.NewTweetQueries(dbDB, bus)
 	eventQueries := user.NewEventQueries(dbDB)
-	api := billing.NewClient(stripeConfig)
+	billingConfig, err := billing.NewConfigFromSecrets(gcpSecretKeeper)
+	if err != nil {
+		return nil, err
+	}
+	api := billing.NewClient(billingConfig)
 	customerQueries := billing2.NewCustomerQueries(api)
 	billingSubscriptionQueries := billing2.NewSubscriptionQueries(api)
 	queries := resolvers.Queries{
@@ -58,7 +77,11 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, tweetsPostRepository)
 	customerRepository := billing3.NewCustomerRepository(api)
 	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
-	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, stripeConfig, customerRepository, billingSubscriptionRepository)
+	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, billingConfig, customerRepository, billingSubscriptionRepository)
+	authConfig, err := auth.NewConfigFromSecrets(gcpSecretKeeper)
+	if err != nil {
+		return nil, err
+	}
 	management, err := auth.NewManagementClient(authConfig)
 	if err != nil {
 		return nil, err
@@ -73,6 +96,6 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	jwksClient := auth.NewJWKSClient(authConfig)
 	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
 	eventRecorder := user2.NewEventRecorder(dbDB, bus)
-	handler := NewHandler(schema, authenticator, eventRecorder)
+	handler := NewHandler(config, schema, authenticator, eventRecorder)
 	return handler, nil
 }

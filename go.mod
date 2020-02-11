@@ -3,6 +3,7 @@ module github.com/mjm/courier-js
 go 1.13
 
 require (
+	cloud.google.com/go v0.52.0
 	github.com/DataDog/zstd v1.4.4 // indirect
 	github.com/GoogleCloudPlatform/functions-framework-go v1.0.0
 	github.com/HnH/qry v1.1.0
@@ -39,9 +40,11 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/stripe/stripe-go v68.13.0+incompatible
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
-	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
-	golang.org/x/sync v0.0.0-20190423024810-112230192c58
+	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
+	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/text v0.3.2
+	google.golang.org/api v0.15.0
+	google.golang.org/genproto v0.0.0-20200115191322-ca5a22157cba
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/auth0.v3 v3.0.3
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
