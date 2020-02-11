@@ -7,14 +7,16 @@ package graphql
 
 import (
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/read/billing"
+	billing2 "github.com/mjm/courier-js/internal/read/billing"
 	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/write"
+	billing3 "github.com/mjm/courier-js/internal/write/billing"
 	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
 	tweets2 "github.com/mjm/courier-js/internal/write/tweets"
 	user2 "github.com/mjm/courier-js/internal/write/user"
@@ -34,8 +36,8 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	tweetQueries := tweets.NewTweetQueries(dbDB, bus)
 	eventQueries := user.NewEventQueries(dbDB)
 	api := billing.NewClient(stripeConfig)
-	customerQueries := billing.NewCustomerQueries(api)
-	billingSubscriptionQueries := billing.NewSubscriptionQueries(api)
+	customerQueries := billing2.NewCustomerQueries(api)
+	billingSubscriptionQueries := billing2.NewSubscriptionQueries(api)
 	queries := resolvers.Queries{
 		Feeds:             feedQueries,
 		FeedSubscriptions: subscriptionQueries,
@@ -54,7 +56,10 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
 	tweetsPostRepository := tweets2.NewPostRepository(dbDB)
 	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, tweetsPostRepository)
-	root := resolvers.New(dbDB, queries, commandBus, commandHandler, tweetsCommandHandler)
+	customerRepository := billing3.NewCustomerRepository(api)
+	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
+	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, stripeConfig, customerRepository, billingSubscriptionRepository)
+	root := resolvers.New(queries, commandBus, commandHandler, tweetsCommandHandler, billingCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err

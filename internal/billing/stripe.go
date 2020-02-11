@@ -6,7 +6,8 @@ import (
 
 // Config includes settings for configuring talking to Stripe for billing.
 type Config struct {
-	SecretKey string
+	SecretKey     string
+	MonthlyPlanID string
 }
 
 // NewClient creates a new Stripe client from a billing config.

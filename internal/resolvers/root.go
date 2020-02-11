@@ -12,6 +12,7 @@ import (
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
 )
@@ -26,14 +27,13 @@ type Root struct {
 
 // New creates a new root resolver.
 func New(
-	db db.DB,
 	q Queries,
 	commandBus *write.CommandBus,
 	_ *feeds.CommandHandler,
 	_ *tweets.CommandHandler,
+	_ *billing.CommandHandler,
 ) *Root {
 	return &Root{
-		db:         db,
 		q:          q,
 		commandBus: commandBus,
 	}
@@ -48,7 +48,7 @@ func (r *Root) Viewer(ctx context.Context) *User {
 		return nil
 	}
 
-	return &User{q: r.q, db: r.db, user: u}
+	return &User{q: r.q, user: u}
 }
 
 // Node fetches any kind of node in the app by ID.

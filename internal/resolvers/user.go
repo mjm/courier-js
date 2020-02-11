@@ -4,14 +4,12 @@ import (
 	"context"
 
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/tweets"
 )
 
 type User struct {
 	q    Queries
-	db   db.DB
 	user auth.User
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/graph-gophers/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
 )
@@ -231,5 +232,43 @@ func (r *Root) UncancelTweet(ctx context.Context, args struct {
 	}
 
 	payload.Tweet = NewTweet(r.q, t)
+	return
+}
+
+func (r *Root) Subscribe(ctx context.Context, args struct {
+	Input struct {
+		TokenID *string
+		Email   *string
+	}
+}) (
+	payload struct {
+		User *User
+	},
+	err error,
+) {
+	user := auth.GetUser(ctx)
+	userID, err := user.ID()
+	if err != nil {
+		return
+	}
+
+	var email, tokenID string
+	if args.Input.TokenID != nil {
+		tokenID = *args.Input.TokenID
+	}
+	if args.Input.Email != nil {
+		email = *args.Input.Email
+	}
+
+	cmd := billing.SubscribeCommand{
+		UserID:  userID,
+		TokenID: tokenID,
+		Email:   email,
+	}
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
+		return
+	}
+
+	payload.User = &User{q: r.q, user: user}
 	return
 }

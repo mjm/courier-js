@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/graphql"
-	billing2 "github.com/mjm/courier-js/internal/read/billing"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -31,7 +31,7 @@ func init() {
 		ClientSecret: os.Getenv("BACKEND_CLIENT_SECRET"),
 	}, db.Config{
 		URL: os.Getenv("DATABASE_URL"),
-	}, billing2.Config{
+	}, billing.Config{
 		SecretKey: os.Getenv("STRIPE_SECRET_KEY"),
 	})
 	if err != nil {
