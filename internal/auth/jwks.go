@@ -28,6 +28,10 @@ type JWKSClient struct {
 	AuthDomain string
 }
 
+func NewJWKSClient(cfg Config) *JWKSClient {
+	return &JWKSClient{AuthDomain: cfg.AuthDomain}
+}
+
 func (c *JWKSClient) SigningKey(ctx context.Context, token *jwt.Token) (*rsa.PublicKey, error) {
 	ctx = trace.Start(ctx, "Get signing key")
 	defer trace.Finish(ctx)

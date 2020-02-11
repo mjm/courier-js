@@ -29,7 +29,7 @@ func InitializeHandler(
 			NewSchema,
 			resolvers.New,
 			resolvers.QueriesProvider,
-			auth.NewAuthenticator,
+			auth.DefaultSet,
 			db.New,
 			billing2.NewClient,
 			write.NewCommandBus,
@@ -37,6 +37,7 @@ func InitializeHandler(
 			feeds.DefaultSet,
 			tweets.DefaultSet,
 			billing.DefaultSet,
+			user.DefaultSet,
 			user.NewEventRecorder,
 		),
 	)

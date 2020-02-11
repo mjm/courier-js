@@ -15,6 +15,7 @@ import (
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
+	"github.com/mjm/courier-js/internal/write/user"
 )
 
 // Root is the root resolver for queries and mutations.
@@ -32,6 +33,7 @@ func New(
 	_ *feeds.CommandHandler,
 	_ *tweets.CommandHandler,
 	_ *billing.CommandHandler,
+	_ *user.CommandHandler,
 ) *Root {
 	return &Root{
 		q:          q,

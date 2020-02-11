@@ -6,11 +6,14 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/google/wire"
 	"gopkg.in/auth0.v3/management"
 	"gopkg.in/dgrijalva/jwt-go.v3"
 
 	"github.com/mjm/courier-js/internal/trace"
 )
+
+var DefaultSet = wire.NewSet(NewAuthenticator, NewManagementClient, NewJWKSClient)
 
 type userContextKey struct{}
 
@@ -18,8 +21,8 @@ type userContextKey struct{}
 // resolvers and other downstream logic.
 type Authenticator struct {
 	Config
-
 	management *management.Management
+	jwks       *JWKSClient
 }
 
 type Config struct {
@@ -28,16 +31,12 @@ type Config struct {
 	ClientSecret string
 }
 
-func NewAuthenticator(cfg Config) (*Authenticator, error) {
-	m, err := management.New(cfg.AuthDomain, cfg.ClientID, cfg.ClientSecret)
-	if err != nil {
-		return nil, err
-	}
-
+func NewAuthenticator(cfg Config, m *management.Management, jwks *JWKSClient) *Authenticator {
 	return &Authenticator{
 		Config:     cfg,
 		management: m,
-	}, nil
+		jwks:       jwks,
+	}
 }
 
 // Authenticate reads a JWT token from the request and returns a new context with an
@@ -59,10 +58,9 @@ func (a *Authenticator) Authenticate(parentCtx context.Context, r *http.Request)
 
 	trace.AddField(ctx, "token_present", true)
 
-	jwks := &JWKSClient{AuthDomain: a.AuthDomain}
 	var claims Claims
 	token, err := jwt.ParseWithClaims(tokenStr, &claims, func(token *jwt.Token) (interface{}, error) {
-		return jwks.SigningKey(ctx, token)
+		return a.jwks.SigningKey(ctx, token)
 	})
 
 	if err != nil {

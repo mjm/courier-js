@@ -59,15 +59,19 @@ func InitializeHandler(schemaString string, authConfig auth.Config, dbConfig db.
 	customerRepository := billing3.NewCustomerRepository(api)
 	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
 	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, stripeConfig, customerRepository, billingSubscriptionRepository)
-	root := resolvers.New(queries, commandBus, commandHandler, tweetsCommandHandler, billingCommandHandler)
+	management, err := auth.NewManagementClient(authConfig)
+	if err != nil {
+		return nil, err
+	}
+	userRepository := user2.NewUserRepository(management)
+	userCommandHandler := user2.NewCommandHandler(commandBus, bus, userRepository)
+	root := resolvers.New(queries, commandBus, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err
 	}
-	authenticator, err := auth.NewAuthenticator(authConfig)
-	if err != nil {
-		return nil, err
-	}
+	jwksClient := auth.NewJWKSClient(authConfig)
+	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
 	eventRecorder := user2.NewEventRecorder(dbDB, bus)
 	handler := NewHandler(schema, authenticator, eventRecorder)
 	return handler, nil
