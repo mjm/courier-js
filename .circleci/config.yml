@@ -36,7 +36,7 @@ jobs:
           POSTGRES_DB: courier_test
     environment:
       TEST_RESULTS: /tmp/test-results
-      DATABASE_URL: postgresql:///courier_test?sslmode=disable
+      DATABASE_URL: postgresql://localhost/courier_test?sslmode=disable
     steps:
       - checkout
       - run: sudo apt-get update
