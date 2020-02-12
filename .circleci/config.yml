@@ -17,9 +17,9 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
-      - run:
-          name: Migrate database
-          command: env DATABASE_URL="$STAGING_DATABASE_URL" npx node-pg-migrate up
+#      - run:
+#          name: Migrate database
+#          command: env DATABASE_URL="$STAGING_DATABASE_URL" npx node-pg-migrate up
       - run:
           name: Update Auth0 configuration
           command: npm run auth:import:staging
@@ -58,7 +58,7 @@ jobs:
       - run:
           name: Migrate test database
           command: |
-            migrate -database 'postgresql:///courier_test?sslmode=disable' -path migrations/ up
+            /go/bin/migrate -database 'postgresql:///courier_test?sslmode=disable' -path migrations/ up
       - run:
           name: Run unit tests
           command: |
