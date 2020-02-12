@@ -42,8 +42,13 @@ jobs:
       - restore_cache:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
-      - run: go get github.com/lib/pq
-      - run: go get github.com/mattes/migrate
+      - run:
+          name: Install golang-migrate
+          command: |
+            go get -u -d github.com/golang-migrate/migrate/cmd/migrate
+            cd /go/src/github.com/golang-migrate/migrate/cmd/migrate
+            git checkout v4.8.0
+            go build -tags 'postgres' -ldflags="-X main.Version=$(git describe --tags)" -o /go/bin/migrate github.com/golang-migrate/migrate/cmd/migrate
       - run: go get github.com/jstemmer/go-junit-report
       - run:
           name: Waiting for Postgres to be ready
