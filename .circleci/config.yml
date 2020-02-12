@@ -2,7 +2,7 @@ version: 2
 jobs:
   deploy_frontend_staging:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:12
     steps:
       - checkout
       - run:
@@ -20,9 +20,9 @@ jobs:
 #      - run:
 #          name: Migrate database
 #          command: env DATABASE_URL="$STAGING_DATABASE_URL" npx node-pg-migrate up
-      - run:
-          name: Update Auth0 configuration
-          command: npm run auth:import:staging
+#      - run:
+#          name: Update Auth0 configuration
+#          command: npm run auth:import:staging
       - run:
           name: Deploy to Now
           command: now --token $NOW_TOKEN --target production
@@ -83,13 +83,13 @@ jobs:
 
       - store_artifacts:
           path: /tmp/test-results
-          destination: raw-test-outpu
+          destination: raw-test-output
       - store_test_results:
           path: /tmp/test-results
 
   deploy_prod:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:12
     steps:
       - checkout
       - run:
