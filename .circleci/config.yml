@@ -36,6 +36,7 @@ jobs:
           POSTGRES_DB: courier_test
     environment:
       TEST_RESULTS: /tmp/test-results
+      DATABASE_URL: postgresql:///courier_test?sslmode=disable
     steps:
       - checkout
       - run: sudo apt-get update
@@ -62,11 +63,11 @@ jobs:
             echo Failed waiting for Postgres && exit 1
       - run:
           name: Enable pgcrypto extension
-          command: psql -c 'create extension pgcrypto;' courier_test
+          command: psql -c 'create extension pgcrypto;' $DATABASE_URL
       - run:
           name: Migrate test database
           command: |
-            /go/bin/migrate -database 'postgresql:///courier_test?sslmode=disable' -path migrations/ up
+            /go/bin/migrate -database "$DATABASE_URL" -path migrations/ up
       - run:
           name: Run unit tests
           command: |
