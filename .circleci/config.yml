@@ -30,7 +30,7 @@ jobs:
   test_backend:
     docker:
       - image: circleci/golang:1.13-node
-      - image: circleci/postgres:12-alpine
+      - image: circleci/postgres:12-alpine-ram
         environment:
           POSTGRES_USER: circleci
           POSTGRES_DB: courier_test
@@ -38,6 +38,8 @@ jobs:
       TEST_RESULTS: /tmp/test-results
     steps:
       - checkout
+      - run: sudo apt-get update
+      - run: sudo apt-get install postgresql-client
       - run: mkdir -p $TEST_RESULTS
       - restore_cache:
           keys:
