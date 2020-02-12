@@ -1,5 +1,5 @@
 import React from "react"
-import { ReactRelayContext } from "react-relay"
+import {ReactRelayContext} from "react-relay"
 import {
   Environment,
   FetchFunction,
@@ -10,16 +10,16 @@ import {
   RecordSource,
   Store,
 } from "relay-runtime"
-import { RecordMap } from "relay-runtime/lib/store/RelayStoreTypes"
+import {RecordMap} from "relay-runtime/lib/store/RelayStoreTypes"
 
-import { NextPage, NextPageContext } from "next"
+import {NextPage, NextPageContext} from "next"
 import Router from "next/router"
 
-import { IncomingMessage } from "http"
+import {IncomingMessage} from "http"
 
 import fetch from "isomorphic-unfetch"
 
-import { getToken } from "utils/auth0"
+import {getToken} from "utils/auth0"
 
 let relayEnvironment: Environment | null = null
 
@@ -181,6 +181,9 @@ function initEnvironment(
 }
 
 function apiUrl(path: string, req: IncomingMessage | undefined): string {
+  if (process.env.GRAPHQL_URL) {
+    return process.env.GRAPHQL_URL
+  }
   if (req && typeof window === "undefined") {
     // this is running server-side, so we need an absolute URL
     const host = req.headers.host

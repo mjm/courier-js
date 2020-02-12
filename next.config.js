@@ -9,6 +9,7 @@ module.exports = withMDX({
   pageExtensions: ["ts", "tsx", "mdx"],
 
   env: {
+    GRAPHQL_URL: process.env.GRAPHQL_URL,
     CLIENT_ID: process.env.CLIENT_ID,
     AUTH_DOMAIN: process.env.AUTH_DOMAIN,
     API_IDENTIFIER: process.env.API_IDENTIFIER,
