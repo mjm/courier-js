@@ -56,6 +56,10 @@ jobs:
             done
             echo Failed waiting for Postgres && exit 1
       - run:
+          name: Migrate test database
+          command: |
+            migrate -database 'postgresql:///courier_test?sslmode=disable' -path migrations/ up
+      - run:
           name: Run unit tests
           command: |
             trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
