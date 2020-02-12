@@ -96,7 +96,7 @@ const SubscribePage: NextPage<SubscribePageQueryResponse> = ({
 export default withData(withSecurePage(SubscribePage), {
   query: graphql`
     query SubscribePageQuery {
-      currentUser {
+      viewer {
         ...SubscribeForm_user
       }
     }

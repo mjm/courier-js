@@ -57,7 +57,7 @@ export default withData(withSecurePage(TweetsPage), {
       past: viewer {
         ...TweetList_tweets @arguments(filter: PAST)
       }
-      currentUser {
+      viewer {
         ...SubscriptionProvider_user
       }
     }

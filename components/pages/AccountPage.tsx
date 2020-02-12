@@ -40,7 +40,7 @@ const AccountPage: NextPage<AccountPageQueryResponse> = props => {
 export default withData(withSecurePage(AccountPage), {
   query: graphql`
     query AccountPageQuery {
-      currentUser {
+      viewer {
         ...UserInfoCard_user
         ...SubscriptionInfoCard_user
       }

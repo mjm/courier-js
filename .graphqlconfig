@@ -1,6 +1,6 @@
 {
   "name": "Courier Schema",
-  "schemaPath": "schema2.graphql",
+  "schemaPath": "schema.graphql",
   "extensions": {
     "endpoints": {
       "Default GraphQL Endpoint": {

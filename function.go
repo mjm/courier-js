@@ -12,7 +12,7 @@ import (
 var handler *graphql.Handler
 
 func init() {
-	s, err := ioutil.ReadFile("schema2.graphql")
+	s, err := ioutil.ReadFile("schema.graphql")
 	if err != nil {
 		panic(err)
 	}

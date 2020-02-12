@@ -36,7 +36,7 @@ export default withData(withSecurePage(FeedDetailsPage), {
       subscribedFeed(id: $id) {
         ...FeedDetails_feed
       }
-      currentUser {
+      viewer {
         ...FeedDetails_user
       }
     }
