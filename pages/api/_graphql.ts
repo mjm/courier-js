@@ -1,6 +1,6 @@
-import { ApolloServer, gql, makeExecutableSchema } from "apollo-server-micro"
+import {ApolloServer, gql, makeExecutableSchema} from "apollo-server-micro"
 
-import { CourierContext } from "lib/context"
+import {CourierContext} from "lib/context"
 import resolvers from "lib/resolvers"
 import serverEventsPlugin from "lib/server_events"
 

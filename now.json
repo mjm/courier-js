@@ -2,8 +2,6 @@
   "version": 2,
   "name": "courier-staging",
   "routes": [
-    { "src": "/api/graphql2", "dest": "/api/graphql2.go" },
-    { "src": "/graphql", "dest": "/api/graphql" },
     { "src": "/ping", "dest": "/api/ping" }
   ],
   "env": {
@@ -32,12 +30,5 @@
       "STRIPE_PUBLISHABLE_KEY": "pk_test_P2pW0N6UFzp1OY5In8KApmxj",
       "APNS_CERTIFICATE": "courier-push-dev.p12"
     }
-  },
-  "builds": [
-    {
-      "src": "api/graphql2.go",
-      "use": "@now/go",
-      "config": { "includeFiles": ["schema.graphql"] }
-    }
-  ]
+  }
 }

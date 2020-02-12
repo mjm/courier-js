@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  deploy_staging:
+  deploy_frontend_staging:
     docker:
       - image: circleci/node:8
     steps:
@@ -26,6 +26,54 @@ jobs:
       - run:
           name: Deploy to Now
           command: now --token $NOW_TOKEN --target production
+
+  test_backend:
+    docker:
+      - image: circleci/golang:1.13-node
+      - image: circleci/postgres:12-alpine
+        environment:
+          POSTGRES_USER: circleci
+          POSTGRES_DB: courier_test
+    environment:
+      TEST_RESULTS: /tmp/test-results
+    steps:
+      - checkout
+      - run: mkdir -p $TEST_RESULTS
+      - restore_cache:
+          keys:
+            - go-mod-v4-{{ checksum "go.sum" }}
+      - run: go get github.com/lib/pq
+      - run: go get github.com/mattes/migrate
+      - run: go get github.com/jstemmer/go-junit-report
+      - run:
+          name: Waiting for Postgres to be ready
+          command: |
+            for i in `seq 1 10`;
+            do
+              nc -z localhost 5432 && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failed waiting for Postgres && exit 1
+      - run:
+          name: Run unit tests
+          command: |
+            trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+            go test -v ./... | tee ${TEST_RESULTS}/go-test.out
+
+      - run: go build -v ./...
+
+      - save_cache:
+          key: go-mod-v4-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: raw-test-outpu
+      - store_test_results:
+          path: /tmp/test-results
+
   deploy_prod:
     docker:
       - image: circleci/node:8
@@ -56,7 +104,8 @@ workflows:
   version: 2
   release:
     jobs:
-      - deploy_staging
+      - deploy_frontend_staging
+      - test_backend
       - deploy_prod:
           filters:
             branches:
