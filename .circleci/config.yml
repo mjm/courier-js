@@ -59,6 +59,9 @@ jobs:
             done
             echo Failed waiting for Postgres && exit 1
       - run:
+          name: Enable pgcrypto extension
+          command: psql -c 'create extension pgcrypto;' courier_test
+      - run:
           name: Migrate test database
           command: |
             /go/bin/migrate -database 'postgresql:///courier_test?sslmode=disable' -path migrations/ up
