@@ -2,6 +2,7 @@ package tweets
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"time"
@@ -16,6 +17,8 @@ import (
 var (
 	// ErrNoTweet is returned when a specific tweet cannot be found.
 	ErrNoTweet = errors.New("no tweet found")
+
+	ErrNotDraft = errors.New("tweet is not a draft")
 )
 
 // TweetRepository fetches and stores information about tweets.
@@ -26,6 +29,18 @@ type TweetRepository struct {
 // NewTweetRepository creates a new tweet repository targeting a given database.
 func NewTweetRepository(db db.DB) *TweetRepository {
 	return &TweetRepository{db: db}
+}
+
+func (r *TweetRepository) Get(ctx context.Context, userID string, tweetID TweetID) (*Tweet, error) {
+	var tweet Tweet
+	if err := r.db.QueryRowxContext(ctx, queries.TweetsGet, userID, tweetID).StructScan(&tweet); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrNoTweet
+		}
+		return nil, err
+	}
+
+	return &tweet, nil
 }
 
 func (r *TweetRepository) ByPostIDs(ctx context.Context, subID FeedSubscriptionID, postIDs []PostID) (map[PostID][]*Tweet, error) {

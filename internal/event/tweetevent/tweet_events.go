@@ -11,6 +11,11 @@ type TweetUncanceled struct {
 	TweetID string
 }
 
+type TweetEdited struct {
+	UserID  string
+	TweetID string
+}
+
 // TweetsCreated occurs when some tweets are created for a subscription by posts being
 // imported.
 type TweetsCreated struct {

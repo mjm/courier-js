@@ -12,11 +12,6 @@ import (
 	"github.com/mjm/courier-js/internal/write/tweets"
 )
 
-type AddFeedPayload struct {
-	Feed     *SubscribedFeed
-	FeedEdge *SubscribedFeedEdge
-}
-
 // AddFeed subscribes the user to a new feed, creating the feed if needed.
 func (r *Root) AddFeed(ctx context.Context, args struct {
 	Input struct{ URL string }
@@ -124,10 +119,6 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 	return
 }
 
-type DeleteFeedPayload struct {
-	ID graphql.ID
-}
-
 func (r *Root) DeleteFeed(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
@@ -156,17 +147,11 @@ func (r *Root) DeleteFeed(ctx context.Context, args struct {
 	return
 }
 
-type CancelTweetPayload struct {
-	Tweet *Tweet
-}
-
 // CancelTweet marks a tweet as not to be posted.
 func (r *Root) CancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
-	payload struct {
-		Tweet *Tweet
-	},
+	payload struct{ Tweet *Tweet },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -196,16 +181,10 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 	return
 }
 
-type UncancelTweetPayload struct {
-	Tweet *Tweet
-}
-
 func (r *Root) UncancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
-	payload struct {
-		Tweet *Tweet
-	},
+	payload struct{ Tweet *Tweet },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -221,6 +200,47 @@ func (r *Root) UncancelTweet(ctx context.Context, args struct {
 	cmd := tweets.UncancelCommand{
 		UserID:  userID,
 		TweetID: id,
+	}
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
+		return
+	}
+
+	t, err := r.q.Tweets.Get(ctx, id)
+	if err != nil {
+		return
+	}
+
+	payload.Tweet = NewTweet(r.q, t)
+	return
+}
+
+func (r *Root) EditTweet(ctx context.Context, args struct {
+	Input struct {
+		ID        graphql.ID
+		Body      string
+		MediaURLs *[]string
+	}
+}) (
+	payload struct{ Tweet *Tweet },
+	err error,
+) {
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return
+	}
+
+	var id tweets.TweetID
+	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+		return
+	}
+
+	cmd := tweets.UpdateCommand{
+		UserID:  userID,
+		TweetID: id,
+		Body:    args.Input.Body,
+	}
+	if args.Input.MediaURLs != nil {
+		cmd.MediaURLs = *args.Input.MediaURLs
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return

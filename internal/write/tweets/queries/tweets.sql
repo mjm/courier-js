@@ -1,3 +1,11 @@
+-- qry: TweetsGet
+SELECT t.*
+FROM
+  tweets t
+  JOIN feed_subscriptions fs ON t.feed_subscription_guid = fs.guid
+WHERE fs.user_id = $1
+  AND t.guid = $2;
+
 -- qry: TweetsByPostIDs
 SELECT *
 FROM
@@ -77,7 +85,7 @@ FROM
       v.guid,
       v.action,
       v.body,
-      ARRAY(SELECT json_array_elements_text(v.media_urls)),
+      ARRAY(SELECT json_array_elements_text(v.media_urls)) media_urls,
       v.retweet_id
     FROM
       __unnested__ v(guid, action, body, media_urls, retweet_id)

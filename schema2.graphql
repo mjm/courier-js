@@ -47,7 +47,7 @@ type Mutation {
   cancelTweet(input: CancelTweetInput!): CancelTweetPayload!
   uncancelTweet(input: UncancelTweetInput!): UncancelTweetPayload!
   #   postTweet(input: PostTweetInput!): PostTweetPayload!
-  #   editTweet(input: EditTweetInput!): EditTweetPayload!
+  editTweet(input: EditTweetInput!): EditTweetPayload!
 
   subscribe(input: SubscribeInput!): SubscribePayload!
   #   cancelSubscription(
