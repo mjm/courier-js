@@ -104,10 +104,10 @@ jobs:
           name: Deploy GraphQL function
           command: |
             gcloud functions deploy graphql \
-              --source https://source.developers.google.com/projects/${GOOGLE_PROJECT_ID}/repos/github_mjm_courier-js/revisions/${CIRCLE_SHA1}/paths//
-              --runtime go113
-              --trigger-http
-              --entry-point GraphQL
+              --source https://source.developers.google.com/projects/${GOOGLE_PROJECT_ID}/repos/github_mjm_courier-js/revisions/${CIRCLE_SHA1}/paths// \
+              --runtime go113 \
+              --trigger-http \
+              --entry-point GraphQL \
               --env-vars-file ${ENV_VAR_FILE}
 
   deploy_prod:
