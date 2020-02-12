@@ -53,6 +53,19 @@ func (u *User) Subscription(ctx context.Context) (*Subscription, error) {
 	return &Subscription{sub: sub}, nil
 }
 
+func (u *User) SubscriptionStatusOverride() *string {
+	status := u.user.SubscriptionStatusOverride()
+	if status == "" {
+		return nil
+	}
+
+	return &status
+}
+
+func (u *User) MicropubSites() []string {
+	return u.user.MicropubSites()
+}
+
 func (u *User) AllTweets(ctx context.Context, args struct {
 	pager.Options
 	Filter *tweets.Filter

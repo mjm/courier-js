@@ -12,8 +12,8 @@ import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
 
 const AccountPage: NextPage<AccountPageQueryResponse> = props => {
-  const { currentUser } = props
-  if (!currentUser) {
+  const { viewer } = props
+  if (!viewer) {
     return null
   }
 
@@ -24,8 +24,8 @@ const AccountPage: NextPage<AccountPageQueryResponse> = props => {
       <div className="px-3">
         <div className="flex flex-wrap -mx-3">
           <div className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0 px-3 mb-6">
-            <UserInfoCard user={currentUser} />
-            <SubscriptionInfoCard user={currentUser} />
+            <UserInfoCard user={viewer} />
+            <SubscriptionInfoCard user={viewer} />
             <UserActionsCard />
           </div>
           <div className="w-full md:w-2/3 lg:w-3/4 px-3">

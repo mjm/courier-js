@@ -255,6 +255,19 @@ func (r *Root) EditTweet(ctx context.Context, args struct {
 	return
 }
 
+func (r *Root) PostTweet(ctx context.Context, args struct {
+	Input struct {
+		ID        graphql.ID
+		Body      *string
+		MediaURLs *[]string
+	}
+}) (
+	payload struct{ Tweet *Tweet },
+	err error,
+) {
+	return
+}
+
 func (r *Root) Subscribe(ctx context.Context, args struct {
 	Input struct {
 		TokenID *string
@@ -290,5 +303,18 @@ func (r *Root) Subscribe(ctx context.Context, args struct {
 	}
 
 	payload.User = &User{q: r.q, user: user}
+	return
+}
+
+func (r *Root) CancelSubscription(ctx context.Context, args struct {
+	Input struct {
+		Placeholder *string
+	}
+}) (
+	payload struct {
+		User *User
+	},
+	err error,
+) {
 	return
 }

@@ -18,6 +18,8 @@ type User interface {
 	Picture() string
 	CustomerID() string
 	SubscriptionID() string
+	SubscriptionStatusOverride() string
+	MicropubSites() []string
 }
 
 type AnonymousUser struct{}
@@ -25,12 +27,14 @@ type AnonymousUser struct{}
 func (AnonymousUser) ID() (string, error) {
 	return "", ErrUnauthorized
 }
-func (AnonymousUser) Authenticated() bool    { return false }
-func (AnonymousUser) Name() string           { return "" }
-func (AnonymousUser) Nickname() string       { return "" }
-func (AnonymousUser) Picture() string        { return "" }
-func (AnonymousUser) CustomerID() string     { return "" }
-func (AnonymousUser) SubscriptionID() string { return "" }
+func (AnonymousUser) Authenticated() bool                { return false }
+func (AnonymousUser) Name() string                       { return "" }
+func (AnonymousUser) Nickname() string                   { return "" }
+func (AnonymousUser) Picture() string                    { return "" }
+func (AnonymousUser) CustomerID() string                 { return "" }
+func (AnonymousUser) SubscriptionID() string             { return "" }
+func (AnonymousUser) SubscriptionStatusOverride() string { return "" }
+func (AnonymousUser) MicropubSites() []string            { return nil }
 
 type TokenUser struct {
 	token         *jwt.Token
@@ -81,6 +85,14 @@ func (u *TokenUser) CustomerID() string {
 
 func (u *TokenUser) SubscriptionID() string {
 	return u.claims().StripeSubscriptionID
+}
+
+func (u *TokenUser) SubscriptionStatusOverride() string {
+	return u.claims().SubscriptionStatus
+}
+
+func (u *TokenUser) MicropubSites() []string {
+	return u.claims().MicropubSites
 }
 
 func (u *TokenUser) getUserInfo() (*management.User, error) {

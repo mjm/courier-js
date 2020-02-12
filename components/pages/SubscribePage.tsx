@@ -13,9 +13,7 @@ import SubscribeForm from "components/SubscribeForm"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
 
-const SubscribePage: NextPage<SubscribePageQueryResponse> = ({
-  currentUser,
-}) => {
+const SubscribePage: NextPage<SubscribePageQueryResponse> = ({ viewer }) => {
   const [stripe, setStripe] = React.useState<stripe.Stripe | null>(null)
   React.useEffect(() => {
     if (!process.env.STRIPE_KEY) {
@@ -27,7 +25,7 @@ const SubscribePage: NextPage<SubscribePageQueryResponse> = ({
 
   const [isFormVisible, setFormVisible] = React.useState(true)
 
-  if (!currentUser) {
+  if (!viewer) {
     return <></>
   }
 
@@ -74,7 +72,7 @@ const SubscribePage: NextPage<SubscribePageQueryResponse> = ({
 
         {isFormVisible ? (
           <Elements fonts={[{ cssSrc: "https://rsms.me/inter/inter.css" }]}>
-            <SubscribeForm user={currentUser} />
+            <SubscribeForm user={viewer} />
           </Elements>
         ) : (
           <div className="flex justify-center p-6">

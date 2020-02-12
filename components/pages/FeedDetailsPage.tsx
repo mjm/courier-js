@@ -11,8 +11,8 @@ import withSecurePage from "hocs/withSecurePage"
 const FeedDetailsPage: NextPage<
   FeedDetailsPageQueryResponse,
   { id: string }
-> = ({ subscribedFeed, currentUser }) => {
-  if (!subscribedFeed || !currentUser) {
+> = ({ subscribedFeed, viewer }) => {
+  if (!subscribedFeed || !viewer) {
     // TODO I think this means there's no such feed
     return <></>
   }
@@ -20,7 +20,7 @@ const FeedDetailsPage: NextPage<
   return (
     <main className="container mx-auto my-8">
       <ErrorContainer>
-        <FeedDetails feed={subscribedFeed} user={currentUser} />
+        <FeedDetails feed={subscribedFeed} user={viewer} />
       </ErrorContainer>
     </main>
   )

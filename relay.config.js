@@ -4,6 +4,6 @@ module.exports = {
   language: "typescript",
   artifactDirectory: "./lib/__generated__",
   customScalars: {
-    DateTime: "any",
+    Time: "any",
   },
 }

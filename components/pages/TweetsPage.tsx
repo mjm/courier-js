@@ -18,13 +18,13 @@ import withSecurePage from "hocs/withSecurePage"
 const TweetsPage: NextPage<TweetsPageQueryResponse> = ({
   upcoming,
   past,
-  currentUser,
+  viewer,
 }) => {
   return (
     <main className="container my-8 mx-auto py-0 px-8">
       <Head title="Your Tweets" />
-      {currentUser && (
-        <SubscriptionProvider user={currentUser}>
+      {viewer && (
+        <SubscriptionProvider user={viewer}>
           <SubscribeBanner />
           {upcoming && past ? (
             <div className="flex flex-row flex-wrap -mx-4">

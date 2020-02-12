@@ -156,3 +156,15 @@ func (r *Root) AllEvents(ctx context.Context, args pager.Options) (*EventConnect
 
 	return &EventConnection{q: r.q, conn: conn}, nil
 }
+
+func (r *Root) Microformats(ctx context.Context, args struct {
+	URL string
+}) (*MicroformatPage, error) {
+	return nil, nil
+}
+
+func (r *Root) FeedPreview(ctx context.Context, args struct {
+	URL string
+}) (*FeedPreview, error) {
+	return nil, nil
+}

@@ -16,14 +16,6 @@ type Query {
 
   subscribedFeed(id: ID!): SubscribedFeed
 
-  # allTweets(
-  #   filter: TweetFilter
-  #   first: Int
-  #   last: Int
-  #   before: Cursor
-  #   after: Cursor
-  # ): TweetConnection!
-
   tweet(id: ID!): Tweet
 
   allEvents(
@@ -33,9 +25,9 @@ type Query {
     after: Cursor
   ): EventConnection!
 
-  # microformats(url: String!): MicroformatPage
+  microformats(url: String!): MicroformatPage
 
-  # feedPreview(url: String!): FeedPreview
+  feedPreview(url: String!): FeedPreview
 }
 
 type Mutation {
@@ -46,13 +38,13 @@ type Mutation {
 
   cancelTweet(input: CancelTweetInput!): CancelTweetPayload!
   uncancelTweet(input: UncancelTweetInput!): UncancelTweetPayload!
-  #   postTweet(input: PostTweetInput!): PostTweetPayload!
+  postTweet(input: PostTweetInput!): PostTweetPayload!
   editTweet(input: EditTweetInput!): EditTweetPayload!
 
   subscribe(input: SubscribeInput!): SubscribePayload!
-  #   cancelSubscription(
-  #     input: CancelSubscriptionInput!
-  #   ): CancelSubscriptionPayload!
+  cancelSubscription(
+    input: CancelSubscriptionInput!
+  ): CancelSubscriptionPayload!
 
   #   addDevice(input: AddDeviceInput!): AddDevicePayload!
   #   sendTestNotification(
@@ -77,8 +69,8 @@ type User {
   picture: String!
   customer: Customer
   subscription: UserSubscription
-  # subscriptionStatusOverride: SubscriptionStatus
-  # micropubSites: [String!]!
+  subscriptionStatusOverride: SubscriptionStatus
+  micropubSites: [String!]!
 
   allTweets(
     filter: TweetFilter
