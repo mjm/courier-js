@@ -13,7 +13,6 @@
 
 # misc
 .DS_Store
-env.yaml
 .env
 .env.*
 .envrc

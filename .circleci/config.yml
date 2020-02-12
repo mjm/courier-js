@@ -25,7 +25,7 @@ jobs:
 #          command: npm run auth:import:staging
       - run:
           name: Deploy to Now
-          command: now --token $NOW_TOKEN --target production
+          command: now --token $NOW_TOKEN --prod --confirm
 
   test_backend:
     docker:
@@ -87,6 +87,29 @@ jobs:
       - store_test_results:
           path: /tmp/test-results
 
+  deploy_backend_staging:
+    docker:
+      - image: google/cloud-sdk
+    environment:
+      GOOGLE_PROJECT_ID: courier-staging-267902
+      ENV_VAR_FILE: env.staging.yaml
+    steps:
+      - checkout
+      - run:
+          name: Authenticate with Google Cloud
+          command: |
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+      - run:
+          name: Deploy GraphQL function
+          command: |
+            gcloud functions deploy graphql \
+              --source https://source.developers.google.com/projects/${GOOGLE_PROJECT_ID}/repos/github_mjm_courier-js/revisions/${CIRCLE_SHA1}/paths//
+              --runtime go113
+              --trigger-http
+              --entry-point GraphQL
+              --env-vars-file ${ENV_VAR_FILE}
+
   deploy_prod:
     docker:
       - image: circleci/node:12
@@ -112,13 +135,18 @@ jobs:
           command: npm run auth:import:prod
       - run:
           name: Deploy to Now
-          command: now --token $NOW_TOKEN --target production -A now.prod.json
+          command: now --token $NOW_TOKEN --prod -A now.prod.json
 workflows:
   version: 2
   release:
     jobs:
-      - deploy_frontend_staging
       - test_backend
+      - deploy_frontend_staging:
+          requires:
+            - test_backend
+      - deploy_backend_staging:
+          requires:
+            - test_backend
       - deploy_prod:
           filters:
             branches:
