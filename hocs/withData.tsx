@@ -1,5 +1,5 @@
 import React from "react"
-import {ReactRelayContext} from "react-relay"
+import { ReactRelayContext } from "react-relay"
 import {
   Environment,
   FetchFunction,
@@ -10,16 +10,16 @@ import {
   RecordSource,
   Store,
 } from "relay-runtime"
-import {RecordMap} from "relay-runtime/lib/store/RelayStoreTypes"
+import { RecordMap } from "relay-runtime/lib/store/RelayStoreTypes"
 
-import {NextPage, NextPageContext} from "next"
+import { NextPage, NextPageContext } from "next"
 import Router from "next/router"
 
-import {IncomingMessage} from "http"
+import { IncomingMessage } from "http"
 
 import fetch from "isomorphic-unfetch"
 
-import {getToken} from "utils/auth0"
+import { getToken } from "utils/auth0"
 
 let relayEnvironment: Environment | null = null
 
