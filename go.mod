@@ -2,6 +2,8 @@ module github.com/mjm/courier-js
 
 go 1.13
 
+replace github.com/graph-gophers/graphql-go => github.com/mjm/graphql-go v0.0.0-20200213061915-cf3e440568f6
+
 require (
 	cloud.google.com/go v0.52.0
 	github.com/DataDog/zstd v1.4.4 // indirect
