@@ -2,13 +2,13 @@ package resolvers
 
 import (
 	"context"
-	"strconv"
 	"strings"
 
 	"github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/read/feeds"
+	"github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/read/user"
 )
 
@@ -51,13 +51,12 @@ func (e *Event) Tweet(ctx context.Context) (*Tweet, error) {
 		return nil, nil
 	}
 
-	_, err := strconv.Atoi(e.event.Params.TweetID)
+	t, err := e.q.Tweets.Get(ctx, tweets.TweetID(e.event.Params.TweetID))
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO load tweet
-	return nil, nil
+	return NewTweet(e.q, t), nil
 }
 
 func (e *Event) BoolValue() *bool {
