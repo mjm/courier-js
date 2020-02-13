@@ -3,8 +3,8 @@ package resolvers
 import (
 	"context"
 
-	"github.com/graph-gophers/graphql-go"
-	"github.com/graph-gophers/graphql-go/relay"
+	"github.com/mjm/graphql-go"
+	"github.com/mjm/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/feeds"

@@ -1,7 +1,7 @@
 package graphql
 
 import (
-	"github.com/graph-gophers/graphql-go"
+	"github.com/mjm/graphql-go"
 
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/trace"

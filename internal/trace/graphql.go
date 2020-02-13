@@ -3,9 +3,9 @@ package trace
 import (
 	"context"
 
-	"github.com/graph-gophers/graphql-go/errors"
-	"github.com/graph-gophers/graphql-go/introspection"
-	"github.com/graph-gophers/graphql-go/trace"
+	"github.com/mjm/graphql-go/errors"
+	"github.com/mjm/graphql-go/introspection"
+	"github.com/mjm/graphql-go/trace"
 )
 
 // GraphQLTracer implements trace.Tracer for tracing GraphQL requests

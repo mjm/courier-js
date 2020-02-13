@@ -1,7 +1,7 @@
 package resolvers
 
 import (
-	"github.com/graph-gophers/graphql-go"
+	"github.com/mjm/graphql-go"
 )
 
 const (

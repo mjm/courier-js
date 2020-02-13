@@ -1,9 +1,10 @@
 package resolvers
 
 import (
-	"github.com/graph-gophers/graphql-go"
-	"github.com/stripe/stripe-go"
 	"time"
+
+	"github.com/mjm/graphql-go"
+	"github.com/stripe/stripe-go"
 )
 
 type Subscription struct {
