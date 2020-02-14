@@ -74,6 +74,24 @@ func (r *SubscriptionRepository) Uncancel(ctx context.Context, subID string) err
 	return nil
 }
 
+func (r *SubscriptionRepository) CancelLater(ctx context.Context, subID string) error {
+	ctx = trace.Start(ctx, "Stripe: Cancel subscription")
+	defer trace.Finish(ctx)
+
+	trace.Add(ctx, trace.Fields{
+		"stripe.subscription_id": subID,
+		"stripe.cancel_now":      false,
+	})
+	if _, err := r.stripe.Subscriptions.Update(subID, &stripe.SubscriptionParams{
+		CancelAtPeriodEnd: stripe.Bool(true),
+	}); err != nil {
+		trace.Error(ctx, err)
+		return err
+	}
+
+	return nil
+}
+
 func (r *SubscriptionRepository) CancelNow(ctx context.Context, subID string) error {
 	ctx = trace.Start(ctx, "Stripe: Cancel subscription")
 	defer trace.Finish(ctx)

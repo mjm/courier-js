@@ -41,7 +41,8 @@ func NewCommandHandler(
 		subRepo:  subRepo,
 	}
 	bus.Register(h,
-		SubscribeCommand{})
+		SubscribeCommand{},
+		CancelCommand{})
 	return h
 }
 
@@ -50,6 +51,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 
 	case SubscribeCommand:
 		return nil, h.handleSubscribe(ctx, cmd)
+
+	case CancelCommand:
+		return nil, h.handleCancel(ctx, cmd)
 
 	}
 

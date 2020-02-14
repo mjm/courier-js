@@ -316,5 +316,19 @@ func (r *Root) CancelSubscription(ctx context.Context, args struct {
 	},
 	err error,
 ) {
+	user := auth.GetUser(ctx)
+	userID, err := user.ID()
+	if err != nil {
+		return
+	}
+
+	cmd := billing.CancelCommand{
+		UserID: userID,
+	}
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
+		return
+	}
+
+	payload.User = &User{q: r.q, user: user}
 	return
 }
