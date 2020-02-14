@@ -43,7 +43,10 @@ func NewFeedQueries(db db.DB, eventBus *event.Bus) FeedQueries {
 
 func newFeedLoader(db db.DB) *dataloader.Loader {
 	return loader.New("Feed Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-		rows, _ := db.QueryxContext(ctx, queries.FeedsLoad, loader.StringArray(keys))
+		rows, err := db.QueryxContext(ctx, queries.FeedsLoad, loader.StringArray(keys))
+		if err != nil {
+			panic(err)
+		}
 		return loader.Gather(keys, rows, func(rows *sqlx.Rows) (interface{}, string, error) {
 			var feed Feed
 			if err := rows.StructScan(&feed); err != nil {
