@@ -3,7 +3,6 @@ package tweets
 import (
 	"context"
 
-	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/trace"
 )
@@ -42,7 +41,7 @@ func (h *CommandHandler) handleImportRecentPosts(ctx context.Context, cmd Import
 	return nil
 }
 
-func (h *CommandHandler) handleFeedSubscribed(ctx context.Context, evt feedevent.FeedSubscribed) {
+func (h *CommandHandler) handleFeedSubscribed(ctx context.Context, evt feeds.FeedSubscribed) {
 	_, _ = h.bus.Run(ctx, ImportRecentPostsCommand{
 		UserID:         evt.UserID,
 		SubscriptionID: feeds.SubscriptionID(evt.SubscriptionID),

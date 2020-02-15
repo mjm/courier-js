@@ -8,7 +8,7 @@ import (
 	"github.com/google/wire"
 
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/event/feedevent"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/write"
 )
 
@@ -57,8 +57,8 @@ func NewCommandHandler(
 		ImportRecentPostsCommand{},
 	)
 	eventBus.Notify(h,
-		feedevent.PostsImported{},
-		feedevent.FeedSubscribed{},
+		feeds.PostsImported{},
+		feeds.FeedSubscribed{},
 	)
 	return h
 }
@@ -93,10 +93,10 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 func (h *CommandHandler) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
-	case feedevent.PostsImported:
+	case feeds.PostsImported:
 		h.handlePostsImported(ctx, evt)
 
-	case feedevent.FeedSubscribed:
+	case feeds.FeedSubscribed:
 		h.handleFeedSubscribed(ctx, evt)
 
 	}

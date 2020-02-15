@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/event/tweetevent"
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
@@ -185,7 +184,7 @@ func (h *CommandHandler) planTweets(ctx context.Context, post *Post, ts []*Tweet
 	return toCreate, toUpdate, nil
 }
 
-func (h *CommandHandler) handlePostsImported(ctx context.Context, evt feedevent.PostsImported) {
+func (h *CommandHandler) handlePostsImported(ctx context.Context, evt feeds.PostsImported) {
 	subs, err := h.subRepo.ByFeedID(ctx, feeds.FeedID(evt.FeedID))
 	if err != nil {
 		trace.Error(ctx, err)

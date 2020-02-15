@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/locatefeed"
@@ -46,7 +45,7 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 				return "", err
 			}
 
-			h.eventBus.Fire(ctx, feedevent.FeedCreated{
+			h.eventBus.Fire(ctx, feeds.FeedCreated{
 				FeedID: feedID.String(),
 				URL:    u.String(),
 			})
@@ -72,7 +71,7 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 	}
 
 	trace.FeedSubscriptionID(ctx, subID)
-	h.eventBus.Fire(ctx, feedevent.FeedSubscribed{
+	h.eventBus.Fire(ctx, feeds.FeedSubscribed{
 		UserID:         cmd.UserID,
 		FeedID:         feedID.String(),
 		SubscriptionID: subID.String(),

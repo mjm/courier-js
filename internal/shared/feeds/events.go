@@ -1,4 +1,4 @@
-package feedevent
+package feeds
 
 // FeedCreated occurs when a feed is initially created. This happens the first time any
 // user subscribes to the feed.

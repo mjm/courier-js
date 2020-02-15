@@ -38,7 +38,7 @@ func NewPostQueries(db db.DB, eventBus *event.Bus) PostQueries {
 		db:     db,
 		loader: newPostLoader(db),
 	}
-	// eventBus.Notify(q, feedevent.FeedRefreshed{})
+	// eventBus.Notify(q, feeds.FeedRefreshed{})
 	return q
 }
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/mjm/courier-js/internal/event/feedevent"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/scraper"
 )
@@ -77,7 +77,7 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 		return err
 	}
 
-	h.eventBus.Fire(ctx, feedevent.FeedRefreshed{
+	h.eventBus.Fire(ctx, feeds.FeedRefreshed{
 		FeedID: f.ID.String(),
 		UserID: cmd.UserID,
 	})

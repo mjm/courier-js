@@ -6,7 +6,6 @@ import (
 
 	"github.com/lib/pq"
 
-	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/scraper"
@@ -48,7 +47,7 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 			ids = append(ids, p.ID.String())
 		}
 
-		h.eventBus.Fire(ctx, feedevent.PostsImported{
+		h.eventBus.Fire(ctx, feeds.PostsImported{
 			FeedID:  cmd.FeedID.String(),
 			PostIDs: ids,
 		})

@@ -10,10 +10,10 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/feeds/queries"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 var (
@@ -43,7 +43,7 @@ func NewSubscriptionQueries(db db.DB, eventBus *event.Bus) SubscriptionQueries {
 		db:     db,
 		loader: newSubscriptionLoader(db),
 	}
-	eventBus.Notify(q, feedevent.FeedSubscribed{})
+	eventBus.Notify(q, feeds.FeedSubscribed{})
 	return q
 }
 
@@ -96,7 +96,7 @@ func (q *subscriptionQueries) Paged(ctx context.Context, userID string, opts pag
 func (q *subscriptionQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
-	case feedevent.FeedSubscribed:
+	case feeds.FeedSubscribed:
 		q.loader.Clear(ctx, dataloader.StringKey(evt.SubscriptionID))
 
 	}

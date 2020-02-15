@@ -9,9 +9,9 @@ import (
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/read/feeds/queries"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 var (
@@ -37,7 +37,7 @@ func NewFeedQueries(db db.DB, eventBus *event.Bus) FeedQueries {
 		db:     db,
 		loader: newFeedLoader(db),
 	}
-	eventBus.Notify(q, feedevent.FeedRefreshed{})
+	eventBus.Notify(q, feeds.FeedRefreshed{})
 	return q
 }
 
@@ -72,7 +72,7 @@ func (q *feedQueries) Get(ctx context.Context, id FeedID) (*Feed, error) {
 func (q *feedQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
-	case feedevent.FeedRefreshed:
+	case feeds.FeedRefreshed:
 		q.loader.Clear(ctx, dataloader.StringKey(evt.FeedID))
 
 	}

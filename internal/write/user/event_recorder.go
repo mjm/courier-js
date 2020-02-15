@@ -6,8 +6,8 @@ import (
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/event/tweetevent"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -20,10 +20,10 @@ func NewEventRecorder(db db.DB, eventBus *event.Bus) *EventRecorder {
 		db: db,
 	}
 	eventBus.Notify(r,
-		feedevent.FeedSubscribed{},
-		feedevent.FeedRefreshed{},
-		feedevent.FeedOptionsChanged{},
-		feedevent.FeedUnsubscribed{},
+		feeds.FeedSubscribed{},
+		feeds.FeedRefreshed{},
+		feeds.FeedOptionsChanged{},
+		feeds.FeedUnsubscribed{},
 		tweetevent.TweetCanceled{},
 		tweetevent.TweetUncanceled{},
 		tweetevent.TweetEdited{},
@@ -39,25 +39,25 @@ func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 
 	switch evt := evt.(type) {
 
-	case feedevent.FeedSubscribed:
+	case feeds.FeedSubscribed:
 		r.record(ctx, evt.UserID, FeedSubscribe, EventParams{
 			FeedID:             evt.FeedID,
 			FeedSubscriptionID: evt.SubscriptionID,
 		})
 
-	case feedevent.FeedRefreshed:
+	case feeds.FeedRefreshed:
 		r.record(ctx, evt.UserID, FeedRefresh, EventParams{
 			FeedID: evt.FeedID,
 			// TODO fetch subscription from user ID
 		})
 
-	case feedevent.FeedOptionsChanged:
+	case feeds.FeedOptionsChanged:
 		r.record(ctx, evt.UserID, FeedSetAutopost, EventParams{
 			FeedSubscriptionID: evt.SubscriptionID,
 			ParamValue:         &evt.Autopost,
 		})
 
-	case feedevent.FeedUnsubscribed:
+	case feeds.FeedUnsubscribed:
 		r.record(ctx, evt.UserID, FeedUnsubscribe, EventParams{
 			FeedSubscriptionID: evt.SubscriptionID,
 		})

@@ -3,7 +3,7 @@ package feeds
 import (
 	"context"
 
-	"github.com/mjm/courier-js/internal/event/feedevent"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -25,7 +25,7 @@ func (h *CommandHandler) handleUpdateOptions(ctx context.Context, cmd UpdateOpti
 		return err
 	}
 
-	h.eventBus.Fire(ctx, feedevent.FeedOptionsChanged{
+	h.eventBus.Fire(ctx, feeds.FeedOptionsChanged{
 		SubscriptionID: string(cmd.SubscriptionID),
 		UserID:         cmd.UserID,
 		Autopost:       cmd.Autopost,
