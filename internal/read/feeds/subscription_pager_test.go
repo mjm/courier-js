@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/mjm/courier-js/internal/pager"
-	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 func (suite *feedsSuite) TestSubscriptionsEmpty() {

@@ -4,24 +4,26 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 func (suite *feedsSuite) TestCreateNone() {
 	ctx := context.Background()
-	posts, err := suite.postRepo.Create(ctx, NewFeedID(), nil)
+	posts, err := suite.postRepo.Create(ctx, feeds.NewFeedID(), nil)
 	suite.NoError(err)
 	suite.Nil(posts)
 }
 
 func (suite *feedsSuite) TestCreateOne() {
 	ctx := context.Background()
-	feedID := NewFeedID()
+	feedID := feeds.NewFeedID()
 	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
 	suite.NoError(err)
 
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 	newPost := CreatePostParams{
-		ID:          NewPostID(),
+		ID:          feeds.NewPostID(),
 		ItemID:      "abc",
 		URL:         "https://example.com/abc",
 		Title:       "a post title",
@@ -47,7 +49,7 @@ func (suite *feedsSuite) TestCreateOne() {
 
 func (suite *feedsSuite) TestCreateMany() {
 	ctx := context.Background()
-	feedID := NewFeedID()
+	feedID := feeds.NewFeedID()
 	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
 	suite.NoError(err)
 
@@ -56,7 +58,7 @@ func (suite *feedsSuite) TestCreateMany() {
 		url := fmt.Sprintf("https://example.com/item-%d", i)
 		t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 		newPost := CreatePostParams{
-			ID:          NewPostID(),
+			ID:          feeds.NewPostID(),
 			ItemID:      url,
 			URL:         url,
 			Title:       "a post title",
@@ -79,7 +81,7 @@ func (suite *feedsSuite) TestCreateMany() {
 
 func (suite *feedsSuite) TestLoadByItemID() {
 	ctx := context.Background()
-	feedID := NewFeedID()
+	feedID := feeds.NewFeedID()
 	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
 	suite.NoError(err)
 
@@ -88,7 +90,7 @@ func (suite *feedsSuite) TestLoadByItemID() {
 		url := fmt.Sprintf("https://example.com/item-%d", i)
 		t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 		newPost := CreatePostParams{
-			ID:          NewPostID(),
+			ID:          feeds.NewPostID(),
 			ItemID:      url,
 			URL:         url,
 			Title:       "a post title",
@@ -116,7 +118,7 @@ func (suite *feedsSuite) TestLoadByItemID() {
 
 func (suite *feedsSuite) TestLoadByItemIDWrongFeed() {
 	ctx := context.Background()
-	feedID := NewFeedID()
+	feedID := feeds.NewFeedID()
 	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
 	suite.NoError(err)
 
@@ -125,7 +127,7 @@ func (suite *feedsSuite) TestLoadByItemIDWrongFeed() {
 		url := fmt.Sprintf("https://example.com/item-%d", i)
 		t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 		newPost := CreatePostParams{
-			ID:          NewPostID(),
+			ID:          feeds.NewPostID(),
 			ItemID:      url,
 			URL:         url,
 			Title:       "a post title",
@@ -139,7 +141,7 @@ func (suite *feedsSuite) TestLoadByItemIDWrongFeed() {
 	_, err = suite.postRepo.Create(ctx, feedID, newPosts)
 	suite.NoError(err)
 
-	posts, err := suite.postRepo.FindByItemIDs(ctx, NewFeedID(), []string{
+	posts, err := suite.postRepo.FindByItemIDs(ctx, feeds.NewFeedID(), []string{
 		"https://example.com/item-2",
 		"https://example.com/item-0",
 		"https://example.com/item-4",

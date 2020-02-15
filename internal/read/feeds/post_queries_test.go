@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"time"
 
+	feedid "github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 func (suite *feedsSuite) TestGetPost() {
 	ctx := context.Background()
-	feedID := feeds.NewFeedID()
+	feedID := feedid.NewFeedID()
 	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
 	suite.NoError(err)
 
@@ -19,7 +20,7 @@ func (suite *feedsSuite) TestGetPost() {
 		url := fmt.Sprintf("https://example.com/item-%d", i)
 		t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 		newPost := feeds.CreatePostParams{
-			ID:          feeds.NewPostID(),
+			ID:          feedid.NewPostID(),
 			ItemID:      url,
 			URL:         url,
 			Title:       "a post title",

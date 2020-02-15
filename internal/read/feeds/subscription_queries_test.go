@@ -5,12 +5,12 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/pager"
-	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 func (suite *feedsSuite) TestGetSubscriptionDoesNotExist() {
 	ctx := auth.WithMockUser(context.Background(), "test_user")
-	sub, err := suite.subQueries.Get(ctx, feeds.NewFeedSubscriptionID())
+	sub, err := suite.subQueries.Get(ctx, feeds.NewSubscriptionID())
 	suite.Nil(sub)
 	suite.EqualError(err, "no feed subscription found")
 }
