@@ -25,7 +25,7 @@ func (h *CommandHandler) handleUnsubscribe(ctx context.Context, cmd UnsubscribeC
 	}
 
 	h.eventBus.Fire(ctx, feeds.FeedUnsubscribed{
-		SubscriptionID: string(cmd.SubscriptionID),
+		SubscriptionID: cmd.SubscriptionID,
 		UserID:         cmd.UserID,
 	})
 

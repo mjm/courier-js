@@ -41,25 +41,25 @@ func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 
 	case feeds.FeedSubscribed:
 		r.record(ctx, evt.UserID, FeedSubscribe, EventParams{
-			FeedID:             evt.FeedID,
-			FeedSubscriptionID: evt.SubscriptionID,
+			FeedID:             string(evt.FeedID),
+			FeedSubscriptionID: string(evt.SubscriptionID),
 		})
 
 	case feeds.FeedRefreshed:
 		r.record(ctx, evt.UserID, FeedRefresh, EventParams{
-			FeedID: evt.FeedID,
+			FeedID: string(evt.FeedID),
 			// TODO fetch subscription from user ID
 		})
 
 	case feeds.FeedOptionsChanged:
 		r.record(ctx, evt.UserID, FeedSetAutopost, EventParams{
-			FeedSubscriptionID: evt.SubscriptionID,
+			FeedSubscriptionID: string(evt.SubscriptionID),
 			ParamValue:         &evt.Autopost,
 		})
 
 	case feeds.FeedUnsubscribed:
 		r.record(ctx, evt.UserID, FeedUnsubscribe, EventParams{
-			FeedSubscriptionID: evt.SubscriptionID,
+			FeedSubscriptionID: string(evt.SubscriptionID),
 		})
 
 	case tweets.TweetCanceled:

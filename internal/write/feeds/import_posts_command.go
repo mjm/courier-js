@@ -42,13 +42,13 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 
 	trace.AddField(ctx, "import.changed_count", len(changed))
 	if len(changed) > 0 {
-		var ids []string
+		var ids []PostID
 		for _, p := range changed {
-			ids = append(ids, p.ID.String())
+			ids = append(ids, p.ID)
 		}
 
 		h.eventBus.Fire(ctx, feeds.PostsImported{
-			FeedID:  cmd.FeedID.String(),
+			FeedID:  cmd.FeedID,
 			PostIDs: ids,
 		})
 	}

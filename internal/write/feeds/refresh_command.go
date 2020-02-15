@@ -78,7 +78,7 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 	}
 
 	h.eventBus.Fire(ctx, feeds.FeedRefreshed{
-		FeedID: f.ID.String(),
+		FeedID: f.ID,
 		UserID: cmd.UserID,
 	})
 
