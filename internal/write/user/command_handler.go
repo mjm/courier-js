@@ -8,7 +8,7 @@ import (
 	"github.com/google/wire"
 
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/event/billingevent"
+	"github.com/mjm/courier-js/internal/shared/billing"
 	"github.com/mjm/courier-js/internal/write"
 )
 
@@ -36,8 +36,8 @@ func NewCommandHandler(
 	bus.Register(h,
 		UpdateCustomerCommand{})
 	eventBus.Notify(h,
-		billingevent.CustomerCreated{},
-		billingevent.SubscriptionCreated{})
+		billing.CustomerCreated{},
+		billing.SubscriptionCreated{})
 	return h
 }
 
@@ -58,10 +58,10 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 func (h *CommandHandler) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
-	case billingevent.CustomerCreated:
+	case billing.CustomerCreated:
 		h.handleCustomerCreated(ctx, evt)
 
-	case billingevent.SubscriptionCreated:
+	case billing.SubscriptionCreated:
 		h.handleSubscriptionCreated(ctx, evt)
 
 	}

@@ -1,4 +1,4 @@
-package billingevent
+package billing
 
 type CustomerCreated struct {
 	UserID     string

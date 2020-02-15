@@ -7,7 +7,7 @@ import (
 	"github.com/stripe/stripe-go"
 
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/event/billingevent"
+	"github.com/mjm/courier-js/internal/shared/billing"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -55,7 +55,7 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 	var cusID string
 	if createNewCustomer {
 		cusID, err = h.cusRepo.Create(ctx, cmd.Email, cmd.TokenID)
-		h.eventBus.Fire(ctx, billingevent.CustomerCreated{
+		h.eventBus.Fire(ctx, billing.CustomerCreated{
 			UserID:     cmd.UserID,
 			CustomerID: cusID,
 		})
@@ -74,7 +74,7 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 	}
 
 	trace.SubscriptionID(ctx, subID)
-	h.eventBus.Fire(ctx, billingevent.SubscriptionCreated{
+	h.eventBus.Fire(ctx, billing.SubscriptionCreated{
 		UserID:         cmd.UserID,
 		SubscriptionID: subID,
 	})

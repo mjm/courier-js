@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"github.com/mjm/courier-js/internal/event/billingevent"
+	"github.com/mjm/courier-js/internal/shared/billing"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -28,7 +28,7 @@ func (h *CommandHandler) handleUpdateSubscription(ctx context.Context, cmd Updat
 	return nil
 }
 
-func (h *CommandHandler) handleSubscriptionCreated(ctx context.Context, evt billingevent.SubscriptionCreated) {
+func (h *CommandHandler) handleSubscriptionCreated(ctx context.Context, evt billing.SubscriptionCreated) {
 	if _, err := h.bus.Run(ctx, UpdateSubscriptionCommand{
 		UserID:         evt.UserID,
 		SubscriptionID: evt.SubscriptionID,
