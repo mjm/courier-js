@@ -5,7 +5,7 @@ import (
 
 	"github.com/lib/pq"
 
-	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 // Subscription represents a single user's subscription to a Feed. It includes user-specific

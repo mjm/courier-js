@@ -5,7 +5,7 @@ import (
 
 	"github.com/lib/pq"
 
-	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 // Post is a single entry from a feed. A Post is shared between all users that are subscribed

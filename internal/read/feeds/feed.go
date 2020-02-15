@@ -8,7 +8,7 @@ import (
 
 	"github.com/lib/pq"
 
-	writefeeds "github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 // Feed represents a URL that serves some kind of feed with posts. Feed captures our current
@@ -30,7 +30,7 @@ type Feed struct {
 	Unused_ID int `db:"id"`
 }
 
-type FeedID = writefeeds.FeedID
+type FeedID = feeds.FeedID
 
 // CachingHeaders are HTTP headers that a feed can provide when we request it that allow us
 // to take advantage of caching. These headers are stored on the feed, so the next time we
