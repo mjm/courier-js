@@ -18,15 +18,17 @@ var DefaultSet = wire.NewSet(
 	NewTweetRepository,
 	NewFeedSubscriptionRepository,
 	NewPostRepository,
+	NewExternalTweetRepository,
 )
 
 // CommandHandler processes tweet-related commands and updates the data store appropriately.
 type CommandHandler struct {
-	bus       *write.CommandBus
-	eventBus  *event.Bus
-	tweetRepo *TweetRepository
-	subRepo   *FeedSubscriptionRepository
-	postRepo  *PostRepository
+	bus               *write.CommandBus
+	eventBus          *event.Bus
+	tweetRepo         *TweetRepository
+	subRepo           *FeedSubscriptionRepository
+	postRepo          *PostRepository
+	externalTweetRepo *ExternalTweetRepository
 }
 
 // NewCommandHandler creates a new command handler for tweet commands.
@@ -36,18 +38,21 @@ func NewCommandHandler(
 	tweetRepo *TweetRepository,
 	subRepo *FeedSubscriptionRepository,
 	postRepo *PostRepository,
+	externalTweetRepo *ExternalTweetRepository,
 ) *CommandHandler {
 	h := &CommandHandler{
-		bus:       bus,
-		eventBus:  eventBus,
-		tweetRepo: tweetRepo,
-		subRepo:   subRepo,
-		postRepo:  postRepo,
+		bus:               bus,
+		eventBus:          eventBus,
+		tweetRepo:         tweetRepo,
+		subRepo:           subRepo,
+		postRepo:          postRepo,
+		externalTweetRepo: externalTweetRepo,
 	}
 	bus.Register(h,
 		CancelCommand{},
 		UncancelCommand{},
 		UpdateCommand{},
+		SendTweetCommand{},
 		ImportTweetsCommand{},
 		ImportRecentPostsCommand{},
 	)
@@ -70,6 +75,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 
 	case UpdateCommand:
 		return nil, h.handleUpdate(ctx, cmd)
+
+	case SendTweetCommand:
+		return nil, h.handleSendTweet(ctx, cmd)
 
 	case ImportTweetsCommand:
 		return nil, h.handleImportTweets(ctx, cmd)

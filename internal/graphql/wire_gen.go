@@ -74,14 +74,19 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	tweetRepository := tweets2.NewTweetRepository(dbDB)
 	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
 	tweetsPostRepository := tweets2.NewPostRepository(dbDB)
-	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, tweetsPostRepository)
-	customerRepository := billing3.NewCustomerRepository(api)
-	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
-	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, billingConfig, customerRepository, billingSubscriptionRepository)
 	authConfig, err := auth.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
+	twitterConfig, err := tweets2.NewTwitterConfigFromSecrets(gcpSecretKeeper)
+	if err != nil {
+		return nil, err
+	}
+	externalTweetRepository := tweets2.NewExternalTweetRepository(authConfig, twitterConfig)
+	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository)
+	customerRepository := billing3.NewCustomerRepository(api)
+	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
+	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, billingConfig, customerRepository, billingSubscriptionRepository)
 	management, err := auth.NewManagementClient(authConfig)
 	if err != nil {
 		return nil, err

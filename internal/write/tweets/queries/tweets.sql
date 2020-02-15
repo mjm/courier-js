@@ -1,5 +1,6 @@
 -- qry: TweetsGet
-SELECT t.*
+SELECT
+  t.*
 FROM
   tweets t
   JOIN feed_subscriptions fs ON t.feed_subscription_guid = fs.guid
@@ -44,6 +45,16 @@ WHERE tweets.feed_subscription_guid = feed_subscriptions.guid
   AND tweets.guid = $2
   AND status = 'canceled';
 
+-- qry: TweetsPost
+UPDATE tweets
+SET
+  status          = 'posted',
+  post_after      = NULL,
+  posted_at       = CURRENT_TIMESTAMP,
+  posted_tweet_id = $2
+WHERE guid = $1
+  AND status <> 'posted';
+
 -- qry: TweetsCreate
 INSERT
   INTO
@@ -85,7 +96,7 @@ FROM
       v.guid,
       v.action,
       v.body,
-      ARRAY(SELECT json_array_elements_text(v.media_urls)) media_urls,
+      ARRAY(SELECT json_array_elements_text(v.media_urls)) AS media_urls,
       v.retweet_id
     FROM
       __unnested__ v(guid, action, body, media_urls, retweet_id)

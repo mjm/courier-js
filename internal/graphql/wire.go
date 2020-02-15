@@ -37,6 +37,7 @@ func InitializeHandler(
 			db.New,
 			billing2.NewConfigFromSecrets,
 			billing2.NewClient,
+			tweets.NewTwitterConfigFromSecrets,
 			write.NewCommandBus,
 			event.NewBus,
 			feeds.DefaultSet,

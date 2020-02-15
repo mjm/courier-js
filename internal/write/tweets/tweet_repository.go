@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/HnH/qry"
@@ -84,6 +85,24 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, tweetID Twe
 
 func (r *TweetRepository) Uncancel(ctx context.Context, userID string, tweetID TweetID) error {
 	res, err := r.db.ExecContext(ctx, queries.TweetsUncancel, userID, tweetID)
+	if err != nil {
+		return err
+	}
+
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if n == 0 {
+		return ErrNoTweet
+	}
+
+	return nil
+}
+
+func (r *TweetRepository) Post(ctx context.Context, tweetID TweetID, postedTweetID int64) error {
+	res, err := r.db.ExecContext(ctx, queries.TweetsPost, tweetID, strconv.FormatInt(postedTweetID, 10))
 	if err != nil {
 		return err
 	}
