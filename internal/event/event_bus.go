@@ -11,26 +11,31 @@ type Handler interface {
 }
 
 type Bus struct {
-	handlers map[reflect.Type][]Handler
+	handlers map[reflect.Type]map[Handler]struct{}
 }
 
 func NewBus() *Bus {
 	return &Bus{
-		handlers: make(map[reflect.Type][]Handler),
+		handlers: make(map[reflect.Type]map[Handler]struct{}),
 	}
 }
 
 func (b *Bus) Notify(h Handler, vs ...interface{}) {
 	for _, v := range vs {
 		t := reflect.TypeOf(v)
-		b.handlers[t] = append(b.handlers[t], h)
+		hMap, ok := b.handlers[t]
+		if !ok {
+			hMap = make(map[Handler]struct{})
+			b.handlers[t] = hMap
+		}
+		hMap[h] = struct{}{}
 	}
 }
 
 func (b *Bus) Fire(ctx context.Context, evt interface{}) {
 	hs := b.handlers[reflect.TypeOf(evt)]
 	var wg sync.WaitGroup
-	for _, h := range hs {
+	for h := range hs {
 		// Run all handlers for the event in parallel, but wait for them to complete so they
 		// can't outlive the request.
 		wg.Add(1)

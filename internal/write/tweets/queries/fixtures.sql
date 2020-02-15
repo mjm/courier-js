@@ -40,4 +40,9 @@ VALUES
    'f536e1b2-ddaa-49fa-97e7-6065714660a3', 'A Titled Post https://example.com/item-2', '{}'::text[], 'posted', 'tweet',
    '2020-01-03 04:00:00', '1234567890'),
   ('398042cc-d2f6-4d91-bd81-a5a4f19f7746', '4b033437-c2a8-4775-b303-2764f2d73c31',
-   '4d18e711-0d6e-4725-91f9-02b64a88067b', 'This is my first example post', '{}'::text[], 'draft', 'tweet', NULL, '');
+   '4d18e711-0d6e-4725-91f9-02b64a88067b', 'This is my first example post', '{}'::text[], 'draft', 'tweet', NULL, ''),
+  ('be94e030-6062-439f-8c73-3b24c08e6b5f', '4b033437-c2a8-4775-b303-2764f2d73c31',
+   '4d18e711-0d6e-4725-91f9-02b64a88067b', 'This tweet has some media',
+   '{https://example.com/media/foobar.jpg}'::text[], 'draft', 'tweet', NULL, ''),
+  ('5fea0b11-0264-4ebe-8cd6-1854ddf151ad', '4b033437-c2a8-4775-b303-2764f2d73c31',
+   '4d18e711-0d6e-4725-91f9-02b64a88067b', '', '{}'::text[], 'draft', 'retweet', NULL, '');
