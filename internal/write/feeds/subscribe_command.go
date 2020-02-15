@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/mjm/courier-js/internal/event/feedevent"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/locatefeed"
 )
@@ -21,7 +22,7 @@ type SubscribeCommand struct {
 
 func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeCommand) (SubscriptionID, error) {
 	trace.AddField(ctx, "feed.url", cmd.URL)
-	trace.AddField(ctx, "user_id", cmd.UserID)
+	trace.UserID(ctx, cmd.UserID)
 
 	u, err := url.Parse(cmd.URL)
 	if err != nil {
@@ -39,7 +40,7 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 	f, err := h.feedRepo.GetByURL(ctx, u.String())
 	if err != nil {
 		if err == ErrNoFeed {
-			feedID = NewFeedID()
+			feedID = feeds.NewFeedID()
 			err = h.feedRepo.Create(ctx, feedID, u.String())
 			if err != nil {
 				return "", err
@@ -63,14 +64,14 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 		feedID = f.ID
 	}
 
-	trace.AddField(ctx, "feed.id", feedID)
+	trace.FeedID(ctx, feedID)
 
 	subID, err := h.subRepo.Create(ctx, cmd.UserID, feedID)
 	if err != nil {
 		return "", err
 	}
 
-	trace.AddField(ctx, "feed.subscription_id", subID)
+	trace.FeedSubscriptionID(ctx, subID)
 	h.eventBus.Fire(ctx, feedevent.FeedSubscribed{
 		UserID:         cmd.UserID,
 		FeedID:         feedID.String(),

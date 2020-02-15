@@ -14,10 +14,10 @@ type UpdateOptionsCommand struct {
 }
 
 func (h *CommandHandler) handleUpdateOptions(ctx context.Context, cmd UpdateOptionsCommand) error {
+	trace.UserID(ctx, cmd.UserID)
+	trace.FeedSubscriptionID(ctx, cmd.SubscriptionID)
 	trace.Add(ctx, trace.Fields{
-		"user_id":              cmd.UserID,
-		"feed.subscription_id": cmd.SubscriptionID,
-		"feed.autopost":        cmd.Autopost,
+		"feed.autopost": cmd.Autopost,
 	})
 
 	if err := h.subRepo.Update(ctx, cmd.UserID, UpdateSubscriptionParams{

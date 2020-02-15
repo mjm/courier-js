@@ -13,8 +13,8 @@ type UpdateCustomerCommand struct {
 }
 
 func (h *CommandHandler) handleUpdateCustomer(ctx context.Context, cmd UpdateCustomerCommand) error {
+	trace.UserID(ctx, cmd.UserID)
 	trace.Add(ctx, trace.Fields{
-		"user_id":             cmd.UserID,
 		"billing.customer_id": cmd.CustomerID,
 	})
 

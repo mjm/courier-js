@@ -19,9 +19,7 @@ func (h *CommandHandler) handleSendTweet(ctx context.Context, cmd SendTweetComma
 	}
 
 	trace.UserID(ctx, sub.UserID)
-	trace.Add(ctx, trace.Fields{
-		"feed.subscription_id": sub.ID,
-	})
+	trace.FeedSubscriptionID(ctx, sub.ID)
 
 	postedTweet, err := h.externalTweetRepo.Create(ctx, sub.UserID, cmd.Tweet)
 	if err != nil {

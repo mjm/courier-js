@@ -12,6 +12,7 @@ import (
 	"github.com/lib/pq"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets/queries"
 )
 
@@ -44,13 +45,13 @@ func (r *TweetRepository) Get(ctx context.Context, userID string, tweetID TweetI
 	return &tweet, nil
 }
 
-func (r *TweetRepository) ByPostIDs(ctx context.Context, subID FeedSubscriptionID, postIDs []PostID) (map[PostID][]*Tweet, error) {
+func (r *TweetRepository) ByPostIDs(ctx context.Context, subID feeds.SubscriptionID, postIDs []feeds.PostID) (map[feeds.PostID][]*Tweet, error) {
 	rows, err := r.db.QueryxContext(ctx, queries.TweetsByPostIDs, subID, pq.Array(postIDs))
 	if err != nil {
 		return nil, err
 	}
 
-	byPostID := make(map[PostID][]*Tweet)
+	byPostID := make(map[feeds.PostID][]*Tweet)
 	for rows.Next() {
 		var t Tweet
 		if err := rows.StructScan(&t); err != nil {
@@ -121,7 +122,7 @@ func (r *TweetRepository) Post(ctx context.Context, tweetID TweetID, postedTweet
 
 type CreateTweetParams struct {
 	ID        TweetID
-	PostID    PostID
+	PostID    feeds.PostID
 	Action    TweetAction
 	Body      string
 	MediaURLs []string
@@ -129,7 +130,7 @@ type CreateTweetParams struct {
 	Position  int
 }
 
-func (r *TweetRepository) Create(ctx context.Context, subID FeedSubscriptionID, autopost bool, ts []CreateTweetParams) error {
+func (r *TweetRepository) Create(ctx context.Context, subID feeds.SubscriptionID, autopost bool, ts []CreateTweetParams) error {
 	if len(ts) == 0 {
 		return nil
 	}

@@ -13,8 +13,8 @@ type UpdateSubscriptionCommand struct {
 }
 
 func (h *CommandHandler) handleUpdateSubscription(ctx context.Context, cmd UpdateSubscriptionCommand) error {
+	trace.UserID(ctx, cmd.UserID)
 	trace.Add(ctx, trace.Fields{
-		"user_id":             cmd.UserID,
 		"billing.customer_id": cmd.SubscriptionID,
 	})
 

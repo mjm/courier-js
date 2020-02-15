@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/write/feeds/queries"
 )
 
@@ -19,7 +20,7 @@ func NewSubscriptionRepository(db db.DB) *SubscriptionRepository {
 
 // Create adds a new subscription to a feed for a user to the database.
 func (r *SubscriptionRepository) Create(ctx context.Context, userID string, feedID FeedID) (SubscriptionID, error) {
-	subID := NewFeedSubscriptionID()
+	subID := feeds.NewSubscriptionID()
 	if err := r.db.QueryRowxContext(ctx, queries.SubscriptionsCreate, subID, userID, feedID).Scan(&subID); err != nil {
 		return subID, err
 	}

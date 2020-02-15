@@ -4,19 +4,18 @@ import (
 	"context"
 
 	"github.com/mjm/courier-js/internal/event/feedevent"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
 type ImportRecentPostsCommand struct {
 	UserID         string
-	SubscriptionID FeedSubscriptionID
+	SubscriptionID feeds.SubscriptionID
 }
 
 func (h *CommandHandler) handleImportRecentPosts(ctx context.Context, cmd ImportRecentPostsCommand) error {
 	trace.UserID(ctx, cmd.UserID)
-	trace.Add(ctx, trace.Fields{
-		"feed.subscription_id": cmd.SubscriptionID,
-	})
+	trace.FeedSubscriptionID(ctx, cmd.SubscriptionID)
 
 	sub, err := h.subRepo.Get(ctx, cmd.SubscriptionID)
 	if err != nil {
@@ -46,6 +45,6 @@ func (h *CommandHandler) handleImportRecentPosts(ctx context.Context, cmd Import
 func (h *CommandHandler) handleFeedSubscribed(ctx context.Context, evt feedevent.FeedSubscribed) {
 	_, _ = h.bus.Run(ctx, ImportRecentPostsCommand{
 		UserID:         evt.UserID,
-		SubscriptionID: FeedSubscriptionID(evt.SubscriptionID),
+		SubscriptionID: feeds.SubscriptionID(evt.SubscriptionID),
 	})
 }

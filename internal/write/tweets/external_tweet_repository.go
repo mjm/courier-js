@@ -141,9 +141,9 @@ func (r *ExternalTweetRepository) getTwitterCredentials(ctx context.Context, use
 	ctx = trace.Start(ctx, "Auth: Get Twitter credentials")
 	defer trace.Finish(ctx)
 
+	trace.UserID(ctx, userID)
 	trace.Add(ctx, trace.Fields{
 		"auth.domain": r.authDomain,
-		"user_id":     userID,
 	})
 
 	u := fmt.Sprintf("https://%s/api/v2/users/%s", r.authDomain, userID)

@@ -26,9 +26,9 @@ type RefreshCommand struct {
 }
 
 func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) error {
+	trace.UserID(ctx, cmd.UserID)
+	trace.FeedID(ctx, cmd.FeedID)
 	trace.Add(ctx, trace.Fields{
-		"user_id":            cmd.UserID,
-		"feed.id":            cmd.FeedID,
 		"feed.force_refresh": cmd.Force,
 	})
 

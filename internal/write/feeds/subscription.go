@@ -3,8 +3,9 @@ package feeds
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/lib/pq"
+
+	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 // Subscription represents a single user's subscription to a Feed. It includes user-specific
@@ -26,12 +27,4 @@ type Subscription struct {
 	Unused_FeedID *int `db:"feed_id"`
 }
 
-type SubscriptionID string
-
-func NewFeedSubscriptionID() SubscriptionID {
-	return SubscriptionID(uuid.New().String())
-}
-
-func (id SubscriptionID) String() string {
-	return string(id)
-}
+type SubscriptionID = feeds.SubscriptionID

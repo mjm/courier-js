@@ -17,8 +17,8 @@ type UnsubscribeCommand struct {
 }
 
 func (h *CommandHandler) handleUnsubscribe(ctx context.Context, cmd UnsubscribeCommand) error {
-	trace.AddField(ctx, "feed.subscription_id", cmd.SubscriptionID)
-	trace.AddField(ctx, "user_id", cmd.UserID)
+	trace.UserID(ctx, cmd.UserID)
+	trace.FeedSubscriptionID(ctx, cmd.SubscriptionID)
 
 	if err := h.subRepo.Deactivate(ctx, cmd.UserID, cmd.SubscriptionID); err != nil {
 		return err

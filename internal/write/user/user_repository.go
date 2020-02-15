@@ -52,7 +52,7 @@ func (r *UserRepository) Update(ctx context.Context, params UpdateMetadataParams
 	ctx = trace.Start(ctx, "Auth0: Update user")
 	defer trace.Finish(ctx)
 
-	trace.AddField(ctx, "user_id", params.UserID)
+	trace.UserID(ctx, params.UserID)
 
 	u := &management.User{}
 	params.AppMetadataParams.apply(u)

@@ -5,25 +5,26 @@ import (
 
 	"github.com/lib/pq"
 
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 )
 
 // Tweet is a single tweet that was translated from a post for a particular user.
 type Tweet struct {
-	ID                 TweetID            `db:"guid"`
-	PostID             PostID             `db:"post_guid"`
-	FeedSubscriptionID FeedSubscriptionID `db:"feed_subscription_guid"`
-	Body               string             `db:"body"`
-	MediaURLs          pq.StringArray     `db:"media_urls"`
-	Status             TweetStatus        `db:"status"`
-	PostedAt           pq.NullTime        `db:"posted_at"`
-	PostedTweetID      string             `db:"posted_tweet_id"`
-	Position           int                `db:"position"`
-	CreatedAt          time.Time          `db:"created_at"`
-	UpdatedAt          time.Time          `db:"updated_at"`
-	PostAfter          pq.NullTime        `db:"post_after"`
-	Action             TweetAction        `db:"action"`
-	RetweetID          string             `db:"retweet_id"`
+	ID                 TweetID              `db:"guid"`
+	PostID             feeds.PostID         `db:"post_guid"`
+	FeedSubscriptionID feeds.SubscriptionID `db:"feed_subscription_guid"`
+	Body               string               `db:"body"`
+	MediaURLs          pq.StringArray       `db:"media_urls"`
+	Status             TweetStatus          `db:"status"`
+	PostedAt           pq.NullTime          `db:"posted_at"`
+	PostedTweetID      string               `db:"posted_tweet_id"`
+	Position           int                  `db:"position"`
+	CreatedAt          time.Time            `db:"created_at"`
+	UpdatedAt          time.Time            `db:"updated_at"`
+	PostAfter          pq.NullTime          `db:"post_after"`
+	Action             TweetAction          `db:"action"`
+	RetweetID          string               `db:"retweet_id"`
 
 	Unused_ID                 int  `db:"id"`
 	Unused_PostID             *int `db:"post_id"`

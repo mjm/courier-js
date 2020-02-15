@@ -7,6 +7,7 @@ import (
 	"github.com/lib/pq"
 
 	"github.com/mjm/courier-js/internal/event/feedevent"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/scraper"
 )
@@ -19,8 +20,8 @@ type ImportPostsCommand struct {
 }
 
 func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsCommand) error {
+	trace.FeedID(ctx, cmd.FeedID)
 	trace.Add(ctx, trace.Fields{
-		"feed.id":            cmd.FeedID,
 		"import.entry_count": len(cmd.Entries),
 	})
 
@@ -93,7 +94,7 @@ func (h *CommandHandler) planPostChanges(ctx context.Context, feedID FeedID, ent
 			}
 		} else {
 			toCreate = append(toCreate, CreatePostParams{
-				ID:          NewPostID(),
+				ID:          feeds.NewPostID(),
 				ItemID:      e.ID,
 				Title:       e.Title,
 				URL:         e.URL,

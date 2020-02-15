@@ -6,6 +6,8 @@ import (
 
 	"github.com/mjm/courier-js/internal/event/feedevent"
 	"github.com/mjm/courier-js/internal/event/tweetevent"
+	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/htmltweets"
 
@@ -21,14 +23,14 @@ type ImportTweetsCommand struct {
 
 func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweetsCommand) error {
 	trace.UserID(ctx, cmd.Subscription.UserID)
+	trace.FeedID(ctx, cmd.Subscription.FeedID)
+	trace.FeedSubscriptionID(ctx, cmd.Subscription.ID)
 	trace.Add(ctx, trace.Fields{
-		"feed.id":              cmd.Subscription.FeedID,
-		"feed.subscription_id": cmd.Subscription.ID,
-		"feed.autopost":        cmd.Subscription.Autopost,
-		"import.post_count":    len(cmd.Posts),
+		"feed.autopost":     cmd.Subscription.Autopost,
+		"import.post_count": len(cmd.Posts),
 	})
 
-	var postIDs []PostID
+	var postIDs []feeds.PostID
 	for _, p := range cmd.Posts {
 		postIDs = append(postIDs, p.ID)
 	}
@@ -109,13 +111,13 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	return nil
 }
 
-func (h *CommandHandler) planTweets(ctx context.Context, post *Post, tweets []*Tweet) ([]CreateTweetParams, []UpdateTweetParams, error) {
+func (h *CommandHandler) planTweets(ctx context.Context, post *Post, ts []*Tweet) ([]CreateTweetParams, []UpdateTweetParams, error) {
 	ctx = trace.Start(ctx, "Plan tweets")
 	defer trace.Finish(ctx)
 
 	trace.Add(ctx, trace.Fields{
 		"post.id":                     post.ID,
-		"import.existing_tweet_count": len(tweets),
+		"import.existing_tweet_count": len(ts),
 	})
 
 	translated, err := htmltweets.Translate(htmltweets.Input{
@@ -135,8 +137,8 @@ func (h *CommandHandler) planTweets(ctx context.Context, post *Post, tweets []*T
 	var toUpdate []UpdateTweetParams
 
 	for i, newTweet := range translated {
-		if len(tweets) > i {
-			existingTweet := tweets[i]
+		if len(ts) > i {
+			existingTweet := ts[i]
 			if existingTweet.Status == Posted {
 				continue
 			}
@@ -156,7 +158,7 @@ func (h *CommandHandler) planTweets(ctx context.Context, post *Post, tweets []*T
 			toUpdate = append(toUpdate, t)
 		} else {
 			t := CreateTweetParams{
-				ID:       NewTweetID(),
+				ID:       tweets.NewTweetID(),
 				PostID:   post.ID,
 				Position: i,
 			}
@@ -184,15 +186,15 @@ func (h *CommandHandler) planTweets(ctx context.Context, post *Post, tweets []*T
 }
 
 func (h *CommandHandler) handlePostsImported(ctx context.Context, evt feedevent.PostsImported) {
-	subs, err := h.subRepo.ByFeedID(ctx, FeedID(evt.FeedID))
+	subs, err := h.subRepo.ByFeedID(ctx, feeds.FeedID(evt.FeedID))
 	if err != nil {
 		trace.Error(ctx, err)
 		return
 	}
 
-	var postIDs []PostID
+	var postIDs []feeds.PostID
 	for _, id := range evt.PostIDs {
-		postIDs = append(postIDs, PostID(id))
+		postIDs = append(postIDs, feeds.PostID(id))
 	}
 
 	posts, err := h.postRepo.ByIDs(ctx, postIDs)

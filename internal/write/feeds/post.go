@@ -3,8 +3,9 @@ package feeds
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/lib/pq"
+
+	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 // Post is a single entry from a feed. A Post is shared between all users that are subscribed
@@ -26,12 +27,4 @@ type Post struct {
 	Unused_FeedID *int `db:"feed_id"`
 }
 
-type PostID string
-
-func NewPostID() PostID {
-	return PostID(uuid.New().String())
-}
-
-func (id PostID) String() string {
-	return string(id)
-}
+type PostID = feeds.PostID

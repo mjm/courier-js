@@ -17,9 +17,7 @@ type CancelCommand struct {
 }
 
 func (h *CommandHandler) handleCancel(ctx context.Context, cmd CancelCommand) error {
-	trace.Add(ctx, trace.Fields{
-		"user_id": cmd.UserID,
-	})
+	trace.UserID(ctx, cmd.UserID)
 
 	user := auth.GetUser(ctx)
 	subID := user.SubscriptionID()
