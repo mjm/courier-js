@@ -3,17 +3,17 @@ package tweets
 // TweetCanceled occurs when a user cancels posting a draft tweet.
 type TweetCanceled struct {
 	UserID  string
-	TweetID string
+	TweetID TweetID
 }
 
 type TweetUncanceled struct {
 	UserID  string
-	TweetID string
+	TweetID TweetID
 }
 
 type TweetEdited struct {
 	UserID  string
-	TweetID string
+	TweetID TweetID
 }
 
 // TweetsCreated occurs when some tweets are created for a subscription by posts being
@@ -33,5 +33,5 @@ type TweetsUpdated struct {
 type TweetsImported struct {
 	UserID         string
 	SubscriptionID string
-	TweetIDs       []string
+	TweetIDs       []TweetID
 }

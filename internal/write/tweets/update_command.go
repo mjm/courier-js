@@ -52,14 +52,14 @@ func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) er
 
 	h.eventBus.Fire(ctx, tweets.TweetEdited{
 		UserID:  cmd.UserID,
-		TweetID: cmd.TweetID.String(),
+		TweetID: cmd.TweetID,
 	})
 
 	h.eventBus.Fire(ctx, tweets.TweetsUpdated{
 		TweetsImported: tweets.TweetsImported{
 			UserID:         cmd.UserID,
 			SubscriptionID: string(t.FeedSubscriptionID),
-			TweetIDs:       []string{cmd.TweetID.String()},
+			TweetIDs:       []TweetID{cmd.TweetID},
 		},
 	})
 

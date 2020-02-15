@@ -85,7 +85,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 
 	createdEvt := tweets.TweetsCreated{TweetsImported: eventBase}
 	for _, params := range toCreate {
-		createdEvt.TweetIDs = append(createdEvt.TweetIDs, string(params.ID))
+		createdEvt.TweetIDs = append(createdEvt.TweetIDs, params.ID)
 	}
 	if len(createdEvt.TweetIDs) > 0 {
 		h.eventBus.Fire(ctx, createdEvt)
@@ -93,14 +93,14 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 
 	updatedEvt := tweets.TweetsUpdated{TweetsImported: eventBase}
 	for _, params := range toUpdate {
-		updatedEvt.TweetIDs = append(updatedEvt.TweetIDs, string(params.ID))
+		updatedEvt.TweetIDs = append(updatedEvt.TweetIDs, params.ID)
 	}
 	if len(updatedEvt.TweetIDs) > 0 {
 		h.eventBus.Fire(ctx, updatedEvt)
 	}
 
 	importedEvt := eventBase
-	importedEvt.TweetIDs = append([]string{}, createdEvt.TweetIDs...)
+	importedEvt.TweetIDs = append([]TweetID{}, createdEvt.TweetIDs...)
 	importedEvt.TweetIDs = append(importedEvt.TweetIDs, updatedEvt.TweetIDs...)
 	if len(importedEvt.TweetIDs) > 0 {
 		h.eventBus.Fire(ctx, importedEvt)

@@ -64,17 +64,17 @@ func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 
 	case tweets.TweetCanceled:
 		r.record(ctx, evt.UserID, TweetCancel, EventParams{
-			TweetID: evt.TweetID,
+			TweetID: string(evt.TweetID),
 		})
 
 	case tweets.TweetUncanceled:
 		r.record(ctx, evt.UserID, TweetUncancel, EventParams{
-			TweetID: evt.TweetID,
+			TweetID: string(evt.TweetID),
 		})
 
 	case tweets.TweetEdited:
 		r.record(ctx, evt.UserID, TweetEdit, EventParams{
-			TweetID: evt.TweetID,
+			TweetID: string(evt.TweetID),
 		})
 
 	}
