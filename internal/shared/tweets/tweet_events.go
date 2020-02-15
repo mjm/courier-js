@@ -1,4 +1,4 @@
-package tweetevent
+package tweets
 
 // TweetCanceled occurs when a user cancels posting a draft tweet.
 type TweetCanceled struct {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mjm/courier-js/internal/event/tweetevent"
+	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -50,13 +50,13 @@ func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) er
 		return err
 	}
 
-	h.eventBus.Fire(ctx, tweetevent.TweetEdited{
+	h.eventBus.Fire(ctx, tweets.TweetEdited{
 		UserID:  cmd.UserID,
 		TweetID: cmd.TweetID.String(),
 	})
 
-	h.eventBus.Fire(ctx, tweetevent.TweetsUpdated{
-		TweetsImported: tweetevent.TweetsImported{
+	h.eventBus.Fire(ctx, tweets.TweetsUpdated{
+		TweetsImported: tweets.TweetsImported{
 			UserID:         cmd.UserID,
 			SubscriptionID: string(t.FeedSubscriptionID),
 			TweetIDs:       []string{cmd.TweetID.String()},

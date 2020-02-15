@@ -3,7 +3,7 @@ package tweets
 import (
 	"context"
 
-	"github.com/mjm/courier-js/internal/event/tweetevent"
+	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -23,7 +23,7 @@ func (h *CommandHandler) handleUncancel(ctx context.Context, cmd UncancelCommand
 		return err
 	}
 
-	h.eventBus.Fire(ctx, tweetevent.TweetUncanceled{
+	h.eventBus.Fire(ctx, tweets.TweetUncanceled{
 		UserID:  cmd.UserID,
 		TweetID: string(cmd.TweetID),
 	})

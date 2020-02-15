@@ -10,10 +10,10 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/event/tweetevent"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/tweets/queries"
+	"github.com/mjm/courier-js/internal/shared/tweets"
 )
 
 var (
@@ -41,7 +41,7 @@ func NewTweetQueries(db db.DB, eventBus *event.Bus) TweetQueries {
 		db:     db,
 		loader: newTweetLoader(db),
 	}
-	eventBus.Notify(q, tweetevent.TweetCanceled{}, tweetevent.TweetsUpdated{})
+	eventBus.Notify(q, tweets.TweetCanceled{}, tweets.TweetUncanceled{}, tweets.TweetsUpdated{})
 	return q
 }
 
@@ -85,13 +85,13 @@ func (q *tweetQueries) Paged(ctx context.Context, userID string, filter Filter, 
 func (q *tweetQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
-	case tweetevent.TweetCanceled:
+	case tweets.TweetCanceled:
 		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetID))
 
-	case tweetevent.TweetUncanceled:
+	case tweets.TweetUncanceled:
 		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetID))
 
-	case tweetevent.TweetsUpdated:
+	case tweets.TweetsUpdated:
 		for _, id := range evt.TweetIDs {
 			q.loader.Clear(ctx, dataloader.StringKey(id))
 		}

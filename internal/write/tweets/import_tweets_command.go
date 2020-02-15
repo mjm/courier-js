@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/mjm/courier-js/internal/event/tweetevent"
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace"
@@ -79,12 +78,12 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 		return err
 	}
 
-	eventBase := tweetevent.TweetsImported{
+	eventBase := tweets.TweetsImported{
 		UserID:         cmd.Subscription.UserID,
 		SubscriptionID: string(cmd.Subscription.ID),
 	}
 
-	createdEvt := tweetevent.TweetsCreated{TweetsImported: eventBase}
+	createdEvt := tweets.TweetsCreated{TweetsImported: eventBase}
 	for _, params := range toCreate {
 		createdEvt.TweetIDs = append(createdEvt.TweetIDs, string(params.ID))
 	}
@@ -92,7 +91,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 		h.eventBus.Fire(ctx, createdEvt)
 	}
 
-	updatedEvt := tweetevent.TweetsUpdated{TweetsImported: eventBase}
+	updatedEvt := tweets.TweetsUpdated{TweetsImported: eventBase}
 	for _, params := range toUpdate {
 		updatedEvt.TweetIDs = append(updatedEvt.TweetIDs, string(params.ID))
 	}
