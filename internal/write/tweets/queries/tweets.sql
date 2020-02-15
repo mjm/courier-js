@@ -53,7 +53,7 @@ SET
   posted_at       = CURRENT_TIMESTAMP,
   posted_tweet_id = $2
 WHERE guid = $1
-  AND status <> 'posted';
+  AND status = 'draft';
 
 -- qry: TweetsCreate
 INSERT
