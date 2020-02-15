@@ -62,7 +62,7 @@ func (db *tracingDB) SelectContext(ctx context.Context, dest interface{}, query 
 	}
 
 	trace.Add(ctx, trace.Fields{
-		"sql.row_count": reflect.ValueOf(dest).Len(),
+		"sql.row_count": reflect.ValueOf(dest).Elem().Len(),
 	})
 	return nil
 }

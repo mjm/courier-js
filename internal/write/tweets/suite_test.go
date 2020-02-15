@@ -1,6 +1,7 @@
 package tweets
 
 import (
+	"context"
 	"testing"
 
 	"github.com/khaiql/dbcleaner"
@@ -10,6 +11,7 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/tweets/queries"
 )
 
 var cleaner = dbcleaner.New()
@@ -37,6 +39,8 @@ func (suite *tweetsSuite) SetupSuite() {
 
 func (suite *tweetsSuite) SetupTest() {
 	cleaner.Acquire("feeds", "feed_subscriptions", "posts", "tweets")
+	_, err := suite.db.ExecContext(context.Background(), queries.FixturesExample)
+	suite.NoError(err)
 }
 
 func (suite *tweetsSuite) TearDownTest() {
