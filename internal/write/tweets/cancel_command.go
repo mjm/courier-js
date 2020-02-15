@@ -15,8 +15,7 @@ type CancelCommand struct {
 	TweetID TweetID
 }
 
-// HandleCancel handles a request from a user to cancel a tweet.
-func (h *CommandHandler) HandleCancel(ctx context.Context, cmd CancelCommand) error {
+func (h *CommandHandler) handleCancel(ctx context.Context, cmd CancelCommand) error {
 	trace.Add(ctx, trace.Fields{
 		"user_id":  cmd.UserID,
 		"tweet.id": cmd.TweetID,

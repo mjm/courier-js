@@ -18,8 +18,7 @@ type ImportPostsCommand struct {
 	Entries []*scraper.Entry
 }
 
-// HandleImportPosts handles a request to import posts.
-func (h *CommandHandler) HandleImportPosts(ctx context.Context, cmd ImportPostsCommand) error {
+func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsCommand) error {
 	trace.Add(ctx, trace.Fields{
 		"feed.id":            cmd.FeedID,
 		"import.entry_count": len(cmd.Entries),

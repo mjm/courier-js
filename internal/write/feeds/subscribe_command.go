@@ -19,8 +19,7 @@ type SubscribeCommand struct {
 	URL string
 }
 
-// HandleSubscribe handles a request from a user to subscribe to a feed.
-func (h *CommandHandler) HandleSubscribe(ctx context.Context, cmd SubscribeCommand) (SubscriptionID, error) {
+func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeCommand) (SubscriptionID, error) {
 	trace.AddField(ctx, "feed.url", cmd.URL)
 	trace.AddField(ctx, "user_id", cmd.UserID)
 

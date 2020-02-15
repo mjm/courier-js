@@ -55,22 +55,22 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 	switch cmd := cmd.(type) {
 
 	case SubscribeCommand:
-		subID, err := h.HandleSubscribe(ctx, cmd)
+		subID, err := h.handleSubscribe(ctx, cmd)
 		return subID, err
 
 	case RefreshCommand:
-		err := h.HandleRefresh(ctx, cmd)
+		err := h.handleRefresh(ctx, cmd)
 		return nil, err
 
 	case UpdateOptionsCommand:
 		return nil, h.handleUpdateOptions(ctx, cmd)
 
 	case UnsubscribeCommand:
-		err := h.HandleUnsubscribe(ctx, cmd)
+		err := h.handleUnsubscribe(ctx, cmd)
 		return nil, err
 
 	case ImportPostsCommand:
-		err := h.HandleImportPosts(ctx, cmd)
+		err := h.handleImportPosts(ctx, cmd)
 		return nil, err
 
 	}

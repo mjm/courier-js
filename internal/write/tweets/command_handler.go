@@ -68,7 +68,7 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 	switch cmd := cmd.(type) {
 
 	case CancelCommand:
-		return nil, h.HandleCancel(ctx, cmd)
+		return nil, h.handleCancel(ctx, cmd)
 
 	case UncancelCommand:
 		return nil, h.handleUncancel(ctx, cmd)

@@ -16,8 +16,7 @@ type UnsubscribeCommand struct {
 	SubscriptionID SubscriptionID
 }
 
-// HandleUnsubscribe handles a request from a user to unsubscribe from a feed.
-func (h *CommandHandler) HandleUnsubscribe(ctx context.Context, cmd UnsubscribeCommand) error {
+func (h *CommandHandler) handleUnsubscribe(ctx context.Context, cmd UnsubscribeCommand) error {
 	trace.AddField(ctx, "feed.subscription_id", cmd.SubscriptionID)
 	trace.AddField(ctx, "user_id", cmd.UserID)
 

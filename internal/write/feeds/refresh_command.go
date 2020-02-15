@@ -25,8 +25,7 @@ type RefreshCommand struct {
 	Force bool
 }
 
-// HandleRefresh handles a request to refresh the contents of a feed.
-func (h *CommandHandler) HandleRefresh(ctx context.Context, cmd RefreshCommand) error {
+func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) error {
 	trace.Add(ctx, trace.Fields{
 		"user_id":            cmd.UserID,
 		"feed.id":            cmd.FeedID,
