@@ -21,8 +21,8 @@ type SubscribeCommand struct {
 }
 
 func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeCommand) (SubscriptionID, error) {
-	trace.AddField(ctx, "feed.url", cmd.URL)
 	trace.UserID(ctx, cmd.UserID)
+	trace.FeedURL(ctx, cmd.URL)
 
 	u, err := url.Parse(cmd.URL)
 	if err != nil {
@@ -85,7 +85,7 @@ func locateFeed(ctx context.Context, u *url.URL) (*url.URL, error) {
 	ctx = trace.Start(ctx, "Locate feed")
 	defer trace.Finish(ctx)
 
-	trace.AddField(ctx, "feed.url", u.String())
+	trace.FeedURL(ctx, u.String())
 
 	u, err := locatefeed.Locate(ctx, u)
 	if err != nil {

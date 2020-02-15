@@ -81,9 +81,9 @@ func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 }
 
 func (r *EventRecorder) record(ctx context.Context, userID string, t EventType, p EventParams) {
+	trace.UserID(ctx, userID)
 	trace.Add(ctx, trace.Fields{
 		"event.type_external": string(t),
-		"event.user_id":       userID,
 	})
 
 	if _, err := r.db.ExecContext(ctx, `

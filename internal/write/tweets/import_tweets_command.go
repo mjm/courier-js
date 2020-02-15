@@ -25,8 +25,8 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	trace.UserID(ctx, cmd.Subscription.UserID)
 	trace.FeedID(ctx, cmd.Subscription.FeedID)
 	trace.FeedSubscriptionID(ctx, cmd.Subscription.ID)
+	trace.FeedAutopost(ctx, cmd.Subscription.Autopost)
 	trace.Add(ctx, trace.Fields{
-		"feed.autopost":     cmd.Subscription.Autopost,
 		"import.post_count": len(cmd.Posts),
 	})
 
@@ -115,8 +115,8 @@ func (h *CommandHandler) planTweets(ctx context.Context, post *Post, ts []*Tweet
 	ctx = trace.Start(ctx, "Plan tweets")
 	defer trace.Finish(ctx)
 
+	trace.PostID(ctx, post.ID)
 	trace.Add(ctx, trace.Fields{
-		"post.id":                     post.ID,
 		"import.existing_tweet_count": len(ts),
 	})
 

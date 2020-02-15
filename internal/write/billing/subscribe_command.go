@@ -66,14 +66,14 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 		return err
 	}
 
-	trace.AddField(ctx, "billing.customer_id", cusID)
+	trace.CustomerID(ctx, cusID)
 
 	subID, err := h.subRepo.Create(ctx, cusID, h.config.MonthlyPlanID)
 	if err != nil {
 		return err
 	}
 
-	trace.AddField(ctx, "billing.subscription_id", subID)
+	trace.SubscriptionID(ctx, subID)
 	h.eventBus.Fire(ctx, billingevent.SubscriptionCreated{
 		UserID:         cmd.UserID,
 		SubscriptionID: subID,

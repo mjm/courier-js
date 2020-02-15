@@ -25,7 +25,7 @@ func (h *CommandHandler) handleCancel(ctx context.Context, cmd CancelCommand) er
 		return ErrNotSubscribed
 	}
 
-	trace.AddField(ctx, "billing.subscription_id", subID)
+	trace.SubscriptionID(ctx, subID)
 	if err := h.subRepo.CancelLater(ctx, subID); err != nil {
 		return err
 	}

@@ -14,9 +14,7 @@ type UpdateCustomerCommand struct {
 
 func (h *CommandHandler) handleUpdateCustomer(ctx context.Context, cmd UpdateCustomerCommand) error {
 	trace.UserID(ctx, cmd.UserID)
-	trace.Add(ctx, trace.Fields{
-		"billing.customer_id": cmd.CustomerID,
-	})
+	trace.CustomerID(ctx, cmd.CustomerID)
 
 	if err := h.userRepo.Update(ctx, UpdateMetadataParams{
 		UserID: cmd.UserID,

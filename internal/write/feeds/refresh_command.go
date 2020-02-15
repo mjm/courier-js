@@ -28,9 +28,7 @@ type RefreshCommand struct {
 func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) error {
 	trace.UserID(ctx, cmd.UserID)
 	trace.FeedID(ctx, cmd.FeedID)
-	trace.Add(ctx, trace.Fields{
-		"feed.force_refresh": cmd.Force,
-	})
+	trace.FeedForceRefresh(ctx, cmd.Force)
 
 	f, err := h.feedRepo.Get(ctx, cmd.FeedID)
 	if err != nil {
@@ -50,10 +48,10 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 	}
 
 	if scraped == nil {
-		trace.AddField(ctx, "feed.up_to_date", true)
+		trace.FeedUpToDate(ctx, true)
 		return nil
 	}
-	trace.AddField(ctx, "feed.up_to_date", false)
+	trace.FeedUpToDate(ctx, false)
 
 	_, err = h.bus.Run(ctx, ImportPostsCommand{
 		FeedID:  f.ID,
@@ -91,11 +89,11 @@ func scrapeFeed(ctx context.Context, urlStr string, headers *scraper.CachingHead
 	ctx = trace.Start(ctx, "Scrape feed")
 	defer trace.Finish(ctx)
 
-	trace.AddField(ctx, "scrape.url", urlStr)
+	trace.FeedURL(ctx, urlStr)
 	if headers != nil {
 		trace.Add(ctx, trace.Fields{
-			"scrape.etag":          headers.Etag,
-			"scrape.last_modified": headers.LastModified,
+			"feed.etag":          headers.Etag,
+			"feed.last_modified": headers.LastModified,
 		})
 	}
 
