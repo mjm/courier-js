@@ -13,9 +13,9 @@ type ImportRecentPostsCommand struct {
 }
 
 func (h *CommandHandler) handleImportRecentPosts(ctx context.Context, cmd ImportRecentPostsCommand) error {
+	trace.UserID(ctx, cmd.UserID)
 	trace.Add(ctx, trace.Fields{
 		"feed.subscription_id": cmd.SubscriptionID,
-		"user_id":              cmd.UserID,
 	})
 
 	sub, err := h.subRepo.Get(ctx, cmd.SubscriptionID)

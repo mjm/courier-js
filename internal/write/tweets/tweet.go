@@ -3,8 +3,9 @@ package tweets
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/lib/pq"
+
+	"github.com/mjm/courier-js/internal/shared/tweets"
 )
 
 // Tweet is a single tweet that was translated from a post for a particular user.
@@ -29,15 +30,7 @@ type Tweet struct {
 	Unused_FeedSubscriptionID *int `db:"feed_subscription_id"`
 }
 
-type TweetID string
-
-func NewTweetID() TweetID {
-	return TweetID(uuid.New().String())
-}
-
-func (id TweetID) String() string {
-	return string(id)
-}
+type TweetID = tweets.TweetID
 
 // TweetStatus is a state that a tweet can be in.
 type TweetStatus string

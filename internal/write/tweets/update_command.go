@@ -16,9 +16,9 @@ type UpdateCommand struct {
 }
 
 func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) error {
+	trace.UserID(ctx, cmd.UserID)
+	trace.TweetID(ctx, cmd.TweetID)
 	trace.Add(ctx, trace.Fields{
-		"user_id":               cmd.UserID,
-		"tweet.id":              cmd.TweetID,
 		"tweet.body_length":     len(cmd.Body),
 		"tweet.media_url_count": len(cmd.MediaURLs),
 	})

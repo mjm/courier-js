@@ -11,16 +11,16 @@ type SendTweetCommand struct {
 }
 
 func (h *CommandHandler) handleSendTweet(ctx context.Context, cmd SendTweetCommand) error {
-	trace.AddField(ctx, "tweet.id", cmd.Tweet.ID)
+	trace.TweetID(ctx, cmd.Tweet.ID)
 
 	sub, err := h.subRepo.Get(ctx, cmd.Tweet.FeedSubscriptionID)
 	if err != nil {
 		return err
 	}
 
+	trace.UserID(ctx, sub.UserID)
 	trace.Add(ctx, trace.Fields{
 		"feed.subscription_id": sub.ID,
-		"user_id":              sub.UserID,
 	})
 
 	postedTweet, err := h.externalTweetRepo.Create(ctx, sub.UserID, cmd.Tweet)

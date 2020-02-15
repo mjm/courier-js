@@ -67,9 +67,9 @@ func (r *ExternalTweetRepository) Create(ctx context.Context, userID string, twe
 	trace.Start(ctx, "Twitter: Create tweet")
 	defer trace.Finish(ctx)
 
+	trace.UserID(ctx, userID)
+	trace.TweetID(ctx, tweet.ID)
 	trace.Add(ctx, trace.Fields{
-		"user_id":      userID,
-		"tweet.id":     tweet.ID,
 		"tweet.action": tweet.Action,
 	})
 

@@ -16,10 +16,8 @@ type UncancelCommand struct {
 }
 
 func (h *CommandHandler) handleUncancel(ctx context.Context, cmd UncancelCommand) error {
-	trace.Add(ctx, trace.Fields{
-		"user_id":  cmd.UserID,
-		"tweet.id": cmd.TweetID,
-	})
+	trace.UserID(ctx, cmd.UserID)
+	trace.TweetID(ctx, cmd.TweetID)
 
 	if err := h.tweetRepo.Uncancel(ctx, cmd.UserID, cmd.TweetID); err != nil {
 		return err

@@ -16,10 +16,8 @@ type CancelCommand struct {
 }
 
 func (h *CommandHandler) handleCancel(ctx context.Context, cmd CancelCommand) error {
-	trace.Add(ctx, trace.Fields{
-		"user_id":  cmd.UserID,
-		"tweet.id": cmd.TweetID,
-	})
+	trace.UserID(ctx, cmd.UserID)
+	trace.TweetID(ctx, cmd.TweetID)
 
 	if err := h.tweetRepo.Cancel(ctx, cmd.UserID, cmd.TweetID); err != nil {
 		return err

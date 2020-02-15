@@ -20,8 +20,8 @@ type ImportTweetsCommand struct {
 }
 
 func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweetsCommand) error {
+	trace.UserID(ctx, cmd.Subscription.UserID)
 	trace.Add(ctx, trace.Fields{
-		"user_id":              cmd.Subscription.UserID,
 		"feed.id":              cmd.Subscription.FeedID,
 		"feed.subscription_id": cmd.Subscription.ID,
 		"feed.autopost":        cmd.Subscription.Autopost,
