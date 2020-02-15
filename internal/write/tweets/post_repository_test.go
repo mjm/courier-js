@@ -42,7 +42,7 @@ func (suite *tweetsSuite) TestRecentPosts() {
 	ctx := context.Background()
 	posts, err := suite.postRepo.RecentPosts(ctx, "46c2aa85-5124-40c1-896d-1e2ca4eb8587")
 	suite.NoError(err)
-	suite.Equal(2, len(posts))
+	suite.Equal(3, len(posts))
 
 	suite.Equal(feeds.PostID("f536e1b2-ddaa-49fa-97e7-6065714660a3"), posts[0].ID)
 	suite.Equal("https://example.com/item-2", posts[0].ItemID)

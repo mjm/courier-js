@@ -29,7 +29,7 @@ FROM
 WHERE tweets.feed_subscription_guid = feed_subscriptions.guid
   AND feed_subscriptions.user_id = $1
   AND tweets.guid = $2
-  AND status <> 'posted';
+  AND status = 'draft';
 
 -- qry: TweetsUncancel
 UPDATE
