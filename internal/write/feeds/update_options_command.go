@@ -26,8 +26,8 @@ func (h *CommandHandler) handleUpdateOptions(ctx context.Context, cmd UpdateOpti
 	}
 
 	h.eventBus.Fire(ctx, feeds.FeedOptionsChanged{
-		SubscriptionID: cmd.SubscriptionID,
-		UserID:         cmd.UserID,
+		SubscriptionId: cmd.SubscriptionID.String(),
+		UserId:         cmd.UserID,
 		Autopost:       cmd.Autopost,
 	})
 

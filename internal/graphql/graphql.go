@@ -9,6 +9,7 @@ import (
 	"github.com/mjm/graphql-go/errors"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write/user"
@@ -19,7 +20,7 @@ type Handler struct {
 	Authenticator *auth.Authenticator
 }
 
-func NewHandler(traceCfg trace.Config, schema *graphql.Schema, auther *auth.Authenticator, _ *user.EventRecorder) *Handler {
+func NewHandler(traceCfg trace.Config, schema *graphql.Schema, auther *auth.Authenticator, _ *event.Publisher, _ *user.EventRecorder) *Handler {
 	trace.Init(traceCfg)
 
 	return &Handler{

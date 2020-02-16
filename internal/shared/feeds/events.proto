@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package courier.events.feeds;
+option go_package = "feeds";
+
+message FeedCreated {
+  string user_id = 1;
+  string feed_id = 2;
+  string url = 3;
+}
+
+message FeedSubscribed {
+  string user_id = 1;
+  string feed_id = 2;
+  string subscription_id = 3;
+}
+
+message FeedRefreshed {
+  string user_id = 1;
+  string feed_id = 2;
+}
+
+message FeedOptionsChanged {
+  string user_id = 1;
+  string subscription_id = 2;
+  bool autopost = 3;
+}
+
+message FeedUnsubscribed {
+  string user_id = 1;
+  string subscription_id = 2;
+}
+
+message PostsImported {
+  string feed_id = 1;
+  repeated string post_ids = 2;
+}

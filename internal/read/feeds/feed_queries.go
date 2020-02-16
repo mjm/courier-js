@@ -73,7 +73,7 @@ func (q *feedQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
 	case feeds.FeedRefreshed:
-		q.loader.Clear(ctx, dataloader.StringKey(evt.FeedID))
+		q.loader.Clear(ctx, dataloader.StringKey(evt.FeedId))
 
 	}
 }

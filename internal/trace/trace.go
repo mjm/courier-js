@@ -53,6 +53,10 @@ func Init(cfg Config) {
 	})
 }
 
+func SetServiceName(svcname string) {
+	libhoney.AddField("service_name", svcname)
+}
+
 // Flush ensures that any in-flight events get sent.
 func Flush() {
 	libhoney.Flush()

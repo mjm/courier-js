@@ -39,9 +39,9 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 
 	trace.FeedSubscriptionID(ctx, subID)
 	h.eventBus.Fire(ctx, feeds.FeedSubscribed{
-		UserID:         cmd.UserID,
-		FeedID:         feedID,
-		SubscriptionID: subID,
+		UserId:         cmd.UserID,
+		FeedId:         feedID.String(),
+		SubscriptionId: subID.String(),
 	})
 
 	return subID, nil

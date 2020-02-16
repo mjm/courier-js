@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	cloud.google.com/go v0.52.0
+	cloud.google.com/go/pubsub v1.0.1
 	github.com/DataDog/zstd v1.4.4 // indirect
 	github.com/GoogleCloudPlatform/functions-framework-go v1.0.0
 	github.com/HnH/qry v1.1.0
@@ -24,6 +25,7 @@ require (
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
+	github.com/golang/protobuf v1.3.2
 	github.com/google/uuid v1.1.1
 	github.com/google/wire v0.4.0
 	github.com/graph-gophers/dataloader v5.0.0+incompatible

@@ -46,8 +46,9 @@ func (h *CommandHandler) handleCreate(ctx context.Context, cmd CreateCommand) (F
 	}
 
 	h.eventBus.Fire(ctx, feeds.FeedCreated{
-		FeedID: feedID,
-		URL:    u.String(),
+		UserId: cmd.UserID,
+		FeedId: feedID.String(),
+		Url:    u.String(),
 	})
 
 	_, err = h.bus.Run(ctx, RefreshCommand{

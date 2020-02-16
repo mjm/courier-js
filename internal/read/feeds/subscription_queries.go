@@ -97,7 +97,7 @@ func (q *subscriptionQueries) HandleEvent(ctx context.Context, evt interface{}) 
 	switch evt := evt.(type) {
 
 	case feeds.FeedSubscribed:
-		q.loader.Clear(ctx, dataloader.StringKey(evt.SubscriptionID))
+		q.loader.Clear(ctx, dataloader.StringKey(evt.SubscriptionId))
 
 	}
 }

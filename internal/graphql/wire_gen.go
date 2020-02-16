@@ -100,7 +100,12 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	}
 	jwksClient := auth.NewJWKSClient(authConfig)
 	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
+	publisherConfig := event.NewPublisherConfig(gcpConfig)
+	publisher, err := event.NewPublisher(publisherConfig, bus)
+	if err != nil {
+		return nil, err
+	}
 	eventRecorder := user2.NewEventRecorder(dbDB, bus)
-	handler := NewHandler(config, schema, authenticator, eventRecorder)
+	handler := NewHandler(config, schema, authenticator, publisher, eventRecorder)
 	return handler, nil
 }

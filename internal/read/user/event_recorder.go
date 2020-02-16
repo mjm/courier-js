@@ -6,6 +6,7 @@ import (
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/read/user/queries"
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace"
@@ -20,13 +21,13 @@ func NewEventRecorder(db db.DB, eventBus *event.Bus) *EventRecorder {
 		db: db,
 	}
 	eventBus.Notify(r,
-		// feeds.FeedSubscribed{},
-		// feeds.FeedRefreshed{},
-		// feeds.FeedOptionsChanged{},
-		// feeds.FeedUnsubscribed{},
-		tweets.TweetCanceled{},
-		tweets.TweetUncanceled{},
-		tweets.TweetEdited{},
+		feeds.FeedSubscribed{},
+		feeds.FeedRefreshed{},
+		feeds.FeedOptionsChanged{},
+		feeds.FeedUnsubscribed{},
+		// tweets.TweetCanceled{},
+		// tweets.TweetUncanceled{},
+		// tweets.TweetEdited{},
 	)
 	return r
 }
@@ -86,13 +87,7 @@ func (r *EventRecorder) record(ctx context.Context, userID string, t EventType, 
 		"event.type_external": string(t),
 	})
 
-	if _, err := r.db.ExecContext(ctx, `
-		INSERT INTO events (
-			user_id, event_type, parameters
-		) VALUES (
-			$1, $2, $3
-		)
-	`, userID, t, p); err != nil {
+	if _, err := r.db.ExecContext(ctx, queries.EventsRecord, userID, t, p); err != nil {
 		trace.Error(ctx, err)
 	}
 }

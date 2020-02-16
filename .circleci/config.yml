@@ -109,6 +109,12 @@ jobs:
               --trigger-http \
               --entry-point GraphQL \
               --env-vars-file ${ENV_VAR_FILE}
+            gcloud functions deploy events \
+              --source https://source.developers.google.com/projects/${GOOGLE_PROJECT_ID}/repos/github_mjm_courier-js/revisions/${CIRCLE_SHA1}/paths// \
+              --runtime go113 \
+              --trigger-topic events-staging \
+              --entry-point Events \
+              --env-vars-file ${ENV_VAR_FILE}
 
   deploy_prod:
     docker:
