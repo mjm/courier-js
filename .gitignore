@@ -26,3 +26,5 @@ yarn-error.log*
 /courier
 *credentials.json
 /.idea/
+terraform.tfvars
+.terraform
