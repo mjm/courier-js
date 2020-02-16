@@ -4,6 +4,9 @@ import (
 	"context"
 	"net/url"
 
+	"golang.org/x/net/context/ctxhttp"
+	"willnorris.com/go/microformats"
+
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/scraper"
@@ -61,7 +64,10 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 		return err
 	}
 
-	// TODO get micropub endpoint
+	mpEndpoint, err := getMicropubEndpoint(ctx, scraped.HomePageURL)
+	if err != nil {
+		return err
+	}
 
 	p := UpdateFeedParams{
 		ID:          f.ID,
@@ -71,7 +77,7 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 			Etag:         scraped.CachingHeaders.Etag,
 			LastModified: scraped.CachingHeaders.LastModified,
 		},
-		// TODO MPEndpoint
+		MPEndpoint: mpEndpoint,
 	}
 	if err = h.feedRepo.Update(ctx, p); err != nil {
 		return err
@@ -110,4 +116,38 @@ func scrapeFeed(ctx context.Context, urlStr string, headers *scraper.CachingHead
 	}
 
 	return feed, nil
+}
+
+func getMicropubEndpoint(ctx context.Context, urlStr string) (string, error) {
+	ctx = trace.Start(ctx, "Get Micropub endpoint")
+	defer trace.Finish(ctx)
+
+	trace.AddField(ctx, "url", urlStr)
+
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		trace.Error(ctx, err)
+		return "", err
+	}
+
+	res, err := ctxhttp.Get(ctx, nil, u.String())
+	if err != nil {
+		trace.Error(ctx, err)
+		return "", err
+	}
+	defer res.Body.Close()
+
+	data := microformats.Parse(res.Body, u)
+	micropubs, ok := data.Rels["micropub"]
+	if !ok {
+		return "", nil
+	}
+
+	trace.AddField(ctx, "microformats.micropub_count", len(micropubs))
+
+	if len(micropubs) == 0 {
+		return "", nil
+	}
+
+	return micropubs[0], nil
 }
