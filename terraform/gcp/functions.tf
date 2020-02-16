@@ -12,6 +12,11 @@ resource "google_service_account" "function_events" {
 
 locals {
   source_repo_url = "https://source.developers.google.com/projects/${var.project_id}/repos/${var.function_repo}/revisions/${var.function_revision}/paths/"
+
+  function_env = {
+    GCP_PROJECT  = var.project_id
+    GCP_TOPIC_ID = google_pubsub_topic.events.name
+  }
 }
 
 resource "google_cloudfunctions_function" "graphql" {
@@ -25,23 +30,11 @@ resource "google_cloudfunctions_function" "graphql" {
   }
 
   service_account_email = google_service_account.function_graphql.email
-  available_memory_mb = 512
+  available_memory_mb   = 512
 
   trigger_http = true
 
-  // TODO pull out into variables so they can be different in prod
-  environment_variables = {
-    GCP_PROJECT = var.project_id
-    GCP_TOPIC_ID = google_pubsub_topic.events.name
-    APNS_CERTIFICATE = "courier-push-dev.p12"
-    BACKEND_CLIENT_ID = "0Nmf4ZNfZzptwYBl7sbvPKdxFAH1d1re"
-    CLIENT_ID = "OtyKJMJBiL09j2OAcX6yENl07rMDGx1l"
-    AUTH_DOMAIN = "courier-staging.auth0.com"
-    API_IDENTIFIER = "https://courier.mjm.now.sh/api/"
-    MONTHLY_PLAN_ID = "plan_DdvIUmVUiibVMa"
-    STRIPE_PUBLISHABLE_KEY = "pk_test_P2pW0N6UFzp1OY5In8KApmxj"
-    HONEY_DATASET = "courier-staging"
-  }
+  environment_variables = merge(var.function_env, local.function_env)
 }
 
 resource "google_cloudfunctions_function" "events" {
@@ -61,17 +54,5 @@ resource "google_cloudfunctions_function" "events" {
     resource   = google_pubsub_topic.events.id
   }
 
-  // TODO pull out into variables so they can be different in prod
-  environment_variables = {
-    GCP_PROJECT = var.project_id
-    GCP_TOPIC_ID = google_pubsub_topic.events.name
-    APNS_CERTIFICATE = "courier-push-dev.p12"
-    BACKEND_CLIENT_ID = "0Nmf4ZNfZzptwYBl7sbvPKdxFAH1d1re"
-    CLIENT_ID = "OtyKJMJBiL09j2OAcX6yENl07rMDGx1l"
-    AUTH_DOMAIN = "courier-staging.auth0.com"
-    API_IDENTIFIER = "https://courier.mjm.now.sh/api/"
-    MONTHLY_PLAN_ID = "plan_DdvIUmVUiibVMa"
-    STRIPE_PUBLISHABLE_KEY = "pk_test_P2pW0N6UFzp1OY5In8KApmxj"
-    HONEY_DATASET = "courier-staging"
-  }
+  environment_variables = merge(var.function_env, local.function_env)
 }

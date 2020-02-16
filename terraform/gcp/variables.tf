@@ -21,3 +21,7 @@ variable "function_repo" {
 variable "function_revision" {
   type = string
 }
+
+variable "function_env" {
+  type = map(string)
+}
