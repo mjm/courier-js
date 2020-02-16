@@ -166,5 +166,25 @@ func (r *Root) Microformats(ctx context.Context, args struct {
 func (r *Root) FeedPreview(ctx context.Context, args struct {
 	URL string
 }) (*FeedPreview, error) {
-	return nil, nil
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return nil, err
+	}
+
+	cmd := feeds.CreateCommand{
+		UserID: userID,
+		URL:    args.URL,
+	}
+	v, err := r.commandBus.Run(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
+	feedID := v.(feeds.FeedID)
+
+	feed, err := r.q.Feeds.Get(ctx, feedID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &FeedPreview{q: r.q, feed: feed}, nil
 }

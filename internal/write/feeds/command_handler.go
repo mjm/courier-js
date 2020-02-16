@@ -42,6 +42,7 @@ func NewCommandHandler(
 		postRepo: postRepo,
 	}
 	bus.Register(h,
+		CreateCommand{},
 		SubscribeCommand{},
 		RefreshCommand{},
 		UpdateOptionsCommand{},
@@ -53,6 +54,10 @@ func NewCommandHandler(
 // HandleCommand dispatches a command to the appropriate handler function and returns the result.
 func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (interface{}, error) {
 	switch cmd := cmd.(type) {
+
+	case CreateCommand:
+		feedID, err := h.handleCreate(ctx, cmd)
+		return feedID, err
 
 	case SubscribeCommand:
 		subID, err := h.handleSubscribe(ctx, cmd)

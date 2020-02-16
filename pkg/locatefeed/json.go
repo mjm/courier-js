@@ -9,7 +9,7 @@ import (
 )
 
 func handleJSON(ctx context.Context, u *url.URL, res *http.Response) (*url.URL, error) {
-	res.Body.Close()
+	defer res.Body.Close()
 
 	var feedContent struct {
 		FeedURL string `json:"feed_url"`
