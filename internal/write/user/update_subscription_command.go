@@ -30,8 +30,8 @@ func (h *CommandHandler) handleUpdateSubscription(ctx context.Context, cmd Updat
 
 func (h *CommandHandler) handleSubscriptionCreated(ctx context.Context, evt billing.SubscriptionCreated) {
 	if _, err := h.bus.Run(ctx, UpdateSubscriptionCommand{
-		UserID:         evt.UserID,
-		SubscriptionID: evt.SubscriptionID,
+		UserID:         evt.UserId,
+		SubscriptionID: evt.SubscriptionId,
 	}); err != nil {
 		trace.Error(ctx, err)
 	}

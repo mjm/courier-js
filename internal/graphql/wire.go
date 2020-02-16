@@ -44,7 +44,6 @@ func InitializeHandler(
 			tweets.DefaultSet,
 			billing.DefaultSet,
 			user.DefaultSet,
-			user.NewEventRecorder,
 		),
 	)
 }

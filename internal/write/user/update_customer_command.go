@@ -30,8 +30,8 @@ func (h *CommandHandler) handleUpdateCustomer(ctx context.Context, cmd UpdateCus
 
 func (h *CommandHandler) handleCustomerCreated(ctx context.Context, evt billing.CustomerCreated) {
 	if _, err := h.bus.Run(ctx, UpdateCustomerCommand{
-		UserID:     evt.UserID,
-		CustomerID: evt.CustomerID,
+		UserID:     evt.UserId,
+		CustomerID: evt.CustomerId,
 	}); err != nil {
 		trace.Error(ctx, err)
 	}

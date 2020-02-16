@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package courier.events.tweets;
+option go_package = "tweets";
+
+message TweetCanceled {
+  string user_id = 1;
+  string tweet_id = 2;
+}
+
+message TweetUncanceled {
+  string user_id = 1;
+  string tweet_id = 2;
+}
+
+message TweetEdited {
+  string user_id = 1;
+  string tweet_id = 2;
+}
+
+message TweetPosted {
+  string user_id = 1;
+  string tweet_id = 2;
+  bool autoposted = 3;
+}
+
+message TweetsImported {
+  string user_id = 1;
+  string subscription_id = 2;
+  repeated string created_tweet_ids = 3;
+  repeated string updated_tweet_ids = 4;
+}

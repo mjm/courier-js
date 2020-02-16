@@ -9,7 +9,7 @@ import (
 )
 
 func (suite *tweetsSuite) TestUpdateCommand() {
-	suite.collectEvents(tweets.TweetEdited{}, tweets.TweetsUpdated{})
+	suite.collectEvents(tweets.TweetEdited{})
 	ctx := context.Background()
 
 	cmd := UpdateCommand{
@@ -35,21 +35,14 @@ func (suite *tweetsSuite) TestUpdateCommand() {
 
 	suite.Equal([]interface{}{
 		tweets.TweetEdited{
-			UserID:  "test_user3",
-			TweetID: "398042cc-d2f6-4d91-bd81-a5a4f19f7746",
-		},
-		tweets.TweetsUpdated{
-			TweetsImported: tweets.TweetsImported{
-				UserID:         "test_user3",
-				SubscriptionID: "4b033437-c2a8-4775-b303-2764f2d73c31",
-				TweetIDs:       []TweetID{"398042cc-d2f6-4d91-bd81-a5a4f19f7746"},
-			},
+			UserId:  "test_user3",
+			TweetId: "398042cc-d2f6-4d91-bd81-a5a4f19f7746",
 		},
 	}, suite.eventCollector.Events)
 }
 
 func (suite *tweetsSuite) TestUpdateCommandMediaUnchanged() {
-	suite.collectEvents(tweets.TweetEdited{}, tweets.TweetsUpdated{})
+	suite.collectEvents(tweets.TweetEdited{})
 	ctx := context.Background()
 
 	cmd := UpdateCommand{
@@ -70,21 +63,14 @@ func (suite *tweetsSuite) TestUpdateCommandMediaUnchanged() {
 
 	suite.Equal([]interface{}{
 		tweets.TweetEdited{
-			UserID:  "test_user3",
-			TweetID: "be94e030-6062-439f-8c73-3b24c08e6b5f",
-		},
-		tweets.TweetsUpdated{
-			TweetsImported: tweets.TweetsImported{
-				UserID:         "test_user3",
-				SubscriptionID: "4b033437-c2a8-4775-b303-2764f2d73c31",
-				TweetIDs:       []TweetID{"be94e030-6062-439f-8c73-3b24c08e6b5f"},
-			},
+			UserId:  "test_user3",
+			TweetId: "be94e030-6062-439f-8c73-3b24c08e6b5f",
 		},
 	}, suite.eventCollector.Events)
 }
 
 func (suite *tweetsSuite) TestUpdateCommandNonDraft() {
-	suite.collectEvents(tweets.TweetEdited{}, tweets.TweetsUpdated{})
+	suite.collectEvents(tweets.TweetEdited{})
 	ctx := context.Background()
 
 	cmd := UpdateCommand{
@@ -103,7 +89,7 @@ func (suite *tweetsSuite) TestUpdateCommandNonDraft() {
 }
 
 func (suite *tweetsSuite) TestUpdateCommandRetweet() {
-	suite.collectEvents(tweets.TweetEdited{}, tweets.TweetsUpdated{})
+	suite.collectEvents(tweets.TweetEdited{})
 	ctx := context.Background()
 
 	cmd := UpdateCommand{

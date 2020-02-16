@@ -19,8 +19,8 @@ func (suite *tweetsSuite) TestCancelCommand() {
 
 	suite.Equal([]interface{}{
 		tweets.TweetCanceled{
-			UserID:  "test_user3",
-			TweetID: "398042cc-d2f6-4d91-bd81-a5a4f19f7746",
+			UserId:  "test_user3",
+			TweetId: "398042cc-d2f6-4d91-bd81-a5a4f19f7746",
 		},
 	}, suite.eventCollector.Events)
 }

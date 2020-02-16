@@ -36,8 +36,8 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 	}
 
 	h.eventBus.Fire(ctx, tweets.TweetPosted{
-		UserID:     cmd.UserID,
-		TweetID:    cmd.TweetID,
+		UserId:     cmd.UserID,
+		TweetId:    cmd.TweetID.String(),
 		Autoposted: false,
 	})
 

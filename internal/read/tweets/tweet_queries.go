@@ -43,7 +43,12 @@ func NewTweetQueries(db db.DB, eventBus *event.Bus) TweetQueries {
 		db:     db,
 		loader: newTweetLoader(db),
 	}
-	eventBus.Notify(q, tweets.TweetCanceled{}, tweets.TweetUncanceled{}, tweets.TweetsUpdated{})
+	eventBus.Notify(q,
+		tweets.TweetCanceled{},
+		tweets.TweetUncanceled{},
+		tweets.TweetEdited{},
+		tweets.TweetsImported{},
+	)
 	return q
 }
 
@@ -126,13 +131,19 @@ func (q *tweetQueries) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
 	case tweets.TweetCanceled:
-		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetID))
+		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetId))
 
 	case tweets.TweetUncanceled:
-		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetID))
+		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetId))
 
-	case tweets.TweetsUpdated:
-		for _, id := range evt.TweetIDs {
+	case tweets.TweetEdited:
+		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetId))
+
+	case tweets.TweetsImported:
+		for _, id := range evt.CreatedTweetIds {
+			q.loader.Clear(ctx, dataloader.StringKey(id))
+		}
+		for _, id := range evt.UpdatedTweetIds {
 			q.loader.Clear(ctx, dataloader.StringKey(id))
 		}
 

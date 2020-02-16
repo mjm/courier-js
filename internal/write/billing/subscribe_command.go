@@ -56,8 +56,8 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 	if createNewCustomer {
 		cusID, err = h.cusRepo.Create(ctx, cmd.Email, cmd.TokenID)
 		h.eventBus.Fire(ctx, billing.CustomerCreated{
-			UserID:     cmd.UserID,
-			CustomerID: cusID,
+			UserId:     cmd.UserID,
+			CustomerId: cusID,
 		})
 	} else {
 		cusID, err = h.requireExistingCustomer(ctx)
@@ -75,8 +75,8 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 
 	trace.SubscriptionID(ctx, subID)
 	h.eventBus.Fire(ctx, billing.SubscriptionCreated{
-		UserID:         cmd.UserID,
-		SubscriptionID: subID,
+		UserId:         cmd.UserID,
+		SubscriptionId: subID,
 	})
 
 	return nil

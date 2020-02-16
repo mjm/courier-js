@@ -105,7 +105,6 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	if err != nil {
 		return nil, err
 	}
-	eventRecorder := user2.NewEventRecorder(dbDB, bus)
-	handler := NewHandler(config, schema, authenticator, publisher, eventRecorder)
+	handler := NewHandler(config, schema, authenticator, publisher)
 	return handler, nil
 }

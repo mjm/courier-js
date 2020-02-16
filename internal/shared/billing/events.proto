@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package courier.events.billing;
+option go_package = "billing";
+
+message CustomerCreated {
+  string user_id = 1;
+  string customer_id = 2;
+}
+
+message SubscriptionCreated {
+  string user_id = 1;
+  string subscription_id = 2;
+}

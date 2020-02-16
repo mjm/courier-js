@@ -78,32 +78,19 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 		return err
 	}
 
-	eventBase := tweets.TweetsImported{
-		UserID:         cmd.Subscription.UserID,
-		SubscriptionID: string(cmd.Subscription.ID),
+	evt := tweets.TweetsImported{
+		UserId:         cmd.Subscription.UserID,
+		SubscriptionId: string(cmd.Subscription.ID),
 	}
-
-	createdEvt := tweets.TweetsCreated{TweetsImported: eventBase}
 	for _, params := range toCreate {
-		createdEvt.TweetIDs = append(createdEvt.TweetIDs, params.ID)
+		evt.CreatedTweetIds = append(evt.CreatedTweetIds, params.ID.String())
 	}
-	if len(createdEvt.TweetIDs) > 0 {
-		h.eventBus.Fire(ctx, createdEvt)
-	}
-
-	updatedEvt := tweets.TweetsUpdated{TweetsImported: eventBase}
 	for _, params := range toUpdate {
-		updatedEvt.TweetIDs = append(updatedEvt.TweetIDs, params.ID)
-	}
-	if len(updatedEvt.TweetIDs) > 0 {
-		h.eventBus.Fire(ctx, updatedEvt)
+		evt.UpdatedTweetIds = append(evt.UpdatedTweetIds, params.ID.String())
 	}
 
-	importedEvt := eventBase
-	importedEvt.TweetIDs = append([]TweetID{}, createdEvt.TweetIDs...)
-	importedEvt.TweetIDs = append(importedEvt.TweetIDs, updatedEvt.TweetIDs...)
-	if len(importedEvt.TweetIDs) > 0 {
-		h.eventBus.Fire(ctx, importedEvt)
+	if len(evt.CreatedTweetIds) > 0 || len(evt.UpdatedTweetIds) > 0 {
+		h.eventBus.Fire(ctx, evt)
 	}
 
 	return nil

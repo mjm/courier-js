@@ -12,7 +12,6 @@ import (
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/trace"
-	"github.com/mjm/courier-js/internal/write/user"
 )
 
 type Handler struct {
@@ -20,7 +19,7 @@ type Handler struct {
 	Authenticator *auth.Authenticator
 }
 
-func NewHandler(traceCfg trace.Config, schema *graphql.Schema, auther *auth.Authenticator, _ *event.Publisher, _ *user.EventRecorder) *Handler {
+func NewHandler(traceCfg trace.Config, schema *graphql.Schema, auther *auth.Authenticator, _ *event.Publisher) *Handler {
 	trace.Init(traceCfg)
 
 	return &Handler{
