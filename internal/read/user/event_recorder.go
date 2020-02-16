@@ -28,6 +28,7 @@ func NewEventRecorder(db db.DB, eventBus *event.Bus) *EventRecorder {
 		tweets.TweetCanceled{},
 		tweets.TweetUncanceled{},
 		tweets.TweetEdited{},
+		tweets.TweetPosted{},
 	)
 	return r
 }
@@ -65,17 +66,26 @@ func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 
 	case tweets.TweetCanceled:
 		r.record(ctx, evt.UserId, TweetCancel, EventParams{
-			TweetID: string(evt.TweetId),
+			TweetID: evt.TweetId,
 		})
 
 	case tweets.TweetUncanceled:
 		r.record(ctx, evt.UserId, TweetUncancel, EventParams{
-			TweetID: string(evt.TweetId),
+			TweetID: evt.TweetId,
 		})
 
 	case tweets.TweetEdited:
 		r.record(ctx, evt.UserId, TweetEdit, EventParams{
-			TweetID: string(evt.TweetId),
+			TweetID: evt.TweetId,
+		})
+
+	case tweets.TweetPosted:
+		t := TweetPost
+		if evt.Autoposted {
+			t = TweetAutopost
+		}
+		r.record(ctx, evt.UserId, t, EventParams{
+			TweetID: evt.TweetId,
 		})
 
 	}
