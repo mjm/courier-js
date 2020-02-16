@@ -100,11 +100,11 @@ jobs:
           name: Configure Terraform
           command: |
             printf "credentials \"app.terraform.io\" {\n  token = \"%s\"\n}\n" "$TF_TOKEN" > ~/.terraformrc
-            printf "credentials \"app.terraform.io\" {\n  token = \"%s\"\n}\n" "<token goes here>"
-            cd terraform/gcp && echo "function_revision = \"$CIRCLE_SHA1\"" > revision.auto.tfvars
-#      - run:
-#          name: Select Terraform workspace
-#          command: cd terraform/gcp && terraform workspace select $TF_WORKSPACE
+
+            cd terraform/gcp
+            echo "function_revision = \"$CIRCLE_SHA1\"" > revision.auto.tfvars
+            echo "revision.auto.tfvars:"
+            cat revision.auto.tfvars
       - run:
           name: terraform init
           command: cd terraform/gcp && terraform init
