@@ -44,6 +44,6 @@ func (h *CommandHandler) handleImportRecentPosts(ctx context.Context, cmd Import
 func (h *CommandHandler) handleFeedSubscribed(ctx context.Context, evt feeds.FeedSubscribed) {
 	_, _ = h.bus.Run(ctx, ImportRecentPostsCommand{
 		UserID:         evt.UserID,
-		SubscriptionID: feeds.SubscriptionID(evt.SubscriptionID),
+		SubscriptionID: evt.SubscriptionID,
 	})
 }
