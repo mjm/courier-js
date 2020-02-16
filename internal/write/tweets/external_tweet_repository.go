@@ -46,7 +46,7 @@ type ExternalTweetRepository struct {
 }
 
 func NewExternalTweetRepository(authConfig auth.Config, twitterConfig TwitterConfig) *ExternalTweetRepository {
-	baseURL := "https://%s" + authConfig.AuthDomain
+	baseURL := "https://" + authConfig.AuthDomain
 	conf := &clientcredentials.Config{
 		ClientID:     authConfig.ClientID,
 		ClientSecret: authConfig.ClientSecret,

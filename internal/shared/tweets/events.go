@@ -16,6 +16,12 @@ type TweetEdited struct {
 	TweetID TweetID
 }
 
+type TweetPosted struct {
+	UserID     string
+	TweetID    TweetID
+	Autoposted bool
+}
+
 // TweetsCreated occurs when some tweets are created for a subscription by posts being
 // imported.
 type TweetsCreated struct {

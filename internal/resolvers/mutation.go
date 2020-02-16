@@ -265,6 +265,30 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 	payload struct{ Tweet *Tweet },
 	err error,
 ) {
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return
+	}
+
+	var id tweets.TweetID
+	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+		return
+	}
+
+	cmd := tweets.PostCommand{
+		UserID:  userID,
+		TweetID: id,
+	}
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
+		return
+	}
+
+	t, err := r.q.Tweets.Get(ctx, id)
+	if err != nil {
+		return
+	}
+
+	payload.Tweet = NewTweet(r.q, t)
 	return
 }
 
