@@ -4,73 +4,72 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 )
 
 func (suite *userSuite) TestRecordEvents() {
-	truth := true
+	// truth := true
 
 	tests := []struct {
 		evt      interface{}
 		expected *Event
 	}{
-		{
-			evt: feeds.FeedSubscribed{
-				FeedID:         "feed_1",
-				SubscriptionID: "feed_subscription_2",
-				UserID:         "test_user",
-			},
-			expected: &Event{
-				UserID:    "test_user",
-				EventType: FeedSubscribe,
-				Params: EventParams{
-					FeedID:             "feed_1",
-					FeedSubscriptionID: "feed_subscription_2",
-				},
-			},
-		},
-		{
-			evt: feeds.FeedRefreshed{
-				FeedID: "feed_2",
-				UserID: "test_user",
-			},
-			expected: &Event{
-				UserID:    "test_user",
-				EventType: FeedRefresh,
-				Params: EventParams{
-					FeedID: "feed_2",
-				},
-			},
-		},
-		{
-			evt: feeds.FeedOptionsChanged{
-				SubscriptionID: "feed_subscription_1",
-				UserID:         "test_user",
-				Autopost:       true,
-			},
-			expected: &Event{
-				UserID:    "test_user",
-				EventType: FeedSetAutopost,
-				Params: EventParams{
-					FeedSubscriptionID: "feed_subscription_1",
-					ParamValue:         &truth,
-				},
-			},
-		},
-		{
-			evt: feeds.FeedUnsubscribed{
-				SubscriptionID: "feed_subscription_3",
-				UserID:         "test_user",
-			},
-			expected: &Event{
-				UserID:    "test_user",
-				EventType: FeedUnsubscribe,
-				Params: EventParams{
-					FeedSubscriptionID: "feed_subscription_3",
-				},
-			},
-		},
+		// {
+		// 	evt: feeds.FeedSubscribed{
+		// 		FeedID:         "feed_1",
+		// 		SubscriptionID: "feed_subscription_2",
+		// 		UserID:         "test_user",
+		// 	},
+		// 	expected: &Event{
+		// 		UserID:    "test_user",
+		// 		EventType: FeedSubscribe,
+		// 		Params: EventParams{
+		// 			FeedID:             "feed_1",
+		// 			FeedSubscriptionID: "feed_subscription_2",
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	evt: feeds.FeedRefreshed{
+		// 		FeedID: "feed_2",
+		// 		UserID: "test_user",
+		// 	},
+		// 	expected: &Event{
+		// 		UserID:    "test_user",
+		// 		EventType: FeedRefresh,
+		// 		Params: EventParams{
+		// 			FeedID: "feed_2",
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	evt: feeds.FeedOptionsChanged{
+		// 		SubscriptionID: "feed_subscription_1",
+		// 		UserID:         "test_user",
+		// 		Autopost:       true,
+		// 	},
+		// 	expected: &Event{
+		// 		UserID:    "test_user",
+		// 		EventType: FeedSetAutopost,
+		// 		Params: EventParams{
+		// 			FeedSubscriptionID: "feed_subscription_1",
+		// 			ParamValue:         &truth,
+		// 		},
+		// 	},
+		// },
+		// {
+		// 	evt: feeds.FeedUnsubscribed{
+		// 		SubscriptionID: "feed_subscription_3",
+		// 		UserID:         "test_user",
+		// 	},
+		// 	expected: &Event{
+		// 		UserID:    "test_user",
+		// 		EventType: FeedUnsubscribe,
+		// 		Params: EventParams{
+		// 			FeedSubscriptionID: "feed_subscription_3",
+		// 		},
+		// 	},
+		// },
 		{
 			evt: tweets.TweetCanceled{
 				UserID:  "test_user",
