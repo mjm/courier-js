@@ -3,9 +3,12 @@ package resolvers
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
+	"golang.org/x/net/context/ctxhttp"
+	"willnorris.com/go/microformats"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
@@ -160,7 +163,21 @@ func (r *Root) AllEvents(ctx context.Context, args pager.Options) (*EventConnect
 func (r *Root) Microformats(ctx context.Context, args struct {
 	URL string
 }) (*MicroformatPage, error) {
-	return nil, nil
+	trace.AddField(ctx, "url", args.URL)
+
+	u, err := url.Parse(args.URL)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := ctxhttp.Get(ctx, nil, u.String())
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	data := microformats.Parse(res.Body, u)
+	return &MicroformatPage{data: data}, nil
 }
 
 func (r *Root) FeedPreview(ctx context.Context, args struct {

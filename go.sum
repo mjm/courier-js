@@ -433,3 +433,5 @@ honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc/go.mod h1:rf3lG4BRIbNafJWh
 honnef.co/go/tools v0.0.1-2019.2.3/go.mod h1:a3bituU0lyd329TUQxRnasdCoJDkEUEAqEt0JzvZhAg=
 pack.ag/amqp v0.11.0/go.mod h1:4/cbmt4EJXSKlG6LCfWHoqmN0uFdy5i/+YFz+fTfhV4=
 rsc.io/binaryregexp v0.2.0/go.mod h1:qTv7/COck+e2FymRvadv62gMdZztPaShugOCi3I+8D8=
+willnorris.com/go/microformats v1.0.0 h1:II6uDIJBPp6RpJQqRWm+6IN9lI00mN/jQAC5OHuF4HA=
+willnorris.com/go/microformats v1.0.0/go.mod h1:AXRtimOA0J5fDmM2sxlka4G6PNLWC4bCNJcZjLvFdDw=
