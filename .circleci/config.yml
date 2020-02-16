@@ -89,32 +89,27 @@ jobs:
 
   deploy_backend_staging:
     docker:
-      - image: google/cloud-sdk
+      - image: hashicorp/terraform:0.12.20
     environment:
-      GOOGLE_PROJECT_ID: courier-staging-267902
-      ENV_VAR_FILE: env.staging.yaml
+      TF_INPUT: "false"
+      TF_IN_AUTOMATION: "true"
+      TF_WORKSPACE: staging-us-central1
     steps:
       - checkout
       - run:
-          name: Authenticate with Google Cloud
+          name: Configure Terraform
           command: |
-            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
-            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            echo "credentials \"app.terraform.io\" {\n  token = \"$TF_TOKEN\"\n}\n" > ~/.terraformrc
+            cd terraform/gcp && echo "function_revision = \"$CIRCLE_SHA1\"" > revision.auto.tfvars
       - run:
-          name: Deploy GraphQL function
-          command: |
-            gcloud functions deploy graphql \
-              --source https://source.developers.google.com/projects/${GOOGLE_PROJECT_ID}/repos/github_mjm_courier-js/revisions/${CIRCLE_SHA1}/paths// \
-              --runtime go113 \
-              --trigger-http \
-              --entry-point GraphQL \
-              --env-vars-file ${ENV_VAR_FILE}
-            gcloud functions deploy events \
-              --source https://source.developers.google.com/projects/${GOOGLE_PROJECT_ID}/repos/github_mjm_courier-js/revisions/${CIRCLE_SHA1}/paths// \
-              --runtime go113 \
-              --trigger-topic events-staging \
-              --entry-point Events \
-              --env-vars-file ${ENV_VAR_FILE}
+          name: Select Terraform workspace
+          command: cd terraform/gcp && terraform workspace select $TF_WORKSPACE
+      - run:
+          name: terraform init
+          command: cd terraform/gcp && terraform init
+      - run:
+          name: terraform apply
+          command: cd terraform/gcp && terraform apply -auto-approve
 
   deploy_prod:
     docker:
