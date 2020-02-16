@@ -14,6 +14,7 @@ import (
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/tweets/queries"
 	"github.com/mjm/courier-js/internal/shared/tweets"
+	"github.com/mjm/courier-js/pkg/htmltweets"
 )
 
 var (
@@ -27,6 +28,7 @@ type TweetQueries interface {
 	Get(context.Context, TweetID) (*Tweet, error)
 	// Paged fetches a paged and possibly filtered subset of a user's tweets.
 	Paged(context.Context, string, Filter, pager.Options) (*pager.Connection, error)
+	GeneratePreviews(context.Context, PreviewPost) ([]*PreviewTweet, error)
 }
 
 type tweetQueries struct {
@@ -80,6 +82,44 @@ func (q *tweetQueries) Get(ctx context.Context, id TweetID) (*Tweet, error) {
 
 func (q *tweetQueries) Paged(ctx context.Context, userID string, filter Filter, opts pager.Options) (*pager.Connection, error) {
 	return pager.Paged(ctx, q.db, &tweetPager{Filter: filter, UserID: userID}, opts)
+}
+
+type PreviewPost struct {
+	URL         string
+	Title       string
+	HTMLContent string
+}
+
+type PreviewTweet struct {
+	Action    TweetAction
+	Body      string
+	MediaURLs []string
+	RetweetID string
+}
+
+func (q *tweetQueries) GeneratePreviews(_ context.Context, p PreviewPost) ([]*PreviewTweet, error) {
+	translated, err := htmltweets.Translate(htmltweets.Input{
+		Title: p.Title,
+		URL:   p.URL,
+		HTML:  p.HTMLContent,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// add the tweets in reverse order, so the last ones come first
+	var ts []*PreviewTweet
+	for i := len(translated) - 1; i >= 0; i-- {
+		t := translated[i]
+		ts = append(ts, &PreviewTweet{
+			Action:    TweetAction(t.Action),
+			Body:      t.Body,
+			MediaURLs: t.MediaURLs,
+			RetweetID: t.RetweetID,
+		})
+	}
+
+	return ts, nil
 }
 
 func (q *tweetQueries) HandleEvent(ctx context.Context, evt interface{}) {
