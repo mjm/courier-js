@@ -41,6 +41,10 @@ resource "google_cloudfunctions_function" "graphql" {
   trigger_http = true
 
   environment_variables = merge(var.function_env, local.function_env)
+
+  depends_on = [
+    google_project_service.services["cloudfunctions.googleapis.com"],
+  ]
 }
 
 resource "google_cloudfunctions_function" "events" {
@@ -61,6 +65,10 @@ resource "google_cloudfunctions_function" "events" {
   }
 
   environment_variables = merge(var.function_env, local.function_env)
+
+  depends_on = [
+    google_project_service.services["cloudfunctions.googleapis.com"],
+  ]
 }
 
 resource "google_cloudfunctions_function" "post_queued_tweets" {
@@ -81,4 +89,8 @@ resource "google_cloudfunctions_function" "post_queued_tweets" {
   }
 
   environment_variables = merge(var.function_env, local.function_env)
+
+  depends_on = [
+    google_project_service.services["cloudfunctions.googleapis.com"],
+  ]
 }
