@@ -29,6 +29,7 @@ type tweetsSuite struct {
 	postRepo          *PostRepository
 	tweetRepo         *TweetRepository
 	externalTweetRepo *ExternalTweetRepository
+	userRepo          *UserRepository
 }
 
 func (suite *tweetsSuite) SetupSuite() {
@@ -43,8 +44,10 @@ func (suite *tweetsSuite) SetupSuite() {
 	suite.postRepo = NewPostRepository(suite.db)
 	suite.tweetRepo = NewTweetRepository(suite.db)
 	// TODO external tweet repo
+	// TODO user repo
 	NewCommandHandler(
-		suite.commandBus, suite.eventBus, suite.tweetRepo, suite.subRepo, suite.postRepo, suite.externalTweetRepo)
+		suite.commandBus, suite.eventBus, suite.tweetRepo, suite.subRepo, suite.postRepo, suite.externalTweetRepo,
+		suite.userRepo)
 }
 
 func (suite *tweetsSuite) SetupTest() {
