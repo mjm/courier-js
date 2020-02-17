@@ -5,7 +5,7 @@ resource "google_cloud_scheduler_job" "post_queued_tweets" {
 
   pubsub_target {
     topic_name = google_pubsub_topic.post_queued_tweets.id
-    data       = "placeholder"
+    data       = "cGxhY2Vob2xkZXIK"
   }
 
   depends_on = [
