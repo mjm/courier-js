@@ -33,3 +33,18 @@ func (r *PostRepository) RecentPosts(ctx context.Context, feedID feeds.FeedID) (
 	}
 	return posts, nil
 }
+
+type MicropubInfo struct {
+	URL         string `db:"url"`
+	HomePageURL string `db:"home_page_url"`
+	MPEndpoint  string `db:"mp_endpoint"`
+}
+
+func (r *PostRepository) MicropubInfo(ctx context.Context, postID feeds.PostID) (*MicropubInfo, error) {
+	var info MicropubInfo
+	if err := r.db.QueryRowxContext(ctx, queries.PostsMicropubEndpoint, postID).StructScan(&info); err != nil {
+		return nil, err
+	}
+
+	return &info, nil
+}

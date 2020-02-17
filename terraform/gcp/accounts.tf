@@ -34,16 +34,18 @@ resource "google_project_iam_binding" "pubsub_subscriber" {
 }
 
 locals {
-  secret_function_accounts = [
+  function_accounts = [
     "serviceAccount:${google_service_account.function_graphql.email}",
     "serviceAccount:${google_service_account.function_events.email}",
     "serviceAccount:${google_service_account.function_post_queued_tweets.email}",
   ]
 
   dev_account = "serviceAccount:matt-laptop-dev@${var.project_id}.iam.gserviceaccount.com"
+
+  all_function_accounts = var.env == "staging" ? concat(local.function_accounts, [local.dev_account]) : local.function_accounts
 }
 
 resource "google_project_iam_binding" "secret_manager_secret_accessor" {
   role    = "roles/secretmanager.secretAccessor"
-  members = var.env == "staging" ? concat(local.secret_function_accounts, [local.dev_account]) : local.secret_function_accounts
+  members = local.all_function_accounts
 }

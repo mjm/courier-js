@@ -24,6 +24,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		db.NewConfigFromSecrets,
 		db.New,
 		auth.NewConfigFromSecrets,
+		auth.NewManagementClient,
 		tweets.NewTwitterConfigFromSecrets,
 		tweets.DefaultSet,
 	))

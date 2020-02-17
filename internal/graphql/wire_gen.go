@@ -83,16 +83,21 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		return nil, err
 	}
 	externalTweetRepository := tweets2.NewExternalTweetRepository(authConfig, twitterConfig)
-	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository)
-	customerRepository := billing3.NewCustomerRepository(api)
-	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
-	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, billingConfig, customerRepository, billingSubscriptionRepository)
 	management, err := auth.NewManagementClient(authConfig)
 	if err != nil {
 		return nil, err
 	}
-	userRepository := user2.NewUserRepository(management)
-	userCommandHandler := user2.NewCommandHandler(commandBus, bus, userRepository)
+	keyManagementClient, err := tweets2.NewKeyManagementClient(gcpConfig)
+	if err != nil {
+		return nil, err
+	}
+	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig)
+	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository, userRepository)
+	customerRepository := billing3.NewCustomerRepository(api)
+	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
+	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, billingConfig, customerRepository, billingSubscriptionRepository)
+	userUserRepository := user2.NewUserRepository(management)
+	userCommandHandler := user2.NewCommandHandler(commandBus, bus, userUserRepository)
 	root := resolvers.New(queries, commandBus, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {

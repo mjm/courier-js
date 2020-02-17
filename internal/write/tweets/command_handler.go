@@ -19,6 +19,8 @@ var DefaultSet = wire.NewSet(
 	NewFeedSubscriptionRepository,
 	NewPostRepository,
 	NewExternalTweetRepository,
+	NewUserRepository,
+	NewKeyManagementClient,
 )
 
 // CommandHandler processes tweet-related commands and updates the data store appropriately.
@@ -29,6 +31,7 @@ type CommandHandler struct {
 	subRepo           *FeedSubscriptionRepository
 	postRepo          *PostRepository
 	externalTweetRepo *ExternalTweetRepository
+	userRepo          *UserRepository
 }
 
 // NewCommandHandler creates a new command handler for tweet commands.
@@ -39,6 +42,7 @@ func NewCommandHandler(
 	subRepo *FeedSubscriptionRepository,
 	postRepo *PostRepository,
 	externalTweetRepo *ExternalTweetRepository,
+	userRepo *UserRepository,
 ) *CommandHandler {
 	h := &CommandHandler{
 		bus:               bus,
@@ -47,6 +51,7 @@ func NewCommandHandler(
 		subRepo:           subRepo,
 		postRepo:          postRepo,
 		externalTweetRepo: externalTweetRepo,
+		userRepo:          userRepo,
 	}
 	bus.Register(h,
 		CancelCommand{},
