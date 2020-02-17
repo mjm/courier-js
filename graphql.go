@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/mjm/courier-js/internal/graphql"
+	"github.com/mjm/courier-js/internal/functions/graphql"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
