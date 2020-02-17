@@ -64,7 +64,7 @@ func NewExternalTweetRepository(authConfig auth.Config, twitterConfig TwitterCon
 }
 
 func (r *ExternalTweetRepository) Create(ctx context.Context, userID string, tweet *Tweet) (*twitter.Tweet, error) {
-	trace.Start(ctx, "Twitter: Create tweet")
+	ctx = trace.Start(ctx, "Twitter: Create tweet")
 	defer trace.Finish(ctx)
 
 	trace.UserID(ctx, userID)

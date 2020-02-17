@@ -31,6 +31,8 @@ func NewHandler(traceCfg trace.Config, schema *graphql.Schema, auther *auth.Auth
 var _ http.Handler = (*Handler)(nil)
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	defer trace.Flush()
+
 	// wrap the whole request in a trace
 	ctx := trace.Start(r.Context(), "HTTP request")
 	defer trace.Finish(ctx)
