@@ -22,6 +22,7 @@ resource "google_project_iam_binding" "pubsub_publisher" {
   role    = "roles/pubsub.publisher"
   members = [
     "serviceAccount:${google_service_account.function_graphql.email}",
+    "serviceAccount:${google_service_account.function_post_queued_tweets.email}",
   ]
 }
 
