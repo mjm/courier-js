@@ -50,6 +50,11 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	externalTweetRepository := tweets.NewExternalTweetRepository(authConfig, twitterConfig)
 	commandHandler := tweets.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository)
-	handler := NewHandler(config, commandBus, commandHandler)
+	publisherConfig := event.NewPublisherConfig(gcpConfig)
+	publisher, err := event.NewPublisher(publisherConfig, bus)
+	if err != nil {
+		return nil, err
+	}
+	handler := NewHandler(config, commandBus, commandHandler, publisher)
 	return handler, nil
 }
