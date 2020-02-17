@@ -46,10 +46,14 @@ func NewConfigFromSecrets(sk secret.Keeper) (cfg Config, err error) {
 
 // Init initializes tracing support so it is correctly configured.
 func Init(cfg Config) {
+	var logger libhoney.Logger
+	if os.Getenv("APP_ENV") == "dev" {
+		logger = &libhoney.DefaultLogger{}
+	}
 	libhoney.Init(libhoney.Config{
 		WriteKey: cfg.WriteKey,
 		Dataset:  cfg.Dataset,
-		// Transmission: &transmission.WriterSender{},
+		Logger:   logger,
 	})
 }
 
@@ -59,7 +63,9 @@ func SetServiceName(svcname string) {
 
 // Flush ensures that any in-flight events get sent.
 func Flush() {
-	libhoney.Flush()
+	if os.Getenv("APP_ENV") != "dev" {
+		libhoney.Flush()
+	}
 }
 
 // Start beings a new trace or span.
