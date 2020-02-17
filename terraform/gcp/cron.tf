@@ -13,6 +13,6 @@ resource "google_pubsub_topic" "post_queued_tweets" {
 }
 
 resource "google_app_engine_application" "default" {
-  name        = var.project_id
+  project     = var.project_id
   location_id = "us-central"
 }
