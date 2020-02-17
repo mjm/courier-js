@@ -24,16 +24,16 @@ func (h *CommandHandler) handleSendTweet(ctx context.Context, cmd SendTweetComma
 
 	trace.AddField(ctx, "tweet.posted_tweet_id", postedTweet.ID)
 
+	if err := h.tweetRepo.Post(ctx, cmd.Tweet.ID, postedTweet.ID); err != nil {
+		return err
+	}
+
 	tweetURL := fmt.Sprintf("https://twitter.com/%s/status/%d", postedTweet.User.ScreenName, postedTweet.ID)
 	if _, err := h.bus.Run(ctx, SyndicateCommand{
 		UserID:   cmd.Subscription.UserID,
 		PostID:   cmd.Tweet.PostID,
 		TweetURL: tweetURL,
 	}); err != nil {
-		return err
-	}
-
-	if err := h.tweetRepo.Post(ctx, cmd.Tweet.ID, postedTweet.ID); err != nil {
 		return err
 	}
 

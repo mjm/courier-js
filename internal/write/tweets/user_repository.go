@@ -51,10 +51,12 @@ func (r *UserRepository) MicropubToken(ctx context.Context, userID string, url s
 	}
 
 	if user.UserMetadata == nil {
+		trace.AddField(ctx, "user.has_metadata", false)
 		return "", nil
 	}
+	trace.AddField(ctx, "user.has_metadata", true)
 
-	tokens, ok := user.UserMetadata["micropub_tokens"].(map[string]string)
+	tokens, ok := user.UserMetadata["micropub_tokens"].(map[string]interface{})
 	if !ok {
 		return "", nil
 	}
@@ -64,7 +66,7 @@ func (r *UserRepository) MicropubToken(ctx context.Context, userID string, url s
 	url = strings.ReplaceAll(url, ".", "-")
 	trace.AddField(ctx, "micropub.token_key", url)
 
-	encToken, ok := tokens[url]
+	encToken, ok := tokens[url].(string)
 	if !ok {
 		return "", nil
 	}
@@ -125,7 +127,7 @@ func (r *UserRepository) SetMicropubToken(ctx context.Context, userID string, ur
 
 	newTokens := make(map[string]interface{})
 	if user.UserMetadata != nil {
-		if existingTokens, ok := user.UserMetadata["micropub_tokens"].(map[string]string); ok {
+		if existingTokens, ok := user.UserMetadata["micropub_tokens"].(map[string]interface{}); ok {
 			for k, v := range existingTokens {
 				newTokens[k] = v
 			}

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -42,6 +43,7 @@ func (c *Client) Update(ctx context.Context, update Update) (interface{}, error)
 	}
 
 	req.Header.Set("Authorization", "Bearer "+c.token)
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 
 	res, err := c.HTTPClient.Do(req)
@@ -49,6 +51,18 @@ func (c *Client) Update(ctx context.Context, update Update) (interface{}, error)
 		return nil, err
 	}
 	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusNoContent {
+		return nil, nil
+	}
+
+	if res.StatusCode != http.StatusOK {
+		b, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+		return nil, fmt.Errorf("unexpected response %d, error: %s", res.StatusCode, string(b))
+	}
 
 	var v interface{}
 	if err := json.NewDecoder(res.Body).Decode(&v); err != nil {
