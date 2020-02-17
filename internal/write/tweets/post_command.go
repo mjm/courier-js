@@ -28,8 +28,16 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 		return ErrNotDraft
 	}
 
+	sub, err := h.subRepo.Get(ctx, tweet.FeedSubscriptionID)
+	if err != nil {
+		return err
+	}
+
+	trace.FeedSubscriptionID(ctx, sub.ID)
+
 	sendCmd := SendTweetCommand{
-		Tweet: tweet,
+		Tweet:        tweet,
+		Subscription: sub,
 	}
 	if _, err := h.bus.Run(ctx, sendCmd); err != nil {
 		return err

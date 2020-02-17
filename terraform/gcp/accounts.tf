@@ -36,6 +36,7 @@ locals {
   secret_function_accounts = [
     "serviceAccount:${google_service_account.function_graphql.email}",
     "serviceAccount:${google_service_account.function_events.email}",
+    "serviceAccount:${google_service_account.function_post_queued_tweets.email}",
   ]
 
   dev_account = "serviceAccount:matt-laptop-dev@${var.project_id}.iam.gserviceaccount.com"

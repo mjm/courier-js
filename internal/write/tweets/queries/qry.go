@@ -15,6 +15,7 @@ const (
 	// tweets.sql
 	TweetsGet       = "SELECT t.* FROM tweets t JOIN feed_subscriptions fs ON t.feed_subscription_guid = fs.guid WHERE fs.user_id = $1 AND t.guid = $2;"
 	TweetsByPostIDs = "SELECT * FROM tweets WHERE feed_subscription_guid = $1 AND post_guid = ANY ($2) ORDER BY post_guid, position;"
+	TweetsQueued    = "SELECT * FROM tweets WHERE post_after IS NOT NULL AND post_after < CURRENT_TIMESTAMP AND status = 'draft' ORDER BY post_after ASC;"
 	TweetsCancel    = "UPDATE tweets SET status = 'canceled', post_after = NULL, updated_at = CURRENT_TIMESTAMP FROM feed_subscriptions WHERE tweets.feed_subscription_guid = feed_subscriptions.guid AND feed_subscriptions.user_id = $1 AND tweets.guid = $2 AND status = 'draft';"
 	TweetsUncancel  = "UPDATE tweets SET status = 'draft', post_after = NULL, updated_at = CURRENT_TIMESTAMP FROM feed_subscriptions WHERE tweets.feed_subscription_guid = feed_subscriptions.guid AND feed_subscriptions.user_id = $1 AND tweets.guid = $2 AND status = 'canceled';"
 	TweetsPost      = "UPDATE tweets SET status = 'posted', post_after = NULL, posted_at = CURRENT_TIMESTAMP, posted_tweet_id = $2 WHERE guid = $1 AND status = 'draft';"

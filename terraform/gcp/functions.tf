@@ -10,6 +10,12 @@ resource "google_service_account" "function_events" {
   description  = "Runner for the Events function"
 }
 
+resource "google_service_account" "function_post_queued_tweets" {
+  account_id   = "function-post-queued-tweets"
+  display_name = "Function: PostQueuedTweets"
+  description  = "Runner for the PostQueuedTweets function"
+}
+
 locals {
   source_repo_url = "https://source.developers.google.com/projects/${var.project_id}/repos/${var.function_repo}/revisions/${var.function_revision}/paths/"
 
@@ -52,6 +58,26 @@ resource "google_cloudfunctions_function" "events" {
   event_trigger {
     event_type = "google.pubsub.topic.publish"
     resource   = google_pubsub_topic.events.id
+  }
+
+  environment_variables = merge(var.function_env, local.function_env)
+}
+
+resource "google_cloudfunctions_function" "post_queued_tweets" {
+  name        = "post-queued-tweets"
+  description = "Handles cron events to check for queued tweets to post to Twitter"
+  runtime     = "go113"
+  entry_point = "PostQueuedTweets"
+
+  source_repository {
+    url = local.source_repo_url
+  }
+
+  service_account_email = google_service_account.function_post_queued_tweets.email
+
+  event_trigger {
+    event_type = "google.pubsub.topic.publish"
+    resource   = google_pubsub_topic.post_queued_tweets.id
   }
 
   environment_variables = merge(var.function_env, local.function_env)

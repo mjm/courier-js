@@ -7,21 +7,16 @@ import (
 )
 
 type SendTweetCommand struct {
-	Tweet *Tweet
+	Tweet        *Tweet
+	Subscription *FeedSubscription
 }
 
 func (h *CommandHandler) handleSendTweet(ctx context.Context, cmd SendTweetCommand) error {
 	trace.TweetID(ctx, cmd.Tweet.ID)
+	trace.UserID(ctx, cmd.Subscription.UserID)
+	trace.FeedSubscriptionID(ctx, cmd.Subscription.ID)
 
-	sub, err := h.subRepo.Get(ctx, cmd.Tweet.FeedSubscriptionID)
-	if err != nil {
-		return err
-	}
-
-	trace.UserID(ctx, sub.UserID)
-	trace.FeedSubscriptionID(ctx, sub.ID)
-
-	postedTweet, err := h.externalTweetRepo.Create(ctx, sub.UserID, cmd.Tweet)
+	postedTweet, err := h.externalTweetRepo.Create(ctx, cmd.Subscription.UserID, cmd.Tweet)
 	if err != nil {
 		return err
 	}

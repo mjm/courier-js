@@ -53,6 +53,7 @@ func NewCommandHandler(
 		UncancelCommand{},
 		UpdateCommand{},
 		PostCommand{},
+		PostQueuedCommand{},
 		SendTweetCommand{},
 		ImportTweetsCommand{},
 		ImportRecentPostsCommand{},
@@ -79,6 +80,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 
 	case PostCommand:
 		return nil, h.handlePost(ctx, cmd)
+
+	case PostQueuedCommand:
+		return nil, h.handlePostQueued(ctx, cmd)
 
 	case SendTweetCommand:
 		return nil, h.handleSendTweet(ctx, cmd)

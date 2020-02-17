@@ -63,6 +63,15 @@ func (r *TweetRepository) ByPostIDs(ctx context.Context, subID feeds.Subscriptio
 	return byPostID, nil
 }
 
+func (r *TweetRepository) Queued(ctx context.Context) ([]*Tweet, error) {
+	var tweets []*Tweet
+	if err := r.db.SelectContext(ctx, &tweets, queries.TweetsQueued); err != nil {
+		return nil, err
+	}
+
+	return tweets, nil
+}
+
 // Cancel marks a tweet as canceled as long as it is not already posted. It also clears
 // the post_after field to prevent the tweet from being autoposted if it is uncanceled
 // later.
