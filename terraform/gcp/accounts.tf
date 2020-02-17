@@ -23,6 +23,7 @@ resource "google_project_iam_binding" "pubsub_publisher" {
   members = [
     "serviceAccount:${google_service_account.function_graphql.email}",
     "serviceAccount:${google_service_account.function_post_queued_tweets.email}",
+    "serviceAccount:${google_service_account.function_indieauth_callback.email}",
   ]
 }
 
@@ -38,6 +39,7 @@ locals {
     "serviceAccount:${google_service_account.function_graphql.email}",
     "serviceAccount:${google_service_account.function_events.email}",
     "serviceAccount:${google_service_account.function_post_queued_tweets.email}",
+    "serviceAccount:${google_service_account.function_indieauth_callback.email}",
   ]
 
   dev_account = "serviceAccount:matt-laptop-dev@${var.project_id}.iam.gserviceaccount.com"

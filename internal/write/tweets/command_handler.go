@@ -62,6 +62,8 @@ func NewCommandHandler(
 		SendTweetCommand{},
 		ImportTweetsCommand{},
 		ImportRecentPostsCommand{},
+		SyndicateCommand{},
+		SetupSyndicationCommand{},
 	)
 	eventBus.Notify(h,
 		feeds.PostsImported{},
@@ -97,6 +99,12 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 
 	case ImportRecentPostsCommand:
 		return nil, h.handleImportRecentPosts(ctx, cmd)
+
+	case SyndicateCommand:
+		return nil, h.handleSyndicate(ctx, cmd)
+
+	case SetupSyndicationCommand:
+		return nil, h.handleSetupSyndication(ctx, cmd)
 
 	}
 

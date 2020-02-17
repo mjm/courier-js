@@ -25,7 +25,7 @@ func NewUserRepository(m *management.Management, kms *cloudkms.KeyManagementClie
 	return &UserRepository{
 		management: m,
 		kms:        kms,
-		keyID:      fmt.Sprintf("projects/%s/locations/global/keyRings/keys/keys/micropub-token", cfg.ProjectID),
+		keyID:      fmt.Sprintf("projects/%s/locations/global/keyRings/keys/cryptoKeys/micropub-token", cfg.ProjectID),
 	}
 }
 
@@ -96,4 +96,65 @@ func (r *UserRepository) decryptToken(ctx context.Context, encString string) (st
 	}
 
 	return string(res.Plaintext), nil
+}
+
+func (r *UserRepository) SetMicropubToken(ctx context.Context, userID string, url string, token string) error {
+	ctx = trace.Start(ctx, "Set Micropub token")
+	defer trace.Finish(ctx)
+
+	trace.UserID(ctx, userID)
+	trace.AddField(ctx, "micropub.url", url)
+	trace.AddField(ctx, "micropub.decrypted_token_length", len(token))
+
+	encToken, err := r.encryptToken(ctx, token)
+	if err != nil {
+		trace.Error(ctx, err)
+		return err
+	}
+
+	trace.AddField(ctx, "micropub.encrypted_token_length", len(encToken))
+
+	user, err := r.management.User.Read(userID)
+	if err != nil {
+		trace.Error(ctx, err)
+		return err
+	}
+
+	url = strings.ReplaceAll(url, ".", "-")
+	trace.AddField(ctx, "micropub.token_key", url)
+
+	newTokens := make(map[string]interface{})
+	if user.UserMetadata != nil {
+		if existingTokens, ok := user.UserMetadata["micropub_tokens"].(map[string]string); ok {
+			for k, v := range existingTokens {
+				newTokens[k] = v
+			}
+		}
+	}
+	newTokens[url] = encToken
+
+	trace.AddField(ctx, "micropub.token_count", len(newTokens))
+
+	if err := r.management.User.Update(userID, &management.User{
+		UserMetadata: map[string]interface{}{
+			"micropub_tokens": newTokens,
+		},
+	}); err != nil {
+		trace.Error(ctx, err)
+		return err
+	}
+
+	return nil
+}
+
+func (r *UserRepository) encryptToken(ctx context.Context, plainString string) (string, error) {
+	res, err := r.kms.Encrypt(ctx, &kms.EncryptRequest{
+		Name:      r.keyID,
+		Plaintext: []byte(plainString),
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return base64.URLEncoding.EncodeToString(res.Ciphertext), nil
 }

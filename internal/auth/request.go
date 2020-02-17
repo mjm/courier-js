@@ -102,7 +102,9 @@ func getTokenString(r *http.Request) string {
 		return authz[7:]
 	}
 
-	// TODO consider supporting cookies
+	if c, err := r.Cookie("accessToken"); err == nil {
+		return c.Value
+	}
 
 	return ""
 }

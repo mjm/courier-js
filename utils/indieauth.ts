@@ -13,7 +13,7 @@ function rootUrl(): string {
 interface IndieAuthInit {
   endpoint: string
   tokenEndpoint: string
-  redirectURI: string
+  // redirectURI: string
   me: string
   scopes: string
 }
@@ -31,12 +31,14 @@ interface StoredData {
 export function beginIndieAuth({
   endpoint,
   tokenEndpoint,
-  redirectURI,
   me,
   scopes,
 }: IndieAuthInit): void {
   const clientID = rootUrl()
-  redirectURI = clientID + redirectURI
+  const redirectURI = process.env.INDIEAUTH_CALLBACK_URL
+  if (!redirectURI) {
+    throw new Error("No IndieAuth URL configured")
+  }
   const nonce = randomBytes(16).toString("hex")
   const origin = window.location.href
 

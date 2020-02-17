@@ -25,6 +25,7 @@
   "build": {
     "env": {
       "GRAPHQL_URL": "https://us-central1-courier-staging-267902.cloudfunctions.net/graphql",
+      "INDIEAUTH_CALLBACK_URL": "https://us-central1-courier-staging-267902.cloudfunctions.net/indieauth-callback",
       "CLIENT_ID": "@courier-staging-frontend-client-id",
       "AUTH_DOMAIN": "@courier-staging-auth-domain",
       "API_IDENTIFIER": "https://courier.mjm.now.sh/api/",
