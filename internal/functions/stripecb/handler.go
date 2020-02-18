@@ -69,7 +69,7 @@ func (h *Handler) handleStripeEvent(ctx context.Context, evt *stripe.Event) erro
 			"stripe.period_end.current":  curPeriodEnd,
 		})
 
-		if prevPeriodEnd != curPeriodEnd {
+		if prevPeriodEnd != "" && prevPeriodEnd != curPeriodEnd {
 			return h.fireSubscriptionEvent(ctx, evt, func(subID string, userID string) interface{} {
 				return billingevent.SubscriptionRenewed{
 					UserId:         userID,
