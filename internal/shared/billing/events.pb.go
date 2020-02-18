@@ -114,15 +114,207 @@ func (m *SubscriptionCreated) GetSubscriptionId() string {
 	return ""
 }
 
+type SubscriptionRenewed struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	SubscriptionId       string   `protobuf:"bytes,2,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SubscriptionRenewed) Reset()         { *m = SubscriptionRenewed{} }
+func (m *SubscriptionRenewed) String() string { return proto.CompactTextString(m) }
+func (*SubscriptionRenewed) ProtoMessage()    {}
+func (*SubscriptionRenewed) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8f22242cb04491f9, []int{2}
+}
+
+func (m *SubscriptionRenewed) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SubscriptionRenewed.Unmarshal(m, b)
+}
+func (m *SubscriptionRenewed) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SubscriptionRenewed.Marshal(b, m, deterministic)
+}
+func (m *SubscriptionRenewed) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubscriptionRenewed.Merge(m, src)
+}
+func (m *SubscriptionRenewed) XXX_Size() int {
+	return xxx_messageInfo_SubscriptionRenewed.Size(m)
+}
+func (m *SubscriptionRenewed) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubscriptionRenewed.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SubscriptionRenewed proto.InternalMessageInfo
+
+func (m *SubscriptionRenewed) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *SubscriptionRenewed) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+type SubscriptionCanceled struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	SubscriptionId       string   `protobuf:"bytes,2,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SubscriptionCanceled) Reset()         { *m = SubscriptionCanceled{} }
+func (m *SubscriptionCanceled) String() string { return proto.CompactTextString(m) }
+func (*SubscriptionCanceled) ProtoMessage()    {}
+func (*SubscriptionCanceled) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8f22242cb04491f9, []int{3}
+}
+
+func (m *SubscriptionCanceled) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SubscriptionCanceled.Unmarshal(m, b)
+}
+func (m *SubscriptionCanceled) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SubscriptionCanceled.Marshal(b, m, deterministic)
+}
+func (m *SubscriptionCanceled) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubscriptionCanceled.Merge(m, src)
+}
+func (m *SubscriptionCanceled) XXX_Size() int {
+	return xxx_messageInfo_SubscriptionCanceled.Size(m)
+}
+func (m *SubscriptionCanceled) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubscriptionCanceled.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SubscriptionCanceled proto.InternalMessageInfo
+
+func (m *SubscriptionCanceled) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *SubscriptionCanceled) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+type SubscriptionReactivated struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	SubscriptionId       string   `protobuf:"bytes,2,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SubscriptionReactivated) Reset()         { *m = SubscriptionReactivated{} }
+func (m *SubscriptionReactivated) String() string { return proto.CompactTextString(m) }
+func (*SubscriptionReactivated) ProtoMessage()    {}
+func (*SubscriptionReactivated) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8f22242cb04491f9, []int{4}
+}
+
+func (m *SubscriptionReactivated) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SubscriptionReactivated.Unmarshal(m, b)
+}
+func (m *SubscriptionReactivated) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SubscriptionReactivated.Marshal(b, m, deterministic)
+}
+func (m *SubscriptionReactivated) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubscriptionReactivated.Merge(m, src)
+}
+func (m *SubscriptionReactivated) XXX_Size() int {
+	return xxx_messageInfo_SubscriptionReactivated.Size(m)
+}
+func (m *SubscriptionReactivated) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubscriptionReactivated.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SubscriptionReactivated proto.InternalMessageInfo
+
+func (m *SubscriptionReactivated) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *SubscriptionReactivated) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
+type SubscriptionExpired struct {
+	UserId               string   `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	SubscriptionId       string   `protobuf:"bytes,2,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SubscriptionExpired) Reset()         { *m = SubscriptionExpired{} }
+func (m *SubscriptionExpired) String() string { return proto.CompactTextString(m) }
+func (*SubscriptionExpired) ProtoMessage()    {}
+func (*SubscriptionExpired) Descriptor() ([]byte, []int) {
+	return fileDescriptor_8f22242cb04491f9, []int{5}
+}
+
+func (m *SubscriptionExpired) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SubscriptionExpired.Unmarshal(m, b)
+}
+func (m *SubscriptionExpired) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SubscriptionExpired.Marshal(b, m, deterministic)
+}
+func (m *SubscriptionExpired) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubscriptionExpired.Merge(m, src)
+}
+func (m *SubscriptionExpired) XXX_Size() int {
+	return xxx_messageInfo_SubscriptionExpired.Size(m)
+}
+func (m *SubscriptionExpired) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubscriptionExpired.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SubscriptionExpired proto.InternalMessageInfo
+
+func (m *SubscriptionExpired) GetUserId() string {
+	if m != nil {
+		return m.UserId
+	}
+	return ""
+}
+
+func (m *SubscriptionExpired) GetSubscriptionId() string {
+	if m != nil {
+		return m.SubscriptionId
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*CustomerCreated)(nil), "courier.events.billing.CustomerCreated")
 	proto.RegisterType((*SubscriptionCreated)(nil), "courier.events.billing.SubscriptionCreated")
+	proto.RegisterType((*SubscriptionRenewed)(nil), "courier.events.billing.SubscriptionRenewed")
+	proto.RegisterType((*SubscriptionCanceled)(nil), "courier.events.billing.SubscriptionCanceled")
+	proto.RegisterType((*SubscriptionReactivated)(nil), "courier.events.billing.SubscriptionReactivated")
+	proto.RegisterType((*SubscriptionExpired)(nil), "courier.events.billing.SubscriptionExpired")
 }
 
 func init() { proto.RegisterFile("events.proto", fileDescriptor_8f22242cb04491f9) }
 
 var fileDescriptor_8f22242cb04491f9 = []byte{
-	// 158 bytes of a gzipped FileDescriptorProto
+	// 201 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x49, 0x2d, 0x4b, 0xcd,
 	0x2b, 0x29, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x4b, 0xce, 0x2f, 0x2d, 0xca, 0x4c,
 	0x2d, 0xd2, 0x83, 0x8a, 0x26, 0x65, 0xe6, 0xe4, 0x64, 0xe6, 0xa5, 0x2b, 0x79, 0x73, 0xf1, 0x3b,
@@ -131,6 +323,9 @@ var fileDescriptor_8f22242cb04491f9 = []byte{
 	0xb1, 0x81, 0xb8, 0x9e, 0x29, 0x42, 0xf2, 0x5c, 0xdc, 0xc9, 0x50, 0xb5, 0x20, 0x49, 0x26, 0xb0,
 	0x24, 0x17, 0x4c, 0xc8, 0x33, 0x45, 0x29, 0x9c, 0x4b, 0x38, 0xb8, 0x34, 0xa9, 0x38, 0xb9, 0x28,
 	0xb3, 0xa0, 0x24, 0x33, 0x3f, 0x8f, 0xa0, 0x81, 0xea, 0x5c, 0xfc, 0xc5, 0x48, 0xea, 0x11, 0x86,
-	0xf2, 0x21, 0x0b, 0x7b, 0xa6, 0x38, 0x71, 0x46, 0xb1, 0x43, 0x1d, 0x9c, 0xc4, 0x06, 0xf6, 0x8f,
-	0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0xef, 0x14, 0x58, 0x3a, 0xdf, 0x00, 0x00, 0x00,
+	0xf2, 0x21, 0x0b, 0x63, 0x1a, 0x1c, 0x94, 0x9a, 0x97, 0x5a, 0x4e, 0x15, 0x83, 0x23, 0xb8, 0x44,
+	0x50, 0x5c, 0x9c, 0x98, 0x97, 0x9c, 0x9a, 0x43, 0x15, 0x93, 0xa3, 0xb9, 0xc4, 0x51, 0x9d, 0x9c,
+	0x98, 0x5c, 0x92, 0x59, 0x46, 0x9b, 0xf0, 0x70, 0xad, 0x28, 0xc8, 0x2c, 0xa2, 0x86, 0xc1, 0x4e,
+	0x9c, 0x51, 0xec, 0xd0, 0x94, 0x91, 0xc4, 0x06, 0x4e, 0x38, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0x75, 0x5d, 0xc0, 0x9d, 0x48, 0x02, 0x00, 0x00,
 }

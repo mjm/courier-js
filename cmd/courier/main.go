@@ -16,6 +16,7 @@ import (
 func main() {
 	funcframework.RegisterHTTPFunction("/graphql", courier.GraphQL)
 	funcframework.RegisterHTTPFunction("/indieauth-callback", courier.IndieAuthCallback)
+	funcframework.RegisterHTTPFunction("/stripe-callback", courier.StripeCallback)
 	funcframework.RegisterEventFunction("/events", courier.Events)
 
 	go pollForEvents()

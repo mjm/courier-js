@@ -56,7 +56,15 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	}
 	api := billing.NewClient(billingConfig)
 	customerQueries := billing2.NewCustomerQueries(api)
-	billingSubscriptionQueries := billing2.NewSubscriptionQueries(api)
+	authConfig, err := auth.NewConfigFromSecrets(gcpSecretKeeper)
+	if err != nil {
+		return nil, err
+	}
+	management, err := auth.NewManagementClient(authConfig)
+	if err != nil {
+		return nil, err
+	}
+	billingSubscriptionQueries := billing2.NewSubscriptionQueries(api, management)
 	queries := resolvers.Queries{
 		Feeds:             feedQueries,
 		FeedSubscriptions: subscriptionQueries,
@@ -74,19 +82,11 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	tweetRepository := tweets2.NewTweetRepository(dbDB)
 	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
 	tweetsPostRepository := tweets2.NewPostRepository(dbDB)
-	authConfig, err := auth.NewConfigFromSecrets(gcpSecretKeeper)
-	if err != nil {
-		return nil, err
-	}
 	twitterConfig, err := tweets2.NewTwitterConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
 	externalTweetRepository := tweets2.NewExternalTweetRepository(authConfig, twitterConfig)
-	management, err := auth.NewManagementClient(authConfig)
-	if err != nil {
-		return nil, err
-	}
 	keyManagementClient, err := tweets2.NewKeyManagementClient(gcpConfig)
 	if err != nil {
 		return nil, err

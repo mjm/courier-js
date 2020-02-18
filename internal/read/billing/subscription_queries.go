@@ -2,28 +2,36 @@ package billing
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/graph-gophers/dataloader"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/client"
+	"gopkg.in/auth0.v3/management"
 
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
+var ErrNoUser = errors.New("no user found")
+
 type SubscriptionQueries interface {
 	Get(context.Context, string) (*stripe.Subscription, error)
+	GetUserID(context.Context, string) (string, error)
 }
 
 type subscriptionQueries struct {
-	stripe *client.API
-	loader *dataloader.Loader
+	stripe     *client.API
+	management *management.Management
+	loader     *dataloader.Loader
 }
 
-func NewSubscriptionQueries(sc *client.API) SubscriptionQueries {
+func NewSubscriptionQueries(sc *client.API, m *management.Management) SubscriptionQueries {
 	return &subscriptionQueries{
-		stripe: sc,
-		loader: newSubscriptionLoader(sc),
+		stripe:     sc,
+		management: m,
+		loader:     newSubscriptionLoader(sc),
 	}
 }
 
@@ -48,6 +56,30 @@ func (q *subscriptionQueries) Get(ctx context.Context, id string) (*stripe.Subsc
 		return nil, err
 	}
 	return v.(*stripe.Subscription), nil
+}
+
+func (q *subscriptionQueries) GetUserID(ctx context.Context, subID string) (string, error) {
+	ctx = trace.Start(ctx, "Get user for subscription")
+	defer trace.Finish(ctx)
+
+	trace.SubscriptionID(ctx, subID)
+
+	query := fmt.Sprintf("app_metadata.stripe_subscription_id:%q", subID)
+	users, err := q.management.User.List(management.Query(query))
+	if err != nil {
+		trace.Error(ctx, err)
+		return "", err
+	}
+
+	trace.AddField(ctx, "user_count", len(users.Users))
+	if len(users.Users) == 0 {
+		return "", ErrNoUser
+	}
+
+	userID := users.Users[0].GetID()
+	trace.UserID(ctx, userID)
+
+	return userID, nil
 }
 
 func loadSubscription(ctx context.Context, sc *client.API, id string) (*stripe.Subscription, error) {

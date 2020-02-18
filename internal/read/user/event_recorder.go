@@ -7,6 +7,7 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/read/user/queries"
+	"github.com/mjm/courier-js/internal/shared/billing"
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace"
@@ -29,6 +30,11 @@ func NewEventRecorder(db db.DB, eventBus *event.Bus) *EventRecorder {
 		tweets.TweetUncanceled{},
 		tweets.TweetEdited{},
 		tweets.TweetPosted{},
+		billing.SubscriptionCreated{},
+		billing.SubscriptionRenewed{},
+		billing.SubscriptionCanceled{},
+		billing.SubscriptionReactivated{},
+		billing.SubscriptionExpired{},
 	)
 	return r
 }
@@ -86,6 +92,31 @@ func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 		}
 		r.record(ctx, evt.UserId, t, EventParams{
 			TweetID: evt.TweetId,
+		})
+
+	case billing.SubscriptionCreated:
+		r.record(ctx, evt.UserId, SubscriptionCreate, EventParams{
+			SubscriptionID: evt.SubscriptionId,
+		})
+
+	case billing.SubscriptionRenewed:
+		r.record(ctx, evt.UserId, SubscriptionRenew, EventParams{
+			SubscriptionID: evt.SubscriptionId,
+		})
+
+	case billing.SubscriptionCanceled:
+		r.record(ctx, evt.UserId, SubscriptionCancel, EventParams{
+			SubscriptionID: evt.SubscriptionId,
+		})
+
+	case billing.SubscriptionReactivated:
+		r.record(ctx, evt.UserId, SubscriptionReactivate, EventParams{
+			SubscriptionID: evt.SubscriptionId,
+		})
+
+	case billing.SubscriptionExpired:
+		r.record(ctx, evt.UserId, SubscriptionExpire, EventParams{
+			SubscriptionID: evt.SubscriptionId,
 		})
 
 	}
