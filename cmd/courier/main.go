@@ -34,7 +34,7 @@ func main() {
 func pollForEvents() {
 	ctx := context.Background()
 	client, err := pubsub.NewClient(ctx,
-		os.Getenv("GCP_PROJECT"),
+		os.Getenv("GOOGLE_PROJECT"),
 		option.WithCredentialsFile(os.Getenv("GCP_CREDENTIALS_FILE")))
 	if err != nil {
 		log.Printf("error creating pubsub client: %v", err)

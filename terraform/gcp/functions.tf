@@ -26,9 +26,9 @@ locals {
   source_repo_url = "https://source.developers.google.com/projects/${var.project_id}/repos/${var.function_repo}/revisions/${var.function_revision}/paths/"
 
   function_env = {
-    APP_ENV      = var.env
-    GCP_PROJECT  = var.project_id
-    GCP_TOPIC_ID = google_pubsub_topic.events.name
+    APP_ENV        = var.env
+    GOOGLE_PROJECT = var.project_id
+    GCP_TOPIC_ID   = google_pubsub_topic.events.name
   }
 }
 

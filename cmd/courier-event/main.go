@@ -31,7 +31,7 @@ func main() {
 	ctx := context.Background()
 
 	var cfg event.PublisherConfig
-	cfg.ProjectID = os.Getenv("GCP_PROJECT")
+	cfg.ProjectID = os.Getenv("GOOGLE_PROJECT")
 	cfg.CredentialsFile = os.Getenv("GCP_CREDENTIALS_FILE")
 	cfg.TopicID = os.Getenv("GCP_TOPIC_ID")
 
