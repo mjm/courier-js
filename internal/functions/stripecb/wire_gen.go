@@ -26,11 +26,11 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	bus := event.NewBus()
 	billingConfig, err := billing.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
+	bus := event.NewBus()
 	api := billing.NewClient(billingConfig)
 	authConfig, err := auth.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
@@ -46,6 +46,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	handler := NewHandler(config, bus, subscriptionQueries, publisher)
+	handler := NewHandler(config, billingConfig, bus, subscriptionQueries, publisher)
 	return handler, nil
 }

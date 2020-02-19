@@ -2,12 +2,14 @@ package stripecb
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/webhook"
 
+	billing2 "github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/read/billing"
 	billingevent "github.com/mjm/courier-js/internal/shared/billing"
@@ -15,16 +17,18 @@ import (
 )
 
 type Handler struct {
-	eventBus   *event.Bus
-	subQueries billing.SubscriptionQueries
+	webhookSecret string
+	eventBus      *event.Bus
+	subQueries    billing.SubscriptionQueries
 }
 
-func NewHandler(traceCfg trace.Config, eventBus *event.Bus, subQueries billing.SubscriptionQueries, _ *event.Publisher) *Handler {
+func NewHandler(traceCfg trace.Config, stripeCfg billing2.Config, eventBus *event.Bus, subQueries billing.SubscriptionQueries, _ *event.Publisher) *Handler {
 	trace.Init(traceCfg)
 
 	return &Handler{
-		eventBus:   eventBus,
-		subQueries: subQueries,
+		webhookSecret: stripeCfg.WebhookSecret,
+		eventBus:      eventBus,
+		subQueries:    subQueries,
 	}
 }
 
@@ -34,8 +38,18 @@ func (h *Handler) HandleHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := trace.Start(r.Context(), "Stripe webhook event")
 	defer trace.Finish(ctx)
 
-	var evt stripe.Event
-	if err := json.NewDecoder(r.Body).Decode(&evt); err != nil {
+	r.Body = http.MaxBytesReader(w, r.Body, 65536)
+	payload, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		trace.Error(ctx, err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	trace.AddField(ctx, "stripe.payload_length", len(payload))
+
+	evt, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), h.webhookSecret)
+	if err != nil {
 		trace.Error(ctx, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
