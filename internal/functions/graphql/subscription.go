@@ -63,6 +63,7 @@ func (h *Handler) handleSubscriptionRequest(ctx context.Context, w http.Response
 	w.Header().Set("Connection", "keep-alive")
 
 	for res := range ch {
+		fmt.Println("got a graphql response!")
 		res := res.(*graphql.Response)
 		payload, err := json.Marshal(res)
 		if err != nil {

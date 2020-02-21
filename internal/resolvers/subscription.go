@@ -2,30 +2,35 @@ package resolvers
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
-type eventHandlerFunc struct {
-	fn func(context.Context, interface{})
+func (r *Root) watch(ctx context.Context, v interface{}, fn func(evt interface{})) error {
+	evts, err := r.subscriber.Subscribe(ctx, v)
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		for evt := range evts {
+			fn(evt)
+		}
+	}()
+
+	return nil
 }
 
-func (e *eventHandlerFunc) HandleEvent(ctx context.Context, evt interface{}) {
-	e.fn(ctx, evt)
-}
-
-func (r *Root) FeedRefreshed(ctx context.Context) <-chan *FeedRefreshed {
+func (r *Root) FeedRefreshed(ctx context.Context) (<-chan *FeedRefreshed, error) {
 	ch := make(chan *FeedRefreshed)
-	r.watch(func(ctx context.Context, evt interface{}) {
-		fmt.Println("hallo!")
-		ch <- &FeedRefreshed{q: r.q, evt: evt.(feeds.FeedRefreshed)}
-	}, feeds.FeedRefreshed{})
-	return ch
-}
 
-func (r *Root) watch(fn func(context.Context, interface{}), v ...interface{}) {
-	r.subscriber.Notify(&eventHandlerFunc{fn: fn}, v...)
+	if err := r.watch(ctx, feeds.FeedRefreshed{}, func(evt interface{}) {
+		ch <- &FeedRefreshed{q: r.q, evt: evt.(feeds.FeedRefreshed)}
+	}); err != nil {
+		return nil, err
+	}
+
+	return ch, nil
 }
 
 type FeedRefreshed struct {

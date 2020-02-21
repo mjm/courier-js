@@ -3,7 +3,6 @@ package event
 import (
 	"context"
 	"fmt"
-	"log"
 	"reflect"
 	"sync"
 	"time"
@@ -19,36 +18,66 @@ import (
 var SubscribingSet = wire.NewSet(NewBus, NewPublisherConfig, NewPubSubClient, NewSubscriber)
 
 type Subscriber struct {
-	*Bus
-
 	client *pubsub.Client
 	topic  *pubsub.Topic
 	sub    *pubsub.Subscription
+
+	subscribers map[reflect.Type]map[chan<- interface{}]struct{}
 
 	mu sync.Mutex
 }
 
 func NewSubscriber(cfg PublisherConfig, client *pubsub.Client) *Subscriber {
 	topic := client.Topic(cfg.TopicID)
-	// create a local bus here so that we don't broadcast to a bunch of handlers that are only
-	// expecting to handle local events. need to refactor that later such that event handlers
-	// are only running in the events function or on subscribe requests from graphql.
-	bus := NewBus()
 
 	return &Subscriber{
-		Bus:    bus,
-		client: client,
-		topic:  topic,
+		client:      client,
+		topic:       topic,
+		subscribers: make(map[reflect.Type]map[chan<- interface{}]struct{}),
 	}
 }
 
-func (s *Subscriber) Notify(h Handler, v ...interface{}) {
+func (s *Subscriber) Subscribe(ctx context.Context, v interface{}) (<-chan interface{}, error) {
 	if err := s.ensureSubscription(); err != nil {
-		log.Printf("error setting up subscription: %v", err)
-		return
+		return nil, err
 	}
 
-	s.Bus.Notify(h, v...)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	ch := make(chan interface{})
+
+	t := reflect.TypeOf(v)
+	subs, ok := s.subscribers[t]
+	if !ok {
+		subs = make(map[chan<- interface{}]struct{})
+		s.subscribers[t] = subs
+	}
+
+	subs[ch] = struct{}{}
+
+	// watch for the context to be done, and close the channel and remove it from the
+	// subscribers
+	go func() {
+		<-ctx.Done()
+		s.mu.Lock()
+		defer s.mu.Unlock()
+
+		close(ch)
+		delete(s.subscribers[t], ch)
+	}()
+
+	return ch, nil
+}
+
+func (s *Subscriber) send(ctx context.Context, evt interface{}) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	t := reflect.TypeOf(evt)
+	for ch := range s.subscribers[t] {
+		ch <- evt
+	}
 }
 
 func (s *Subscriber) ensureSubscription() error {
@@ -87,7 +116,7 @@ func (s *Subscriber) ensureSubscription() error {
 			}
 
 			fmt.Println("firing an event")
-			s.Fire(ctx, reflect.ValueOf(msg.Message).Elem().Interface())
+			s.send(ctx, reflect.ValueOf(msg.Message).Elem().Interface())
 			message.Ack()
 		}); err != nil {
 			fmt.Printf("error listening for events: %v", err)
