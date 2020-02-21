@@ -5,21 +5,21 @@ resource "google_service_account" "circleci_deployer" {
 }
 
 resource "google_project_iam_binding" "owner" {
-  role    = "roles/owner"
+  role = "roles/owner"
   members = [
     "user:matt@mattmoriarity.com",
   ]
 }
 
 resource "google_project_iam_binding" "cloud_functions_developer" {
-  role    = "roles/cloudfunctions.developer"
+  role = "roles/cloudfunctions.developer"
   members = [
     "serviceAccount:${google_service_account.circleci_deployer.email}",
   ]
 }
 
 resource "google_project_iam_binding" "pubsub_publisher" {
-  role    = "roles/pubsub.publisher"
+  role = "roles/pubsub.publisher"
   members = [
     "serviceAccount:${module.function_graphql.service_account_email}",
     "serviceAccount:${module.function_post_queued_tweets.service_account_email}",
@@ -29,8 +29,9 @@ resource "google_project_iam_binding" "pubsub_publisher" {
 }
 
 resource "google_project_iam_binding" "pubsub_subscriber" {
-  role    = "roles/pubsub.subscriber"
+  role = "roles/pubsub.subscriber"
   members = [
+    "serviceAccount:${module.function_graphql.service_account_email}",
     "serviceAccount:${module.function_events.service_account_email}",
   ]
 }
