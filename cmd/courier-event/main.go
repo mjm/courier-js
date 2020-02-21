@@ -36,9 +36,11 @@ func main() {
 	cfg.TopicID = os.Getenv("GCP_TOPIC_ID")
 
 	bus := event.NewBus()
-	if _, err := event.NewPublisher(cfg, bus); err != nil {
+	client, err := event.NewPubSubClient(cfg.GCPConfig)
+	if err != nil {
 		panic(err)
 	}
+	event.NewPublisher(cfg, client, bus)
 
 	evt, err := createEvent()
 	if err != nil {
