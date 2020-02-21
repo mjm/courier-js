@@ -42,10 +42,11 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	subscriptionQueries := billing2.NewSubscriptionQueries(api, management)
 	publisherConfig := event.NewPublisherConfig(gcpConfig)
-	publisher, err := event.NewPublisher(publisherConfig, bus)
+	pubsubClient, err := event.NewPubSubClient(gcpConfig)
 	if err != nil {
 		return nil, err
 	}
+	publisher := event.NewPublisher(publisherConfig, pubsubClient, bus)
 	handler := NewHandler(config, billingConfig, bus, subscriptionQueries, publisher)
 	return handler, nil
 }

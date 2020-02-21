@@ -6,9 +6,11 @@ import {
   fetchQuery,
   GraphQLTaggedNode,
   Network,
+  Observable,
   OperationType,
   RecordSource,
   Store,
+  SubscribeFunction,
 } from "relay-runtime"
 import { RecordMap } from "relay-runtime/lib/store/RelayStoreTypes"
 
@@ -155,12 +157,42 @@ function makeFetchQuery(ctx?: NextPageContext): FetchFunction {
   }
 }
 
+function makeFetchSubscription(ctx?: NextPageContext): SubscribeFunction {
+  const req = ctx && ctx.req
+  const url = apiUrl("/api/graphql", req)
+
+  return (operation, variables, _cacheConfig) => {
+    const params = new URLSearchParams()
+    params.set("q", operation.text || "")
+    params.set("op", operation.name)
+    params.set("v", JSON.stringify(variables))
+
+    const eventSource = new EventSource(`${url}?${params.toString()}`, {
+      withCredentials: true,
+    })
+    return Observable.create(sink => {
+      eventSource.onerror = err => {
+        sink.error(new Error(`Error received from event source: ${err}`))
+      }
+
+      eventSource.onmessage = data => {
+        sink.next(JSON.parse(data.data))
+      }
+
+      return () => {
+        eventSource.close()
+      }
+    })
+  }
+}
+
 function initEnvironment(
   ctx?: NextPageContext,
   records?: RecordMap
 ): Environment {
   const fetchQuery = makeFetchQuery(ctx)
-  const network = Network.create(fetchQuery)
+  const fetchSubscription = makeFetchSubscription(ctx)
+  const network = Network.create(fetchQuery, fetchSubscription)
   const store = new Store(new RecordSource(records))
 
   if (!process.browser) {

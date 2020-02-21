@@ -40,6 +40,7 @@ require (
 	github.com/mjm/graphql-go v0.0.0-20200213070811-48021cabfccf
 	github.com/mmcdole/gofeed v1.0.0-beta2
 	github.com/mmcdole/goxpp v0.0.0-20181012175147-0068e33feabf // indirect
+	github.com/prometheus/common v0.2.0
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/stripe/stripe-go v68.13.0+incompatible

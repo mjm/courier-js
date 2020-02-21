@@ -40,6 +40,7 @@ func InitializeHandler(
 			tweets.NewTwitterConfigFromSecrets,
 			write.NewCommandBus,
 			event.PublishingSet,
+			event.NewSubscriber,
 			feeds.DefaultSet,
 			tweets.DefaultSet,
 			billing.DefaultSet,

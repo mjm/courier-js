@@ -75,6 +75,12 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		Subscriptions:     billingSubscriptionQueries,
 	}
 	commandBus := write.NewCommandBus()
+	publisherConfig := event.NewPublisherConfig(gcpConfig)
+	pubsubClient, err := event.NewPubSubClient(gcpConfig)
+	if err != nil {
+		return nil, err
+	}
+	subscriber := event.NewSubscriber(publisherConfig, pubsubClient)
 	feedRepository := feeds2.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
 	postRepository := feeds2.NewPostRepository(dbDB)
@@ -98,18 +104,14 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, billingConfig, customerRepository, billingSubscriptionRepository)
 	userUserRepository := user2.NewUserRepository(management)
 	userCommandHandler := user2.NewCommandHandler(commandBus, bus, userUserRepository)
-	root := resolvers.New(queries, commandBus, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
+	root := resolvers.New(queries, commandBus, subscriber, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err
 	}
 	jwksClient := auth.NewJWKSClient(authConfig)
 	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
-	publisherConfig := event.NewPublisherConfig(gcpConfig)
-	publisher, err := event.NewPublisher(publisherConfig, bus)
-	if err != nil {
-		return nil, err
-	}
+	publisher := event.NewPublisher(publisherConfig, pubsubClient, bus)
 	handler := NewHandler(config, schema, authenticator, publisher)
 	return handler, nil
 }

@@ -1,17 +1,40 @@
 import React from "react"
-import { createPaginationContainer, graphql } from "react-relay"
+import {
+  createPaginationContainer,
+  graphql,
+  RelayPaginationProp,
+  requestSubscription,
+} from "react-relay"
 
 import Link from "next/link"
 
 import { FeedList_feeds } from "@generated/FeedList_feeds.graphql"
 import FeedCard from "components/FeedCard"
-
 // need to use CSS Grid _and_ media queries, so a CSS module is the best thing here
 import styles from "components/FeedList.module.css"
 
 const FeedList: React.FC<{
   feeds: FeedList_feeds
-}> = ({ feeds }) => {
+  relay: RelayPaginationProp
+}> = ({ feeds, relay: { environment } }) => {
+  React.useEffect(() => {
+    const disposable = requestSubscription(environment, {
+      subscription: graphql`
+        subscription FeedListSubscription {
+          feedRefreshed {
+            feed {
+              id
+              refreshedAt
+            }
+          }
+        }
+      `,
+      variables: {},
+    })
+
+    return () => disposable.dispose()
+  }, [])
+
   if (!feeds.allSubscribedFeeds) {
     return null
   }

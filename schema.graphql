@@ -52,6 +52,10 @@ type Mutation {
   #   ): SendTestNotificationPayload!
 }
 
+type Subscription {
+  feedRefreshed: FeedRefreshedEvent
+}
+
 interface Node {
   id: ID!
 }
@@ -401,4 +405,8 @@ interface TweetContent {
   body: String!
   mediaURLs: [String!]!
   retweetID: String!
+}
+
+type FeedRefreshedEvent {
+  feed: Feed
 }

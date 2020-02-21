@@ -57,17 +57,6 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Vary", "Origin")
 
-	var params struct {
-		Query         string                 `json:"query"`
-		OperationName string                 `json:"operationName"`
-		Variables     map[string]interface{} `json:"variables"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
-		trace.Error(ctx, err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
 	childCtx, err := h.Authenticator.Authenticate(ctx, r)
 	if err != nil {
 		trace.Error(ctx, err)
@@ -82,8 +71,21 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeResponse(ctx, w, response)
 		return
 	}
-
 	childCtx = loader.WithLoaderCache(childCtx)
+
+	params, ok := decodeSubscriptionRequest(r)
+	if ok {
+		h.handleSubscriptionRequest(ctx, w, params)
+		return
+	}
+
+	// TODO handle other get requests with GraphQL playground
+
+	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
+		trace.Error(ctx, err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	response := h.Schema.Exec(childCtx, params.Query, params.OperationName, params.Variables)
 	writeResponse(ctx, w, response)

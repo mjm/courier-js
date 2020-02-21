@@ -60,10 +60,11 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	userRepository := tweets.NewUserRepository(management, keyManagementClient, gcpConfig)
 	commandHandler := tweets.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository)
 	publisherConfig := event.NewPublisherConfig(gcpConfig)
-	publisher, err := event.NewPublisher(publisherConfig, bus)
+	pubsubClient, err := event.NewPubSubClient(gcpConfig)
 	if err != nil {
 		return nil, err
 	}
+	publisher := event.NewPublisher(publisherConfig, pubsubClient, bus)
 	handler := NewHandler(config, commandBus, commandHandler, publisher)
 	return handler, nil
 }

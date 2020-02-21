@@ -9,13 +9,12 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/wire"
-	"google.golang.org/api/option"
 
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
-var PublishingSet = wire.NewSet(NewBus, NewPublisher, NewPublisherConfig)
+var PublishingSet = wire.NewSet(NewBus, NewPubSubClient, NewPublisher, NewPublisherConfig)
 
 type PublisherConfig struct {
 	secret.GCPConfig
@@ -27,17 +26,7 @@ type Publisher struct {
 	bus   *Bus
 }
 
-func NewPublisher(cfg PublisherConfig, bus *Bus) (*Publisher, error) {
-	ctx := context.Background()
-	var o []option.ClientOption
-	if cfg.CredentialsFile != "" {
-		o = append(o, option.WithCredentialsFile(cfg.CredentialsFile))
-	}
-	client, err := pubsub.NewClient(ctx, cfg.ProjectID, o...)
-	if err != nil {
-		return nil, err
-	}
-
+func NewPublisher(cfg PublisherConfig, client *pubsub.Client, bus *Bus) *Publisher {
 	t := client.Topic(cfg.TopicID)
 
 	p := &Publisher{
@@ -45,7 +34,7 @@ func NewPublisher(cfg PublisherConfig, bus *Bus) (*Publisher, error) {
 		bus:   bus,
 	}
 	bus.NotifyAll(p)
-	return p, nil
+	return p
 }
 
 func NewPublisherConfig(secretConfig secret.GCPConfig) PublisherConfig {

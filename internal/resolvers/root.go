@@ -12,6 +12,7 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
@@ -27,12 +28,14 @@ type Root struct {
 
 	q          Queries
 	commandBus *write.CommandBus
+	subscriber *event.Subscriber
 }
 
 // New creates a new root resolver.
 func New(
 	q Queries,
 	commandBus *write.CommandBus,
+	subscriber *event.Subscriber,
 	_ *feeds.CommandHandler,
 	_ *tweets.CommandHandler,
 	_ *billing.CommandHandler,
@@ -41,6 +44,7 @@ func New(
 	return &Root{
 		q:          q,
 		commandBus: commandBus,
+		subscriber: subscriber,
 	}
 }
 
