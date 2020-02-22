@@ -8,6 +8,7 @@
 
 import Apollo
 import Combinable
+import PushNotifications
 import UserActions
 
 class ViewModel {

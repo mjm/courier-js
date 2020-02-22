@@ -9,6 +9,7 @@
 import Apollo
 import Auth0
 import Events
+import PushNotifications
 import UIKit
 import UserActions
 import UserNotifications
@@ -24,8 +25,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         actionRunner.presenter = self
         actionRunner.delegate = self
 
-        notificationsEvent.startTimer(.registerTime)
-        application.registerForRemoteNotifications()
+        Endpoint.current.pushNotifications.start()
+        try? Endpoint.current.pushNotifications.addDeviceInterest(interest: "debug-test")
 
         let userNotifications = UNUserNotificationCenter.current()
         userNotifications.delegate = self
@@ -35,6 +36,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             event[.authorized] = authorized
             event.error = error
             event.send("requested notification permission")
+
+            self.notificationsEvent.startTimer(.registerTime)
+            Endpoint.current.pushNotifications.registerForRemoteNotifications()
         }
 
         return true
@@ -47,17 +51,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Endpoint.current.pushNotifications.registerDeviceToken(deviceToken)
         notificationsEvent.stopTimer(.registerTime)
         notificationsEvent[.tokenLength] = deviceToken.count
         notificationsEvent.send("registered for remote notifications")
-
-//        actionRunner.perform(RegisterDeviceAction(token: deviceToken))
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         notificationsEvent.stopTimer(.registerTime)
         notificationsEvent.error = error
         notificationsEvent.send("registered for remote notifications")
+    }
+
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        Endpoint.current.pushNotifications.handleNotification(userInfo: userInfo)
+        completionHandler(.noData)
     }
 
 }

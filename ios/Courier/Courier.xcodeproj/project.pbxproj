@@ -33,6 +33,8 @@
 		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
 		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
 		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
+		C972326A2401ED6100C400EA /* PushNotifications in Frameworks */ = {isa = PBXBuildFile; productRef = C97232692401ED6100C400EA /* PushNotifications */; };
+		C972326C2401EEA800C400EA /* Beams.swift in Sources */ = {isa = PBXBuildFile; fileRef = C972326B2401EEA800C400EA /* Beams.swift */; };
 		C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B6E237BAED30069EED1 /* Endpoint.swift */; };
 		C9A36B71237BC0380069EED1 /* UncancelTweetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */; };
 		C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B73237BC2DE0069EED1 /* TweetDetailViewModel.swift */; };
@@ -114,6 +116,7 @@
 		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
 		C95C6F6C238243F7006063A2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C95C6F702383BCB9006063A2 /* NotificationCategories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCategories.swift; sourceTree = "<group>"; };
+		C972326B2401EEA800C400EA /* Beams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Beams.swift; sourceTree = "<group>"; };
 		C9A36B6E237BAED30069EED1 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncancelTweetAction.swift; sourceTree = "<group>"; };
 		C9A36B73237BC2DE0069EED1 /* TweetDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetDetailViewModel.swift; sourceTree = "<group>"; };
@@ -162,6 +165,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9A7499E237853300046E924 /* Apollo in Frameworks */,
+				C972326A2401ED6100C400EA /* PushNotifications in Frameworks */,
 				C9A749B12378AFB40046E924 /* Auth0.framework in Frameworks */,
 				C9A749B22378AFB40046E924 /* SimpleKeychain.framework in Frameworks */,
 				C9A74996237852AB0046E924 /* CombinableUI in Frameworks */,
@@ -238,6 +242,7 @@
 			children = (
 				C95C6F6F2383BCA6006063A2 /* Actions */,
 				C95C6F702383BCB9006063A2 /* NotificationCategories.swift */,
+				C972326B2401EEA800C400EA /* Beams.swift */,
 			);
 			path = Notifications;
 			sourceTree = "<group>";
@@ -457,6 +462,7 @@
 				C9A7499A237852BD0046E924 /* UserActions */,
 				C9A7499D237853300046E924 /* Apollo */,
 				C9A7499F237853300046E924 /* ApolloSQLite */,
+				C97232692401ED6100C400EA /* PushNotifications */,
 			);
 			productName = Courier;
 			productReference = C9A7496A237852430046E924 /* Courier.app */;
@@ -513,6 +519,7 @@
 				C9A74994237852AB0046E924 /* XCRemoteSwiftPackageReference "Combinable" */,
 				C9A74999237852BD0046E924 /* XCRemoteSwiftPackageReference "UserActions" */,
 				C9A7499C237853300046E924 /* XCRemoteSwiftPackageReference "apollo-ios" */,
+				C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */,
 			);
 			productRefGroup = C9A7496B237852430046E924 /* Products */;
 			projectDirPath = "";
@@ -632,6 +639,7 @@
 				C95009F62389B60000A36E64 /* SettingsActionCell.swift in Sources */,
 				C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */,
 				C9A36B79237BC61C0069EED1 /* SplitViewModel.swift in Sources */,
+				C972326C2401EEA800C400EA /* Beams.swift in Sources */,
 				C9A749AB237856D00046E924 /* ApolloClient.swift in Sources */,
 				C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */,
 				C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */,
@@ -927,6 +935,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pusher/push-notifications-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.4;
+			};
+		};
 		C9A749912378528F0046E924 /* XCRemoteSwiftPackageReference "Events" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mjm/Events.git";
@@ -962,6 +978,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C97232692401ED6100C400EA /* PushNotifications */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */;
+			productName = PushNotifications;
+		};
 		C9A749922378528F0046E924 /* Events */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C9A749912378528F0046E924 /* XCRemoteSwiftPackageReference "Events" */;
