@@ -23,7 +23,7 @@ struct Endpoint {
     }
 
     static let staging = Endpoint(
-        url: "https://staging.courier.blog",
+        url: "https://us-central1-courier-staging-267902.cloudfunctions.net",
         apiIdentifier: "https://courier.mjm.now.sh/api/",
         clientId: "8c0TcS4ucF3PIPiqDY7FNYx1DE2jx9hL",
         domain: "courier-staging.auth0.com"

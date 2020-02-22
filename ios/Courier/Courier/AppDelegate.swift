@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         notificationsEvent[.tokenLength] = deviceToken.count
         notificationsEvent.send("registered for remote notifications")
 
-        actionRunner.perform(RegisterDeviceAction(token: deviceToken))
+//        actionRunner.perform(RegisterDeviceAction(token: deviceToken))
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {

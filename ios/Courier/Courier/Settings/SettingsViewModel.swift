@@ -59,7 +59,7 @@ final class SettingsViewModel: ViewModel {
 
     private var userInfo: AnyPublisher<QueryState<UserInfo?>, Never> {
         apolloClient.publisher(query: CurrentUserQuery())
-            .queryMap { $0.currentUser?.fragments.userInfo }
+            .queryMap { $0.viewer?.fragments.userInfo }
             .ignoreError()
             .eraseToAnyPublisher()
     }
