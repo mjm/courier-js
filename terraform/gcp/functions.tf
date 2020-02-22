@@ -68,3 +68,17 @@ module "function_stripe_callback" {
   entry_point  = "StripeCallback"
   trigger_http = true
 }
+
+module "function_pusher_auth" {
+  source            = "../modules/cloud_function"
+  project_id        = var.project_id
+  env               = var.env
+  git_revision      = var.function_revision
+  env_vars          = var.function_env
+  events_topic_name = google_pubsub_topic.events.name
+
+  name         = "pusher-auth"
+  description  = "Handles authentication requests for private Pusher channels"
+  entry_point  = "PusherAuth"
+  trigger_http = true
+}

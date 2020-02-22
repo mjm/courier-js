@@ -16,7 +16,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*PubSubHandler, error) {
 	panic(wire.Build(
 		NewPubSubHandler,
 		NewPusher,
-		NewPusherClient,
+		event.NewPusherClient,
 		event.NewBus,
 		secret.GCPSet,
 		trace.NewConfigFromSecrets,

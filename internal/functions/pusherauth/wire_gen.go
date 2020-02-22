@@ -3,19 +3,18 @@
 //go:generate wire
 //+build !wireinject
 
-package events
+package pusherauth
 
 import (
-	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
 // Injectors from wire.go:
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*PubSubHandler, error) {
+func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	client, err := secret.NewSecretManager(gcpConfig)
 	if err != nil {
 		return nil, err
@@ -25,21 +24,20 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*PubSubHandler, error) {
 	if err != nil {
 		return nil, err
 	}
-	bus := event.NewBus()
-	dbConfig, err := db.NewConfigFromSecrets(gcpSecretKeeper)
+	authConfig, err := auth.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
-	dbDB, err := db.New(dbConfig)
+	management, err := auth.NewManagementClient(authConfig)
 	if err != nil {
 		return nil, err
 	}
-	eventRecorder := user.NewEventRecorder(dbDB, bus)
+	jwksClient := auth.NewJWKSClient(authConfig)
+	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
 	pusherClient, err := event.NewPusherClient(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
-	pusher := NewPusher(bus, pusherClient)
-	pubSubHandler := NewPubSubHandler(config, bus, eventRecorder, pusher)
-	return pubSubHandler, nil
+	handler := NewHandler(config, authenticator, pusherClient)
+	return handler, nil
 }

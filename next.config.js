@@ -13,6 +13,7 @@ module.exports = withImages(
     env: {
       GRAPHQL_URL: process.env.GRAPHQL_URL,
       INDIEAUTH_CALLBACK_URL: process.env.INDIEAUTH_CALLBACK_URL,
+      PUSHER_AUTH_URL: process.env.PUSHER_AUTH_URL,
       CLIENT_ID: process.env.CLIENT_ID,
       AUTH_DOMAIN: process.env.AUTH_DOMAIN,
       API_IDENTIFIER: process.env.API_IDENTIFIER,

@@ -3,7 +3,6 @@ package events
 import (
 	"context"
 	"fmt"
-	"os"
 	"reflect"
 	"strings"
 
@@ -12,7 +11,6 @@ import (
 
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/resolvers"
-	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -27,20 +25,6 @@ func NewPusher(bus *event.Bus, client *pusher.Client) *Pusher {
 
 	bus.NotifyAll(p)
 	return p
-}
-
-func NewPusherClient(sk secret.Keeper) (*pusher.Client, error) {
-	key := "pusher-url"
-	if os.Getenv("APP_ENV") == "dev" {
-		key = "pusher-url-dev"
-	}
-
-	url, err := sk.GetString(context.Background(), key)
-	if err != nil {
-		return nil, err
-	}
-
-	return pusher.ClientFromURL(url)
 }
 
 func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
@@ -64,7 +48,7 @@ func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
 
 	trace.UserID(ctx, userID)
 
-	channelName := fmt.Sprintf("user_events_%s", strings.ReplaceAll(userID, "|", "_"))
+	channelName := fmt.Sprintf("private-events-%s", strings.ReplaceAll(userID, "|", "_"))
 	trace.AddField(ctx, "event.channel_name", channelName)
 
 	evt = convertIDsToGraphQL(evt)

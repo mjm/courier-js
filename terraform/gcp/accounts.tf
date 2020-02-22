@@ -29,6 +29,7 @@ locals {
     "serviceAccount:${module.function_post_queued_tweets.service_account_email}",
     "serviceAccount:${module.function_indieauth_callback.service_account_email}",
     "serviceAccount:${module.function_stripe_callback.service_account_email}",
+    "serviceAccount:${module.function_pusher_auth.service_account_email}",
   ]
 
   dev_account = "serviceAccount:matt-laptop-dev@${var.project_id}.iam.gserviceaccount.com"
