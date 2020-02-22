@@ -31,8 +31,24 @@ resource "google_project_iam_binding" "pubsub_publisher" {
 resource "google_project_iam_binding" "pubsub_subscriber" {
   role = "roles/pubsub.subscriber"
   members = [
-    "serviceAccount:${module.function_graphql.service_account_email}",
     "serviceAccount:${module.function_events.service_account_email}",
+  ]
+}
+
+resource "google_project_iam_custom_role" "pubsub_dynamic_subscriber" {
+  role_id = "pubsub.dynamicSubscriber"
+  title   = "Pub/Sub Dynamic Subscriber"
+  permissions = [
+    "pubsub.subscriptions.consume",
+    "pubsub.subscriptions.create",
+    "pubsub.topics.attachSubscription",
+  ]
+}
+
+resource "google_project_iam_binding" "pubsub_dynamic_subscriber" {
+  role = google_project_iam_custom_role.pubsub_dynamic_subscriber.id
+  members = [
+    "serviceAccount:${module.function_graphql.service_account_email}",
   ]
 }
 
