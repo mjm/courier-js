@@ -35,6 +35,11 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*PubSubHandler, error) {
 		return nil, err
 	}
 	eventRecorder := user.NewEventRecorder(dbDB, bus)
-	pubSubHandler := NewPubSubHandler(config, bus, eventRecorder)
+	pusherClient, err := NewPusherClient(gcpSecretKeeper)
+	if err != nil {
+		return nil, err
+	}
+	pusher := NewPusher(bus, pusherClient)
+	pubSubHandler := NewPubSubHandler(config, bus, eventRecorder, pusher)
 	return pubSubHandler, nil
 }

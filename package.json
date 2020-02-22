@@ -82,6 +82,7 @@
     "nprogress": "^0.2.0",
     "pg": "^7.10.0",
     "postcss-import": "^12.0.1",
+    "pusher-js": "^5.1.1",
     "randombytes": "^2.1.0",
     "react": "^16.12.0",
     "react-dom": "^16.8.6",

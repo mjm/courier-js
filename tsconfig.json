@@ -5,6 +5,7 @@
       "@generated/*": ["lib/__generated__/*"],
       "@pages/*": ["components/pages/*"],
       "@mutations/*": ["components/mutations/*"],
+      "@events/*": ["components/events/*"],
       "@repositories/*": ["lib/repositories/*"],
       "@services/*": ["lib/services"],
       "*": ["*", "types/*"]

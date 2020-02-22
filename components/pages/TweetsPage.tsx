@@ -1,10 +1,15 @@
 import React from "react"
-import { graphql } from "react-relay"
+import { Environment, graphql } from "react-relay"
 
 import { NextPage } from "next"
 import Link from "next/link"
 
+import {
+  handleTweetCanceled,
+  TweetCanceledEvent,
+} from "@events/TweetCanceledEvent"
 import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
+import { useEvent } from "components/EventsProvider"
 import Head from "components/Head"
 import Loading from "components/Loading"
 import Notice from "components/Notice"
@@ -15,11 +20,17 @@ import TweetList from "components/TweetList"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
 
-const TweetsPage: NextPage<TweetsPageQueryResponse> = ({
-  upcoming,
-  past,
-  viewer,
-}) => {
+const TweetsPage: NextPage<TweetsPageQueryResponse & {
+  environment: Environment
+}> = ({ upcoming, past, viewer, environment }) => {
+  useEvent(
+    "TweetCanceled",
+    (data: TweetCanceledEvent) => {
+      handleTweetCanceled(environment, data)
+    },
+    []
+  )
+
   return (
     <main className="container my-8 mx-auto py-0 px-8">
       <Head title="Your Tweets" />

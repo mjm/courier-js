@@ -17,6 +17,8 @@ module.exports = withImages(
       AUTH_DOMAIN: process.env.AUTH_DOMAIN,
       API_IDENTIFIER: process.env.API_IDENTIFIER,
       STRIPE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+      PUSHER_KEY: process.env.PUSHER_KEY,
+      PUSHER_CLUSTER: process.env.PUSHER_CLUSTER,
     },
 
     webpack(config, _options) {
@@ -25,6 +27,7 @@ module.exports = withImages(
         ...config.resolve.alias,
         "@mutations": path.join(__dirname, "components/mutations"),
         "@pages": path.join(__dirname, "components/pages"),
+        "@events": path.join(__dirname, "components/events"),
         "@repositories": path.join(__dirname, "lib/repositories"),
         "@services": path.join(__dirname, "lib/services"),
       }

@@ -18,7 +18,7 @@ type PubSubHandler struct {
 	bus *event.Bus
 }
 
-func NewPubSubHandler(traceCfg trace.Config, bus *event.Bus, _ *user.EventRecorder) *PubSubHandler {
+func NewPubSubHandler(traceCfg trace.Config, bus *event.Bus, _ *user.EventRecorder, _ *Pusher) *PubSubHandler {
 	trace.Init(traceCfg)
 
 	return &PubSubHandler{bus: bus}
