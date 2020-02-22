@@ -73,14 +73,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	childCtx = loader.WithLoaderCache(childCtx)
 
-	params, ok := decodeSubscriptionRequest(r)
-	if ok {
-		h.handleSubscriptionRequest(ctx, w, params)
-		return
-	}
-
-	// TODO handle other get requests with GraphQL playground
-
+	var params Request
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
 		trace.Error(ctx, err)
 		http.Error(w, err.Error(), http.StatusBadRequest)

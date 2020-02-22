@@ -1,20 +1,7 @@
-resource "google_service_account" "circleci_deployer" {
-  account_id   = "circleci-deployer"
-  display_name = "CircleCI Deployer"
-  description  = "Account for deploying functions from CircleCI"
-}
-
 resource "google_project_iam_binding" "owner" {
   role = "roles/owner"
   members = [
     "user:matt@mattmoriarity.com",
-  ]
-}
-
-resource "google_project_iam_binding" "cloud_functions_developer" {
-  role = "roles/cloudfunctions.developer"
-  members = [
-    "serviceAccount:${google_service_account.circleci_deployer.email}",
   ]
 }
 
@@ -32,23 +19,6 @@ resource "google_project_iam_binding" "pubsub_subscriber" {
   role = "roles/pubsub.subscriber"
   members = [
     "serviceAccount:${module.function_events.service_account_email}",
-  ]
-}
-
-resource "google_project_iam_custom_role" "pubsub_dynamic_subscriber" {
-  role_id = "pubsub.dynamicSubscriber"
-  title   = "Pub/Sub Dynamic Subscriber"
-  permissions = [
-    "pubsub.subscriptions.consume",
-    "pubsub.subscriptions.create",
-    "pubsub.topics.attachSubscription",
-  ]
-}
-
-resource "google_project_iam_binding" "pubsub_dynamic_subscriber" {
-  role = google_project_iam_custom_role.pubsub_dynamic_subscriber.id
-  members = [
-    "serviceAccount:${module.function_graphql.service_account_email}",
   ]
 }
 
