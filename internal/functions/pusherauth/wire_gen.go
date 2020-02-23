@@ -38,6 +38,10 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	handler := NewHandler(config, authenticator, pusherClient)
+	pushNotifications, err := event.NewBeamsClient(gcpSecretKeeper)
+	if err != nil {
+		return nil, err
+	}
+	handler := NewHandler(config, authenticator, pusherClient, pushNotifications)
 	return handler, nil
 }

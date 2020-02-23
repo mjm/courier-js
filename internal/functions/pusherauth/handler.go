@@ -3,11 +3,13 @@ package pusherauth
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
+	pushnotifications "github.com/pusher/push-notifications-go"
 	"github.com/pusher/pusher-http-go"
 
 	"github.com/mjm/courier-js/internal/auth"
@@ -18,14 +20,16 @@ import (
 type Handler struct {
 	authenticator *auth.Authenticator
 	pusher        *pusher.Client
+	beams         pushnotifications.PushNotifications
 }
 
-func NewHandler(traceCfg trace.Config, auther *auth.Authenticator, client *pusher.Client) *Handler {
+func NewHandler(traceCfg trace.Config, auther *auth.Authenticator, client *pusher.Client, beams pushnotifications.PushNotifications) *Handler {
 	trace.Init(traceCfg)
 
 	return &Handler{
 		authenticator: auther,
 		pusher:        client,
+		beams:         beams,
 	}
 }
 
@@ -60,32 +64,56 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 
 	trace.UserID(ctx, userID)
 
-	params, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return err
+	switch r.Method {
+	case http.MethodGet:
+		expectedUserID := r.FormValue("user_id")
+		trace.AddField(ctx, "user_id_expected", expectedUserID)
+
+		if expectedUserID != userID {
+			return functions.WrapHTTPError(fmt.Errorf("user ID does not match"), http.StatusUnauthorized)
+		}
+
+		beamsToken, err := h.beams.GenerateToken(userID)
+		if err != nil {
+			return err
+		}
+
+		if err := json.NewEncoder(w).Encode(beamsToken); err != nil {
+			return err
+		}
+
+		return nil
+
+	case http.MethodPost:
+		params, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			return err
+		}
+		r.Body.Close()
+		r.Body = ioutil.NopCloser(bytes.NewBuffer(params))
+
+		trace.AddField(ctx, "auth.params_length", len(params))
+
+		sanitizedUserID := strings.ReplaceAll(userID, "|", "_")
+		trace.AddField(ctx, "user_id_sanitized", sanitizedUserID)
+		channelName := r.FormValue("channel_name")
+		trace.AddField(ctx, "event.channel_name", channelName)
+
+		if channelName != fmt.Sprintf("private-events-%s", sanitizedUserID) {
+			err := fmt.Errorf("user %q cannot subscribe to channel %q", userID, channelName)
+			return functions.WrapHTTPError(err, http.StatusForbidden)
+		}
+
+		res, err := h.pusher.AuthenticatePrivateChannel(params)
+		if err != nil {
+			return err
+		}
+
+		trace.AddField(ctx, "auth.response_length", len(res))
+
+		fmt.Fprintf(w, string(res))
+		return nil
 	}
-	r.Body.Close()
-	r.Body = ioutil.NopCloser(bytes.NewBuffer(params))
 
-	trace.AddField(ctx, "auth.params_length", len(params))
-
-	sanitizedUserID := strings.ReplaceAll(userID, "|", "_")
-	trace.AddField(ctx, "user_id_sanitized", sanitizedUserID)
-	channelName := r.FormValue("channel_name")
-	trace.AddField(ctx, "event.channel_name", channelName)
-
-	if channelName != fmt.Sprintf("private-events-%s", sanitizedUserID) {
-		err := fmt.Errorf("user %q cannot subscribe to channel %q", userID, channelName)
-		return functions.WrapHTTPError(err, http.StatusForbidden)
-	}
-
-	res, err := h.pusher.AuthenticatePrivateChannel(params)
-	if err != nil {
-		return err
-	}
-
-	trace.AddField(ctx, "auth.response_length", len(res))
-
-	fmt.Fprintf(w, string(res))
-	return nil
+	return fmt.Errorf("unexpected HTTP method %q", r.Method)
 }
