@@ -8,6 +8,8 @@ package events
 import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/notifications"
+	"github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
@@ -40,6 +42,12 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*PubSubHandler, error) {
 		return nil, err
 	}
 	pusher := NewPusher(bus, pusherClient)
-	pubSubHandler := NewPubSubHandler(config, bus, eventRecorder, pusher)
+	pushNotifications, err := event.NewBeamsClient(gcpSecretKeeper)
+	if err != nil {
+		return nil, err
+	}
+	tweetQueries := tweets.NewTweetQueries(dbDB, bus)
+	notifier := notifications.NewNotifier(bus, pushNotifications, tweetQueries)
+	pubSubHandler := NewPubSubHandler(config, bus, eventRecorder, pusher, notifier)
 	return pubSubHandler, nil
 }

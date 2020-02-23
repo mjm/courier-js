@@ -10,6 +10,7 @@ import (
 	"github.com/golang/protobuf/ptypes/any"
 
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/notifications"
 	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/trace"
 )
@@ -18,7 +19,7 @@ type PubSubHandler struct {
 	bus *event.Bus
 }
 
-func NewPubSubHandler(traceCfg trace.Config, bus *event.Bus, _ *user.EventRecorder, _ *Pusher) *PubSubHandler {
+func NewPubSubHandler(traceCfg trace.Config, bus *event.Bus, _ *user.EventRecorder, _ *Pusher, _ *notifications.Notifier) *PubSubHandler {
 	trace.Init(traceCfg)
 
 	return &PubSubHandler{bus: bus}

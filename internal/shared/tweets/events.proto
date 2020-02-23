@@ -29,4 +29,5 @@ message TweetsImported {
   string subscription_id = 2;
   repeated string created_tweet_ids = 3;
   repeated string updated_tweet_ids = 4;
+  bool autopost = 5;
 }

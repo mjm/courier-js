@@ -26,6 +26,7 @@ var (
 type TweetQueries interface {
 	// Get fetches a tweet by ID.
 	Get(context.Context, TweetID) (*Tweet, error)
+	PrivilegedGet(context.Context, TweetID) (*Tweet, error)
 	// Paged fetches a paged and possibly filtered subset of a user's tweets.
 	Paged(context.Context, string, Filter, pager.Options) (*pager.Connection, error)
 	GeneratePreviews(context.Context, PreviewPost) ([]*PreviewTweet, error)
@@ -83,6 +84,15 @@ func (q *tweetQueries) Get(ctx context.Context, id TweetID) (*Tweet, error) {
 		return nil, ErrNoTweet
 	}
 	return v.(*Tweet), nil
+}
+
+func (q *tweetQueries) PrivilegedGet(ctx context.Context, id TweetID) (*Tweet, error) {
+	var tweet Tweet
+	if err := q.db.QueryRowxContext(ctx, queries.TweetsPrivilegedGet, id).StructScan(&tweet); err != nil {
+		return nil, err
+	}
+
+	return &tweet, nil
 }
 
 func (q *tweetQueries) Paged(ctx context.Context, userID string, filter Filter, opts pager.Options) (*pager.Connection, error) {

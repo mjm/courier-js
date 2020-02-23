@@ -81,6 +81,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	evt := tweets.TweetsImported{
 		UserId:         cmd.Subscription.UserID,
 		SubscriptionId: string(cmd.Subscription.ID),
+		Autopost:       cmd.Subscription.Autopost,
 	}
 	for _, params := range toCreate {
 		evt.CreatedTweetIds = append(evt.CreatedTweetIds, params.ID.String())
