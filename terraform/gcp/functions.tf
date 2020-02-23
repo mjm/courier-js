@@ -13,6 +13,20 @@ module "function_graphql" {
   trigger_http = true
 }
 
+module "function_ping" {
+  source            = "../modules/cloud_function"
+  project_id        = var.project_id
+  env               = var.env
+  git_revision      = var.function_revision
+  env_vars          = var.function_env
+  events_topic_name = google_pubsub_topic.events.name
+
+  name         = "ping"
+  description  = "Handle XML-RPC ping requests from blogs"
+  entry_point  = "Ping"
+  trigger_http = true
+}
+
 module "function_events" {
   source            = "../modules/cloud_function"
   project_id        = var.project_id

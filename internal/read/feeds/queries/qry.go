@@ -2,7 +2,8 @@ package queries
 
 const (
 	// feeds.sql
-	FeedsLoad = "SELECT * FROM feeds WHERE guid = ANY ($1);"
+	FeedsLoad          = "SELECT * FROM feeds WHERE guid = ANY ($1);"
+	FeedsByHomePageURL = "SELECT * FROM feeds WHERE home_page_url = $1;"
 
 	// posts.sql
 	PostsLoad       = "SELECT * FROM posts WHERE guid = ANY ($1);"

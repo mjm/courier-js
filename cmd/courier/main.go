@@ -18,6 +18,7 @@ func main() {
 	funcframework.RegisterHTTPFunction("/indieauth-callback", courier.IndieAuthCallback)
 	funcframework.RegisterHTTPFunction("/stripe-callback", courier.StripeCallback)
 	funcframework.RegisterHTTPFunction("/pusher-auth", courier.PusherAuth)
+	funcframework.RegisterHTTPFunction("/ping", courier.Ping)
 	funcframework.RegisterEventFunction("/events", courier.Events)
 
 	go pollForEvents()

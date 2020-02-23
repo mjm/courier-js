@@ -9,6 +9,7 @@ resource "google_project_iam_binding" "pubsub_publisher" {
   role = "roles/pubsub.publisher"
   members = [
     "serviceAccount:${module.function_graphql.service_account_email}",
+    "serviceAccount:${module.function_ping.service_account_email}",
     "serviceAccount:${module.function_post_queued_tweets.service_account_email}",
     "serviceAccount:${module.function_indieauth_callback.service_account_email}",
     "serviceAccount:${module.function_stripe_callback.service_account_email}",
@@ -25,6 +26,7 @@ resource "google_project_iam_binding" "pubsub_subscriber" {
 locals {
   function_accounts = [
     "serviceAccount:${module.function_graphql.service_account_email}",
+    "serviceAccount:${module.function_ping.service_account_email}",
     "serviceAccount:${module.function_events.service_account_email}",
     "serviceAccount:${module.function_post_queued_tweets.service_account_email}",
     "serviceAccount:${module.function_indieauth_callback.service_account_email}",

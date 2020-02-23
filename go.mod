@@ -16,6 +16,7 @@ require (
 	github.com/benbjohnson/clock v1.0.0 // indirect
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
+	github.com/divan/gorilla-xmlrpc v0.0.0-20190926132722-f0686da74fda
 	github.com/dlclark/regexp2 v1.2.0
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
@@ -28,6 +29,7 @@ require (
 	github.com/golang/protobuf v1.3.2
 	github.com/google/uuid v1.1.1
 	github.com/google/wire v0.4.0
+	github.com/gorilla/rpc v1.2.0
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/honeycombio/libhoney-go v1.12.2
 	github.com/jarcoal/httpmock v1.0.4
@@ -43,6 +45,7 @@ require (
 	github.com/prometheus/common v0.2.0
 	github.com/pusher/push-notifications-go v0.0.0-20200210154345-764224c311b8
 	github.com/pusher/pusher-http-go v4.0.0+incompatible
+	github.com/rogpeppe/go-charset v0.0.0-20190617161244-0dc95cdf6f31 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/stripe/stripe-go v68.13.0+incompatible
