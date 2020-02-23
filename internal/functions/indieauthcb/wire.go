@@ -23,10 +23,8 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		trace.NewConfigFromSecrets,
 		db.NewConfigFromSecrets,
 		db.New,
-		auth.NewAuthenticator,
-		auth.NewJWKSClient,
+		auth.DefaultSet,
 		auth.NewConfigFromSecrets,
-		auth.NewManagementClient,
 		tweets.NewTwitterConfigFromSecrets,
 		tweets.DefaultSet,
 	))

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/google/wire"
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
 	"golang.org/x/net/context/ctxhttp"
@@ -20,6 +21,8 @@ import (
 	"github.com/mjm/courier-js/internal/write/tweets"
 	"github.com/mjm/courier-js/internal/write/user"
 )
+
+var DefaultSet = wire.NewSet(New, QueriesProvider)
 
 // Root is the root resolver for queries and mutations.
 type Root struct {
