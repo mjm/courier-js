@@ -45,11 +45,6 @@ type Mutation {
   cancelSubscription(
     input: CancelSubscriptionInput!
   ): CancelSubscriptionPayload!
-
-  #   addDevice(input: AddDeviceInput!): AddDevicePayload!
-  #   sendTestNotification(
-  #     input: SendTestNotificationInput!
-  #   ): SendTestNotificationPayload!
 }
 
 interface Node {
@@ -347,40 +342,6 @@ type MicroformatPage {
   tokenEndpoint: String
 }
 
-# type DeviceToken implements Node {
-type DeviceToken {
-  id: ID!
-  token: String!
-}
-
-enum NotificationEnvironment {
-  PRODUCTION
-  SANDBOX
-}
-
-input AddDeviceInput {
-  token: String!
-  environment: NotificationEnvironment
-}
-
-type AddDevicePayload {
-  deviceToken: DeviceToken!
-}
-
-enum TestNotificationType {
-  IMPORTED
-  POSTED
-}
-
-input SendTestNotificationInput {
-  tweetId: ID!
-  type: TestNotificationType
-}
-
-type SendTestNotificationPayload {
-  placeholder: String
-}
-
 type FeedPreview {
   url: String!
   title: String!
@@ -401,8 +362,4 @@ interface TweetContent {
   body: String!
   mediaURLs: [String!]!
   retweetID: String!
-}
-
-type FeedRefreshedEvent {
-  feed: Feed
 }
