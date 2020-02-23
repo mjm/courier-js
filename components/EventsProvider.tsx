@@ -3,7 +3,8 @@ import React from "react"
 import Pusher, { AuthInfo, Channel } from "pusher-js"
 import { AuthData } from "pusher-js/types/src/core/auth/options"
 
-import { useAuth } from "./AuthProvider"
+import { useAuth } from "components/AuthProvider"
+import { getToken } from "utils/auth0"
 
 const pusher = process.browser
   ? new Pusher(process.env.PUSHER_KEY ?? "", {
@@ -13,9 +14,9 @@ const pusher = process.browser
         async function authorize(socketId: string): Promise<AuthInfo> {
           const response = await fetch(process.env.PUSHER_AUTH_URL ?? "", {
             method: "POST",
-            credentials: "include",
             body: `channel_name=${channel.name}&socket_id=${socketId}`,
             headers: {
+              Authorization: `Bearer ${getToken(undefined, "accessToken")}`,
               "Content-Type": "application/x-www-form-urlencoded",
             },
           })
