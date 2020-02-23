@@ -4,9 +4,29 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"sync"
 
 	"github.com/mjm/courier-js/internal/trace"
 )
+
+func NewHTTP(svcname string, creator func() (HTTPHandler, error)) http.Handler {
+	var handler http.Handler
+	var init sync.Once
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		init.Do(func() {
+			h, err := creator()
+			if err != nil {
+				panic(err)
+			}
+			handler = WrapHTTP(h)
+
+			trace.SetServiceName(svcname)
+		})
+
+		handler.ServeHTTP(w, r)
+	})
+}
 
 type HTTPHandler interface {
 	HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error

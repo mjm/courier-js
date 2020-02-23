@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/tweets"
@@ -25,31 +26,20 @@ func NewHandler(traceCfg trace.Config, commandBus *write.CommandBus, auth *auth.
 	}
 }
 
-func (h *Handler) HandleHTTP(w http.ResponseWriter, r *http.Request) {
-	defer trace.Flush()
-
-	ctx := trace.Start(r.Context(), "Complete IndieAuth")
-	defer trace.Finish(ctx)
-
+func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	ctx, err := h.auth.Authenticate(ctx, r)
 	if err != nil {
-		trace.Error(ctx, err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return functions.WrapHTTPError(err, http.StatusBadRequest)
 	}
 
 	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
-		trace.Error(ctx, err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return functions.WrapHTTPError(err, http.StatusBadRequest)
 	}
 
 	result, err := completeIndieAuth(ctx, r)
 	if err != nil {
-		trace.Error(ctx, err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return functions.WrapHTTPError(err, http.StatusBadRequest)
 	}
 
 	if _, err := h.commandBus.Run(ctx, tweets.SetupSyndicationCommand{
@@ -57,13 +47,12 @@ func (h *Handler) HandleHTTP(w http.ResponseWriter, r *http.Request) {
 		URL:    result.URL,
 		Token:  result.Token,
 	}); err != nil {
-		trace.Error(ctx, err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return functions.WrapHTTPError(err, http.StatusBadRequest)
 	}
 
 	w.Header().Set("Location", result.Origin)
 	w.WriteHeader(http.StatusMovedPermanently)
+	return nil
 }
 
 func completeIndieAuth(ctx context.Context, r *http.Request) (*indieauth.Result, error) {

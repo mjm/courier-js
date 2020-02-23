@@ -11,6 +11,7 @@ import (
 
 	billing2 "github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/read/billing"
 	billingevent "github.com/mjm/courier-js/internal/shared/billing"
 	"github.com/mjm/courier-js/internal/trace"
@@ -32,36 +33,27 @@ func NewHandler(traceCfg trace.Config, stripeCfg billing2.Config, eventBus *even
 	}
 }
 
-func (h *Handler) HandleHTTP(w http.ResponseWriter, r *http.Request) {
-	defer trace.Flush()
-
-	ctx := trace.Start(r.Context(), "Stripe webhook event")
-	defer trace.Finish(ctx)
-
+func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	r.Body = http.MaxBytesReader(w, r.Body, 65536)
 	payload, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		trace.Error(ctx, err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return functions.WrapHTTPError(err, http.StatusBadRequest)
 	}
 
 	trace.AddField(ctx, "stripe.payload_length", len(payload))
 
 	evt, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), h.webhookSecret)
 	if err != nil {
-		trace.Error(ctx, err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return err
 	}
 
 	if err := h.handleStripeEvent(ctx, &evt); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return err
 	}
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "OK")
+	return nil
 }
 
 func (h *Handler) handleStripeEvent(ctx context.Context, evt *stripe.Event) error {

@@ -10,6 +10,7 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/trace"
 )
@@ -28,20 +29,7 @@ func NewHandler(traceCfg trace.Config, schema *graphql.Schema, auther *auth.Auth
 	}
 }
 
-var _ http.Handler = (*Handler)(nil)
-
-func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	defer trace.Flush()
-
-	// wrap the whole request in a trace
-	ctx := trace.Start(r.Context(), "HTTP request")
-	defer trace.Finish(ctx)
-
-	trace.Add(ctx, trace.Fields{
-		"http.url":    r.URL.Path,
-		"http.method": r.Method,
-	})
-
+func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	// Set CORS headers for the preflight request
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -50,8 +38,9 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 		w.Header().Set("Access-Control-Max-Age", "3600")
 		w.WriteHeader(http.StatusNoContent)
-		return
+		return nil
 	}
+
 	// Set CORS headers for the main request.
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
@@ -68,30 +57,26 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				},
 			},
 		}
-		writeResponse(ctx, w, response)
-		return
+		return writeResponse(ctx, w, response)
 	}
 	childCtx = loader.WithLoaderCache(childCtx)
 
 	var params Request
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
-		trace.Error(ctx, err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return functions.WrapHTTPError(err, http.StatusBadRequest)
 	}
 
 	response := h.Schema.Exec(childCtx, params.Query, params.OperationName, params.Variables)
-	writeResponse(ctx, w, response)
+	return writeResponse(ctx, w, response)
 }
 
-func writeResponse(ctx context.Context, w http.ResponseWriter, resp *graphql.Response) {
+func writeResponse(ctx context.Context, w http.ResponseWriter, resp *graphql.Response) error {
 	responseJSON, err := json.Marshal(resp)
 	if err != nil {
-		trace.Error(ctx, err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		return err
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(responseJSON)
+	return nil
 }
