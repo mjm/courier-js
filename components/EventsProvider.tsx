@@ -1,9 +1,9 @@
 import React from "react"
 
 import Pusher, { AuthInfo, Channel } from "pusher-js"
+import { AuthData } from "pusher-js/types/src/core/auth/options"
 
 import { useAuth } from "./AuthProvider"
-import { AuthData } from "pusher-js/src/core/auth/options"
 
 const pusher = process.browser
   ? new Pusher(process.env.PUSHER_KEY ?? "", {

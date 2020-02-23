@@ -137,6 +137,6 @@
     "relay-compiler-language-typescript": "^10.1.1",
     "relay-config": "^7.1.0",
     "schemats": "^3.0.3",
-    "typescript": "^3.7.2"
+    "typescript": "^3.8.2"
   }
 }
