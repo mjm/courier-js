@@ -96,5 +96,40 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 }
 
 func (n *Notifier) handleTweetPosted(ctx context.Context, evt tweets.TweetPosted) {
+	ctx = trace.Start(ctx, "Send tweet posted")
+	defer trace.Finish(ctx)
 
+	tweetID := tweets.TweetID(evt.TweetId)
+
+	trace.UserID(ctx, evt.UserId)
+	trace.TweetID(ctx, tweetID)
+
+	tweet, err := n.tweets.PrivilegedGet(ctx, tweetID)
+	if err != nil {
+		trace.Error(ctx, err)
+		return
+	}
+
+	payload := make(map[string]interface{})
+	payload["tweetId"] = tweetID
+	aps := make(map[string]interface{})
+	payload["aps"] = aps
+
+	aps["category"] = "POSTED_TWEET"
+	aps["thread-id"] = tweet.ID
+	alert := make(map[string]interface{})
+	aps["alert"] = alert
+
+	alert["title-loc-key"] = "POSTED_TWEET_TITLE"
+	alert["body"] = tweet.Body
+
+	publishID, err := n.beams.PublishToUsers([]string{evt.UserId}, map[string]interface{}{
+		"apns": payload,
+	})
+	if err != nil {
+		trace.Error(ctx, err)
+		return
+	}
+
+	trace.AddField(ctx, "notification.publish_id", publishID)
 }
