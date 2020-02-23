@@ -8,6 +8,7 @@
 
 import Auth0
 import Combinable
+import PushNotifications
 import UserActions
 
 extension Notification.Name {
@@ -25,8 +26,9 @@ struct LogoutAction: ReactiveUserAction {
                     _ = CredentialsManager.shared.clear()
                     NotificationCenter.default.post(name: .didLogOut, object: nil)
                     context.apolloClient.store.clearCache()
-
-                    promise(.success(()))
+                    Endpoint.current.pushNotifications.clearAllState {
+                        promise(.success(()))
+                    }
                 }
         }.eraseToAnyPublisher()
     }
