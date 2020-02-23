@@ -4,21 +4,17 @@ import { Environment, graphql } from "react-relay"
 import { NextPage } from "next"
 import Link from "next/link"
 
-import {
-  handleTweetCanceled,
-  TweetCanceledEvent,
-} from "@events/TweetCanceledEvent"
+import { handleTweetCanceled, TweetCanceledEvent, } from "@events/TweetCanceledEvent"
 import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
 import { useEvent } from "components/EventsProvider"
 import Head from "components/Head"
 import Loading from "components/Loading"
 import Notice from "components/Notice"
-import SubscriptionProvider, {
-  useSubscription,
-} from "components/SubscriptionProvider"
+import SubscriptionProvider, { useSubscription, } from "components/SubscriptionProvider"
 import TweetList from "components/TweetList"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
+import { handleTweetUncanceled, TweetUncanceledEvent, } from "@events/TweetUncanceledEvent"
 
 const TweetsPage: NextPage<TweetsPageQueryResponse & {
   environment: Environment
@@ -27,6 +23,14 @@ const TweetsPage: NextPage<TweetsPageQueryResponse & {
     "TweetCanceled",
     (data: TweetCanceledEvent) => {
       handleTweetCanceled(environment, data)
+    },
+    []
+  )
+
+  useEvent(
+    "TweetUncanceled",
+    (data: TweetUncanceledEvent) => {
+      handleTweetUncanceled(environment, data)
     },
     []
   )
