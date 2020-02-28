@@ -36,9 +36,10 @@ func New(cfg Config, secretCfg secret.GCPConfig) (*Tasks, error) {
 	}
 
 	return &Tasks{
-		url:    cfg.TaskURL,
-		queue:  cfg.Queue,
-		client: client,
+		url:            cfg.TaskURL,
+		queue:          cfg.Queue,
+		serviceAccount: cfg.ServiceAccount,
+		client:         client,
 	}, nil
 }
 
