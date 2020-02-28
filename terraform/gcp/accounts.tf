@@ -13,6 +13,7 @@ resource "google_project_iam_binding" "pubsub_publisher" {
     "serviceAccount:${module.function_post_queued_tweets.service_account_email}",
     "serviceAccount:${module.function_indieauth_callback.service_account_email}",
     "serviceAccount:${module.function_stripe_callback.service_account_email}",
+    "serviceAccount:${module.function_tasks.service_account_email}",
   ]
 }
 
@@ -20,6 +21,16 @@ resource "google_project_iam_binding" "pubsub_subscriber" {
   role = "roles/pubsub.subscriber"
   members = [
     "serviceAccount:${module.function_events.service_account_email}",
+  ]
+}
+
+resource "google_project_iam_binding" "cloud_tasks_enqueuer" {
+  role = "roles/cloudtasks.enqueuer"
+  members = [
+    "serviceAccount:${module.function_graphql.service_account_email}",
+    "serviceAccount:${module.function_ping.service_account_email}",
+    "serviceAccount:${module.function_events.service_account_email}",
+    "serviceAccount:${module.function_tasks.service_account_email}",
   ]
 }
 
@@ -32,6 +43,7 @@ locals {
     "serviceAccount:${module.function_indieauth_callback.service_account_email}",
     "serviceAccount:${module.function_stripe_callback.service_account_email}",
     "serviceAccount:${module.function_pusher_auth.service_account_email}",
+    "serviceAccount:${module.function_tasks.service_account_email}",
   ]
 
   dev_account = "serviceAccount:matt-laptop-dev@${var.project_id}.iam.gserviceaccount.com"

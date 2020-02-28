@@ -16,6 +16,7 @@ import (
 	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	billing3 "github.com/mjm/courier-js/internal/write/billing"
@@ -75,6 +76,11 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		Subscriptions:     billingSubscriptionQueries,
 	}
 	commandBus := write.NewCommandBus()
+	tasksConfig := tasks.NewConfig()
+	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	if err != nil {
+		return nil, err
+	}
 	feedRepository := feeds2.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
 	postRepository := feeds2.NewPostRepository(dbDB)
@@ -98,7 +104,7 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, billingConfig, customerRepository, billingSubscriptionRepository)
 	userUserRepository := user2.NewUserRepository(management)
 	userCommandHandler := user2.NewCommandHandler(commandBus, bus, userUserRepository)
-	root := resolvers.New(queries, commandBus, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
+	root := resolvers.New(queries, commandBus, tasksTasks, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err

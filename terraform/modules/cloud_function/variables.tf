@@ -4,7 +4,6 @@ variable "name" {}
 variable "description" {}
 variable "entry_point" {}
 variable "git_revision" {}
-variable "events_topic_name" {}
 
 variable "trigger_http" {
   type    = bool

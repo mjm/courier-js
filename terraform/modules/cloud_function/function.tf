@@ -1,12 +1,11 @@
 locals {
   source_repo_url = "https://source.developers.google.com/projects/${var.project_id}/repos/${var.repository}/revisions/${var.git_revision}/paths/"
-  function_env    = {
+  function_env = {
     APP_ENV        = var.env
     GOOGLE_PROJECT = var.project_id
-    GCP_TOPIC_ID   = var.events_topic_name
   }
-  event_triggers  = var.trigger_topic == "" ? toset([]) : toset([
-    var.trigger_topic])
+  event_triggers = var.trigger_topic == "" ? toset([]) : toset([
+  var.trigger_topic])
 }
 
 resource "google_cloudfunctions_function" "function" {

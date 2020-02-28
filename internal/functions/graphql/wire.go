@@ -11,6 +11,7 @@ import (
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/billing"
@@ -38,6 +39,7 @@ func InitializeHandler(
 			billing2.NewClient,
 			tweets.NewTwitterConfigFromSecrets,
 			write.NewCommandBus,
+			tasks.DefaultSet,
 			event.PublishingSet,
 			feeds.DefaultSet,
 			tweets.DefaultSet,

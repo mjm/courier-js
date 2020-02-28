@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package courier.tasks.tweets;
+option go_package = "tweets";
+
+message PostTweetTask {
+  string user_id = 1;
+  string tweet_id = 2;
+  bool autopost = 3;
+}

@@ -8,8 +8,9 @@ import (
 )
 
 type PostCommand struct {
-	UserID  string
-	TweetID TweetID
+	UserID   string
+	TweetID  TweetID
+	Autopost bool
 }
 
 func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error {
@@ -46,7 +47,7 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 	h.eventBus.Fire(ctx, tweets.TweetPosted{
 		UserId:     cmd.UserID,
 		TweetId:    cmd.TweetID.String(),
-		Autoposted: false,
+		Autoposted: cmd.Autopost,
 	})
 
 	return nil
