@@ -4,7 +4,7 @@ locals {
     GCP_TASKS_QUEUE = google_cloud_tasks_queue.tasks.id
   }
   non_tasks_env = {
-    TASKS_URL = module.function_tasks.https_url
+    TASKS_URL = "https://${var.region}-${var.project_id}.cloudfunctions.net/tasks"
   }
   function_env = merge(local.base_env, var.function_env)
 }
