@@ -5,13 +5,15 @@ import (
 )
 
 type Config struct {
-	TaskURL string
-	Queue   string
+	TaskURL        string
+	Queue          string
+	ServiceAccount string
 }
 
 func NewConfig() Config {
 	return Config{
-		TaskURL: os.Getenv("TASKS_URL"),
-		Queue:   os.Getenv("GCP_TASKS_QUEUE"),
+		TaskURL:        os.Getenv("TASKS_URL"),
+		Queue:          os.Getenv("GCP_TASKS_QUEUE"),
+		ServiceAccount: os.Getenv("SERVICE_ACCOUNT_EMAIL"),
 	}
 }

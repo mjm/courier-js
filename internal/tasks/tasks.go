@@ -18,9 +18,10 @@ import (
 var DefaultSet = wire.NewSet(New, NewConfig)
 
 type Tasks struct {
-	url    string
-	queue  string
-	client *cloudtasks.Client
+	url            string
+	queue          string
+	serviceAccount string
+	client         *cloudtasks.Client
 }
 
 func New(cfg Config, secretCfg secret.GCPConfig) (*Tasks, error) {
@@ -69,6 +70,11 @@ func (t *Tasks) Enqueue(ctx context.Context, task proto.Message) error {
 					Body:       data,
 					HttpMethod: taskspb.HttpMethod_POST,
 					Url:        t.url,
+					AuthorizationHeader: &taskspb.HttpRequest_OidcToken{
+						OidcToken: &taskspb.OidcToken{
+							ServiceAccountEmail: t.serviceAccount,
+						},
+					},
 				},
 			},
 		},

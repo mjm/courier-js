@@ -1,8 +1,9 @@
 locals {
   source_repo_url = "https://source.developers.google.com/projects/${var.project_id}/repos/${var.repository}/revisions/${var.git_revision}/paths/"
   function_env = {
-    APP_ENV        = var.env
-    GOOGLE_PROJECT = var.project_id
+    APP_ENV               = var.env
+    GOOGLE_PROJECT        = var.project_id
+    SERVICE_ACCOUNT_EMAIL = google_service_account.function_account.email
   }
   event_triggers = var.trigger_topic == "" ? toset([]) : toset([
   var.trigger_topic])
