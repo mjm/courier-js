@@ -130,7 +130,7 @@ func (r *TweetRepository) Post(ctx context.Context, tweetID TweetID, postedTweet
 }
 
 func (r *TweetRepository) QueuePost(ctx context.Context, tweetID TweetID, taskName string) error {
-	res, err := r.db.ExecContext(ctx, queries.TweetsPost, tweetID, taskName)
+	res, err := r.db.ExecContext(ctx, queries.TweetsQueuePost, tweetID, taskName)
 	if err != nil {
 		return err
 	}
@@ -170,7 +170,7 @@ func (r *TweetRepository) Create(ctx context.Context, subID feeds.SubscriptionID
 	}
 
 	emptyMediaURLs := []byte("[]")
-	u := db.NewUnnester("uuid", "uuid", "tweet_action", "text", "json", "text", "int4")
+	u := db.NewUnnester("uuid", "uuid", "tweet_action", "text", "json", "text", "int4", "text")
 	for _, t := range ts {
 		mediaURLs := emptyMediaURLs
 		if len(t.MediaURLs) > 0 {
@@ -180,7 +180,7 @@ func (r *TweetRepository) Create(ctx context.Context, subID feeds.SubscriptionID
 				return err
 			}
 		}
-		u.AppendRow(t.ID, t.PostID, t.Action, t.Body, mediaURLs, t.RetweetID, t.Position)
+		u.AppendRow(t.ID, t.PostID, t.Action, t.Body, mediaURLs, t.RetweetID, t.Position, t.PostTaskName)
 	}
 
 	args := append([]interface{}{subID, postAfter}, u.Values()...)
