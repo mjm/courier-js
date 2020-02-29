@@ -25,6 +25,7 @@ type Tweet struct {
 	PostAfter          pq.NullTime          `db:"post_after"`
 	Action             TweetAction          `db:"action"`
 	RetweetID          string               `db:"retweet_id"`
+	PostTaskName       string               `db:"post_task_name"`
 
 	Unused_ID                 int  `db:"id"`
 	Unused_PostID             *int `db:"post_id"`
