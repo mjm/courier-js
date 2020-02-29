@@ -3,6 +3,7 @@ package secret
 import (
 	"context"
 	"fmt"
+	"os"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1beta1"
 	"github.com/google/wire"
@@ -13,6 +14,13 @@ import (
 type GCPConfig struct {
 	ProjectID       string
 	CredentialsFile string
+}
+
+func GCPConfigFromEnv() GCPConfig {
+	return GCPConfig{
+		ProjectID:       os.Getenv("GOOGLE_PROJECT"),
+		CredentialsFile: os.Getenv("GCP_CREDENTIALS_FILE"),
+	}
 }
 
 var GCPSet = wire.NewSet(
