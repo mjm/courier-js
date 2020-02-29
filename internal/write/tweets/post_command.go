@@ -11,11 +11,13 @@ type PostCommand struct {
 	UserID   string
 	TweetID  TweetID
 	Autopost bool
+	TaskName string
 }
 
 func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error {
 	trace.UserID(ctx, cmd.UserID)
 	trace.TweetID(ctx, cmd.TweetID)
+	trace.AddField(ctx, "task.name", cmd.TaskName)
 
 	// TODO check if user is subscribed
 
@@ -24,7 +26,16 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 		return err
 	}
 
+	trace.AddField(ctx, "tweet.expected_task_name", tweet.PostTaskName)
 	trace.AddField(ctx, "tweet.status", tweet.Status)
+
+	if tweet.PostTaskName == "" || (cmd.TaskName != "" && tweet.PostTaskName != cmd.TaskName) {
+		trace.AddField(ctx, "task.skipped", true)
+		return nil
+	}
+
+	trace.AddField(ctx, "task.skipped", false)
+
 	if tweet.Status != Draft {
 		return ErrNotDraft
 	}

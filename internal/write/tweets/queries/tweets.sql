@@ -65,6 +65,15 @@ SET
 WHERE guid = $1
   AND status = 'draft';
 
+-- qry: TweetsQueuePost
+UPDATE tweets
+SET
+  post_after     = CURRENT_TIMESTAMP,
+  post_task_name = $2,
+  updated_at     = CURRENT_TIMESTAMP
+WHERE guid = $1
+  AND status = 'draft';
+
 -- qry: TweetsCreate
 INSERT
   INTO
@@ -77,7 +86,8 @@ INSERT
    body,
    media_urls,
    retweet_id,
-   position)
+   position,
+   post_task_name)
 SELECT
   v.guid,
   $1,
@@ -87,9 +97,10 @@ SELECT
   v.body,
   ARRAY(SELECT json_array_elements_text(v.media_urls)),
   v.retweet_id,
-  v.position
+  v.position,
+  v.post_task_name
 FROM
-  __unnested__ v(guid, post_guid, action, body, media_urls, retweet_id, position);
+  __unnested__ v(guid, post_guid, action, body, media_urls, retweet_id, position, post_task_name);
 
 -- qry: TweetsUpdate
 UPDATE

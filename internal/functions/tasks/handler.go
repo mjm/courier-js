@@ -30,6 +30,9 @@ func NewHandler(traceCfg trace.Config, commandBus *write.CommandBus, _ *event.Pu
 }
 
 func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	taskName := r.Header.Get("X-CloudTasks-TaskName")
+	trace.AddField(ctx, "task.name", taskName)
+
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return err
@@ -56,6 +59,7 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 			UserID:   task.UserId,
 			TweetID:  tweets.TweetID(task.TweetId),
 			Autopost: task.Autopost,
+			TaskName: taskName,
 		})
 	default:
 		err = fmt.Errorf("unknown task type %T", msg.Message)

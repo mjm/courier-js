@@ -23,6 +23,7 @@ type Tweet struct {
 	CreatedAt          time.Time            `db:"created_at"`
 	UpdatedAt          time.Time            `db:"updated_at"`
 	PostAfter          pq.NullTime          `db:"post_after"`
+	PostTaskName       string               `db:"post_task_name"`
 	Action             TweetAction          `db:"action"`
 	RetweetID          string               `db:"retweet_id"`
 

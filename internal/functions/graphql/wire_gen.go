@@ -98,7 +98,7 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		return nil, err
 	}
 	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig)
-	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository, userRepository)
+	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tasksTasks, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository, userRepository)
 	customerRepository := billing3.NewCustomerRepository(api)
 	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
 	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, billingConfig, customerRepository, billingSubscriptionRepository)

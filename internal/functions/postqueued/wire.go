@@ -9,6 +9,7 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/tweets"
@@ -19,6 +20,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		NewHandler,
 		event.PublishingSet,
 		write.NewCommandBus,
+		tasks.DefaultSet,
 		secret.GCPSet,
 		trace.NewConfigFromSecrets,
 		db.NewConfigFromSecrets,

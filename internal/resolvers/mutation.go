@@ -7,7 +7,6 @@ import (
 	"github.com/mjm/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/auth"
-	tweets2 "github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
@@ -276,10 +275,11 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 		return
 	}
 
-	if err = r.tasks.Enqueue(ctx, &tweets2.PostTweetTask{
-		UserId:  userID,
-		TweetId: id.String(),
-	}); err != nil {
+	cmd := tweets.QueuePostCommand{
+		UserID:  userID,
+		TweetID: id,
+	}
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 

@@ -3,9 +3,13 @@ package tweets
 import (
 	"context"
 	"sync"
+	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
+	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/pkg/htmltweets"
 
@@ -78,6 +82,19 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 		return err
 	}
 
+	if cmd.Subscription.Autopost {
+		for _, t := range toCreate {
+			task := &tweets.PostTweetTask{
+				UserId:   cmd.Subscription.UserID,
+				TweetId:  t.ID.String(),
+				Autopost: true,
+			}
+			if _, err := h.tasks.Enqueue(ctx, task, tasks.After(5*time.Minute), tasks.Named(t.PostTaskName)); err != nil {
+				return err
+			}
+		}
+	}
+
 	evt := tweets.TweetsImported{
 		UserId:         cmd.Subscription.UserID,
 		SubscriptionId: string(cmd.Subscription.ID),
@@ -144,9 +161,10 @@ func (h *CommandHandler) planTweets(ctx context.Context, post *Post, ts []*Tweet
 			toUpdate = append(toUpdate, t)
 		} else {
 			t := CreateTweetParams{
-				ID:       tweets.NewTweetID(),
-				PostID:   post.ID,
-				Position: i,
+				ID:           tweets.NewTweetID(),
+				PostID:       post.ID,
+				PostTaskName: uuid.New().String(),
+				Position:     i,
 			}
 
 			switch newTweet.Action {

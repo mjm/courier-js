@@ -9,6 +9,7 @@ import (
 
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 )
 
@@ -27,6 +28,7 @@ var DefaultSet = wire.NewSet(
 type CommandHandler struct {
 	bus               *write.CommandBus
 	eventBus          *event.Bus
+	tasks             *tasks.Tasks
 	tweetRepo         *TweetRepository
 	subRepo           *FeedSubscriptionRepository
 	postRepo          *PostRepository
@@ -38,6 +40,7 @@ type CommandHandler struct {
 func NewCommandHandler(
 	bus *write.CommandBus,
 	eventBus *event.Bus,
+	tasks *tasks.Tasks,
 	tweetRepo *TweetRepository,
 	subRepo *FeedSubscriptionRepository,
 	postRepo *PostRepository,
@@ -47,6 +50,7 @@ func NewCommandHandler(
 	h := &CommandHandler{
 		bus:               bus,
 		eventBus:          eventBus,
+		tasks:             tasks,
 		tweetRepo:         tweetRepo,
 		subRepo:           subRepo,
 		postRepo:          postRepo,
@@ -58,6 +62,7 @@ func NewCommandHandler(
 		UncancelCommand{},
 		UpdateCommand{},
 		PostCommand{},
+		QueuePostCommand{},
 		PostQueuedCommand{},
 		SendTweetCommand{},
 		ImportTweetsCommand{},
@@ -87,6 +92,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 
 	case PostCommand:
 		return nil, h.handlePost(ctx, cmd)
+
+	case QueuePostCommand:
+		return nil, h.handleQueuePost(ctx, cmd)
 
 	case PostQueuedCommand:
 		return nil, h.handlePostQueued(ctx, cmd)

@@ -129,14 +129,33 @@ func (r *TweetRepository) Post(ctx context.Context, tweetID TweetID, postedTweet
 	return nil
 }
 
+func (r *TweetRepository) QueuePost(ctx context.Context, tweetID TweetID, taskName string) error {
+	res, err := r.db.ExecContext(ctx, queries.TweetsPost, tweetID, taskName)
+	if err != nil {
+		return err
+	}
+
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if n == 0 {
+		return ErrNoTweet
+	}
+
+	return nil
+}
+
 type CreateTweetParams struct {
-	ID        TweetID
-	PostID    feeds.PostID
-	Action    TweetAction
-	Body      string
-	MediaURLs []string
-	RetweetID string
-	Position  int
+	ID           TweetID
+	PostID       feeds.PostID
+	Action       TweetAction
+	Body         string
+	MediaURLs    []string
+	RetweetID    string
+	Position     int
+	PostTaskName string
 }
 
 func (r *TweetRepository) Create(ctx context.Context, subID feeds.SubscriptionID, autopost bool, ts []CreateTweetParams) error {

@@ -10,6 +10,7 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/tweets"
@@ -35,6 +36,11 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	bus := event.NewBus()
 	publisher := event.NewPublisher(publisherConfig, pubsubClient, bus)
+	tasksConfig := tasks.NewConfig()
+	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	if err != nil {
+		return nil, err
+	}
 	dbConfig, err := db.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
@@ -64,7 +70,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	userRepository := tweets.NewUserRepository(management, keyManagementClient, gcpConfig)
-	commandHandler := tweets.NewCommandHandler(commandBus, bus, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository)
+	commandHandler := tweets.NewCommandHandler(commandBus, bus, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository)
 	handler := NewHandler(config, commandBus, publisher, commandHandler)
 	return handler, nil
 }
