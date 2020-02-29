@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "config.go",
+        "tasks.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/tasks",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/secret:go_default_library",
+        "//internal/trace:go_default_library",
+        "@com_github_golang_protobuf//proto:go_default_library",
+        "@com_github_golang_protobuf//ptypes:go_default_library_gen",
+        "@com_github_google_wire//:go_default_library",
+        "@com_google_cloud_go//cloudtasks/apiv2:go_default_library",
+        "@go_googleapis//google/cloud/tasks/v2:tasks_go_proto",
+        "@org_golang_google_api//option:go_default_library",
+    ],
+)

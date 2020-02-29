@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package courier.events.feeds;
+package courier.feeds;
 option go_package = "feeds";
 
 message FeedCreated {

@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/courier-js/cmd/courier",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//:go_default_library",
+        "//internal/functions/events:go_default_library",
+        "@com_github_googlecloudplatform_functions_framework_go//funcframework:go_default_library",
+        "@com_google_cloud_go_pubsub//:go_default_library",
+        "@org_golang_google_api//option:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "courier",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)

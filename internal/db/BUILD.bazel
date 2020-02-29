@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "db.go",
+        "testing.go",
+        "unnest.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/db",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/secret:go_default_library",
+        "//internal/trace:go_default_library",
+        "@com_github_jmoiron_sqlx//:go_default_library",
+        "@com_github_lib_pq//:go_default_library",
+    ],
+)

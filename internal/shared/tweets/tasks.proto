@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package courier.tasks.tweets;
+package courier.tweets;
 option go_package = "tweets";
 
 message PostTweetTask {

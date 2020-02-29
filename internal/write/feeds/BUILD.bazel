@@ -1,0 +1,55 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "command_handler.go",
+        "create_command.go",
+        "feed.go",
+        "feed_repository.go",
+        "import_posts_command.go",
+        "post.go",
+        "post_repository.go",
+        "qry_gen.go",
+        "refresh_command.go",
+        "subscribe_command.go",
+        "subscription.go",
+        "subscription_repository.go",
+        "unsubscribe_command.go",
+        "update_options_command.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/write/feeds",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/event:go_default_library",
+        "//internal/shared/feeds:go_default_library",
+        "//internal/trace:go_default_library",
+        "//internal/write:go_default_library",
+        "//internal/write/feeds/queries:go_default_library",
+        "//pkg/locatefeed:go_default_library",
+        "//pkg/scraper:go_default_library",
+        "@com_github_google_wire//:go_default_library",
+        "@com_github_hnh_qry//:go_default_library",
+        "@com_github_lib_pq//:go_default_library",
+        "@com_willnorris_go_microformats//:go_default_library",
+        "@org_golang_x_net//context/ctxhttp:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "post_repository_test.go",
+        "suite_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/event:go_default_library",
+        "//internal/shared/feeds:go_default_library",
+        "@com_github_khaiql_dbcleaner//:go_default_library",
+        "@com_github_khaiql_dbcleaner//engine:go_default_library",
+        "@com_github_stretchr_testify//suite:go_default_library",
+    ],
+)

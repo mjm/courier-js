@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "handler.go",
+        "wire_gen.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/functions/tasks",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/auth:go_default_library",
+        "//internal/db:go_default_library",
+        "//internal/event:go_default_library",
+        "//internal/secret:go_default_library",
+        "//internal/shared/tweets:go_default_library",
+        "//internal/tasks:go_default_library",
+        "//internal/trace:go_default_library",
+        "//internal/write:go_default_library",
+        "//internal/write/tweets:go_default_library",
+        "@com_github_golang_protobuf//proto:go_default_library",
+        "@com_github_golang_protobuf//ptypes:go_default_library_gen",
+        "@io_bazel_rules_go//proto/wkt:any_go_proto",
+    ],
+)

@@ -1,0 +1,36 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/mjm/courier-js
+# gazelle:exclude node_modules
+gazelle(name = "gazelle")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "events.go",
+        "graphql.go",
+        "indieauth_callback.go",
+        "ping.go",
+        "post_queued_tweets.go",
+        "pusher_auth.go",
+        "secret_config.go",
+        "stripe_callback.go",
+        "tasks.go",
+    ],
+    importpath = "github.com/mjm/courier-js",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/functions:go_default_library",
+        "//internal/functions/events:go_default_library",
+        "//internal/functions/graphql:go_default_library",
+        "//internal/functions/indieauthcb:go_default_library",
+        "//internal/functions/ping:go_default_library",
+        "//internal/functions/postqueued:go_default_library",
+        "//internal/functions/pusherauth:go_default_library",
+        "//internal/functions/stripecb:go_default_library",
+        "//internal/functions/tasks:go_default_library",
+        "//internal/secret:go_default_library",
+        "//internal/trace:go_default_library",
+    ],
+)

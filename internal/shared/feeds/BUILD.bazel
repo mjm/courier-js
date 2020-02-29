@@ -1,0 +1,28 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
+
+proto_library(
+    name = "feeds_proto",
+    srcs = ["events.proto"],
+    visibility = ["//:__subpackages__"],
+)
+
+go_proto_library(
+    name = "feeds_go_proto",
+    importpath = "github.com/mjm/courier-js/internal/shared/feeds",
+    proto = ":feeds_proto",
+    visibility = ["//:__subpackages__"],
+)
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "id.go",
+        "proto_gen.go",
+    ],
+    embed = [":feeds_go_proto"],
+    importpath = "github.com/mjm/courier-js/internal/shared/feeds",
+    visibility = ["//:__subpackages__"],
+    deps = ["@com_github_google_uuid//:go_default_library"],
+)

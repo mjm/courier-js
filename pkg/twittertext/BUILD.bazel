@@ -1,0 +1,33 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "config.go",
+        "extractor.go",
+        "parser.go",
+    ],
+    importpath = "github.com/mjm/courier-js/pkg/twittertext",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/twittertext/regex:go_default_library",
+        "@org_golang_x_net//idna:go_default_library",
+        "@org_golang_x_text//unicode/norm:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "extractor_test.go",
+        "parser_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":go_default_library"],
+    deps = [
+        "//pkg/twittertext/regex:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
+        "@in_gopkg_yaml_v2//:go_default_library",
+    ],
+)

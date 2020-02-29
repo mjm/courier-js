@@ -1,0 +1,27 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "parser.go",
+        "split.go",
+        "translate.go",
+    ],
+    importpath = "github.com/mjm/courier-js/pkg/htmltweets",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/twittertext:go_default_library",
+        "@org_golang_x_net//html:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "parser_test.go",
+        "split_test.go",
+        "translate_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = ["@com_github_stretchr_testify//assert:go_default_library"],
+)

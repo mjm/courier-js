@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "dataloader.go",
+        "graphql.go",
+        "keys.go",
+        "trace.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/trace",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/secret:go_default_library",
+        "//internal/shared/feeds:go_default_library",
+        "//internal/shared/tweets:go_default_library",
+        "@com_github_google_uuid//:go_default_library",
+        "@com_github_graph_gophers_dataloader//:go_default_library",
+        "@com_github_honeycombio_libhoney_go//:go_default_library",
+        "@com_github_mjm_graphql_go//errors:go_default_library",
+        "@com_github_mjm_graphql_go//introspection:go_default_library",
+        "@com_github_mjm_graphql_go//trace:go_default_library",
+    ],
+)

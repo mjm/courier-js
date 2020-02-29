@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "emoji.go",
+        "regex.go",
+        "tlds.go",
+    ],
+    importpath = "github.com/mjm/courier-js/pkg/twittertext/regex",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_dlclark_regexp2//:go_default_library"],
+)

@@ -1,0 +1,43 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "event.go",
+        "event_pager.go",
+        "event_queries.go",
+        "event_recorder.go",
+        "qry_gen.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/read/user",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/event:go_default_library",
+        "//internal/pager:go_default_library",
+        "//internal/read/user/queries:go_default_library",
+        "//internal/shared/billing:go_default_library",
+        "//internal/shared/feeds:go_default_library",
+        "//internal/shared/tweets:go_default_library",
+        "//internal/trace:go_default_library",
+        "@com_github_jmoiron_sqlx//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "event_recorder_test.go",
+        "suite_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/event:go_default_library",
+        "//internal/shared/feeds:go_default_library",
+        "//internal/shared/tweets:go_default_library",
+        "@com_github_khaiql_dbcleaner//:go_default_library",
+        "@com_github_khaiql_dbcleaner//engine:go_default_library",
+        "@com_github_stretchr_testify//suite:go_default_library",
+    ],
+)

@@ -1,0 +1,36 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "command_handler.go",
+        "event.go",
+        "update_customer_command.go",
+        "update_subscription_command.go",
+        "user_repository.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/write/user",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/event:go_default_library",
+        "//internal/shared/billing:go_default_library",
+        "//internal/trace:go_default_library",
+        "//internal/write:go_default_library",
+        "@com_github_google_wire//:go_default_library",
+        "@in_gopkg_auth0_v3//management:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = ["suite_test.go"],
+    embed = [":go_default_library"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/event:go_default_library",
+        "//internal/write:go_default_library",
+        "@com_github_khaiql_dbcleaner//:go_default_library",
+        "@com_github_khaiql_dbcleaner//engine:go_default_library",
+        "@com_github_stretchr_testify//suite:go_default_library",
+    ],
+)

@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "cancel_command.go",
+        "command_handler.go",
+        "customer_repository.go",
+        "subscribe_command.go",
+        "subscription_repository.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/write/billing",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/auth:go_default_library",
+        "//internal/billing:go_default_library",
+        "//internal/event:go_default_library",
+        "//internal/shared/billing:go_default_library",
+        "//internal/trace:go_default_library",
+        "//internal/write:go_default_library",
+        "@com_github_google_wire//:go_default_library",
+        "@com_github_stripe_stripe_go//:go_default_library",
+        "@com_github_stripe_stripe_go//client:go_default_library",
+    ],
+)

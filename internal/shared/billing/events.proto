@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package courier.events.billing;
+package courier.billing;
 option go_package = "billing";
 
 message CustomerCreated {
