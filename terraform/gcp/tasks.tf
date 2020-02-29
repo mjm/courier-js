@@ -16,7 +16,10 @@ resource "google_service_account" "task_creator" {
 resource "google_project_iam_binding" "cloud_tasks_enqueuer" {
   role = "roles/cloudtasks.enqueuer"
   members = [
-    "serviceAccount:${google_service_account.task_creator.email}",
+    "serviceAccount:${module.function_graphql.service_account_email}",
+    "serviceAccount:${module.function_events.service_account_email}",
+    "serviceAccount:${module.function_ping.service_account_email}",
+    "serviceAccount:${module.function_tasks.service_account_email}",
   ]
 }
 
