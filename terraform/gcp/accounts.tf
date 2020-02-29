@@ -5,35 +5,6 @@ resource "google_project_iam_binding" "owner" {
   ]
 }
 
-resource "google_project_iam_binding" "pubsub_publisher" {
-  role = "roles/pubsub.publisher"
-  members = [
-    "serviceAccount:${module.function_graphql.service_account_email}",
-    "serviceAccount:${module.function_ping.service_account_email}",
-    "serviceAccount:${module.function_post_queued_tweets.service_account_email}",
-    "serviceAccount:${module.function_indieauth_callback.service_account_email}",
-    "serviceAccount:${module.function_stripe_callback.service_account_email}",
-    "serviceAccount:${module.function_tasks.service_account_email}",
-  ]
-}
-
-resource "google_project_iam_binding" "pubsub_subscriber" {
-  role = "roles/pubsub.subscriber"
-  members = [
-    "serviceAccount:${module.function_events.service_account_email}",
-  ]
-}
-
-resource "google_project_iam_binding" "cloud_tasks_enqueuer" {
-  role = "roles/cloudtasks.enqueuer"
-  members = [
-    "serviceAccount:${module.function_graphql.service_account_email}",
-    "serviceAccount:${module.function_ping.service_account_email}",
-    "serviceAccount:${module.function_events.service_account_email}",
-    "serviceAccount:${module.function_tasks.service_account_email}",
-  ]
-}
-
 locals {
   function_accounts = [
     "serviceAccount:${module.function_graphql.service_account_email}",
@@ -48,7 +19,8 @@ locals {
 
   dev_account = "serviceAccount:matt-laptop-dev@${var.project_id}.iam.gserviceaccount.com"
 
-  all_function_accounts = var.env == "staging" ? concat(local.function_accounts, [local.dev_account]) : local.function_accounts
+  all_function_accounts = var.env == "staging" ? concat(local.function_accounts, [
+  local.dev_account]) : local.function_accounts
 }
 
 resource "google_project_iam_binding" "secret_manager_secret_accessor" {

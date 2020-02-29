@@ -1,10 +1,9 @@
 locals {
   base_env = {
-    GCP_TOPIC_ID    = google_pubsub_topic.events.name
-    GCP_TASKS_QUEUE = google_cloud_tasks_queue.tasks.id
-  }
-  non_tasks_env = {
-    TASKS_URL = "https://${var.region}-${var.project_id}.cloudfunctions.net/tasks"
+    GCP_TOPIC_ID          = google_pubsub_topic.events.name
+    GCP_TASKS_QUEUE       = google_cloud_tasks_queue.tasks.id
+    TASKS_URL             = "https://${var.region}-${var.project_id}.cloudfunctions.net/tasks"
+    TASKS_SERVICE_ACCOUNT = google_service_account.task_creator.email
   }
   function_env = merge(local.base_env, var.function_env)
 }
@@ -14,7 +13,7 @@ module "function_graphql" {
   project_id   = var.project_id
   env          = var.env
   git_revision = var.function_revision
-  env_vars     = merge(local.function_env, local.non_tasks_env)
+  env_vars     = local.function_env
 
   name         = "graphql"
   description  = "Serve GraphQL API requests"
@@ -28,7 +27,7 @@ module "function_ping" {
   project_id   = var.project_id
   env          = var.env
   git_revision = var.function_revision
-  env_vars     = merge(local.function_env, local.non_tasks_env)
+  env_vars     = local.function_env
 
   name         = "ping"
   description  = "Handle XML-RPC ping requests from blogs"
@@ -41,7 +40,7 @@ module "function_events" {
   project_id   = var.project_id
   env          = var.env
   git_revision = var.function_revision
-  env_vars     = merge(local.function_env, local.non_tasks_env)
+  env_vars     = local.function_env
 
   name          = "events"
   description   = "Handles events delivered via PubSub"
@@ -54,7 +53,7 @@ module "function_post_queued_tweets" {
   project_id   = var.project_id
   env          = var.env
   git_revision = var.function_revision
-  env_vars     = merge(local.function_env, local.non_tasks_env)
+  env_vars     = local.function_env
 
   name          = "post-queued-tweets"
   description   = "Handles cron events to check for queued tweets to post to Twitter"
@@ -67,7 +66,7 @@ module "function_indieauth_callback" {
   project_id   = var.project_id
   env          = var.env
   git_revision = var.function_revision
-  env_vars     = merge(local.function_env, local.non_tasks_env)
+  env_vars     = local.function_env
 
   name         = "indieauth-callback"
   description  = "Handles callbacks to complete IndieAuth handshakes"
@@ -80,7 +79,7 @@ module "function_stripe_callback" {
   project_id   = var.project_id
   env          = var.env
   git_revision = var.function_revision
-  env_vars     = merge(local.function_env, local.non_tasks_env)
+  env_vars     = local.function_env
 
   name         = "stripe-callback"
   description  = "Handles Stripe webhooks for events"
@@ -93,7 +92,7 @@ module "function_pusher_auth" {
   project_id   = var.project_id
   env          = var.env
   git_revision = var.function_revision
-  env_vars     = merge(local.function_env, local.non_tasks_env)
+  env_vars     = local.function_env
 
   name         = "pusher-auth"
   description  = "Handles authentication requests for private Pusher channels"
