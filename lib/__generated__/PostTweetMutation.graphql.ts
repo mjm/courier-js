@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 5fa463848f0bad9f6660e2c48c63313e */
+/* @relayHash 3abfe6e961fb6587b1c0399f0c0fed37 */
 
 import { ConcreteRequest } from "relay-runtime";
 export type TweetStatus = "CANCELED" | "DRAFT" | "POSTED" | "%future added value";
@@ -20,6 +20,7 @@ export type PostTweetMutationResponse = {
             readonly status: TweetStatus;
             readonly postedAt: any | null;
             readonly postedTweetID: string | null;
+            readonly postAfter: any | null;
         };
     };
 };
@@ -42,6 +43,7 @@ mutation PostTweetMutation(
       status
       postedAt
       postedTweetID
+      postAfter
     }
   }
 }
@@ -122,6 +124,13 @@ v1 = [
             "name": "postedTweetID",
             "args": null,
             "storageKey": null
+          },
+          {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "postAfter",
+            "args": null,
+            "storageKey": null
           }
         ]
       }
@@ -148,10 +157,10 @@ return {
     "operationKind": "mutation",
     "name": "PostTweetMutation",
     "id": null,
-    "text": "mutation PostTweetMutation(\n  $input: PostTweetInput!\n) {\n  postTweet(input: $input) {\n    tweet {\n      id\n      body\n      mediaURLs\n      status\n      postedAt\n      postedTweetID\n    }\n  }\n}\n",
+    "text": "mutation PostTweetMutation(\n  $input: PostTweetInput!\n) {\n  postTweet(input: $input) {\n    tweet {\n      id\n      body\n      mediaURLs\n      status\n      postedAt\n      postedTweetID\n      postAfter\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = 'f7634f397b5d8c77896a5589b9f10fbc';
+(node as any).hash = 'a6ac4989dd2c5cbf008446fe998fb311';
 export default node;

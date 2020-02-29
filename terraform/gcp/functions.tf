@@ -48,19 +48,6 @@ module "function_events" {
   trigger_topic = google_pubsub_topic.events.id
 }
 
-module "function_post_queued_tweets" {
-  source       = "../modules/cloud_function"
-  project_id   = var.project_id
-  env          = var.env
-  git_revision = var.function_revision
-  env_vars     = local.function_env
-
-  name          = "post-queued-tweets"
-  description   = "Handles cron events to check for queued tweets to post to Twitter"
-  entry_point   = "PostQueuedTweets"
-  trigger_topic = google_pubsub_topic.post_queued_tweets.id
-}
-
 module "function_indieauth_callback" {
   source       = "../modules/cloud_function"
   project_id   = var.project_id
