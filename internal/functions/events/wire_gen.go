@@ -17,7 +17,7 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*PubSubHandler, error) {
+func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	client, err := secret.NewSecretManager(gcpConfig)
 	if err != nil {
 		return nil, err
@@ -48,6 +48,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*PubSubHandler, error) {
 	}
 	tweetQueries := tweets.NewTweetQueries(dbDB, bus)
 	notifier := notifications.NewNotifier(bus, pushNotifications, tweetQueries)
-	pubSubHandler := NewPubSubHandler(config, bus, eventRecorder, pusher, notifier)
-	return pubSubHandler, nil
+	handler := NewHandler(config, bus, eventRecorder, pusher, notifier)
+	return handler, nil
 }

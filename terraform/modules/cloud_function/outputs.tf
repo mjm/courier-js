@@ -7,5 +7,5 @@ output "service_account_email" {
 }
 
 output "https_url" {
-  value = google_cloudfunctions_function.function.https_trigger_url
+  value = google_cloud_run_service.function.status.url
 }

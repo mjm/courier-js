@@ -2,7 +2,9 @@ package events
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"reflect"
 
 	"github.com/golang/protobuf/proto"
@@ -15,29 +17,32 @@ import (
 	"github.com/mjm/courier-js/internal/trace"
 )
 
-type PubSubHandler struct {
+type Handler struct {
 	bus *event.Bus
 }
 
-func NewPubSubHandler(traceCfg trace.Config, bus *event.Bus, _ *user.EventRecorder, _ *Pusher, _ *notifications.Notifier) *PubSubHandler {
+func NewHandler(traceCfg trace.Config, bus *event.Bus, _ *user.EventRecorder, _ *Pusher, _ *notifications.Notifier) *Handler {
 	trace.Init(traceCfg)
 
-	return &PubSubHandler{bus: bus}
+	return &Handler{bus: bus}
 }
 
-type PubSubEvent struct {
-	Data []byte `json:"data"`
+type PubSubMessage struct {
+	Message struct {
+		Data []byte `json:"data,omitempty"`
+		ID   string `json:"id"`
+	}
+	Subscription string `json:"subscription"`
 }
 
-func (h *PubSubHandler) HandleEvent(ctx context.Context, event PubSubEvent) error {
-	defer trace.Flush()
-
-	ctx = trace.Start(ctx, "PubSub event")
-	defer trace.Finish(ctx)
+func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	var message PubSubMessage
+	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
+		return err
+	}
 
 	var a any.Any
-	if err := proto.Unmarshal(event.Data, &a); err != nil {
-		trace.Error(ctx, err)
+	if err := proto.Unmarshal(message.Message.Data, &a); err != nil {
 		return err
 	}
 
@@ -45,13 +50,11 @@ func (h *PubSubHandler) HandleEvent(ctx context.Context, event PubSubEvent) erro
 
 	var msg ptypes.DynamicAny
 	if err := ptypes.UnmarshalAny(&a, &msg); err != nil {
-		trace.Error(ctx, err)
 		return err
 	}
 
 	trace.AddField(ctx, "event.type", fmt.Sprintf("%T", msg.Message))
 
 	h.bus.Fire(ctx, reflect.ValueOf(msg.Message).Elem().Interface())
-
 	return nil
 }

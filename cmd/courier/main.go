@@ -10,7 +10,6 @@ import (
 	"google.golang.org/api/option"
 
 	"github.com/mjm/courier-js"
-	"github.com/mjm/courier-js/internal/functions/events"
 )
 
 func main() {
@@ -20,7 +19,7 @@ func main() {
 	funcframework.RegisterHTTPFunction("/pusher-auth", courier.PusherAuth)
 	funcframework.RegisterHTTPFunction("/ping", courier.Ping)
 	funcframework.RegisterHTTPFunction("/tasks", courier.Tasks)
-	funcframework.RegisterEventFunction("/events", courier.Events)
+	// funcframework.RegisterEventFunction("/events", courier.Events)
 
 	go pollForEvents()
 
@@ -47,11 +46,11 @@ func pollForEvents() {
 	sub := client.Subscription(os.Getenv("GCP_SUBSCRIPTION_ID"))
 	err = sub.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
 		log.Printf("got pubsub message")
-		if err := courier.Events(ctx, events.PubSubEvent{Data: msg.Data}); err != nil {
-			log.Printf("error processing pubsub message: %v", err)
-			msg.Nack()
-			return
-		}
+		// if err := courier.Events(ctx, events.PubSubEvent{Data: msg.Data}); err != nil {
+		// 	log.Printf("error processing pubsub message: %v", err)
+		// 	msg.Nack()
+		// 	return
+		// }
 
 		msg.Ack()
 	})

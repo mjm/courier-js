@@ -14,9 +14,9 @@ import (
 	"github.com/mjm/courier-js/internal/trace"
 )
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*PubSubHandler, error) {
+func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	panic(wire.Build(
-		NewPubSubHandler,
+		NewHandler,
 		NewPusher,
 		notifications.NewNotifier,
 		event.NewPusherClient,

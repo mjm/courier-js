@@ -12,6 +12,8 @@ func main() {
 	switch os.Args[1] {
 	case "graphql":
 		handler = graphQLHandler
+	case "events":
+		handler = eventsHandler
 	case "indieauth-callback":
 		handler = indieAuthCallbackHandler
 	case "ping":
