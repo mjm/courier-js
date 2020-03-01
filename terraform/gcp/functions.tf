@@ -36,9 +36,9 @@ module "function_events" {
   env_vars     = local.function_env
 
   name = "events"
-  invokers = [
-    "allAuthenticatedUsers"
-  ]
+  //  invokers = [
+  //    "allAuthenticatedUsers"
+  //  ]
 }
 
 module "function_indieauth_callback" {

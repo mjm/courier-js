@@ -12,9 +12,9 @@ resource "google_pubsub_subscription" "events" {
 
   push_config {
     push_endpoint = module.function_events.https_url
-    oidc_token {
-      service_account_email = module.function_events.service_account_email
-    }
+    //    oidc_token {
+    //      service_account_email = module.function_events.service_account_email
+    //    }
   }
 }
 
