@@ -27,7 +27,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "esnext",
-    "types": ["node", "reflect-metadata"],
+    "types": ["node"],
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
