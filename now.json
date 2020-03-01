@@ -6,7 +6,7 @@
     "AUTH_DOMAIN": "@courier-staging-auth-domain",
     "API_IDENTIFIER": "https://courier.mjm.now.sh/api/",
     "MONTHLY_PLAN_ID": "plan_DdvIUmVUiibVMa",
-    "STRIPE_PUBLISHABLE_KEY": "pk_test_P2pW0N6UFzp1OY5In8KApmxj",
+    "STRIPE_PUBLISHABLE_KEY": "pk_test_P2pW0N6UFzp1OY5In8KApmxj"
   },
   "build": {
     "env": {
