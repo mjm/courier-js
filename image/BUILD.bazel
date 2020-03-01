@@ -1,4 +1,4 @@
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 
 container_image(
     name = "courier-functions",
@@ -6,4 +6,14 @@ container_image(
     files = [
         "//cmd/courier-functions:courier-functions",
     ],
+    entrypoint = ["/courier-functions"],
+)
+
+container_push(
+    name = "courier-functions-push",
+    image = ":courier-functions",
+    format = "Docker",
+    registry = "gcr.io",
+    repository = "{PROJECT_ID}/courier-functions",
+    tag = "git-{GIT_COMMIT_SHA}",
 )

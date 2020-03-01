@@ -5,6 +5,7 @@ locals {
     "cloudkms.googleapis.com",
     "cloudscheduler.googleapis.com",
     "cloudtasks.googleapis.com",
+    "containerregistry.googleapis.com",
     "iam.googleapis.com",
     "pubsub.googleapis.com",
   ])

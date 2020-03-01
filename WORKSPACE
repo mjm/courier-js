@@ -42,6 +42,14 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.14.1/rules_docker-v0.14.1.tar.gz"],
 )
 
+load("@io_bazel_rules_docker//toolchains/docker:toolchain.bzl",
+    docker_toolchain_configure="toolchain_configure"
+)
+docker_toolchain_configure(
+    name = "docker_config",
+    docker_path = "/usr/local/bin/docker",
+)
+
 load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",
     container_repositories = "repositories",

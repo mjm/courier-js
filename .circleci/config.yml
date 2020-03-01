@@ -39,8 +39,15 @@ jobs:
       DATABASE_URL: postgresql://localhost/courier_test?sslmode=disable
     steps:
       - checkout
-      - run: sudo apt-get update
-      - run: sudo apt-get install postgresql-client
+      - run:
+          name: Set up Bazel repository
+          command: |
+            sudo apt install curl
+            curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
+            echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
+      - run:
+          name: Install packages
+          command: sudo apt update && sudo apt install bazel postgresql-client
       - run: mkdir -p $TEST_RESULTS
       - restore_cache:
           keys:
@@ -86,6 +93,32 @@ jobs:
           destination: raw-test-output
       - store_test_results:
           path: /tmp/test-results
+
+  push_image_staging:
+    docker:
+      - image: google/cloud-sdk
+    environment:
+      GOOGLE_PROJECT: courier-staging-267902
+    steps:
+      - checkout
+      - run:
+          name: Set up Bazel repository
+          command: |
+            sudo apt install curl
+            curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
+            echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
+      - run:
+          name: Install packages
+          command: sudo apt update && sudo apt install bazel
+      - run:
+          name: Authenticate with Google Cloud
+          command: |
+            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            gcloud --quiet config set project ${GOOGLE_PROJECT}
+            gcloud --quiet auth configure-docker
+      - run:
+          name: Build and Push Container
+          command: bazel run //image:courier-functions-push
 
   deploy_backend_staging:
     docker:
@@ -144,6 +177,9 @@ workflows:
     jobs:
       - test_backend
       - deploy_frontend_staging:
+          requires:
+            - test_backend
+      - push_image_staging:
           requires:
             - test_backend
       - deploy_backend_staging:
