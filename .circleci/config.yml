@@ -132,7 +132,6 @@ jobs:
     parameters:
       database_url:
         type: env_var_name
-        default: DATABASE_URL
     docker:
       - image: circleci/golang:1.13-node
     steps:
@@ -181,6 +180,7 @@ workflows:
           project: courier-staging-267902
       - migrate_database:
           name: migrate_database_staging
+          database_url: STAGING_DATABASE_URL
           requires:
             - build_and_test_backend_staging
       - update_auth0:
@@ -193,6 +193,7 @@ workflows:
           now_config_file: now.json
           requires:
             - build_and_test_backend_staging
+            - migrate_database_staging
             - update_auth0_staging
       - deploy_backend:
           name: deploy_backend_staging
