@@ -23,6 +23,7 @@ import {
   handleTweetUncanceled,
   TweetUncanceledEvent,
 } from "@events/TweetUncanceledEvent"
+import { handleTweetPosted, TweetPostedEvent } from "@events/TweetPostedEvent"
 
 const TweetsPage: NextPage<TweetsPageQueryResponse & {
   environment: Environment
@@ -39,6 +40,14 @@ const TweetsPage: NextPage<TweetsPageQueryResponse & {
     "TweetUncanceled",
     (data: TweetUncanceledEvent) => {
       handleTweetUncanceled(environment, data)
+    },
+    []
+  )
+
+  useEvent(
+    "TweetPosted",
+    (data: TweetPostedEvent) => {
+      handleTweetPosted(environment, data)
     },
     []
   )
