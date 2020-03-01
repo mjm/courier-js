@@ -2,6 +2,7 @@ package tweets
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace"
@@ -19,7 +20,13 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 	trace.TweetID(ctx, cmd.TweetID)
 	trace.AddField(ctx, "task.name", cmd.TaskName)
 
-	// TODO check if user is subscribed
+	isSubscribed, err := h.userRepo.IsSubscribed(ctx, cmd.UserID)
+	if err != nil {
+		return err
+	}
+	if !isSubscribed {
+		return fmt.Errorf("user is not subscribed")
+	}
 
 	tweet, err := h.tweetRepo.Get(ctx, cmd.UserID, cmd.TweetID)
 	if err != nil {

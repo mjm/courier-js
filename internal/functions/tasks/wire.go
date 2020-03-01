@@ -6,6 +6,7 @@ import (
 	"github.com/google/wire"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/secret"
@@ -29,5 +30,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		tweets.NewTwitterConfigFromSecrets,
 		auth.NewConfigFromSecrets,
 		auth.DefaultSet,
+		billing.NewClient,
+		billing.NewConfigFromSecrets,
 	))
 }

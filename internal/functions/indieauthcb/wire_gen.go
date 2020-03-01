@@ -7,6 +7,7 @@ package indieauthcb
 
 import (
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/secret"
@@ -65,7 +66,12 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	userRepository := tweets.NewUserRepository(management, keyManagementClient, gcpConfig)
+	billingConfig, err := billing.NewConfigFromSecrets(gcpSecretKeeper)
+	if err != nil {
+		return nil, err
+	}
+	api := billing.NewClient(billingConfig)
+	userRepository := tweets.NewUserRepository(management, keyManagementClient, gcpConfig, api)
 	commandHandler := tweets.NewCommandHandler(commandBus, bus, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository)
 	handler := NewHandler(config, commandBus, authenticator, commandHandler)
 	return handler, nil

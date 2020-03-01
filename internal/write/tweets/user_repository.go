@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	cloudkms "cloud.google.com/go/kms/apiv1"
+	"github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/client"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/cloud/kms/v1"
 	"gopkg.in/auth0.v3/management"
@@ -19,13 +21,15 @@ type UserRepository struct {
 	management *management.Management
 	kms        *cloudkms.KeyManagementClient
 	keyID      string
+	stripe     *client.API
 }
 
-func NewUserRepository(m *management.Management, kms *cloudkms.KeyManagementClient, cfg secret.GCPConfig) *UserRepository {
+func NewUserRepository(m *management.Management, kms *cloudkms.KeyManagementClient, cfg secret.GCPConfig, stripe *client.API) *UserRepository {
 	return &UserRepository{
 		management: m,
 		kms:        kms,
 		keyID:      fmt.Sprintf("projects/%s/locations/global/keyRings/keys/cryptoKeys/micropub-token", cfg.ProjectID),
+		stripe:     stripe,
 	}
 }
 
@@ -159,4 +163,52 @@ func (r *UserRepository) encryptToken(ctx context.Context, plainString string) (
 	}
 
 	return base64.URLEncoding.EncodeToString(res.Ciphertext), nil
+}
+
+func (r *UserRepository) IsSubscribed(ctx context.Context, userID string) (bool, error) {
+	ctx = trace.Start(ctx, "Check subscription status")
+	defer trace.Finish(ctx)
+
+	trace.UserID(ctx, userID)
+
+	user, err := r.management.User.Read(userID)
+	if err != nil {
+		trace.Error(ctx, err)
+		return false, err
+	}
+
+	statusOverride, ok := user.AppMetadata["subscription_status"]
+	if ok && statusOverride == "active" {
+		trace.AddField(ctx, "user.subscribed", true)
+		return true, nil
+	}
+
+	subIDValue, ok := user.AppMetadata["stripe_subscription_id"]
+	if !ok {
+		trace.AddField(ctx, "user.subscribed", false)
+		return false, nil
+	}
+
+	subID, ok := subIDValue.(string)
+	if !ok {
+		err := fmt.Errorf("user's subscription ID is not a string")
+		trace.Error(ctx, err)
+		return false, err
+	}
+
+	trace.SubscriptionID(ctx, subID)
+
+	sub, err := r.stripe.Subscriptions.Get(subID, nil)
+	if err != nil {
+		trace.Error(ctx, err)
+		return false, err
+	}
+
+	if sub.Status == stripe.SubscriptionStatusActive {
+		trace.AddField(ctx, "user.subscribed", true)
+		return true, nil
+	}
+
+	trace.AddField(ctx, "user.subscribed", false)
+	return false, nil
 }
