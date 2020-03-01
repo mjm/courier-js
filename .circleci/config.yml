@@ -133,8 +133,9 @@ jobs:
       database_url:
         type: env_var_name
     docker:
-      - image: circleci/golang:1.13-node
+      - image: cimg/base:2020.01
     steps:
+      - checkout
       - run:
           name: Install golang-migrate
           command: |
@@ -145,6 +146,7 @@ jobs:
           name: Migrate database
           command: |
             /go/bin/migrate -database "$<< parameters.database_url >>" -path migrations/ up
+
 
   deploy_backend:
     parameters:
