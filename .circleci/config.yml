@@ -116,9 +116,16 @@ jobs:
             echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
             gcloud --quiet config set project ${GOOGLE_PROJECT}
             gcloud --quiet auth configure-docker
+      - restore_cache:
+          keys:
+            - bazel-cache
       - run:
           name: Build and Push Container
-          command: bazel run //image:courier-functions-push
+          command: bazel run --config=ci //image:courier-functions-push
+      - save_cache:
+          key: bazel-cache
+          paths:
+            - "/home/circleci/.bazel_cache"
 
   deploy_backend_staging:
     docker:
