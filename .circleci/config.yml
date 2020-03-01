@@ -49,13 +49,12 @@ jobs:
           command: sudo apt update && sudo apt install bazel patch postgresql-client
       - restore_cache:
           keys:
-            - bazel-cache
+            - bazel-cache-
       - run:
           name: Install golang-migrate
           command: |
             curl -L https://github.com/golang-migrate/migrate/releases/download/v4.8.0/migrate.linux-amd64.tar.gz | tar xvz
             mv migrate.linux-amd64 /go/bin/migrate
-#      - run: go get github.com/jstemmer/go-junit-report
       - run:
           name: Waiting for Postgres to be ready
           command: |
@@ -81,12 +80,15 @@ jobs:
           command: bazel build --config=ci //cmd/courier-functions:courier-functions
 
       - save_cache:
-          key: bazel-cache
+          key: bazel-cache-{{ epoch }}
           paths:
             - "/home/circleci/.bazel_cache"
+      - run:
+          name: Copy test results
+          command: mkdir /tmp/test-results && cp -r bazel-testlogs/* /tmp/test-results/
 
       - store_test_results:
-          path: bazel-testlogs
+          path: /tmp/test-results
 
   push_image_staging:
     docker:
@@ -112,12 +114,12 @@ jobs:
             gcloud --quiet auth configure-docker
       - restore_cache:
           keys:
-            - bazel-cache
+            - bazel-cache-
       - run:
           name: Build and Push Container
           command: bazel run --config=ci //image:courier-functions-push
       - save_cache:
-          key: bazel-cache
+          key: bazel-cache-{{ epoch }}
           paths:
             - "/home/circleci/.bazel_cache"
 
