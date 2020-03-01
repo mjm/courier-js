@@ -47,9 +47,9 @@ jobs:
       - run:
           name: Install packages
           command: sudo apt update && sudo apt install bazel patch postgresql-client
-      - restore_cache:
-          keys:
-            - bazel-cache-
+      - run:
+          name: Set up GCP credentials
+          command: echo $GCLOUD_SERVICE_KEY > /tmp/gcp-credentials.json
       - run:
           name: Install golang-migrate
           command: |
@@ -76,17 +76,11 @@ jobs:
           name: Run unit tests
           command: bazel test --config=ci //...
       - run:
-          name: Build functions
-          command: bazel build --config=ci //cmd/courier-functions:courier-functions
-
-      - save_cache:
-          key: bazel-cache-{{ epoch }}
-          paths:
-            - "/home/circleci/.bazel_cache"
+          name: Build container image
+          command: bazel build --config=ci //image:courier-functions
       - run:
           name: Copy test results
           command: mkdir /tmp/test-results && cp -r bazel-testlogs/* /tmp/test-results/
-
       - store_test_results:
           path: /tmp/test-results
 
@@ -109,19 +103,13 @@ jobs:
       - run:
           name: Authenticate with Google Cloud
           command: |
-            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            echo $GCLOUD_SERVICE_KEY > /tmp/gcp-credentials.json
+            gcloud auth activate-service-account --key-file=/tmp/gcp-credentials.json
             gcloud --quiet config set project ${GOOGLE_PROJECT}
             gcloud --quiet auth configure-docker
-      - restore_cache:
-          keys:
-            - bazel-cache-
       - run:
           name: Build and Push Container
           command: bazel run --config=ci //image:courier-functions-push
-      - save_cache:
-          key: bazel-cache-{{ epoch }}
-          paths:
-            - "/home/circleci/.bazel_cache"
 
   deploy_backend_staging:
     docker:
