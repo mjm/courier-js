@@ -17,16 +17,6 @@ ORDER BY
   post_guid,
   position;
 
--- qry: TweetsQueued
-SELECT *
-FROM
-  tweets
-WHERE post_after IS NOT NULL
-  AND post_after < CURRENT_TIMESTAMP
-  AND status = 'draft'
-ORDER BY
-  post_after ASC;
-
 -- qry: TweetsCancel
 UPDATE
   tweets

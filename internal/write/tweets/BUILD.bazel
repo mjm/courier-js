@@ -12,7 +12,6 @@ go_library(
         "import_tweets_command.go",
         "post.go",
         "post_command.go",
-        "post_queued_command.go",
         "post_repository.go",
         "qry_gen.go",
         "queue_post_command.go",
