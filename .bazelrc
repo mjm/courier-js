@@ -1,6 +1,7 @@
 build --workspace_status_command=bin/workspace_status.sh
 
 build:ci --noshow_progress
-build:ci --jobs=2
+build:ci --local_ram_resources=3272
+build:ci --local_cpu_resources=2
 build:ci --remote_http_cache=https://storage.googleapis.com/courier-staging-build-cache
 build:ci --google_credentials=/tmp/gcp-credentials.json
