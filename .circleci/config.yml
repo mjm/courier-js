@@ -187,7 +187,7 @@ workflows:
             - test_backend
       - deploy_backend_staging:
           requires:
-            - test_backend
+            - push_image_staging
       - deploy_prod:
           filters:
             branches:

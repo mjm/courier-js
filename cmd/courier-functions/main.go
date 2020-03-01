@@ -16,6 +16,8 @@ func main() {
 		handler = indieAuthCallbackHandler
 	case "ping":
 		handler = pingHandler
+	case "pusher-auth":
+		handler = pusherAuthHandler
 	case "stripe-callback":
 		handler = stripeCallbackHandler
 	case "tasks":

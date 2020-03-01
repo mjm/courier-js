@@ -8,6 +8,7 @@ locals {
     "containerregistry.googleapis.com",
     "iam.googleapis.com",
     "pubsub.googleapis.com",
+    "run.googleapis.com",
   ])
 }
 
