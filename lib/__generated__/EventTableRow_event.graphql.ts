@@ -11,6 +11,12 @@ export type EventTableRow_event = {
         readonly id: string;
         readonly title: string;
     } | null;
+    readonly subscribedFeed: {
+        readonly id: string;
+        readonly feed: {
+            readonly title: string;
+        };
+    } | null;
     readonly tweet: {
         readonly id: string;
         readonly body: string;
@@ -31,6 +37,13 @@ var v0 = {
   "kind": "ScalarField",
   "alias": null,
   "name": "id",
+  "args": null,
+  "storageKey": null
+},
+v1 = {
+  "kind": "ScalarField",
+  "alias": null,
+  "name": "title",
   "args": null,
   "storageKey": null
 };
@@ -66,12 +79,30 @@ return {
       "plural": false,
       "selections": [
         (v0/*: any*/),
+        (v1/*: any*/)
+      ]
+    },
+    {
+      "kind": "LinkedField",
+      "alias": null,
+      "name": "subscribedFeed",
+      "storageKey": null,
+      "args": null,
+      "concreteType": "SubscribedFeed",
+      "plural": false,
+      "selections": [
+        (v0/*: any*/),
         {
-          "kind": "ScalarField",
+          "kind": "LinkedField",
           "alias": null,
-          "name": "title",
+          "name": "feed",
+          "storageKey": null,
           "args": null,
-          "storageKey": null
+          "concreteType": "Feed",
+          "plural": false,
+          "selections": [
+            (v1/*: any*/)
+          ]
         }
       ]
     },
@@ -104,5 +135,5 @@ return {
   ]
 };
 })();
-(node as any).hash = 'b202f3e367f9f489416a7d6261b369b8';
+(node as any).hash = '202db63218434822070e4e776c23b9c2';
 export default node;

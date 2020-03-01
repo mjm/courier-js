@@ -316,6 +316,7 @@ type Event implements Node {
   createdAt: Time!
 
   feed: Feed
+  subscribedFeed: SubscribedFeed
   tweet: Tweet
   boolValue: Boolean
 }
