@@ -1,6 +1,10 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 load("@bazel_gazelle//:def.bzl", "gazelle")
 
+exports_files([
+    "schema.graphql",
+])
+
 # gazelle:prefix github.com/mjm/courier-js
 # gazelle:exclude node_modules
 gazelle(name = "gazelle")

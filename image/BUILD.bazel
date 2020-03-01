@@ -5,6 +5,7 @@ container_image(
     base = "@distroless-debian10//image",
     files = [
         "//cmd/courier-functions:courier-functions",
+        "//:schema.graphql",
     ],
     entrypoint = ["/courier-functions"],
 )

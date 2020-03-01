@@ -46,6 +46,9 @@ module "function_events" {
   description   = "Handles events delivered via PubSub"
   entry_point   = "Events"
   trigger_topic = google_pubsub_topic.events.id
+  invokers = [
+    "allAuthenticatedUsers"
+  ]
 }
 
 module "function_indieauth_callback" {
@@ -98,6 +101,9 @@ module "function_tasks" {
   description  = "Runs delayed tasks"
   entry_point  = "Tasks"
   trigger_http = true
+  invokers = [
+    "allAuthenticatedUsers"
+  ]
 }
 
 resource "google_cloudfunctions_function_iam_binding" "tasks" {

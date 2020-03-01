@@ -27,3 +27,8 @@ variable "memory" {
 variable "repository" {
   default = "github_mjm_courier-js"
 }
+
+variable "invokers" {
+  type    = list(string)
+  default = ["allUsers"]
+}
