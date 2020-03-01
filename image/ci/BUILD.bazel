@@ -60,5 +60,6 @@ container_push(
     format = "Docker",
     registry = "index.docker.io",
     repository = "mmoriarity/circleci-bazel",
+    tags = ["manual"],
 )
 
