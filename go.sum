@@ -92,6 +92,8 @@ github.com/divan/gorilla-xmlrpc v0.0.0-20190926132722-f0686da74fda h1:q6BJCx6rxR
 github.com/divan/gorilla-xmlrpc v0.0.0-20190926132722-f0686da74fda/go.mod h1:3Cp6mWQcmK3erqkPrriKEkSpok0LO1uB2M5GxGzifhc=
 github.com/dlclark/regexp2 v1.2.0 h1:8sAhBGEM0dRWogWqWyQeIJnxjWO6oIjl8FKqREDsGfk=
 github.com/dlclark/regexp2 v1.2.0/go.mod h1:2pZnwuY/m+8K6iRw6wQdMtk+rH5tNGR1i55kozfMjCc=
+github.com/drswork/go-twitter v0.0.0-20190721142740-110a39637298 h1:IojggtIqfUspxS5jlkPvEsskaVzlJwQFvP8Lno+feSo=
+github.com/drswork/go-twitter v0.0.0-20190721142740-110a39637298/go.mod h1:xfg4uS5LEzOj8PgZV7SQYRHbG7jPUnelEiaAVJxmhJE=
 github.com/dustin/go-humanize v1.0.0 h1:VSnTsYCnlFHaM2/igO1h6X3HA71jcobQuxemgkq4zYo=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=

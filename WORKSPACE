@@ -301,8 +301,9 @@ go_repository(
 go_repository(
     name = "com_github_dghubble_go_twitter",
     importpath = "github.com/dghubble/go-twitter",
-    sum = "h1:M2wB039zeS1/LZtN/3A7tWyfctiOBL4ty5PURBmDdWU=",
-    version = "v0.0.0-20190719072343-39e5462e111f",
+    replace = "github.com/drswork/go-twitter",
+    sum = "h1:IojggtIqfUspxS5jlkPvEsskaVzlJwQFvP8Lno+feSo=",
+    version = "v0.0.0-20190721142740-110a39637298",
 )
 
 go_repository(

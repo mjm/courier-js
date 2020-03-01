@@ -4,14 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
+	"golang.org/x/net/context/ctxhttp"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/secret"
@@ -81,8 +84,17 @@ func (r *ExternalTweetRepository) Create(ctx context.Context, userID string, twe
 
 	switch tweet.Action {
 	case ActionTweet:
-		// TODO upload media
-		postedTweet, res, err := client.Statuses.Update(tweet.Body, nil)
+		mediaIDs, err := r.uploadMediaURLs(ctx, client, tweet.MediaURLs)
+		if err != nil {
+			trace.Error(ctx, err)
+			return nil, err
+		}
+
+		trace.AddField(ctx, "tweet.media_id_count", len(mediaIDs))
+
+		postedTweet, res, err := client.Statuses.Update(tweet.Body, &twitter.StatusUpdateParams{
+			MediaIds: mediaIDs,
+		})
 		if err != nil {
 			trace.Error(ctx, err)
 			return nil, err
@@ -201,4 +213,113 @@ func (r *ExternalTweetRepository) getTwitterCredentials(ctx context.Context, use
 	err = fmt.Errorf("no identity found for twitter")
 	trace.Error(ctx, err)
 	return "", "", err
+}
+
+func (r *ExternalTweetRepository) uploadMediaURLs(ctx context.Context, client *twitterClient, urls []string) ([]int64, error) {
+	ctx = trace.Start(ctx, "Upload media URLs")
+	defer trace.Finish(ctx)
+
+	trace.AddField(ctx, "tweet.media_url_count", len(urls))
+
+	group, subCtx := errgroup.WithContext(ctx)
+
+	ids := make([]int64, len(urls))
+
+	for i, url := range urls {
+		group.Go(func() error {
+			mediaID, err := r.uploadMediaURL(subCtx, client, url)
+			if err != nil {
+				return err
+			}
+
+			ids[i] = mediaID
+			return nil
+		})
+	}
+
+	if err := group.Wait(); err != nil {
+		trace.Error(ctx, err)
+		return nil, err
+	}
+
+	return ids, nil
+}
+
+func (r *ExternalTweetRepository) uploadMediaURL(ctx context.Context, client *twitterClient, url string) (int64, error) {
+	ctx = trace.Start(ctx, "Upload media item")
+	defer trace.Finish(ctx)
+
+	trace.AddField(ctx, "media.url", url)
+
+	data, mediaType, err := r.fetchMedia(ctx, url)
+	if err != nil {
+		trace.Error(ctx, err)
+		return 0, err
+	}
+
+	mediaID, err := r.doUploadMedia(ctx, client, data, mediaType)
+	if err != nil {
+		trace.Error(ctx, err)
+		return 0, err
+	}
+
+	return mediaID, nil
+}
+
+func (r *ExternalTweetRepository) fetchMedia(ctx context.Context, url string) ([]byte, string, error) {
+	ctx = trace.Start(ctx, "Fetch media contents")
+	defer trace.Finish(ctx)
+
+	trace.AddField(ctx, "media.url", url)
+
+	res, err := ctxhttp.Get(ctx, nil, url)
+	if err != nil {
+		trace.Error(ctx, err)
+		return nil, "", err
+	}
+
+	trace.AddField(ctx, "media.status_code", res.StatusCode)
+
+	if res.StatusCode > 299 {
+		err = fmt.Errorf("unsuccessful status code %d", res.StatusCode)
+		trace.Error(ctx, err)
+		return nil, "", err
+	}
+
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		trace.Error(ctx, err)
+		return nil, "", err
+	}
+
+	trace.AddField(ctx, "media.data_length", len(data))
+
+	mediaType := res.Header.Get("Content-Type")
+	if mediaType == "" {
+		err = fmt.Errorf("no content type")
+		trace.Error(ctx, err)
+		return nil, "", err
+	}
+
+	trace.AddField(ctx, "media.type", mediaType)
+
+	return data, mediaType, nil
+}
+
+func (r *ExternalTweetRepository) doUploadMedia(ctx context.Context, client *twitterClient, data []byte, mediaType string) (int64, error) {
+	ctx = trace.Start(ctx, "Upload media contents")
+	defer trace.Finish(ctx)
+
+	trace.AddField(ctx, "media.data_length", len(data))
+	trace.AddField(ctx, "media.type", mediaType)
+
+	result, _, err := client.Media.Upload(data, mediaType)
+	if err != nil {
+		trace.Error(ctx, err)
+		return 0, err
+	}
+
+	trace.AddField(ctx, "media.id", result.MediaID)
+
+	return result.MediaID, nil
 }

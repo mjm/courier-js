@@ -51,6 +51,7 @@ go_library(
         "@go_googleapis//google/cloud/kms/v1:kms_go_proto",
         "@in_gopkg_auth0_v3//management:go_default_library",
         "@org_golang_google_api//option:go_default_library",
+        "@org_golang_x_net//context/ctxhttp:go_default_library",
         "@org_golang_x_oauth2//:go_default_library",
         "@org_golang_x_oauth2//clientcredentials:go_default_library",
         "@org_golang_x_sync//errgroup:go_default_library",

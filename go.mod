@@ -63,3 +63,5 @@ require (
 	gopkg.in/yaml.v2 v2.2.2
 	willnorris.com/go/microformats v1.0.0
 )
+
+replace github.com/dghubble/go-twitter => github.com/drswork/go-twitter v0.0.0-20190721142740-110a39637298
