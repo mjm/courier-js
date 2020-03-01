@@ -1,33 +1,14 @@
-version: 2
-jobs:
-  deploy_frontend_staging:
+version: 2.1
+
+executors:
+  node:
     docker:
       - image: circleci/node:12
-    steps:
-      - checkout
-      - run:
-          name: Install Now CLI
-          command: sudo npm install -g --unsafe-perm now
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: Install NPM modules
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-#      - run:
-#          name: Migrate database
-#          command: env DATABASE_URL="$STAGING_DATABASE_URL" npx node-pg-migrate up
-#      - run:
-#          name: Update Auth0 configuration
-#          command: npm run auth:import:staging
-      - run:
-          name: Deploy to Now
-          command: now --token $NOW_TOKEN --prod --confirm
-
-  test_backend:
+  bazel:
+    parameters:
+      project:
+        description: Google Cloud Project ID
+        type: string
     docker:
       - image: circleci/golang:1.13-node
       - image: circleci/postgres:12-alpine-ram
@@ -36,7 +17,26 @@ jobs:
           POSTGRES_DB: courier_test
     environment:
       DATABASE_URL: postgresql://localhost/courier_test?sslmode=disable
-      GOOGLE_PROJECT: courier-staging-267902
+      GOOGLE_PROJECT: << parameters.project >>
+  terraform:
+    parameters:
+      workspace:
+        type: string
+    docker:
+      - image: hashicorp/terraform:0.12.20
+    environment:
+      TF_INPUT: "false"
+      TF_IN_AUTOMATION: "true"
+      TF_WORKSPACE: << parameters.workspace >>
+
+jobs:
+  build_and_test_backend:
+    parameters:
+      project:
+        type: string
+    executor:
+      name: bazel
+      project: << parameters.project >>
     steps:
       - checkout
       - run:
@@ -94,13 +94,66 @@ jobs:
           name: Push functions container image
           command: bazel run --config=ci //image:courier-functions-push
 
-  deploy_backend_staging:
+  deploy_frontend:
+    parameters:
+      now_config_file:
+        type: string
+    executor: node
+    steps:
+      - checkout
+      - run:
+          name: Install Now CLI
+          command: sudo npm install -g --unsafe-perm now
+      - run:
+          name: Deploy to Now
+          command: now --token $NOW_TOKEN --prod -A '<< parameters.now_config_file >>' --confirm
+
+  update_auth0:
+    parameters:
+      env:
+        type: string
+    executor: node
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Install NPM modules
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Update Auth0 configuration
+          command: npm run auth:import:<< parameters.env >>
+
+  migrate_database:
+    parameters:
+      database_url:
+        type: env_var_name
+        default: DATABASE_URL
     docker:
-      - image: hashicorp/terraform:0.12.20
-    environment:
-      TF_INPUT: "false"
-      TF_IN_AUTOMATION: "true"
-      TF_WORKSPACE: staging-us-central1
+      - image: circleci/golang:1.13-node
+    steps:
+      - run:
+          name: Install golang-migrate
+          command: |
+            sudo apt install curl
+            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.8.0/migrate.linux-amd64.tar.gz | tar xvz
+            mv migrate.linux-amd64 /go/bin/migrate
+      - run:
+          name: Migrate database
+          command: |
+            /go/bin/migrate -database "$<< parameters.database_url >>" -path migrations/ up
+
+  deploy_backend:
+    parameters:
+      workspace:
+        type: string
+    executor:
+      name: terraform
+      workspace: << parameters.workspace >>
     steps:
       - checkout
       - run:
@@ -119,44 +172,52 @@ jobs:
           name: terraform apply
           command: cd terraform/gcp && terraform apply -auto-approve
 
-  deploy_prod:
-    docker:
-      - image: circleci/node:12
-    steps:
-      - checkout
-      - run:
-          name: Install Now CLI
-          command: sudo npm install -g --unsafe-perm now
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: Install NPM modules
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: Migrate database
-          command: env DATABASE_URL="$PROD_DATABASE_URL" npx node-pg-migrate up
-      - run:
-          name: Update Auth0 configuration
-          command: npm run auth:import:prod
-      - run:
-          name: Deploy to Now
-          command: now --token $NOW_TOKEN --prod -A now.prod.json
 workflows:
   version: 2
   release:
     jobs:
-      - test_backend
-      - deploy_frontend_staging:
+      - build_and_test_backend:
+          name: build_and_test_backend_staging
+          project: courier-staging-267902
+      - migrate_database:
+          name: migrate_database_staging
           requires:
-            - test_backend
-      - deploy_backend_staging:
+            - build_and_test_backend_staging
+      - update_auth0:
+          name: update_auth0_staging
+          env: staging
           requires:
-            - test_backend
-      - deploy_prod:
+            - build_and_test_backend_staging
+      - deploy_frontend:
+          name: deploy_frontend_staging
+          now_config_file: now.json
+          requires:
+            - build_and_test_backend_staging
+            - update_auth0_staging
+      - deploy_backend:
+          name: deploy_backend_staging
+          workspace: staging-us-central1
+          requires:
+            - build_and_test_backend_staging
+            - migrate_database_staging
+            - update_auth0_staging
+
+      - build_and_test_backend:
+          name: build_and_test_backend_prod
+          project: TBD
+          requires:
+            # run the staging one first so we can rely on its build cache
+            - build_and_test_backend_staging
           filters:
             branches:
               only: master
+      - deploy_frontend:
+          name: deploy_frontend_prod
+          now_config_file: now.prod.json
+          requires:
+            - build_and_test_backend_prod
+      - deploy_backend:
+          name: deploy_backend_prod
+          workspace: production-us-central1
+          requires:
+            - build_and_test_backend_prod
