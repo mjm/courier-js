@@ -1,8 +1,3 @@
-import { NextApiRequest } from "next"
-
-import { URLSearchParams } from "url"
-
-import fetch from "isomorphic-unfetch"
 import Cookie from "js-cookie"
 import randomBytes from "randombytes"
 
@@ -56,65 +51,6 @@ export function beginIndieAuth({
   window.location.href = url
 }
 
-interface IndieAuthResult {
-  origin: string
-  url: string
-  token: string
-}
-
-// This function will probably only work correctly from the server.
-//
-// It should be used either in an API route or in getInitialProps
-export async function completeIndieAuth(
-  req: NextApiRequest
-): Promise<IndieAuthResult> {
-  const {
-    tokenEndpoint,
-    nonce,
-    me,
-    clientID,
-    redirectURI,
-    origin,
-  } = getStoredData(req)
-  const { code, state } = req.query
-  if (typeof code !== "string" || typeof state !== "string") {
-    throw new Error("Invalid callback request")
-  }
-
-  if (state !== nonce) {
-    throw new Error("This login attempt is stale. Start over and try again.")
-  }
-
-  const params = new URLSearchParams()
-  params.set("grant_type", "authorization_code")
-  params.set("code", code)
-  params.set("client_id", clientID)
-  params.set("redirect_uri", redirectURI)
-  params.set("me", me)
-
-  const response = await fetch(`${tokenEndpoint}?${params.toString()}`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-    },
-  })
-  const tokenResponse = await response.json()
-  return {
-    origin,
-    token: tokenResponse.access_token,
-    url: me,
-  }
-}
-
 function setStoredData(data: StoredData): void {
   Cookie.set("indieauth", data)
-}
-
-function getStoredData(req: NextApiRequest): StoredData {
-  const storedStr = req.cookies.indieauth
-  if (!storedStr) {
-    throw new Error("This login attempt is stale. Start over and try again.")
-  }
-
-  return JSON.parse(storedStr) as StoredData
 }

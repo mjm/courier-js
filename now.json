@@ -1,26 +1,12 @@
 {
   "version": 2,
   "name": "courier-staging",
-  "routes": [
-    { "src": "/ping", "dest": "/api/ping" }
-  ],
   "env": {
-    "DATABASE_URL": "@courier-staging-database-url",
-    "BACKEND_CLIENT_ID": "@courier-staging-backend-client-id",
-    "BACKEND_CLIENT_SECRET": "@courier-staging-backend-client-secret",
     "CLIENT_ID": "@courier-staging-frontend-client-id",
     "AUTH_DOMAIN": "@courier-staging-auth-domain",
     "API_IDENTIFIER": "https://courier.mjm.now.sh/api/",
-    "TWITTER_CONSUMER_KEY": "@courier-twitter-consumer-key",
-    "TWITTER_CONSUMER_SECRET": "@courier-twitter-consumer-secret",
     "MONTHLY_PLAN_ID": "plan_DdvIUmVUiibVMa",
     "STRIPE_PUBLISHABLE_KEY": "pk_test_P2pW0N6UFzp1OY5In8KApmxj",
-    "STRIPE_SECRET_KEY": "@courier-staging-stripe-secret-key",
-    "AUTH_ENCRYPT_KEY": "@courier-staging-auth-encrypt-key",
-    "APNS_CERTIFICATE": "courier-push-dev.p12",
-    "APNS_PASSPHRASE": "@courier-staging-push-passphrase",
-    "HONEY_WRITE_KEY": "@courier-honey-write-key",
-    "HONEY_DATASET": "courier-staging"
   },
   "build": {
     "env": {

@@ -39,23 +39,6 @@ module.exports = withImages(
 
       config.plugins.push(new webpack.IgnorePlugin(/^pg-native$/))
 
-      config.plugins.push(
-        new webpack.NormalModuleReplacementPlugin(
-          /courier-push\.p12$/,
-          resource => {
-            resource.request = resource.request.replace(
-              /courier-push\.p12$/,
-              process.env.APNS_CERTIFICATE
-            )
-          }
-        )
-      )
-
-      config.module.rules.push({
-        test: /\.graphql$/,
-        exclude: /node_modules/,
-        use: "raw-loader",
-      })
       config.module.rules.push({
         test: /\.js.flow$/,
         loader: "ignore-loader",
