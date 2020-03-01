@@ -25,7 +25,6 @@ go_library(
         "//internal/functions/stripecb:go_default_library",
         "//internal/functions/tasks:go_default_library",
         "//internal/secret:go_default_library",
-        "//internal/trace:go_default_library",
     ],
 )
 
