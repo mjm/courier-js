@@ -36,6 +36,7 @@ jobs:
           POSTGRES_DB: courier_test
     environment:
       DATABASE_URL: postgresql://localhost/courier_test?sslmode=disable
+      GOOGLE_PROJECT: courier-staging-267902
     steps:
       - checkout
       - run:
@@ -43,13 +44,19 @@ jobs:
           command: |
             sudo apt install curl
             curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
+            curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
             echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
+            echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
       - run:
           name: Install packages
-          command: sudo apt update && sudo apt install bazel patch postgresql-client
+          command: sudo apt update && sudo apt install bazel google-cloud-sdk patch postgresql-client
       - run:
           name: Set up GCP credentials
-          command: echo $GCLOUD_SERVICE_KEY > /tmp/gcp-credentials.json
+          command: |
+            echo $GCLOUD_SERVICE_KEY > /tmp/gcp-credentials.json
+            gcloud auth activate-service-account --key-file=/tmp/gcp-credentials.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT}
+            gcloud --quiet auth configure-docker
       - run:
           name: Install golang-migrate
           command: |
@@ -76,39 +83,15 @@ jobs:
           name: Run unit tests
           command: bazel test --config=ci //...
       - run:
-          name: Build container image
-          command: bazel build --config=ci //image:courier-functions
-      - run:
           name: Copy test results
           command: mkdir /tmp/test-results && cp -r bazel-testlogs/* /tmp/test-results/
       - store_test_results:
           path: /tmp/test-results
-
-  push_image_staging:
-    docker:
-      - image: google/cloud-sdk
-    environment:
-      GOOGLE_PROJECT: courier-staging-267902
-    steps:
-      - checkout
       - run:
-          name: Set up Bazel repository
-          command: |
-            apt install -y curl
-            curl https://bazel.build/bazel-release.pub.gpg | apt-key add -
-            echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
+          name: Build container image
+          command: bazel build --config=ci //image:courier-functions
       - run:
-          name: Install packages
-          command: apt update && apt install -y bazel
-      - run:
-          name: Authenticate with Google Cloud
-          command: |
-            echo $GCLOUD_SERVICE_KEY > /tmp/gcp-credentials.json
-            gcloud auth activate-service-account --key-file=/tmp/gcp-credentials.json
-            gcloud --quiet config set project ${GOOGLE_PROJECT}
-            gcloud --quiet auth configure-docker
-      - run:
-          name: Build and Push Container
+          name: Push functions container image
           command: bazel run --config=ci //image:courier-functions-push
 
   deploy_backend_staging:
@@ -170,12 +153,9 @@ workflows:
       - deploy_frontend_staging:
           requires:
             - test_backend
-      - push_image_staging:
-          requires:
-            - test_backend
       - deploy_backend_staging:
           requires:
-            - push_image_staging
+            - test_backend
       - deploy_prod:
           filters:
             branches:
