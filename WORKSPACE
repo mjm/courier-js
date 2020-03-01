@@ -1,6 +1,12 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
+    name = "rules_pkg",
+    url = "https://github.com/bazelbuild/rules_pkg/releases/download/0.2.4/rules_pkg-0.2.4.tar.gz",
+    sha256 = "4ba8f4ab0ff85f2484287ab06c0d871dcb31cc54d439457d28fd4ae14b18450a",
+)
+
+http_archive(
     name = "io_bazel_rules_go",
     urls = [
         "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.22.1/rules_go-v0.22.1.tar.gz",
@@ -14,8 +20,6 @@ load("@io_bazel_rules_go//go:deps.bzl", "go_rules_dependencies", "go_register_to
 go_rules_dependencies()
 
 go_register_toolchains()
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "rules_proto",
@@ -32,8 +36,6 @@ load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_
 rules_proto_dependencies()
 
 rules_proto_toolchains()
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "io_bazel_rules_docker",
@@ -86,6 +88,42 @@ container_pull(
     registry = "gcr.io",
     repository = "distroless/base",
     digest = "sha256:7fa7445dfbebae4f4b7ab0e6ef99276e96075ae42584af6286ba080750d6dfe5",
+)
+
+container_pull(
+    name = "ubuntu_bionic",
+    registry = "index.docker.io",
+    repository = "ubuntu",
+    tag = "bionic",
+    digest = "sha256:0925d086715714114c1988f7c947db94064fd385e171a63c07730f1fa014e6f9",
+)
+
+container_pull(
+    name = "cimg_base",
+    registry = "index.docker.io",
+    repository = "cimg/base",
+    tag = "2020.01",
+    digest = "sha256:eaf4fd4f88368b24c9808f5194d1932c3277febebc61ab98f49cbf79250b8de5",
+)
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+
+http_file(
+    name = "bazel_apt_key",
+    urls = [
+        "https://bazel.build/bazel-release.pub.gpg",
+    ],
+    sha256 = "30af2ca7abfb65987cd61802ca6e352aadc6129dfb5bfc9c81f16617bc3a4416",
+    downloaded_file_path = "bazel-release.pub.gpg",
+)
+
+http_file(
+    name = "gcloud_sdk_apt_key",
+    urls = [
+        "https://packages.cloud.google.com/apt/doc/apt-key.gpg",
+    ],
+    sha256 = "6682f917a79375352c27aaf637f1abd2b5cabb1f014a2c7251bbf6e0580064c7",
+    downloaded_file_path = "gcloud.pub.gpg",
 )
 
 go_repository(

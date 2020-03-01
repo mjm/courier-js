@@ -10,7 +10,7 @@ executors:
         description: Google Cloud Project ID
         type: string
     docker:
-      - image: circleci/golang:1.13-node
+      - image: mmoriarity/circleci-bazel
       - image: circleci/postgres:12-alpine-ram
         environment:
           POSTGRES_USER: circleci
@@ -40,17 +40,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Set up Bazel repository
-          command: |
-            sudo apt install curl
-            curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
-            curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-            echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
-            echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-      - run:
-          name: Install packages
-          command: sudo apt update && sudo apt install bazel google-cloud-sdk patch postgresql-client
-      - run:
           name: Set up GCP credentials
           command: |
             echo $GCLOUD_SERVICE_KEY > /tmp/gcp-credentials.json
@@ -61,7 +50,7 @@ jobs:
           name: Install golang-migrate
           command: |
             curl -L https://github.com/golang-migrate/migrate/releases/download/v4.8.0/migrate.linux-amd64.tar.gz | tar xvz
-            mv migrate.linux-amd64 /go/bin/migrate
+            sudo mv migrate.linux-amd64 /usr/local/bin/migrate
       - run:
           name: Waiting for Postgres to be ready
           command: |
@@ -77,8 +66,7 @@ jobs:
           command: psql -c 'create extension pgcrypto;' $DATABASE_URL
       - run:
           name: Migrate test database
-          command: |
-            /go/bin/migrate -database "$DATABASE_URL" -path migrations/ up
+          command: /usr/local/bin/migrate -database "$DATABASE_URL" -path migrations/ up
       - run:
           name: Run unit tests
           command: bazel test --config=ci //...
@@ -143,9 +131,7 @@ jobs:
             sudo mv migrate.linux-amd64 /usr/local/bin/migrate
       - run:
           name: Migrate database
-          command: |
-            /usr/local/bin/migrate -database "$<< parameters.database_url >>" -path migrations/ up
-
+          command: /usr/local/bin/migrate -database "$<< parameters.database_url >>" -path migrations/ up
 
   deploy_backend:
     parameters:
