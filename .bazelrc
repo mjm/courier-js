@@ -1,2 +1,5 @@
 build --workspace_status_command=bin/workspace_status.sh
-build:ci --jobs=2 --disk_cache=~/.bazel_cache
+
+build:ci --noshow_progress
+build:ci --jobs=2
+build:ci --disk_cache=~/.bazel_cache
