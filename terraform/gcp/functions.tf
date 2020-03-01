@@ -2,7 +2,6 @@ locals {
   base_env = {
     GCP_TOPIC_ID          = google_pubsub_topic.events.name
     GCP_TASKS_QUEUE       = google_cloud_tasks_queue.tasks.id
-    TASKS_URL             = "https://${var.region}-${var.project_id}.cloudfunctions.net/tasks"
     TASKS_SERVICE_ACCOUNT = google_service_account.task_creator.email
   }
   function_env = merge(local.base_env, var.function_env)
@@ -15,11 +14,8 @@ module "function_graphql" {
   git_revision = var.function_revision
   env_vars     = local.function_env
 
-  name         = "graphql"
-  description  = "Serve GraphQL API requests"
-  entry_point  = "GraphQL"
-  memory       = 512
-  trigger_http = true
+  name   = "graphql"
+  memory = 512
 }
 
 module "function_ping" {
@@ -29,10 +25,7 @@ module "function_ping" {
   git_revision = var.function_revision
   env_vars     = local.function_env
 
-  name         = "ping"
-  description  = "Handle XML-RPC ping requests from blogs"
-  entry_point  = "Ping"
-  trigger_http = true
+  name = "ping"
 }
 
 module "function_events" {
@@ -42,10 +35,7 @@ module "function_events" {
   git_revision = var.function_revision
   env_vars     = local.function_env
 
-  name          = "events"
-  description   = "Handles events delivered via PubSub"
-  entry_point   = "Events"
-  trigger_topic = google_pubsub_topic.events.id
+  name = "events"
   invokers = [
     "allAuthenticatedUsers"
   ]
@@ -58,10 +48,7 @@ module "function_indieauth_callback" {
   git_revision = var.function_revision
   env_vars     = local.function_env
 
-  name         = "indieauth-callback"
-  description  = "Handles callbacks to complete IndieAuth handshakes"
-  entry_point  = "IndieAuthCallback"
-  trigger_http = true
+  name = "indieauth-callback"
 }
 
 module "function_stripe_callback" {
@@ -71,10 +58,7 @@ module "function_stripe_callback" {
   git_revision = var.function_revision
   env_vars     = local.function_env
 
-  name         = "stripe-callback"
-  description  = "Handles Stripe webhooks for events"
-  entry_point  = "StripeCallback"
-  trigger_http = true
+  name = "stripe-callback"
 }
 
 module "function_pusher_auth" {
@@ -84,10 +68,7 @@ module "function_pusher_auth" {
   git_revision = var.function_revision
   env_vars     = local.function_env
 
-  name         = "pusher-auth"
-  description  = "Handles authentication requests for private Pusher channels"
-  entry_point  = "PusherAuth"
-  trigger_http = true
+  name = "pusher-auth"
 }
 
 module "function_tasks" {
@@ -97,21 +78,8 @@ module "function_tasks" {
   git_revision = var.function_revision
   env_vars     = local.function_env
 
-  name         = "tasks"
-  description  = "Runs delayed tasks"
-  entry_point  = "Tasks"
-  trigger_http = true
+  name = "tasks"
   invokers = [
     "allAuthenticatedUsers"
   ]
 }
-
-resource "google_cloudfunctions_function_iam_binding" "tasks" {
-  cloud_function = module.function_tasks.name
-  role           = "roles/cloudfunctions.invoker"
-
-  members = [
-    "allAuthenticatedUsers",
-  ]
-}
-

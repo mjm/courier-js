@@ -24,9 +24,9 @@
   },
   "build": {
     "env": {
-      "GRAPHQL_URL": "https://us-central1-courier-staging-267902.cloudfunctions.net/graphql",
-      "INDIEAUTH_CALLBACK_URL": "https://us-central1-courier-staging-267902.cloudfunctions.net/indieauth-callback",
-      "PUSHER_AUTH_URL": "https://us-central1-courier-staging-267902.cloudfunctions.net/pusher-auth",
+      "GRAPHQL_URL": "https://graphql-346j6nvz2q-uc.a.run.app/",
+      "INDIEAUTH_CALLBACK_URL": "https://indieauth-callback-346j6nvz2q-uc.a.run.app/",
+      "PUSHER_AUTH_URL": "https://pusher-auth-346j6nvz2q-uc.a.run.app/",
       "CLIENT_ID": "@courier-staging-frontend-client-id",
       "AUTH_DOMAIN": "@courier-staging-auth-domain",
       "API_IDENTIFIER": "https://courier.mjm.now.sh/api/",

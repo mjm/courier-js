@@ -1,5 +1,5 @@
 output "name" {
-  value = google_cloudfunctions_function.function.name
+  value = google_cloud_run_service.function.name
 }
 
 output "service_account_email" {
@@ -7,5 +7,5 @@ output "service_account_email" {
 }
 
 output "https_url" {
-  value = google_cloud_run_service.function.status.url
+  value = google_cloud_run_service.function.status[0].url
 }
