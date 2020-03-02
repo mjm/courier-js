@@ -4,7 +4,10 @@ load("@io_bazel_rules_go//proto:def.bzl", "go_proto_library")
 
 proto_library(
     name = "feeds_proto",
-    srcs = ["events.proto"],
+    srcs = [
+        "events.proto",
+        "tasks.proto",
+    ],
     visibility = ["//:__subpackages__"],
 )
 

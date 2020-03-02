@@ -10,9 +10,8 @@ import (
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
-	"github.com/mjm/courier-js/internal/write"
-	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
 )
 
 // Injectors from wire.go:
@@ -37,11 +36,11 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	bus := event.NewBus()
 	feedQueries := feeds.NewFeedQueries(dbDB, bus)
-	commandBus := write.NewCommandBus()
-	feedRepository := feeds2.NewFeedRepository(dbDB)
-	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
-	postRepository := feeds2.NewPostRepository(dbDB)
-	commandHandler := feeds2.NewCommandHandler(commandBus, bus, feedRepository, subscriptionRepository, postRepository)
-	handler := NewHandler(config, feedQueries, commandBus, commandHandler)
+	tasksConfig := tasks.NewConfig()
+	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	if err != nil {
+		return nil, err
+	}
+	handler := NewHandler(config, feedQueries, tasksTasks)
 	return handler, nil
 }

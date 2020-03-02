@@ -11,9 +11,11 @@ import (
 	"github.com/golang/protobuf/ptypes/any"
 
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
+	writefeeds "github.com/mjm/courier-js/internal/write/feeds"
 	writetweets "github.com/mjm/courier-js/internal/write/tweets"
 )
 
@@ -21,7 +23,7 @@ type Handler struct {
 	commandBus *write.CommandBus
 }
 
-func NewHandler(traceCfg trace.Config, commandBus *write.CommandBus, _ *event.Publisher, _ *writetweets.CommandHandler) *Handler {
+func NewHandler(traceCfg trace.Config, commandBus *write.CommandBus, _ *event.Publisher, _ *writetweets.CommandHandler, _ *writefeeds.CommandHandler) *Handler {
 	trace.Init(traceCfg)
 
 	return &Handler{
@@ -60,6 +62,11 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 			TweetID:  tweets.TweetID(task.TweetId),
 			Autopost: task.Autopost,
 			TaskName: taskName,
+		})
+	case *feeds.RefreshFeedTask:
+		_, err = h.commandBus.Run(ctx, writefeeds.RefreshCommand{
+			UserID: task.UserId,
+			FeedID: feeds.FeedID(task.FeedId),
 		})
 	default:
 		err = fmt.Errorf("unknown task type %T", msg.Message)

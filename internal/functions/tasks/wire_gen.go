@@ -14,6 +14,7 @@ import (
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
 )
 
@@ -77,6 +78,10 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	api := billing.NewClient(billingConfig)
 	userRepository := tweets.NewUserRepository(management, keyManagementClient, gcpConfig, api)
 	commandHandler := tweets.NewCommandHandler(commandBus, bus, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository)
-	handler := NewHandler(config, commandBus, publisher, commandHandler)
+	feedRepository := feeds.NewFeedRepository(dbDB)
+	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
+	feedsPostRepository := feeds.NewPostRepository(dbDB)
+	feedsCommandHandler := feeds.NewCommandHandler(commandBus, bus, feedRepository, subscriptionRepository, feedsPostRepository)
+	handler := NewHandler(config, commandBus, publisher, commandHandler, feedsCommandHandler)
 	return handler, nil
 }

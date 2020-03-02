@@ -30,7 +30,7 @@ container_image(
     name = "with_apt_sources",
     base = ":with_package_keys.tar",
     tars = [
-        ":apt_sources"
+        ":apt_sources",
     ],
     user = "circleci",
     tags = ["manual"],
@@ -62,4 +62,3 @@ container_push(
     repository = "mmoriarity/circleci-bazel",
     tags = ["manual"],
 )
-

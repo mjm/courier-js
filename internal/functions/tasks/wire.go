@@ -13,6 +13,7 @@ import (
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
 )
 
@@ -28,6 +29,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		db.New,
 		tweets.DefaultSet,
 		tweets.NewTwitterConfigFromSecrets,
+		feeds.DefaultSet,
 		auth.NewConfigFromSecrets,
 		auth.DefaultSet,
 		billing.NewClient,

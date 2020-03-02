@@ -6,28 +6,27 @@ import (
 
 	"github.com/divan/gorilla-xmlrpc/xml"
 	"github.com/gorilla/rpc"
-	"golang.org/x/sync/errgroup"
 
 	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/read/feeds"
+	feeds2 "github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
-	"github.com/mjm/courier-js/internal/write"
-	writefeeds "github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/pkg/scraper"
 )
 
 type Handler struct {
-	rpc        *rpc.Server
-	feeds      feeds.FeedQueries
-	commandBus *write.CommandBus
+	rpc   *rpc.Server
+	feeds feeds.FeedQueries
+	tasks *tasks.Tasks
 }
 
-func NewHandler(traceCfg trace.Config, feedQueries feeds.FeedQueries, commandBus *write.CommandBus, _ *writefeeds.CommandHandler) *Handler {
+func NewHandler(traceCfg trace.Config, feedQueries feeds.FeedQueries, tasks *tasks.Tasks) *Handler {
 	trace.Init(traceCfg)
 
 	h := &Handler{
-		feeds:      feedQueries,
-		commandBus: commandBus,
+		feeds: feedQueries,
+		tasks: tasks,
 	}
 
 	rpcHandler := rpc.NewServer()
@@ -70,20 +69,13 @@ func (h *Handler) Ping(r *http.Request, args *struct {
 
 	trace.AddField(ctx, "feed.count", len(fs))
 
-	group, groupCtx := errgroup.WithContext(ctx)
 	for _, feed := range fs {
-		group.Go(func() error {
-			cmd := writefeeds.RefreshCommand{FeedID: feed.ID}
-			if _, err := h.commandBus.Run(groupCtx, cmd); err != nil {
-				return err
-			}
-			return nil
-		})
-	}
-
-	if err := group.Wait(); err != nil {
-		trace.Error(ctx, err)
-		return err
+		if _, err := h.tasks.Enqueue(ctx, &feeds2.RefreshFeedTask{
+			FeedId: feed.ID.String(),
+		}); err != nil {
+			trace.Error(ctx, err)
+			return err
+		}
 	}
 
 	response.Result.Message = "Thanks for the ping!"
