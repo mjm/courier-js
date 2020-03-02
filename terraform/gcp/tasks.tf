@@ -3,7 +3,8 @@ resource "google_cloud_tasks_queue" "tasks" {
   location = "us-central1"
 
   depends_on = [
-    google_project_service.services["cloudtasks.googleapis.com"]
+    google_project_service.services["cloudtasks.googleapis.com"],
+    google_app_engine_application.default,
   ]
 }
 

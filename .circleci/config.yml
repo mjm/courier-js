@@ -48,6 +48,9 @@ jobs:
             gcloud auth activate-service-account --key-file=/tmp/gcp-credentials.json
             gcloud --quiet config set project ${GOOGLE_PROJECT}
             gcloud --quiet auth configure-docker
+
+            # Use production credentials for build cache, regardless
+            echo $PROD_GCLOUD_SERVICE_KEY > /tmp/gcp-credentials.json
       - run:
           name: Install golang-migrate
           command: |

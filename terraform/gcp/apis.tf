@@ -3,6 +3,7 @@ locals {
     "appengine.googleapis.com",
     "cloudfunctions.googleapis.com",
     "cloudkms.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
     "cloudscheduler.googleapis.com",
     "cloudtasks.googleapis.com",
     "containerregistry.googleapis.com",
