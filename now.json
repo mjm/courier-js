@@ -17,7 +17,6 @@
       "AUTH_DOMAIN": "@courier-staging-auth-domain",
       "API_IDENTIFIER": "https://courier.mjm.now.sh/api/",
       "STRIPE_PUBLISHABLE_KEY": "pk_test_P2pW0N6UFzp1OY5In8KApmxj",
-      "APNS_CERTIFICATE": "courier-push-dev.p12",
       "PUSHER_KEY": "31bfd902720ae06129a7",
       "PUSHER_CLUSTER": "us2"
     }

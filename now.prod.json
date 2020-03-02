@@ -1,27 +1,12 @@
 {
   "version": 2,
   "name": "courier",
-  "routes": [
-    { "src": "/graphql", "dest": "/api/graphql" },
-    { "src": "/ping", "dest": "/api/ping" }
-  ],
   "env": {
-    "DATABASE_URL": "@courier-prod-database-url",
-    "BACKEND_CLIENT_ID": "@courier-prod-backend-client-id",
-    "BACKEND_CLIENT_SECRET": "@courier-prod-backend-client-secret",
     "CLIENT_ID": "@courier-prod-frontend-client-id",
     "AUTH_DOMAIN": "@courier-prod-auth-domain",
     "API_IDENTIFIER": "https://courier.blog/api/",
-    "TWITTER_CONSUMER_KEY": "@courier-twitter-consumer-key",
-    "TWITTER_CONSUMER_SECRET": "@courier-twitter-consumer-secret",
     "MONTHLY_PLAN_ID": "plan_DcPlEgFAqBYpnH",
-    "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM",
-    "STRIPE_SECRET_KEY": "@courier-prod-stripe-secret-key",
-    "AUTH_ENCRYPT_KEY": "@courier-prod-auth-encrypt-key",
-    "APNS_CERTIFICATE": "courier-push-prod.p12",
-    "APNS_PASSPHRASE": "@courier-prod-push-passphrase",
-    "HONEY_WRITE_KEY": "@courier-honey-write-key",
-    "HONEY_DATASET": "courier"
+    "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM"
   },
   "build": {
     "env": {
@@ -29,7 +14,8 @@
       "AUTH_DOMAIN": "@courier-prod-auth-domain",
       "API_IDENTIFIER": "https://courier.blog/api/",
       "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM",
-      "APNS_CERTIFICATE": "courier-push-prod.p12"
+      "PUSHER_KEY": "d45a33818a7ac71ba250",
+      "PUSHER_CLUSTER": "us2"
     }
   }
 }

@@ -34,6 +34,8 @@ jobs:
     parameters:
       project:
         type: string
+      credentials:
+        type: env_var_name
     executor:
       name: bazel
       project: << parameters.project >>
@@ -42,7 +44,7 @@ jobs:
       - run:
           name: Set up GCP credentials
           command: |
-            echo $GCLOUD_SERVICE_KEY > /tmp/gcp-credentials.json
+            echo $<< parameters.credentials >> > /tmp/gcp-credentials.json
             gcloud auth activate-service-account --key-file=/tmp/gcp-credentials.json
             gcloud --quiet config set project ${GOOGLE_PROJECT}
             gcloud --quiet auth configure-docker
@@ -165,6 +167,7 @@ workflows:
       - build_and_test_backend:
           name: build_and_test_backend_staging
           project: courier-staging-267902
+          credentials: GCLOUD_SERVICE_KEY
       - migrate_database:
           name: migrate_database_staging
           database_url: STAGING_DATABASE_URL
@@ -192,20 +195,35 @@ workflows:
 
       - build_and_test_backend:
           name: build_and_test_backend_prod
-          project: TBD
+          project: courier-prod-269822
+          credentials: PROD_GCLOUD_SERVICE_KEY
           requires:
             # run the staging one first so we can rely on its build cache
             - build_and_test_backend_staging
           filters:
             branches:
               only: master
+      - migrate_database:
+          name: migrate_database_prod
+          database_url: PROD_DATABASE_URL
+          requires:
+            - build_and_test_backend_prod
+      - update_auth0:
+          name: update_auth0_prod
+          env: prod
+          requires:
+            - build_and_test_backend_prod
       - deploy_frontend:
           name: deploy_frontend_prod
           now_config_file: now.prod.json
           requires:
             - build_and_test_backend_prod
+            - migrate_database_prod
+            - update_auth0_prod
       - deploy_backend:
           name: deploy_backend_prod
           workspace: production-us-central1
           requires:
             - build_and_test_backend_prod
+            - migrate_database_prod
+            - update_auth0_prod
