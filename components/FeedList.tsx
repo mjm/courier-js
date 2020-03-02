@@ -8,27 +8,14 @@ import {
 import Link from "next/link"
 
 import { FeedList_feeds } from "@generated/FeedList_feeds.graphql"
-import { useEvent } from "components/EventsProvider"
 import FeedCard from "components/FeedCard"
 // need to use CSS Grid _and_ media queries, so a CSS module is the best thing here
 import styles from "components/FeedList.module.css"
-import {
-  FeedRefreshedEvent,
-  handleFeedRefreshed,
-} from "@events/FeedRefreshedEvent"
 
 const FeedList: React.FC<{
   feeds: FeedList_feeds
   relay: RelayPaginationProp
-}> = ({ feeds, relay: { environment } }) => {
-  useEvent(
-    "FeedRefreshed",
-    (data: FeedRefreshedEvent) => {
-      handleFeedRefreshed(environment, data)
-    },
-    []
-  )
-
+}> = ({ feeds }) => {
   if (!feeds.allSubscribedFeeds) {
     return null
   }

@@ -4,12 +4,10 @@ import { Environment, graphql } from "react-relay"
 import { NextPage } from "next"
 import Link from "next/link"
 
-import {
-  handleTweetCanceled,
-  TweetCanceledEvent,
-} from "@events/TweetCanceledEvent"
+import { useTweetCanceledEvent } from "@events/TweetCanceledEvent"
+import { useTweetPostedEvent } from "@events/TweetPostedEvent"
+import { useTweetUncanceledEvent } from "@events/TweetUncanceledEvent"
 import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
-import { useEvent } from "components/EventsProvider"
 import Head from "components/Head"
 import Loading from "components/Loading"
 import Notice from "components/Notice"
@@ -19,38 +17,13 @@ import SubscriptionProvider, {
 import TweetList from "components/TweetList"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-import {
-  handleTweetUncanceled,
-  TweetUncanceledEvent,
-} from "@events/TweetUncanceledEvent"
-import { handleTweetPosted, TweetPostedEvent } from "@events/TweetPostedEvent"
 
 const TweetsPage: NextPage<TweetsPageQueryResponse & {
   environment: Environment
 }> = ({ upcoming, past, viewer, environment }) => {
-  useEvent(
-    "TweetCanceled",
-    (data: TweetCanceledEvent) => {
-      handleTweetCanceled(environment, data)
-    },
-    []
-  )
-
-  useEvent(
-    "TweetUncanceled",
-    (data: TweetUncanceledEvent) => {
-      handleTweetUncanceled(environment, data)
-    },
-    []
-  )
-
-  useEvent(
-    "TweetPosted",
-    (data: TweetPostedEvent) => {
-      handleTweetPosted(environment, data)
-    },
-    []
-  )
+  useTweetCanceledEvent(environment)
+  useTweetUncanceledEvent(environment)
+  useTweetPostedEvent(environment)
 
   return (
     <main className="container my-8 mx-auto py-0 px-8">

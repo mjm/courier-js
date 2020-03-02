@@ -1,4 +1,5 @@
 import { Environment, fetchQuery, graphql } from "relay-runtime"
+import { createEventHook } from "components/EventsProvider"
 
 export interface TweetCanceledEvent {
   user_id: string
@@ -22,3 +23,8 @@ export async function handleTweetCanceled(
 ): Promise<void> {
   await fetchQuery(environment, fetchTweetQuery, { id: event.tweet_id })
 }
+
+export const useTweetCanceledEvent = createEventHook(
+  "TweetCanceled",
+  handleTweetCanceled
+)

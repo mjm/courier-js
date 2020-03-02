@@ -1,4 +1,5 @@
 import { Environment, fetchQuery, graphql } from "relay-runtime"
+import { createEventHook } from "components/EventsProvider"
 
 export interface FeedRefreshedEvent {
   user_id: string
@@ -25,3 +26,8 @@ export async function handleFeedRefreshed(
 ): Promise<void> {
   await fetchQuery(environment, fetchFeedQuery, { id: event.feed_id })
 }
+
+export const useFeedRefreshedEvent = createEventHook(
+  "FeedRefreshed",
+  handleFeedRefreshed
+)

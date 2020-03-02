@@ -5,6 +5,7 @@ import { AuthData } from "pusher-js/types/src/core/auth/options"
 
 import { useAuth } from "components/AuthProvider"
 import { getToken } from "utils/auth0"
+import { Environment } from "relay-runtime"
 
 const pusher = process.browser
   ? new Pusher(process.env.PUSHER_KEY ?? "", {
@@ -70,4 +71,27 @@ export function useEvent(
       channel.unbind(eventName, handler)
     }
   }, deps)
+}
+
+export interface EventHandler<T> {
+  (environment: Environment, data: T): Promise<void>
+}
+
+export interface EventHook {
+  (environment: Environment): void
+}
+
+export function createEventHook<T>(
+  eventName: string,
+  handler: EventHandler<T>
+): EventHook {
+  return environment => {
+    useEvent(
+      eventName,
+      (data: T) => {
+        handler(environment, data)
+      },
+      []
+    )
+  }
 }
