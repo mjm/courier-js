@@ -1,2 +1,7 @@
 .git
 ios
+internal
+pkg
+cmd
+image
+terraform

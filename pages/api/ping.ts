@@ -5,6 +5,7 @@ import httpProxy from "http-proxy"
 const proxy = httpProxy.createProxyServer({
   target: process.env.PING_URL,
   ignorePath: true,
+  changeOrigin: true,
 })
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
