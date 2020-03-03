@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"context"
+	"strings"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/pager"
@@ -59,6 +60,7 @@ func (u *User) SubscriptionStatusOverride() *string {
 		return nil
 	}
 
+	status = strings.ToUpper(status)
 	return &status
 }
 
