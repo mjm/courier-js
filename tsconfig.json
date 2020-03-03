@@ -5,6 +5,9 @@
       "@generated/*": ["lib/__generated__/*"],
       "@pages/*": ["components/pages/*"],
       "@mutations/*": ["components/mutations/*"],
+      "@events/*": ["components/events/*"],
+      "@repositories/*": ["lib/repositories/*"],
+      "@services/*": ["lib/services"],
       "*": ["*", "types/*"]
     },
     "allowJs": true,
@@ -24,7 +27,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "esnext",
-    "types": ["node", "reflect-metadata"],
+    "types": ["node"],
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,

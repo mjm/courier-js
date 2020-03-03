@@ -1,8 +1,8 @@
 scalar Cursor
 scalar DateTime
+scalar Time
 
 type Query {
-  currentUser: User
   viewer: User
 
   node(id: ID!): Node
@@ -15,14 +15,6 @@ type Query {
   ): SubscribedFeedConnection!
 
   subscribedFeed(id: ID!): SubscribedFeed
-
-  allTweets(
-    filter: TweetFilter
-    first: Int
-    last: Int
-    before: Cursor
-    after: Cursor
-  ): TweetConnection!
 
   tweet(id: ID!): Tweet
 
@@ -53,11 +45,6 @@ type Mutation {
   cancelSubscription(
     input: CancelSubscriptionInput!
   ): CancelSubscriptionPayload!
-
-  addDevice(input: AddDeviceInput!): AddDevicePayload!
-  sendTestNotification(
-    input: SendTestNotificationInput!
-  ): SendTestNotificationPayload!
 }
 
 interface Node {
@@ -103,7 +90,7 @@ type CreditCard {
 
 type UserSubscription {
   status: SubscriptionStatus!
-  periodEnd: DateTime!
+  periodEnd: Time!
 }
 
 enum SubscriptionStatus {
@@ -131,9 +118,9 @@ type Feed implements Node {
   title: String!
   homePageURL: String!
   micropubEndpoint: String!
-  refreshedAt: DateTime
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  refreshedAt: Time
+  createdAt: Time!
+  updatedAt: Time!
 
   posts(first: Int, last: Int, before: Cursor, after: Cursor): PostConnection!
 }
@@ -192,10 +179,10 @@ type Post implements Node {
   title: String!
   textContent: String!
   htmlContent: String!
-  publishedAt: DateTime
-  modifiedAt: DateTime
-  createdAt: DateTime!
-  updatedAt: DateTime!
+  publishedAt: Time
+  modifiedAt: Time
+  createdAt: Time!
+  updatedAt: Time!
 }
 
 type SubscribedFeed implements Node {
@@ -225,8 +212,8 @@ type Tweet implements Node & TweetContent {
   mediaURLs: [String!]!
   retweetID: String!
   status: TweetStatus!
-  postAfter: DateTime
-  postedAt: DateTime
+  postAfter: Time
+  postedAt: Time
   postedTweetID: String
 }
 
@@ -326,9 +313,10 @@ type EventEdge {
 type Event implements Node {
   id: ID!
   eventType: EventType!
-  createdAt: DateTime!
+  createdAt: Time!
 
   feed: Feed
+  subscribedFeed: SubscribedFeed
   tweet: Tweet
   boolValue: Boolean
 }
@@ -353,39 +341,6 @@ enum EventType {
 type MicroformatPage {
   authorizationEndpoint: String
   tokenEndpoint: String
-}
-
-type DeviceToken implements Node {
-  id: ID!
-  token: String!
-}
-
-enum NotificationEnvironment {
-  PRODUCTION
-  SANDBOX
-}
-
-input AddDeviceInput {
-  token: String!
-  environment: NotificationEnvironment
-}
-
-type AddDevicePayload {
-  deviceToken: DeviceToken!
-}
-
-enum TestNotificationType {
-  IMPORTED
-  POSTED
-}
-
-input SendTestNotificationInput {
-  tweetId: ID!
-  type: TestNotificationType
-}
-
-type SendTestNotificationPayload {
-  placeholder: String
 }
 
 type FeedPreview {

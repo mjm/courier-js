@@ -1,4 +1,4 @@
-import { graphql } from "react-relay"
+import { Environment, graphql } from "react-relay"
 
 import { NextPage } from "next"
 
@@ -7,12 +7,15 @@ import { ErrorContainer } from "components/ErrorContainer"
 import FeedDetails from "components/FeedDetails"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
+import { useFeedRefreshedEvent } from "@events/FeedRefreshedEvent"
 
 const FeedDetailsPage: NextPage<
-  FeedDetailsPageQueryResponse,
+  FeedDetailsPageQueryResponse & { environment: Environment },
   { id: string }
-> = ({ subscribedFeed, currentUser }) => {
-  if (!subscribedFeed || !currentUser) {
+> = ({ subscribedFeed, viewer, environment }) => {
+  useFeedRefreshedEvent(environment)
+
+  if (!subscribedFeed || !viewer) {
     // TODO I think this means there's no such feed
     return <></>
   }
@@ -20,7 +23,7 @@ const FeedDetailsPage: NextPage<
   return (
     <main className="container mx-auto my-8">
       <ErrorContainer>
-        <FeedDetails feed={subscribedFeed} user={currentUser} />
+        <FeedDetails feed={subscribedFeed} user={viewer} />
       </ErrorContainer>
     </main>
   )
@@ -36,7 +39,7 @@ export default withData(withSecurePage(FeedDetailsPage), {
       subscribedFeed(id: $id) {
         ...FeedDetails_feed
       }
-      currentUser {
+      viewer {
         ...FeedDetails_user
       }
     }

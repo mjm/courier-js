@@ -1,12 +1,16 @@
 query UpcomingTweets($cursor: Cursor) {
-  allTweets(filter: UPCOMING, first: 10, after: $cursor) {
-    ...tweetConnectionFields
+  viewer {
+    allTweets(filter: UPCOMING, first: 10, after: $cursor) {
+      ...tweetConnectionFields
+    }
   }
 }
 
 query PastTweets($cursor: Cursor) {
-  allTweets(filter: PAST, first: 10, after: $cursor) {
-    ...tweetConnectionFields
+  viewer {
+    allTweets(filter: PAST, first: 10, after: $cursor) {
+      ...tweetConnectionFields
+    }
   }
 }
 

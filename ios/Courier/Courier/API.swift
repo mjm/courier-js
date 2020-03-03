@@ -3,72 +3,6 @@
 import Apollo
 import Foundation
 
-public struct AddDeviceInput: GraphQLMapConvertible {
-  public var graphQLMap: GraphQLMap
-
-  public init(token: String, environment: Swift.Optional<NotificationEnvironment?> = nil) {
-    graphQLMap = ["token": token, "environment": environment]
-  }
-
-  public var token: String {
-    get {
-      return graphQLMap["token"] as! String
-    }
-    set {
-      graphQLMap.updateValue(newValue, forKey: "token")
-    }
-  }
-
-  public var environment: Swift.Optional<NotificationEnvironment?> {
-    get {
-      return graphQLMap["environment"] as? Swift.Optional<NotificationEnvironment?> ?? Swift.Optional<NotificationEnvironment?>.none
-    }
-    set {
-      graphQLMap.updateValue(newValue, forKey: "environment")
-    }
-  }
-}
-
-public enum NotificationEnvironment: RawRepresentable, Equatable, Hashable, CaseIterable, Apollo.JSONDecodable, Apollo.JSONEncodable {
-  public typealias RawValue = String
-  case production
-  case sandbox
-  /// Auto generated constant for unknown enum values
-  case __unknown(RawValue)
-
-  public init?(rawValue: RawValue) {
-    switch rawValue {
-      case "PRODUCTION": self = .production
-      case "SANDBOX": self = .sandbox
-      default: self = .__unknown(rawValue)
-    }
-  }
-
-  public var rawValue: RawValue {
-    switch self {
-      case .production: return "PRODUCTION"
-      case .sandbox: return "SANDBOX"
-      case .__unknown(let value): return value
-    }
-  }
-
-  public static func == (lhs: NotificationEnvironment, rhs: NotificationEnvironment) -> Bool {
-    switch (lhs, rhs) {
-      case (.production, .production): return true
-      case (.sandbox, .sandbox): return true
-      case (.__unknown(let lhsValue), .__unknown(let rhsValue)): return lhsValue == rhsValue
-      default: return false
-    }
-  }
-
-  public static var allCases: [NotificationEnvironment] {
-    return [
-      .production,
-      .sandbox,
-    ]
-  }
-}
-
 public struct CancelTweetInput: GraphQLMapConvertible {
   public var graphQLMap: GraphQLMap
 
@@ -308,143 +242,17 @@ public enum SubscriptionStatus: RawRepresentable, Equatable, Hashable, CaseItera
   }
 }
 
-public final class RegisterDeviceMutation: GraphQLMutation {
-  /// The raw GraphQL definition of this operation.
-  public let operationDefinition =
-    """
-    mutation RegisterDevice($input: AddDeviceInput!) {
-      addDevice(input: $input) {
-        __typename
-        deviceToken {
-          __typename
-          id
-        }
-      }
-    }
-    """
-
-  public let operationName = "RegisterDevice"
-
-  public var input: AddDeviceInput
-
-  public init(input: AddDeviceInput) {
-    self.input = input
-  }
-
-  public var variables: GraphQLMap? {
-    return ["input": input]
-  }
-
-  public struct Data: GraphQLSelectionSet {
-    public static let possibleTypes = ["Mutation"]
-
-    public static let selections: [GraphQLSelection] = [
-      GraphQLField("addDevice", arguments: ["input": GraphQLVariable("input")], type: .nonNull(.object(AddDevice.selections))),
-    ]
-
-    public private(set) var resultMap: ResultMap
-
-    public init(unsafeResultMap: ResultMap) {
-      self.resultMap = unsafeResultMap
-    }
-
-    public init(addDevice: AddDevice) {
-      self.init(unsafeResultMap: ["__typename": "Mutation", "addDevice": addDevice.resultMap])
-    }
-
-    public var addDevice: AddDevice {
-      get {
-        return AddDevice(unsafeResultMap: resultMap["addDevice"]! as! ResultMap)
-      }
-      set {
-        resultMap.updateValue(newValue.resultMap, forKey: "addDevice")
-      }
-    }
-
-    public struct AddDevice: GraphQLSelectionSet {
-      public static let possibleTypes = ["AddDevicePayload"]
-
-      public static let selections: [GraphQLSelection] = [
-        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-        GraphQLField("deviceToken", type: .nonNull(.object(DeviceToken.selections))),
-      ]
-
-      public private(set) var resultMap: ResultMap
-
-      public init(unsafeResultMap: ResultMap) {
-        self.resultMap = unsafeResultMap
-      }
-
-      public init(deviceToken: DeviceToken) {
-        self.init(unsafeResultMap: ["__typename": "AddDevicePayload", "deviceToken": deviceToken.resultMap])
-      }
-
-      public var __typename: String {
-        get {
-          return resultMap["__typename"]! as! String
-        }
-        set {
-          resultMap.updateValue(newValue, forKey: "__typename")
-        }
-      }
-
-      public var deviceToken: DeviceToken {
-        get {
-          return DeviceToken(unsafeResultMap: resultMap["deviceToken"]! as! ResultMap)
-        }
-        set {
-          resultMap.updateValue(newValue.resultMap, forKey: "deviceToken")
-        }
-      }
-
-      public struct DeviceToken: GraphQLSelectionSet {
-        public static let possibleTypes = ["DeviceToken"]
-
-        public static let selections: [GraphQLSelection] = [
-          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-          GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
-        ]
-
-        public private(set) var resultMap: ResultMap
-
-        public init(unsafeResultMap: ResultMap) {
-          self.resultMap = unsafeResultMap
-        }
-
-        public init(id: GraphQLID) {
-          self.init(unsafeResultMap: ["__typename": "DeviceToken", "id": id])
-        }
-
-        public var __typename: String {
-          get {
-            return resultMap["__typename"]! as! String
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "__typename")
-          }
-        }
-
-        public var id: GraphQLID {
-          get {
-            return resultMap["id"]! as! GraphQLID
-          }
-          set {
-            resultMap.updateValue(newValue, forKey: "id")
-          }
-        }
-      }
-    }
-  }
-}
-
 public final class UpcomingTweetsQuery: GraphQLQuery {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition =
     """
     query UpcomingTweets($cursor: Cursor) {
-      allTweets(filter: UPCOMING, first: 10, after: $cursor) {
+      viewer {
         __typename
-        ...tweetConnectionFields
+        allTweets(filter: UPCOMING, first: 10, after: $cursor) {
+          __typename
+          ...tweetConnectionFields
+        }
       }
     }
     """
@@ -467,7 +275,7 @@ public final class UpcomingTweetsQuery: GraphQLQuery {
     public static let possibleTypes = ["Query"]
 
     public static let selections: [GraphQLSelection] = [
-      GraphQLField("allTweets", arguments: ["filter": "UPCOMING", "first": 10, "after": GraphQLVariable("cursor")], type: .nonNull(.object(AllTweet.selections))),
+      GraphQLField("viewer", type: .object(Viewer.selections)),
     ]
 
     public private(set) var resultMap: ResultMap
@@ -476,31 +284,35 @@ public final class UpcomingTweetsQuery: GraphQLQuery {
       self.resultMap = unsafeResultMap
     }
 
-    public init(allTweets: AllTweet) {
-      self.init(unsafeResultMap: ["__typename": "Query", "allTweets": allTweets.resultMap])
+    public init(viewer: Viewer? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "viewer": viewer.flatMap { (value: Viewer) -> ResultMap in value.resultMap }])
     }
 
-    public var allTweets: AllTweet {
+    public var viewer: Viewer? {
       get {
-        return AllTweet(unsafeResultMap: resultMap["allTweets"]! as! ResultMap)
+        return (resultMap["viewer"] as? ResultMap).flatMap { Viewer(unsafeResultMap: $0) }
       }
       set {
-        resultMap.updateValue(newValue.resultMap, forKey: "allTweets")
+        resultMap.updateValue(newValue?.resultMap, forKey: "viewer")
       }
     }
 
-    public struct AllTweet: GraphQLSelectionSet {
-      public static let possibleTypes = ["TweetConnection"]
+    public struct Viewer: GraphQLSelectionSet {
+      public static let possibleTypes = ["User"]
 
       public static let selections: [GraphQLSelection] = [
         GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-        GraphQLFragmentSpread(TweetConnectionFields.self),
+        GraphQLField("allTweets", arguments: ["filter": "UPCOMING", "first": 10, "after": GraphQLVariable("cursor")], type: .nonNull(.object(AllTweet.selections))),
       ]
 
       public private(set) var resultMap: ResultMap
 
       public init(unsafeResultMap: ResultMap) {
         self.resultMap = unsafeResultMap
+      }
+
+      public init(allTweets: AllTweet) {
+        self.init(unsafeResultMap: ["__typename": "User", "allTweets": allTweets.resultMap])
       }
 
       public var __typename: String {
@@ -512,28 +324,61 @@ public final class UpcomingTweetsQuery: GraphQLQuery {
         }
       }
 
-      public var fragments: Fragments {
+      public var allTweets: AllTweet {
         get {
-          return Fragments(unsafeResultMap: resultMap)
+          return AllTweet(unsafeResultMap: resultMap["allTweets"]! as! ResultMap)
         }
         set {
-          resultMap += newValue.resultMap
+          resultMap.updateValue(newValue.resultMap, forKey: "allTweets")
         }
       }
 
-      public struct Fragments {
+      public struct AllTweet: GraphQLSelectionSet {
+        public static let possibleTypes = ["TweetConnection"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLFragmentSpread(TweetConnectionFields.self),
+        ]
+
         public private(set) var resultMap: ResultMap
 
         public init(unsafeResultMap: ResultMap) {
           self.resultMap = unsafeResultMap
         }
 
-        public var tweetConnectionFields: TweetConnectionFields {
+        public var __typename: String {
           get {
-            return TweetConnectionFields(unsafeResultMap: resultMap)
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var fragments: Fragments {
+          get {
+            return Fragments(unsafeResultMap: resultMap)
           }
           set {
             resultMap += newValue.resultMap
+          }
+        }
+
+        public struct Fragments {
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var tweetConnectionFields: TweetConnectionFields {
+            get {
+              return TweetConnectionFields(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
           }
         }
       }
@@ -546,9 +391,12 @@ public final class PastTweetsQuery: GraphQLQuery {
   public let operationDefinition =
     """
     query PastTweets($cursor: Cursor) {
-      allTweets(filter: PAST, first: 10, after: $cursor) {
+      viewer {
         __typename
-        ...tweetConnectionFields
+        allTweets(filter: PAST, first: 10, after: $cursor) {
+          __typename
+          ...tweetConnectionFields
+        }
       }
     }
     """
@@ -571,7 +419,7 @@ public final class PastTweetsQuery: GraphQLQuery {
     public static let possibleTypes = ["Query"]
 
     public static let selections: [GraphQLSelection] = [
-      GraphQLField("allTweets", arguments: ["filter": "PAST", "first": 10, "after": GraphQLVariable("cursor")], type: .nonNull(.object(AllTweet.selections))),
+      GraphQLField("viewer", type: .object(Viewer.selections)),
     ]
 
     public private(set) var resultMap: ResultMap
@@ -580,31 +428,35 @@ public final class PastTweetsQuery: GraphQLQuery {
       self.resultMap = unsafeResultMap
     }
 
-    public init(allTweets: AllTweet) {
-      self.init(unsafeResultMap: ["__typename": "Query", "allTweets": allTweets.resultMap])
+    public init(viewer: Viewer? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "viewer": viewer.flatMap { (value: Viewer) -> ResultMap in value.resultMap }])
     }
 
-    public var allTweets: AllTweet {
+    public var viewer: Viewer? {
       get {
-        return AllTweet(unsafeResultMap: resultMap["allTweets"]! as! ResultMap)
+        return (resultMap["viewer"] as? ResultMap).flatMap { Viewer(unsafeResultMap: $0) }
       }
       set {
-        resultMap.updateValue(newValue.resultMap, forKey: "allTweets")
+        resultMap.updateValue(newValue?.resultMap, forKey: "viewer")
       }
     }
 
-    public struct AllTweet: GraphQLSelectionSet {
-      public static let possibleTypes = ["TweetConnection"]
+    public struct Viewer: GraphQLSelectionSet {
+      public static let possibleTypes = ["User"]
 
       public static let selections: [GraphQLSelection] = [
         GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-        GraphQLFragmentSpread(TweetConnectionFields.self),
+        GraphQLField("allTweets", arguments: ["filter": "PAST", "first": 10, "after": GraphQLVariable("cursor")], type: .nonNull(.object(AllTweet.selections))),
       ]
 
       public private(set) var resultMap: ResultMap
 
       public init(unsafeResultMap: ResultMap) {
         self.resultMap = unsafeResultMap
+      }
+
+      public init(allTweets: AllTweet) {
+        self.init(unsafeResultMap: ["__typename": "User", "allTweets": allTweets.resultMap])
       }
 
       public var __typename: String {
@@ -616,28 +468,61 @@ public final class PastTweetsQuery: GraphQLQuery {
         }
       }
 
-      public var fragments: Fragments {
+      public var allTweets: AllTweet {
         get {
-          return Fragments(unsafeResultMap: resultMap)
+          return AllTweet(unsafeResultMap: resultMap["allTweets"]! as! ResultMap)
         }
         set {
-          resultMap += newValue.resultMap
+          resultMap.updateValue(newValue.resultMap, forKey: "allTweets")
         }
       }
 
-      public struct Fragments {
+      public struct AllTweet: GraphQLSelectionSet {
+        public static let possibleTypes = ["TweetConnection"]
+
+        public static let selections: [GraphQLSelection] = [
+          GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+          GraphQLFragmentSpread(TweetConnectionFields.self),
+        ]
+
         public private(set) var resultMap: ResultMap
 
         public init(unsafeResultMap: ResultMap) {
           self.resultMap = unsafeResultMap
         }
 
-        public var tweetConnectionFields: TweetConnectionFields {
+        public var __typename: String {
           get {
-            return TweetConnectionFields(unsafeResultMap: resultMap)
+            return resultMap["__typename"]! as! String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "__typename")
+          }
+        }
+
+        public var fragments: Fragments {
+          get {
+            return Fragments(unsafeResultMap: resultMap)
           }
           set {
             resultMap += newValue.resultMap
+          }
+        }
+
+        public struct Fragments {
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public var tweetConnectionFields: TweetConnectionFields {
+            get {
+              return TweetConnectionFields(unsafeResultMap: resultMap)
+            }
+            set {
+              resultMap += newValue.resultMap
+            }
           }
         }
       }
@@ -1369,7 +1254,7 @@ public final class CurrentUserQuery: GraphQLQuery {
   public let operationDefinition =
     """
     query CurrentUser {
-      currentUser {
+      viewer {
         __typename
         ...userInfo
       }
@@ -1387,7 +1272,7 @@ public final class CurrentUserQuery: GraphQLQuery {
     public static let possibleTypes = ["Query"]
 
     public static let selections: [GraphQLSelection] = [
-      GraphQLField("currentUser", type: .object(CurrentUser.selections)),
+      GraphQLField("viewer", type: .object(Viewer.selections)),
     ]
 
     public private(set) var resultMap: ResultMap
@@ -1396,20 +1281,20 @@ public final class CurrentUserQuery: GraphQLQuery {
       self.resultMap = unsafeResultMap
     }
 
-    public init(currentUser: CurrentUser? = nil) {
-      self.init(unsafeResultMap: ["__typename": "Query", "currentUser": currentUser.flatMap { (value: CurrentUser) -> ResultMap in value.resultMap }])
+    public init(viewer: Viewer? = nil) {
+      self.init(unsafeResultMap: ["__typename": "Query", "viewer": viewer.flatMap { (value: Viewer) -> ResultMap in value.resultMap }])
     }
 
-    public var currentUser: CurrentUser? {
+    public var viewer: Viewer? {
       get {
-        return (resultMap["currentUser"] as? ResultMap).flatMap { CurrentUser(unsafeResultMap: $0) }
+        return (resultMap["viewer"] as? ResultMap).flatMap { Viewer(unsafeResultMap: $0) }
       }
       set {
-        resultMap.updateValue(newValue?.resultMap, forKey: "currentUser")
+        resultMap.updateValue(newValue?.resultMap, forKey: "viewer")
       }
     }
 
-    public struct CurrentUser: GraphQLSelectionSet {
+    public struct Viewer: GraphQLSelectionSet {
       public static let possibleTypes = ["User"]
 
       public static let selections: [GraphQLSelection] = [

@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package courier.billing;
+option go_package = "billing";
+
+message CustomerCreated {
+  string user_id = 1;
+  string customer_id = 2;
+}
+
+message SubscriptionCreated {
+  string user_id = 1;
+  string subscription_id = 2;
+}
+
+message SubscriptionRenewed {
+  string user_id = 1;
+  string subscription_id = 2;
+}
+
+message SubscriptionCanceled {
+  string user_id = 1;
+  string subscription_id = 2;
+}
+
+message SubscriptionReactivated {
+  string user_id = 1;
+  string subscription_id = 2;
+}
+
+message SubscriptionExpired {
+  string user_id = 1;
+  string subscription_id = 2;
+}

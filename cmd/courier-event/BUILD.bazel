@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["main.go"],
+    importpath = "github.com/mjm/courier-js/cmd/courier-event",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//internal/event:go_default_library",
+        "//internal/shared/feeds:go_default_library",
+        "@com_github_honeycombio_libhoney_go//:go_default_library",
+        "@com_github_honeycombio_libhoney_go//transmission:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "courier-event",
+    embed = [":go_default_library"],
+    visibility = ["//visibility:public"],
+)

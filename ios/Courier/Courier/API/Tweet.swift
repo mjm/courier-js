@@ -87,14 +87,14 @@ extension TweetListData {
 
 extension UpcomingTweetsQuery.Data: TweetListData {
     var tweetConnectionFields: TweetConnectionFields {
-        get { allTweets.fragments.tweetConnectionFields }
-        set { allTweets.fragments.tweetConnectionFields = newValue }
+        get { viewer!.allTweets.fragments.tweetConnectionFields }
+        set { viewer!.allTweets.fragments.tweetConnectionFields = newValue }
     }
 }
 
 extension PastTweetsQuery.Data: TweetListData {
     var tweetConnectionFields: TweetConnectionFields {
-        get { allTweets.fragments.tweetConnectionFields }
-        set { allTweets.fragments.tweetConnectionFields = newValue }
+        get { viewer!.allTweets.fragments.tweetConnectionFields }
+        set { viewer!.allTweets.fragments.tweetConnectionFields = newValue }
     }
 }

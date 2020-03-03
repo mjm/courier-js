@@ -1,11 +1,11 @@
 /* tslint:disable */
-/* @relayHash bc4c97cefff3e37790fcfe01355a1b76 */
+/* @relayHash 25a2c62b23f42f543180a853649a3b8f */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type AccountPageQueryVariables = {};
 export type AccountPageQueryResponse = {
-    readonly currentUser: {
+    readonly viewer: {
         readonly " $fragmentRefs": FragmentRefs<"UserInfoCard_user" | "SubscriptionInfoCard_user">;
     } | null;
     readonly " $fragmentRefs": FragmentRefs<"RecentEventsCard_events">;
@@ -19,7 +19,7 @@ export type AccountPageQuery = {
 
 /*
 query AccountPageQuery {
-  currentUser {
+  viewer {
     ...UserInfoCard_user
     ...SubscriptionInfoCard_user
   }
@@ -33,6 +33,13 @@ fragment EventTableRow_event on Event {
   feed {
     id
     title
+  }
+  subscribedFeed {
+    id
+    feed {
+      title
+      id
+    }
   }
   tweet {
     id
@@ -93,6 +100,13 @@ v1 = {
   "name": "id",
   "args": null,
   "storageKey": null
+},
+v2 = {
+  "kind": "ScalarField",
+  "alias": null,
+  "name": "title",
+  "args": null,
+  "storageKey": null
 };
 return {
   "kind": "Request",
@@ -106,7 +120,7 @@ return {
       {
         "kind": "LinkedField",
         "alias": null,
-        "name": "currentUser",
+        "name": "viewer",
         "storageKey": null,
         "args": null,
         "concreteType": "User",
@@ -139,7 +153,7 @@ return {
       {
         "kind": "LinkedField",
         "alias": null,
-        "name": "currentUser",
+        "name": "viewer",
         "storageKey": null,
         "args": null,
         "concreteType": "User",
@@ -288,12 +302,31 @@ return {
                     "plural": false,
                     "selections": [
                       (v1/*: any*/),
+                      (v2/*: any*/)
+                    ]
+                  },
+                  {
+                    "kind": "LinkedField",
+                    "alias": null,
+                    "name": "subscribedFeed",
+                    "storageKey": null,
+                    "args": null,
+                    "concreteType": "SubscribedFeed",
+                    "plural": false,
+                    "selections": [
+                      (v1/*: any*/),
                       {
-                        "kind": "ScalarField",
+                        "kind": "LinkedField",
                         "alias": null,
-                        "name": "title",
+                        "name": "feed",
+                        "storageKey": null,
                         "args": null,
-                        "storageKey": null
+                        "concreteType": "Feed",
+                        "plural": false,
+                        "selections": [
+                          (v2/*: any*/),
+                          (v1/*: any*/)
+                        ]
                       }
                     ]
                   },
@@ -383,10 +416,10 @@ return {
     "operationKind": "query",
     "name": "AccountPageQuery",
     "id": null,
-    "text": "query AccountPageQuery {\n  currentUser {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 10) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n  picture\n}\n",
+    "text": "query AccountPageQuery {\n  viewer {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  subscribedFeed {\n    id\n    feed {\n      title\n      id\n    }\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 10) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n  picture\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = '0fd3d521a742f1e0209ec80183548ead';
+(node as any).hash = 'ae10ece807a28d9f69c00f289ef56791';
 export default node;

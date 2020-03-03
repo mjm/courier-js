@@ -3,6 +3,7 @@ import React from "react"
 import { NextComponentType, NextPage, NextPageContext } from "next"
 
 import { AuthProvider } from "components/AuthProvider"
+import { EventsProvider } from "components/EventsProvider"
 import Nav from "components/Nav"
 import { getUser, IdToken, isAuthenticated } from "utils/auth0"
 
@@ -40,8 +41,10 @@ export default function withDefaultPage<P, IP = P>(
         isAuthenticated={isAuthenticated}
         isAuthenticating={isAuthenticating}
       >
-        <Nav user={user} isAuthenticating={isAuthenticating} />
-        <Page {...props} />
+        <EventsProvider>
+          <Nav user={user} isAuthenticating={isAuthenticating} />
+          <Page {...props} />
+        </EventsProvider>
       </AuthProvider>
     )
   }

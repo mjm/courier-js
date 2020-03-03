@@ -1,0 +1,11 @@
+#!include:.gitignore
+/.git
+/.idea
+/.next
+/components
+/hocs
+/ios
+/lib
+/node_modules
+/pages
+/utils

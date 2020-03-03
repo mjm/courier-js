@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["notifier.go"],
+    importpath = "github.com/mjm/courier-js/internal/notifications",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/event:go_default_library",
+        "//internal/read/tweets:go_default_library",
+        "//internal/shared/tweets:go_default_library",
+        "//internal/trace:go_default_library",
+        "@com_github_pusher_push_notifications_go//:go_default_library",
+    ],
+)

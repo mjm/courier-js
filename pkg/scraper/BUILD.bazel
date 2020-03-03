@@ -1,0 +1,33 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "feed.go",
+        "json.go",
+        "scrape.go",
+        "xml.go",
+    ],
+    importpath = "github.com/mjm/courier-js/pkg/scraper",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_mmcdole_gofeed//:go_default_library",
+        "@com_github_puerkitobio_purell//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "atom_test.go",
+        "json_test.go",
+        "rss_test.go",
+        "scrape_test.go",
+    ],
+    data = glob(["testdata/**"]),
+    embed = [":go_default_library"],
+    deps = [
+        "@com_github_jarcoal_httpmock//:go_default_library",
+        "@com_github_stretchr_testify//suite:go_default_library",
+    ],
+)

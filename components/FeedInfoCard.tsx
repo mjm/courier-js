@@ -187,7 +187,6 @@ export const MicropubSection: React.FC<{
       beginIndieAuth({
         endpoint: authorizationEndpoint,
         tokenEndpoint,
-        redirectURI: "api/syndication-callback",
         me: feed.homePageURL,
         scopes: "update",
       })

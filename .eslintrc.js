@@ -29,7 +29,7 @@ module.exports = {
           ["^\\u0000"],
           ["^[^.]"],
           [
-            "^(lib/|components/|hocs/|utils/|@pages/|@mutations/|@generated/|tailwind.config)",
+            "^(lib/|components/|hocs/|utils/|@pages/|@mutations/|@events/|@generated/|@repositories/|@services/|tailwind.config)",
           ],
           ["^\\."],
           ["^.+\\.s?css$"],

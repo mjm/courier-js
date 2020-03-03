@@ -12,26 +12,15 @@ import Events
 import Foundation
 import UserActions
 
-struct RegisterDeviceAction: MutationUserAction {
-    let token: Data
+//struct RegisterDeviceAction: ReactiveUserAction {
+//    let token: Data
+//
+//    var undoActionName: String? { nil }
+//    var displayName: String? { "Register for Notifications" }
+//
+//    func mutation(context: UserActions.Context<RegisterDeviceAction>) -> RegisterDeviceMutation {
+//        
+//    }
+//}
 
-    var undoActionName: String? { nil }
-    var displayName: String? { "Register for Notifications" }
-
-    func mutation(context: UserActions.Context<RegisterDeviceAction>) -> RegisterDeviceMutation {
-        let tokenString = token.base64EncodedString()
-
-        var input = AddDeviceInput(token: tokenString)
-        #if DEBUG
-        input.environment = .sandbox
-        #else
-        input.environment = .production
-        #endif
-
-        Event.current[.environment] = input.environment!
-
-        return RegisterDeviceMutation(input: input)
-    }
-}
-
-extension NotificationEnvironment: Encodable {}
+//extension NotificationEnvironment: Encodable {}

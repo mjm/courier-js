@@ -20,3 +20,13 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+/.now
+/courier-event
+/courier
+*credentials.json
+/.idea/
+terraform.tfvars
+.terraform
+
+/bazel-*

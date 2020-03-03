@@ -32,6 +32,12 @@ export default createFragmentContainer(EventTableRow, {
         id
         title
       }
+      subscribedFeed {
+        id
+        feed {
+          title
+        }
+      }
       tweet {
         id
         body
@@ -46,13 +52,14 @@ const EventDescription: React.FC<{
 }> = ({ event }) => {
   const tweetBody = event.tweet?.body
   const feed = event.feed as EventTableRow_event["feed"] & {}
+  const subscribedFeed = event.subscribedFeed as EventTableRow_event["subscribedFeed"] & {}
 
   switch (event.eventType) {
     case "FEED_SET_AUTOPOST":
       return (
         <>
           You turned {event.boolValue ? "on" : "off"} autoposting for{" "}
-          <FeedLink id={feed.id} title={feed.title} />
+          <FeedLink id={subscribedFeed.id} title={subscribedFeed.feed.title} />
         </>
       )
     case "FEED_REFRESH":
@@ -64,13 +71,15 @@ const EventDescription: React.FC<{
     case "FEED_SUBSCRIBE":
       return (
         <>
-          You subscribed to <FeedLink id={feed.id} title={feed.title} />
+          You subscribed to{" "}
+          <FeedLink id={subscribedFeed.id} title={subscribedFeed.feed.title} />
         </>
       )
     case "FEED_UNSUBSCRIBE":
       return (
         <>
-          You unsubscribed from <FeedLink id={feed.id} title={feed.title} />
+          You unsubscribed from{" "}
+          <FeedLink id={subscribedFeed.id} title={subscribedFeed.feed.title} />
         </>
       )
     case "TWEET_CANCEL":

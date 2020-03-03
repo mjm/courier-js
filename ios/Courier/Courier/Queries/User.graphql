@@ -1,5 +1,5 @@
 query CurrentUser {
-  currentUser {
+  viewer {
     ...userInfo
   }
 }

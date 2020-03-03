@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "handler.go",
+        "wire_gen.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/functions/ping",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/event:go_default_library",
+        "//internal/functions:go_default_library",
+        "//internal/read/feeds:go_default_library",
+        "//internal/secret:go_default_library",
+        "//internal/shared/feeds:go_default_library",
+        "//internal/tasks:go_default_library",
+        "//internal/trace:go_default_library",
+        "//pkg/scraper:go_default_library",
+        "@com_github_divan_gorilla_xmlrpc//xml:go_default_library",
+        "@com_github_gorilla_rpc//:go_default_library",
+    ],
+)

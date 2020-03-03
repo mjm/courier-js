@@ -1,9 +1,12 @@
 import React from "react"
-import { graphql } from "react-relay"
+import { Environment, graphql } from "react-relay"
 
 import { NextPage } from "next"
 import Link from "next/link"
 
+import { useTweetCanceledEvent } from "@events/TweetCanceledEvent"
+import { useTweetPostedEvent } from "@events/TweetPostedEvent"
+import { useTweetUncanceledEvent } from "@events/TweetUncanceledEvent"
 import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
 import Head from "components/Head"
 import Loading from "components/Loading"
@@ -15,16 +18,18 @@ import TweetList from "components/TweetList"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
 
-const TweetsPage: NextPage<TweetsPageQueryResponse> = ({
-  upcoming,
-  past,
-  currentUser,
-}) => {
+const TweetsPage: NextPage<TweetsPageQueryResponse & {
+  environment: Environment
+}> = ({ upcoming, past, viewer, environment }) => {
+  useTweetCanceledEvent(environment)
+  useTweetUncanceledEvent(environment)
+  useTweetPostedEvent(environment)
+
   return (
     <main className="container my-8 mx-auto py-0 px-8">
       <Head title="Your Tweets" />
-      {currentUser && (
-        <SubscriptionProvider user={currentUser}>
+      {viewer && (
+        <SubscriptionProvider user={viewer}>
           <SubscribeBanner />
           {upcoming && past ? (
             <div className="flex flex-row flex-wrap -mx-4">
@@ -57,7 +62,7 @@ export default withData(withSecurePage(TweetsPage), {
       past: viewer {
         ...TweetList_tweets @arguments(filter: PAST)
       }
-      currentUser {
+      viewer {
         ...SubscriptionProvider_user
       }
     }

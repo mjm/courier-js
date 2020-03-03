@@ -1,0 +1,12 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = ["stripe.go"],
+    importpath = "github.com/mjm/courier-js/internal/billing",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/secret:go_default_library",
+        "@com_github_stripe_stripe_go//client:go_default_library",
+    ],
+)

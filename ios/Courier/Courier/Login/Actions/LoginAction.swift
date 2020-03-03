@@ -8,6 +8,7 @@
 
 import Auth0
 import Combinable
+import PushNotifications
 import UserActions
 
 extension Notification.Name {
@@ -19,11 +20,27 @@ struct LoginAction: ReactiveUserAction {
 
     var undoActionName: String? { nil }
 
-    var canPerform: Bool {
-        !CredentialsManager.shared.hasValid()
+    func publisher(context: UserActions.Context<LoginAction>) -> AnyPublisher<Credentials, Swift.Error> {
+        let credsPublisher: AnyPublisher<Credentials, Swift.Error>
+        if CredentialsManager.shared.hasValid() {
+            credsPublisher = getCurrentCredentials()
+        } else {
+            credsPublisher = authenticate()
+        }
+
+        return credsPublisher.flatMap { credentials in
+            return self.registerUserID(creds: credentials)
+        }.tryMap { credentials in
+            if !CredentialsManager.shared.store(credentials: credentials) {
+                throw Error.storeCredentialsFailed
+            }
+
+            NotificationCenter.default.post(name: .didLogIn, object: nil)
+            return credentials
+        }.eraseToAnyPublisher()
     }
 
-    func publisher(context: UserActions.Context<LoginAction>) -> AnyPublisher<Credentials, Swift.Error> {
+    private func authenticate() -> AnyPublisher<Credentials, Swift.Error> {
         Future<Credentials, Swift.Error> { promise in
             Endpoint.current.webAuth
                 .useLegacyAuthentication()
@@ -37,13 +54,38 @@ struct LoginAction: ReactiveUserAction {
                         promise(.success(credentials))
                     }
             }
-        }.tryMap { credentials in
-            if !CredentialsManager.shared.store(credentials: credentials) {
-                throw Error.storeCredentialsFailed
-            }
+        }.eraseToAnyPublisher()
+    }
 
-            NotificationCenter.default.post(name: .didLogIn, object: nil)
-            return credentials
+    private func getCurrentCredentials() -> AnyPublisher<Credentials, Swift.Error> {
+        Future<Credentials, Swift.Error> { promise in
+            CredentialsManager.shared.credentials { error, creds in
+                if let error = error {
+                    promise(.failure(error))
+                } else if let creds = creds {
+                    promise(.success(creds))
+                }
+            }
+        }.eraseToAnyPublisher()
+    }
+
+    private func registerUserID(creds: Credentials) -> AnyPublisher<Credentials, Swift.Error> {
+        Future<Credentials, Swift.Error> { promise in
+            Endpoint.current.authentication.userInfo(withAccessToken: creds.accessToken!)
+                .start { result in
+                    switch result {
+                    case .failure(let error):
+                        promise(.failure(error))
+                    case .success(let info):
+                        Endpoint.current.pushNotifications.setUserId(info.sub, tokenProvider: BeamsTokenProvider.shared) { error in
+                            if let error = error {
+                                promise(.failure(error))
+                            } else {
+                                promise(.success(creds))
+                            }
+                        }
+                    }
+                }
         }.eraseToAnyPublisher()
     }
 

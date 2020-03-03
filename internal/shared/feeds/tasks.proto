@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package courier.feeds;
+option go_package = "feeds";
+
+message RefreshFeedTask {
+  string user_id = 1;
+  string feed_id = 2;
+}

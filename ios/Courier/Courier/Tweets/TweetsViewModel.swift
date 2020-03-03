@@ -92,7 +92,7 @@ final class TweetsViewModel: ViewModel {
             pollInterval: 60,
             refresh: startRefreshingSection(.upcoming)
         ).queryMap { data in
-            data.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields }
+            data.viewer?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
         }.ignoreError().multicast(subject: CurrentValueSubject(.loading)).autoconnect().eraseToAnyPublisher()
     }()
 
@@ -102,7 +102,7 @@ final class TweetsViewModel: ViewModel {
             pollInterval: 60,
             refresh: startRefreshingSection(.past)
         ).queryMap { data in
-            data.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields }
+            data.viewer?.allTweets.fragments.tweetConnectionFields.nodes.map { $0.fragments.allTweetsFields } ?? []
         }.ignoreError().multicast(subject: CurrentValueSubject(.loading)).autoconnect().eraseToAnyPublisher()
     }()
 

@@ -2,3 +2,4 @@
 /lib/generated/*
 /lib/data/dbTypes.ts
 /types/**/*
+**/*.js
