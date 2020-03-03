@@ -1,12 +1,16 @@
 {
   "version": 2,
   "name": "courier",
+  "routes": [
+    { "src": "/ping", "dest": "/api/ping" }
+  ],
   "env": {
     "CLIENT_ID": "@courier-prod-frontend-client-id",
     "AUTH_DOMAIN": "@courier-prod-auth-domain",
     "API_IDENTIFIER": "https://courier.blog/api/",
     "MONTHLY_PLAN_ID": "plan_DcPlEgFAqBYpnH",
-    "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM"
+    "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM",
+    "PING_URL": "https://ping-upnlzarjda-uc.a.run.app/"
   },
   "build": {
     "env": {
