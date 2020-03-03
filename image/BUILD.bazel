@@ -8,6 +8,7 @@ container_image(
         "//:schema.graphql",
     ],
     entrypoint = ["/courier-functions"],
+    tags = ["no-cache"],
 )
 
 container_push(

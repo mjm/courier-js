@@ -17,4 +17,5 @@ go_binary(
     name = "courier-event",
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
+    tags = ["no-cache"],
 )
