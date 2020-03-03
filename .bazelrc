@@ -4,4 +4,5 @@ build:ci --noshow_progress
 build:ci --local_ram_resources=3272
 build:ci --local_cpu_resources=2
 build:ci --remote_http_cache=https://storage.googleapis.com/courier-production-build-cache
+build:ci --experimental_allow_tags_propagation
 build:ci --google_credentials=/tmp/gcp-credentials.json
