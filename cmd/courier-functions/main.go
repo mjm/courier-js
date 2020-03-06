@@ -57,6 +57,7 @@ func handleAllFunctions() {
 	http.Handle("/pusher-auth", pusherAuthHandler)
 	http.Handle("/stripe-callback", stripeCallbackHandler)
 	http.Handle("/events", eventsHandler)
+	http.Handle("/tasks", tasksHandler)
 
 	go pollForEvents()
 }

@@ -16,10 +16,11 @@ locals {
     "serviceAccount:${module.function_tasks.service_account_email}",
   ]
 
-  dev_account = "serviceAccount:matt-laptop-dev@${var.project_id}.iam.gserviceaccount.com"
+  dev_account = var.env == "staging" ? [
+    "serviceAccount:matt-laptop-dev@${var.project_id}.iam.gserviceaccount.com"
+  ] : []
 
-  all_function_accounts = var.env == "staging" ? concat(local.function_accounts, [
-  local.dev_account]) : local.function_accounts
+  all_function_accounts = concat(local.function_accounts, local.dev_account)
 }
 
 resource "google_project_iam_binding" "secret_manager_secret_accessor" {

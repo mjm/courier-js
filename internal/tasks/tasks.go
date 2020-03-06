@@ -97,6 +97,9 @@ func (t *Tasks) Enqueue(ctx context.Context, task proto.Message, opts ...taskOpt
 
 func (t *Tasks) newTaskRequest(ctx context.Context, task proto.Message) (*taskspb.CreateTaskRequest, error) {
 	trace.AddField(ctx, "task.type", fmt.Sprintf("%T", task))
+	trace.AddField(ctx, "task.queue", t.queue)
+	trace.AddField(ctx, "task.url", t.url)
+	trace.AddField(ctx, "task.service_account", t.serviceAccount)
 
 	a, err := ptypes.MarshalAny(task)
 	if err != nil {
@@ -110,22 +113,28 @@ func (t *Tasks) newTaskRequest(ctx context.Context, task proto.Message) (*tasksp
 
 	trace.AddField(ctx, "task.data_length", len(data))
 
+	httpReq := &taskspb.HttpRequest{
+		Body:       data,
+		HttpMethod: taskspb.HttpMethod_POST,
+		Url:        t.url,
+	}
+
+	if t.serviceAccount != "" {
+		httpReq.AuthorizationHeader = &taskspb.HttpRequest_OidcToken{
+			OidcToken: &taskspb.OidcToken{
+				ServiceAccountEmail: t.serviceAccount,
+			},
+		}
+	}
+
 	req := &taskspb.CreateTaskRequest{
 		Parent: t.queue,
 		Task: &taskspb.Task{
 			MessageType: &taskspb.Task_HttpRequest{
-				HttpRequest: &taskspb.HttpRequest{
-					Body:       data,
-					HttpMethod: taskspb.HttpMethod_POST,
-					Url:        t.url,
-					AuthorizationHeader: &taskspb.HttpRequest_OidcToken{
-						OidcToken: &taskspb.OidcToken{
-							ServiceAccountEmail: t.serviceAccount,
-						},
-					},
-				},
+				HttpRequest: httpReq,
 			},
 		},
 	}
+
 	return req, nil
 }

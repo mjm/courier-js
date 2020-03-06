@@ -16,12 +16,12 @@ resource "google_service_account" "task_creator" {
 
 resource "google_project_iam_binding" "cloud_tasks_enqueuer" {
   role = "roles/cloudtasks.enqueuer"
-  members = [
+  members = concat([
     "serviceAccount:${module.function_graphql.service_account_email}",
     "serviceAccount:${module.function_events.service_account_email}",
     "serviceAccount:${module.function_ping.service_account_email}",
     "serviceAccount:${module.function_tasks.service_account_email}",
-  ]
+  ], local.dev_account)
 }
 
 resource "google_project_iam_binding" "cloud_functions_invoker" {
