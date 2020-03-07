@@ -53,7 +53,7 @@ extension ApolloClient {
     }()
 }
 
-final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNetworkTransportRetryDelegate, HTTPNetworkTransportGraphQLErrorDelegate {
+final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNetworkTransportRetryDelegate, HTTPNetworkTransportGraphQLErrorDelegate, HTTPNetworkTransportTaskCompletedDelegate {
 
     let retryQueue = DispatchQueue(label: "com.mattmoriarity.Threads.retryRequests")
     let credentialsManager: CredentialsManager
@@ -101,6 +101,10 @@ final class ApolloClientDelegate: HTTPNetworkTransportPreflightDelegate, HTTPNet
         } else {
             retryHandler(false)
         }
+    }
+
+    func networkTransport(_ networkTransport: HTTPNetworkTransport, didCompleteRawTaskForRequest request: URLRequest, withData data: Data?, response: URLResponse?, error: Error?) {
+        print("Got raw output: \(String(data: data ?? Data(), encoding: .utf8)!)")
     }
 
     private func getCredentials(completion: @escaping (Error?) -> Void = { _ in }) {

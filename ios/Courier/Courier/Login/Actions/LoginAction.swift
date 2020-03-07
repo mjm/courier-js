@@ -43,8 +43,7 @@ struct LoginAction: ReactiveUserAction {
     private func authenticate() -> AnyPublisher<Credentials, Swift.Error> {
         Future<Credentials, Swift.Error> { promise in
             Endpoint.current.webAuth
-                .useLegacyAuthentication()
-                .scope("openid profile email https://courier.blog/customer_id https://courier.blog/subscription_id")
+                .scope("offline_access openid profile email https://courier.blog/customer_id https://courier.blog/subscription_id")
                 .audience(Endpoint.current.apiIdentifier)
                 .start { result in
                     switch result {
