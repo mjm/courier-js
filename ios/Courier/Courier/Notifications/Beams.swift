@@ -11,7 +11,7 @@ import Dispatch
 import PushNotifications
 
 extension BeamsTokenProvider {
-    static let shared: BeamsTokenProvider = BeamsTokenProvider(authURL: Endpoint.current.url.appendingPathComponent("/pusher-auth").absoluteString) {
+    static let shared: BeamsTokenProvider = BeamsTokenProvider(authURL: Endpoint.current.pusherAuthURL.absoluteString) {
         var token = ""
         let sema = DispatchSemaphore(value: 0)
 

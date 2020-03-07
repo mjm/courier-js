@@ -26,7 +26,7 @@ struct Endpoint {
     }
 
     static let staging = Endpoint(
-        url: "https://us-central1-courier-staging-267902.cloudfunctions.net",
+        url: "https://graphql-346j6nvz2q-uc.a.run.app/",
         apiIdentifier: "https://courier.mjm.now.sh/api/",
         clientId: "8c0TcS4ucF3PIPiqDY7FNYx1DE2jx9hL",
         domain: "courier-staging.auth0.com",
@@ -34,7 +34,7 @@ struct Endpoint {
     )
 
     static let production = Endpoint(
-        url: "https://courier.blog",
+        url: "https://graphql-upnlzarjda-uc.a.run.app/",
         apiIdentifier: "https://courier.blog/api/",
         clientId: "zG8153IA65HklO6ctzcWSRJAg6xe3SlO",
         domain: "courier-prod.auth0.com",
@@ -47,4 +47,8 @@ struct Endpoint {
     static let current: Endpoint = {
         environment == "production" ? .production : .staging
     }()
+
+    var pusherAuthURL: URL {
+        URL(string: url.absoluteString.replacingOccurrences(of: "graphql", with: "pusher-auth"))!
+    }
 }

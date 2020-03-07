@@ -18,7 +18,7 @@ extension ApolloClient {
         var event = EventBuilder()
 
         let delegate = ApolloClientDelegate(credentialsManager: .shared)
-        let apiURL = Endpoint.current.url.appendingPathComponent("/graphql")
+        let apiURL = Endpoint.current.url
         event[.apiURL] = apiURL
 
         let transport = HTTPNetworkTransport(url: apiURL, delegate: delegate)

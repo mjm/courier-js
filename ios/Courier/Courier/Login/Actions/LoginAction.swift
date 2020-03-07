@@ -28,15 +28,15 @@ struct LoginAction: ReactiveUserAction {
             credsPublisher = authenticate()
         }
 
-        return credsPublisher.flatMap { credentials in
-            return self.registerUserID(creds: credentials)
-        }.tryMap { credentials in
+        return credsPublisher.tryMap { credentials in
             if !CredentialsManager.shared.store(credentials: credentials) {
                 throw Error.storeCredentialsFailed
             }
 
             NotificationCenter.default.post(name: .didLogIn, object: nil)
             return credentials
+        }.flatMap { credentials in
+            return self.registerUserID(creds: credentials)
         }.eraseToAnyPublisher()
     }
 
