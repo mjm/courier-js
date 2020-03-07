@@ -1,13 +1,26 @@
 import Moment from "react-moment"
-import { createFragmentContainer, graphql } from "react-relay"
+import { createRefetchContainer, graphql, RelayRefetchProp } from "react-relay"
 
 import striptags from "striptags"
 
+import { FeedRefreshedEvent } from "@events/FeedRefreshedEvent"
 import { FeedRecentPostList_feed } from "@generated/FeedRecentPostList_feed.graphql"
+import { useEvent } from "components/EventsProvider"
 
 const FeedRecentPostList: React.FC<{
   feed: FeedRecentPostList_feed
-}> = ({ feed }) => {
+  relay: RelayRefetchProp
+}> = ({ feed, relay: { refetch } }) => {
+  useEvent(
+    "FeedRefreshed",
+    (data: FeedRefreshedEvent) => {
+      if (data.feed_id === feed.id) {
+        refetch({ id: feed.id }, null, null, { force: true })
+      }
+    },
+    [feed.id]
+  )
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden w-full">
       {feed.posts.edges.map(({ node }) => (
@@ -33,20 +46,32 @@ const FeedRecentPostList: React.FC<{
   )
 }
 
-export default createFragmentContainer(FeedRecentPostList, {
-  feed: graphql`
-    fragment FeedRecentPostList_feed on Feed {
-      posts(first: 10) @connection(key: "FeedRecentPostList_posts") {
-        edges {
-          node {
-            id
-            url
-            title
-            htmlContent
-            publishedAt
+export default createRefetchContainer(
+  FeedRecentPostList,
+  {
+    feed: graphql`
+      fragment FeedRecentPostList_feed on Feed {
+        id
+        posts(first: 10) @connection(key: "FeedRecentPostList_posts") {
+          edges {
+            node {
+              id
+              url
+              title
+              htmlContent
+              publishedAt
+            }
           }
         }
       }
+    `,
+  },
+  graphql`
+    query FeedRecentPostListRefetchQuery($id: ID!) {
+      node(id: $id) {
+        id
+        ...FeedRecentPostList_feed
+      }
     }
-  `,
-})
+  `
+)

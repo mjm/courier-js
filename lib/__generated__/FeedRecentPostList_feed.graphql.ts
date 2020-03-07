@@ -3,6 +3,7 @@
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type FeedRecentPostList_feed = {
+    readonly id: string;
     readonly posts: {
         readonly edges: ReadonlyArray<{
             readonly node: {
@@ -24,7 +25,15 @@ export type FeedRecentPostList_feed$key = {
 
 
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = {
+  "kind": "ScalarField",
+  "alias": null,
+  "name": "id",
+  "args": null,
+  "storageKey": null
+};
+return {
   "kind": "Fragment",
   "name": "FeedRecentPostList_feed",
   "type": "Feed",
@@ -42,6 +51,7 @@ const node: ReaderFragment = {
   },
   "argumentDefinitions": [],
   "selections": [
+    (v0/*: any*/),
     {
       "kind": "LinkedField",
       "alias": "posts",
@@ -69,13 +79,7 @@ const node: ReaderFragment = {
               "concreteType": "Post",
               "plural": false,
               "selections": [
-                {
-                  "kind": "ScalarField",
-                  "alias": null,
-                  "name": "id",
-                  "args": null,
-                  "storageKey": null
-                },
+                (v0/*: any*/),
                 {
                   "kind": "ScalarField",
                   "alias": null,
@@ -151,5 +155,6 @@ const node: ReaderFragment = {
     }
   ]
 };
-(node as any).hash = 'e2b18eb65a240af79b147f125f2864c0';
+})();
+(node as any).hash = '83dc564ff1e5a8efa1ea63fdfae57409';
 export default node;
