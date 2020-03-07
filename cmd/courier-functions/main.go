@@ -25,8 +25,6 @@ func main() {
 			handleSingleFunction(graphQLHandler)
 		case "events":
 			handleSingleFunction(eventsHandler)
-		case "indieauth-callback":
-			handleSingleFunction(indieAuthCallbackHandler)
 		case "ping":
 			handleSingleFunction(pingHandler)
 		case "pusher-auth":
@@ -52,7 +50,6 @@ func handleSingleFunction(handler http.Handler) {
 
 func handleAllFunctions() {
 	http.Handle("/graphql", graphQLHandler)
-	http.Handle("/indieauth-callback", indieAuthCallbackHandler)
 	http.Handle("/ping", pingHandler)
 	http.Handle("/pusher-auth", pusherAuthHandler)
 	http.Handle("/stripe-callback", stripeCallbackHandler)

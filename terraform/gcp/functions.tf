@@ -41,16 +41,6 @@ module "function_events" {
   //  ]
 }
 
-module "function_indieauth_callback" {
-  source       = "../modules/cloud_function"
-  project_id   = var.project_id
-  env          = var.env
-  git_revision = var.function_revision
-  env_vars     = local.function_env
-
-  name = "indieauth-callback"
-}
-
 module "function_stripe_callback" {
   source       = "../modules/cloud_function"
   project_id   = var.project_id
