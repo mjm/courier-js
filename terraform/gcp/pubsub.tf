@@ -23,7 +23,6 @@ resource "google_project_iam_binding" "pubsub_publisher" {
   members = [
     "serviceAccount:${module.function_graphql.service_account_email}",
     "serviceAccount:${module.function_ping.service_account_email}",
-    "serviceAccount:${module.function_indieauth_callback.service_account_email}",
     "serviceAccount:${module.function_stripe_callback.service_account_email}",
     "serviceAccount:${module.function_tasks.service_account_email}",
   ]
