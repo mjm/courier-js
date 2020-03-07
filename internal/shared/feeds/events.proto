@@ -12,7 +12,7 @@ message FeedCreated {
 message FeedSubscribed {
   string user_id = 1;
   string feed_id = 2;
-  string subscription_id = 3;
+  string feed_subscription_id = 3;
 }
 
 message FeedRefreshed {
@@ -22,13 +22,13 @@ message FeedRefreshed {
 
 message FeedOptionsChanged {
   string user_id = 1;
-  string subscription_id = 2;
+  string feed_subscription_id = 2;
   bool autopost = 3;
 }
 
 message FeedUnsubscribed {
   string user_id = 1;
-  string subscription_id = 2;
+  string feed_subscription_id = 2;
 }
 
 message PostsImported {

@@ -17,9 +17,9 @@ func (suite *userSuite) TestRecordEvents() {
 	}{
 		{
 			evt: feeds.FeedSubscribed{
-				FeedId:         "feed_1",
-				SubscriptionId: "feed_subscription_2",
-				UserId:         "test_user",
+				FeedId:             "feed_1",
+				FeedSubscriptionId: "feed_subscription_2",
+				UserId:             "test_user",
 			},
 			expected: &Event{
 				UserID:    "test_user",
@@ -45,9 +45,9 @@ func (suite *userSuite) TestRecordEvents() {
 		},
 		{
 			evt: feeds.FeedOptionsChanged{
-				SubscriptionId: "feed_subscription_1",
-				UserId:         "test_user",
-				Autopost:       true,
+				FeedSubscriptionId: "feed_subscription_1",
+				UserId:             "test_user",
+				Autopost:           true,
 			},
 			expected: &Event{
 				UserID:    "test_user",
@@ -60,8 +60,8 @@ func (suite *userSuite) TestRecordEvents() {
 		},
 		{
 			evt: feeds.FeedUnsubscribed{
-				SubscriptionId: "feed_subscription_3",
-				UserId:         "test_user",
+				FeedSubscriptionId: "feed_subscription_3",
+				UserId:             "test_user",
 			},
 			expected: &Event{
 				UserID:    "test_user",
