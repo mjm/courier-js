@@ -8,12 +8,14 @@ import FeedDetails from "components/FeedDetails"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
 import { useFeedRefreshedEvent } from "@events/FeedRefreshedEvent"
+import { useFeedOptionsChangedEvent } from "@events/FeedOptionsChangedEvent"
 
 const FeedDetailsPage: NextPage<
   FeedDetailsPageQueryResponse & { environment: Environment },
   { id: string }
 > = ({ subscribedFeed, viewer, environment }) => {
   useFeedRefreshedEvent(environment)
+  useFeedOptionsChangedEvent(environment)
 
   if (!subscribedFeed || !viewer) {
     // TODO I think this means there's no such feed

@@ -9,11 +9,13 @@ import FeedList from "components/FeedList"
 import Head from "components/Head"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
+import { useFeedOptionsChangedEvent } from "@events/FeedOptionsChangedEvent"
 
 const FeedsPage: NextPage<FeedsPageQueryResponse & {
   environment: Environment
 }> = ({ environment, ...props }) => {
   useFeedRefreshedEvent(environment)
+  useFeedOptionsChangedEvent(environment)
 
   return (
     <main className="container mx-auto my-8">
