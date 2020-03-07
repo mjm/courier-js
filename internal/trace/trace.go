@@ -63,9 +63,12 @@ func SetServiceName(svcname string) {
 
 // Flush ensures that any in-flight events get sent.
 func Flush() {
-	if os.Getenv("APP_ENV") != "dev" {
-		libhoney.Flush()
-	}
+	// Don't actually flush: we're running in Cloud Run which is more like a normal server, we might get
+	// multiple in-flight requests.
+
+	// if os.Getenv("APP_ENV") != "dev" {
+	// 	libhoney.Flush()
+	// }
 }
 
 // Start beings a new trace or span.
