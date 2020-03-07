@@ -19,9 +19,7 @@ func NewHTTP(svcname string, creator func() (HTTPHandler, error)) http.Handler {
 			if err != nil {
 				panic(err)
 			}
-			handler = WrapHTTP(h)
-
-			trace.SetServiceName(svcname)
+			handler = wrapHTTP(h, svcname)
 		})
 
 		handler.ServeHTTP(w, r)
@@ -32,13 +30,14 @@ type HTTPHandler interface {
 	HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error
 }
 
-func WrapHTTP(h HTTPHandler) http.Handler {
+func wrapHTTP(h HTTPHandler, svcname string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer trace.Flush()
 
 		ctx := trace.Start(r.Context(), "HTTP request")
 		defer trace.Finish(ctx)
 
+		trace.Set(ctx, "service_name", svcname)
 		trace.Add(ctx, trace.Fields{
 			"http.url":    r.URL.Path,
 			"http.method": r.Method,
@@ -49,8 +48,10 @@ func WrapHTTP(h HTTPHandler) http.Handler {
 			var httpErr HTTPError
 			if errors.As(err, &httpErr) {
 				http.Error(w, httpErr.Error(), httpErr.statusCode)
+				trace.AddField(ctx, "http.response.status", httpErr.statusCode)
 			} else {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				trace.AddField(ctx, "http.response.status", http.StatusInternalServerError)
 			}
 			return
 		}

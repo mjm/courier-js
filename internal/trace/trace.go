@@ -21,6 +21,7 @@ type traceContext struct {
 	parentID  string
 	name      string
 	timestamp time.Time
+	builder   *libhoney.Builder
 	fields    Fields
 	sent      bool
 }
@@ -55,6 +56,8 @@ func Init(cfg Config) {
 		Dataset:  cfg.Dataset,
 		Logger:   logger,
 	})
+
+	libhoney.AddField("env", os.Getenv("APP_ENV"))
 }
 
 func SetServiceName(svcname string) {
@@ -71,6 +74,15 @@ func Flush() {
 	// }
 }
 
+func Set(ctx context.Context, key string, value interface{}) {
+	trace := getTraceContext(ctx)
+	if trace == nil {
+		return
+	}
+
+	trace.builder.AddField(key, value)
+}
+
 // Start beings a new trace or span.
 func Start(ctx context.Context, name string) context.Context {
 	var trace *traceContext
@@ -78,11 +90,13 @@ func Start(ctx context.Context, name string) context.Context {
 	if parent == nil {
 		trace = &traceContext{
 			traceID: uuid.New().String(),
+			builder: libhoney.NewBuilder(),
 		}
 	} else {
 		trace = &traceContext{
 			traceID:  parent.traceID,
 			parentID: parent.spanID,
+			builder:  parent.builder,
 		}
 	}
 	trace.spanID = uuid.New().String()
@@ -100,7 +114,7 @@ func Finish(ctx context.Context) {
 		return
 	}
 
-	e := libhoney.NewEvent()
+	e := trace.builder.NewEvent()
 	e.Timestamp = trace.timestamp
 	e.AddField("duration_ms", time.Since(trace.timestamp).Milliseconds())
 	e.AddField("name", trace.name)
