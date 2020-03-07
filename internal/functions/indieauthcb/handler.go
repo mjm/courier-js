@@ -59,7 +59,7 @@ func completeIndieAuth(ctx context.Context, r *http.Request) (*indieauth.Result,
 	ctx = trace.Start(ctx, "Get IndieAuth token")
 	defer trace.Finish(ctx)
 
-	res, err := indieauth.Complete(ctx, r)
+	res, err := indieauth.CompleteRequest(ctx, r)
 	if err != nil {
 		trace.Error(ctx, err)
 		return nil, err

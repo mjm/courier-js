@@ -30,10 +30,7 @@ export function beginIndieAuth({
   scopes,
 }: IndieAuthInit): void {
   const clientID = rootUrl()
-  const redirectURI = process.env.INDIEAUTH_CALLBACK_URL
-  if (!redirectURI) {
-    throw new Error("No IndieAuth URL configured")
-  }
+  const redirectURI = `${clientID}api/indieauth`
   const nonce = randomBytes(16).toString("hex")
   const origin = window.location.href
 

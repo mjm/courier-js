@@ -45,6 +45,8 @@ type Mutation {
   cancelSubscription(
     input: CancelSubscriptionInput!
   ): CancelSubscriptionPayload!
+
+  completeIndieAuth(input: CompleteIndieAuthInput!): CompleteIndieAuthPayload!
 }
 
 interface Node {
@@ -296,6 +298,16 @@ input CancelSubscriptionInput {
 
 type CancelSubscriptionPayload {
   user: User!
+}
+
+input CompleteIndieAuthInput {
+  code: String!
+  state: String!
+  data: String!
+}
+
+type CompleteIndieAuthPayload {
+  origin: String!
 }
 
 type EventConnection {

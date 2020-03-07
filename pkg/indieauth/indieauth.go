@@ -23,7 +23,7 @@ type Result struct {
 	Token  string `json:"token"`
 }
 
-func Complete(ctx context.Context, r *http.Request) (*Result, error) {
+func CompleteRequest(ctx context.Context, r *http.Request) (*Result, error) {
 	c, err := r.Cookie("indieauth")
 	if err != nil {
 		return nil, err
@@ -34,18 +34,23 @@ func Complete(ctx context.Context, r *http.Request) (*Result, error) {
 		return nil, err
 	}
 
-	var data Data
-	if err := json.Unmarshal([]byte(encodedData), &data); err != nil {
-		return nil, err
-	}
-
 	q := r.URL.Query()
 	code, state := q.Get("code"), q.Get("state")
+
+	return Complete(ctx, code, state, encodedData)
+}
+
+func Complete(ctx context.Context, code string, state string, dataStr string) (*Result, error) {
 	if code == "" {
 		return nil, fmt.Errorf("query parameter %q is required", "code")
 	}
 	if state == "" {
 		return nil, fmt.Errorf("query parameter %q is required", "state")
+	}
+
+	var data Data
+	if err := json.Unmarshal([]byte(dataStr), &data); err != nil {
+		return nil, err
 	}
 
 	if state != data.Nonce {

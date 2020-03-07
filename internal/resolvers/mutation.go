@@ -7,9 +7,11 @@ import (
 	"github.com/mjm/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
+	"github.com/mjm/courier-js/pkg/indieauth"
 )
 
 // AddFeed subscribes the user to a new feed, creating the feed if needed.
@@ -355,4 +357,51 @@ func (r *Root) CancelSubscription(ctx context.Context, args struct {
 
 	payload.User = &User{q: r.q, user: user}
 	return
+}
+
+func (r *Root) CompleteIndieAuth(ctx context.Context, args struct {
+	Input struct {
+		Code  string
+		State string
+		Data  string
+	}
+}) (
+	payload struct {
+		Origin string
+	},
+	err error,
+) {
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return
+	}
+
+	result, err := completeIndieAuth(ctx, args.Input.Code, args.Input.State, args.Input.Data)
+	if err != nil {
+		return
+	}
+
+	if _, err = r.commandBus.Run(ctx, tweets.SetupSyndicationCommand{
+		UserID: userID,
+		URL:    result.URL,
+		Token:  result.Token,
+	}); err != nil {
+		return
+	}
+
+	payload.Origin = result.Origin
+	return
+}
+
+func completeIndieAuth(ctx context.Context, code, state, data string) (*indieauth.Result, error) {
+	ctx = trace.Start(ctx, "Get IndieAuth token")
+	defer trace.Finish(ctx)
+
+	res, err := indieauth.Complete(ctx, code, state, data)
+	if err != nil {
+		trace.Error(ctx, err)
+		return nil, err
+	}
+
+	return res, nil
 }

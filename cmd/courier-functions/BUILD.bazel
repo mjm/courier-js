@@ -33,6 +33,6 @@ go_library(
 go_binary(
     name = "courier-functions",
     embed = [":go_default_library"],
-    visibility = ["//visibility:public"],
     tags = ["no-cache"],
+    visibility = ["//visibility:public"],
 )
