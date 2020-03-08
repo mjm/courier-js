@@ -4,31 +4,37 @@ import (
 	"context"
 	"os"
 
+	"github.com/google/wire"
 	pushnotifications "github.com/pusher/push-notifications-go"
 	"github.com/pusher/pusher-http-go"
 
-	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/config"
 )
 
-func NewPusherClient(sk secret.Keeper) (*pusher.Client, error) {
-	key := "pusher-url"
-	if os.Getenv("APP_ENV") == "dev" {
-		key = "pusher-url-dev"
-	}
+var PusherSet = wire.NewSet(NewPusherConfig, NewPusherClient, NewBeamsClient)
 
-	url, err := sk.GetSecret(context.Background(), key)
-	if err != nil {
-		return nil, err
-	}
-
-	return pusher.ClientFromURL(url)
+type PusherConfig struct {
+	ChannelsURL     string `secret:"pusher-url"`
+	BeamsInstanceID string `env:"BEAMS_INSTANCE_ID"`
+	BeamsSecretKey  string `secret:"beams-secret-key"`
 }
 
-func NewBeamsClient(sk secret.Keeper) (pushnotifications.PushNotifications, error) {
-	key, err := sk.GetSecret(context.Background(), "beams-secret-key")
-	if err != nil {
-		return nil, err
-	}
+func NewPusherConfig(l *config.Loader) (cfg PusherConfig, err error) {
+	err = l.Load(context.Background(), &cfg, config.WithSecretKeyResolver(pusherSecretResolver))
+	return
+}
 
-	return pushnotifications.New(os.Getenv("BEAMS_INSTANCE_ID"), key)
+func pusherSecretResolver(key string) string {
+	if key == "pusher-url" && os.Getenv("APP_ENV") == "dev" {
+		return "pusher-url-dev"
+	}
+	return key
+}
+
+func NewPusherClient(cfg PusherConfig) (*pusher.Client, error) {
+	return pusher.ClientFromURL(cfg.ChannelsURL)
+}
+
+func NewBeamsClient(cfg PusherConfig) (pushnotifications.PushNotifications, error) {
+	return pushnotifications.New(cfg.BeamsInstanceID, cfg.BeamsSecretKey)
 }

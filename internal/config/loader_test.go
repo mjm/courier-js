@@ -114,3 +114,28 @@ func TestLoadEmbeddedStruct(t *testing.T) {
 	assert.Equal(t, "a secret value", cfg.embedded.Foo)
 	assert.Equal(t, "another secret value", cfg.Bar)
 }
+
+func TestLoadSecretKeyOverrides(t *testing.T) {
+	ctx := context.Background()
+	loader := NewLoader(envMap{
+		"FOO": "foo",
+		"BAR": "bar",
+	}, secretMap{
+		"foo":     "a secret value",
+		"foo-alt": "a different secret value",
+		"bar":     "another secret value",
+	})
+
+	var cfg struct {
+		Foo string `secret:"foo"`
+		Bar string `secret:"bar"`
+	}
+	assert.NoError(t, loader.Load(ctx, &cfg, WithSecretKeyResolver(func(key string) string {
+		if key == "foo" {
+			return "foo-alt"
+		}
+		return key
+	})))
+	assert.Equal(t, "a different secret value", cfg.Foo)
+	assert.Equal(t, "another secret value", cfg.Bar)
+}

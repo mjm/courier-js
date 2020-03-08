@@ -40,12 +40,16 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	eventRecorder := user.NewEventRecorder(dbDB, bus)
-	pusherClient, err := event.NewPusherClient(gcpSecretKeeper)
+	pusherConfig, err := event.NewPusherConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	pusherClient, err := event.NewPusherClient(pusherConfig)
 	if err != nil {
 		return nil, err
 	}
 	pusher := NewPusher(bus, pusherClient)
-	pushNotifications, err := event.NewBeamsClient(gcpSecretKeeper)
+	pushNotifications, err := event.NewBeamsClient(pusherConfig)
 	if err != nil {
 		return nil, err
 	}

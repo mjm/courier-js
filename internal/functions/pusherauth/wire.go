@@ -19,7 +19,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		secret.GCPSet,
 		trace.NewConfig,
 		auth.DefaultSet,
-		event.NewPusherClient,
-		event.NewBeamsClient,
+		event.PusherSet,
 	))
 }

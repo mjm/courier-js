@@ -14,6 +14,24 @@ var (
 	ErrNotPointer = errors.New("must pass a pointer to Load()")
 )
 
+type loadSettings struct {
+	secretKeyResolver func(string) string
+}
+
+type LoadOption interface {
+	Apply(*loadSettings)
+}
+
+type withSecretKeyResolver func(string) string
+
+func (o withSecretKeyResolver) Apply(s *loadSettings) {
+	s.secretKeyResolver = o
+}
+
+func WithSecretKeyResolver(fn func(string) string) LoadOption {
+	return withSecretKeyResolver(fn)
+}
+
 type Loader struct {
 	Env     Env
 	Secrets Secrets
@@ -26,7 +44,7 @@ func NewLoader(env Env, secrets Secrets) *Loader {
 	}
 }
 
-func (l *Loader) Load(ctx context.Context, dst interface{}) error {
+func (l *Loader) Load(ctx context.Context, dst interface{}, opts ...LoadOption) error {
 	v := reflect.ValueOf(dst)
 
 	if v.Kind() != reflect.Ptr {
@@ -34,10 +52,18 @@ func (l *Loader) Load(ctx context.Context, dst interface{}) error {
 	}
 
 	v = v.Elem()
-	return l.loadStructValue(ctx, v)
+
+	settings := &loadSettings{
+		secretKeyResolver: func(key string) string { return key },
+	}
+	for _, opt := range opts {
+		opt.Apply(settings)
+	}
+
+	return l.loadStructValue(ctx, settings, v)
 }
 
-func (l *Loader) loadStructValue(ctx context.Context, v reflect.Value) error {
+func (l *Loader) loadStructValue(ctx context.Context, settings *loadSettings, v reflect.Value) error {
 	t := v.Type()
 
 	for i := 0; i < t.NumField(); i++ {
@@ -45,7 +71,7 @@ func (l *Loader) loadStructValue(ctx context.Context, v reflect.Value) error {
 
 		switch field.Type.Kind() {
 		case reflect.Struct:
-			if err := l.loadStructValue(ctx, v.Field(i)); err != nil {
+			if err := l.loadStructValue(ctx, settings, v.Field(i)); err != nil {
 				return err
 			}
 		case reflect.String:
@@ -64,6 +90,7 @@ func (l *Loader) loadStructValue(ctx context.Context, v reflect.Value) error {
 
 			secretKey := field.Tag.Get("secret")
 			if secretKey != "" {
+				secretKey = settings.secretKeyResolver(secretKey)
 				val, err := l.Secrets.GetSecret(ctx, secretKey)
 				if err != nil {
 					return err
