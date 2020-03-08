@@ -38,7 +38,9 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	if err != nil {
 		return nil, err
 	}
-	dbConfig, err := db.NewConfigFromSecrets(gcpSecretKeeper)
+	defaultEnv := &config.DefaultEnv{}
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	dbConfig, err := db.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +54,6 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	postQueries := feeds.NewPostQueries(dbDB, bus)
 	tweetQueries := tweets.NewTweetQueries(dbDB, bus)
 	eventQueries := user.NewEventQueries(dbDB)
-	defaultEnv := &config.DefaultEnv{}
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
 	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
 		return nil, err

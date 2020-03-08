@@ -44,7 +44,9 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	dbConfig, err := db.NewConfigFromSecrets(gcpSecretKeeper)
+	defaultEnv := &config.DefaultEnv{}
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	dbConfig, err := db.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
@@ -55,8 +57,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	tweetRepository := tweets.NewTweetRepository(dbDB)
 	feedSubscriptionRepository := tweets.NewFeedSubscriptionRepository(dbDB)
 	postRepository := tweets.NewPostRepository(dbDB)
-	defaultEnv := &config.DefaultEnv{}
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err

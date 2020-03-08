@@ -6,6 +6,7 @@
 package events
 
 import (
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/notifications"
@@ -23,12 +24,14 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	config, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
+	traceConfig, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
 	bus := event.NewBus()
-	dbConfig, err := db.NewConfigFromSecrets(gcpSecretKeeper)
+	defaultEnv := &config.DefaultEnv{}
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	dbConfig, err := db.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
@@ -48,6 +51,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	tweetQueries := tweets.NewTweetQueries(dbDB, bus)
 	notifier := notifications.NewNotifier(bus, pushNotifications, tweetQueries)
-	handler := NewHandler(config, bus, eventRecorder, pusher, notifier)
+	handler := NewHandler(traceConfig, bus, eventRecorder, pusher, notifier)
 	return handler, nil
 }

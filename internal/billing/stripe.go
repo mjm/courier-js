@@ -2,13 +2,11 @@ package billing
 
 import (
 	"context"
-	"os"
 
 	"github.com/google/wire"
 	"github.com/stripe/stripe-go/client"
 
 	"github.com/mjm/courier-js/internal/config"
-	"github.com/mjm/courier-js/internal/secret"
 )
 
 var DefaultSet = wire.NewSet(NewConfig, NewClient)
@@ -27,23 +25,5 @@ func NewClient(cfg Config) *client.API {
 
 func NewConfig(l *config.Loader) (cfg Config, err error) {
 	err = l.Load(context.Background(), &cfg)
-	return
-}
-
-func NewConfigFromSecrets(sk secret.Keeper) (cfg Config, err error) {
-	cfg.SecretKey, err = sk.GetSecret(context.Background(), "stripe-secret-key")
-	if err != nil {
-		return
-	}
-
-	cfg.WebhookSecret = os.Getenv("STRIPE_WEBHOOK_SECRET")
-	if cfg.WebhookSecret == "" {
-		cfg.WebhookSecret, err = sk.GetSecret(context.Background(), "stripe-webhook-secret")
-		if err != nil {
-			return
-		}
-	}
-
-	cfg.MonthlyPlanID = os.Getenv("MONTHLY_PLAN_ID")
 	return
 }

@@ -9,6 +9,7 @@ go_library(
     importpath = "github.com/mjm/courier-js/internal/functions/ping",
     visibility = ["//:__subpackages__"],
     deps = [
+        "//internal/config:go_default_library",
         "//internal/db:go_default_library",
         "//internal/event:go_default_library",
         "//internal/functions:go_default_library",

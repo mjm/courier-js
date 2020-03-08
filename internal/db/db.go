@@ -5,18 +5,21 @@ import (
 	"database/sql"
 	"reflect"
 
+	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/trace"
 
 	// ensure the postgres driver is present
 	_ "github.com/lib/pq"
 )
 
+var DefaultSet = wire.NewSet(New, NewConfig)
+
 // Config is configuration for the application's database.
 type Config struct {
-	URL string
+	URL string `secret:"database-url"`
 }
 
 // DB is an interface of supported operations for performing SQL queries.
@@ -42,9 +45,8 @@ func New(cfg Config) (DB, error) {
 	return &tracingDB{DB: db}, nil
 }
 
-func NewConfigFromSecrets(sk secret.Keeper) (cfg Config, err error) {
-	cfg.URL, err = sk.GetSecret(context.Background(), "database-url")
-
+func NewConfig(l *config.Loader) (cfg Config, err error) {
+	err = l.Load(context.Background(), &cfg)
 	return
 }
 

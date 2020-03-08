@@ -6,6 +6,7 @@
 package ping
 
 import (
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/read/feeds"
@@ -22,11 +23,13 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	config, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
+	traceConfig, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
-	dbConfig, err := db.NewConfigFromSecrets(gcpSecretKeeper)
+	defaultEnv := &config.DefaultEnv{}
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	dbConfig, err := db.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
@@ -41,6 +44,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	handler := NewHandler(config, feedQueries, tasksTasks)
+	handler := NewHandler(traceConfig, feedQueries, tasksTasks)
 	return handler, nil
 }
