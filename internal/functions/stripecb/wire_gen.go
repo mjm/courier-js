@@ -18,17 +18,17 @@ import (
 // Injectors from wire.go:
 
 func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
+	defaultEnv := &config.DefaultEnv{}
 	client, err := secret.NewSecretManager(gcpConfig)
 	if err != nil {
 		return nil, err
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	traceConfig, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	traceConfig, err := trace.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	defaultEnv := &config.DefaultEnv{}
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
 	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
 		return nil, err

@@ -3,6 +3,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = [
+        "config.go",
         "dataloader.go",
         "graphql.go",
         "keys.go",
@@ -11,7 +12,7 @@ go_library(
     importpath = "github.com/mjm/courier-js/internal/trace",
     visibility = ["//:__subpackages__"],
     deps = [
-        "//internal/secret:go_default_library",
+        "//internal/config:go_default_library",
         "//internal/shared/feeds:go_default_library",
         "//internal/shared/tweets:go_default_library",
         "@com_github_google_uuid//:go_default_library",

@@ -21,7 +21,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		secret.GCPSet,
 		event.PublishingSet,
 		tasks.DefaultSet,
-		trace.NewConfigFromSecrets,
+		trace.NewConfig,
 		db.DefaultSet,
 		feeds2.NewFeedQueries,
 	))

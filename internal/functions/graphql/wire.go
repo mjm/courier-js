@@ -31,7 +31,7 @@ func InitializeHandler(
 			NewSchema,
 			config.DefaultSet,
 			secret.GCPSet,
-			trace.NewConfigFromSecrets,
+			trace.NewConfig,
 			resolvers.DefaultSet,
 			auth.DefaultSet,
 			db.DefaultSet,

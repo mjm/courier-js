@@ -25,7 +25,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		event.NewPusherClient,
 		event.NewBeamsClient,
 		event.NewBus,
-		trace.NewConfigFromSecrets,
+		trace.NewConfig,
 		db.DefaultSet,
 		tweets.NewTweetQueries,
 		user.NewEventRecorder,

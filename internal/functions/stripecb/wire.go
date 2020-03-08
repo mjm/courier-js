@@ -20,7 +20,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		config.DefaultSet,
 		secret.GCPSet,
 		event.PublishingSet,
-		trace.NewConfigFromSecrets,
+		trace.NewConfig,
 		auth.DefaultSet,
 		billing.NewSubscriptionQueries,
 		billing2.DefaultSet,
