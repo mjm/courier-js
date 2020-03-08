@@ -50,6 +50,7 @@ go_test(
         "//internal/event:go_default_library",
         "//internal/shared/feeds:go_default_library",
         "//internal/write:go_default_library",
+        "//internal/write/feeds/queries:go_default_library",
         "@com_github_khaiql_dbcleaner//:go_default_library",
         "@com_github_khaiql_dbcleaner//engine:go_default_library",
         "@com_github_stretchr_testify//suite:go_default_library",

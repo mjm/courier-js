@@ -72,8 +72,8 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 		}
 		alert["body"] = tweet.Body
 
-		aps["thread-id"] = tweet.ID
-		payload["tweetId"] = tweet.ID
+		aps["thread-id"] = tweet.ID.String()
+		payload["tweetId"] = tweet.ID.String()
 	} else {
 		alert["title-loc-args"] = []string{strconv.Itoa(len(evt.CreatedTweetIds))}
 		if evt.Autopost {

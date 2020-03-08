@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "go_default_library",
@@ -11,5 +11,26 @@ go_library(
         "//internal/shared/tweets:go_default_library",
         "//internal/trace:go_default_library",
         "@com_github_pusher_push_notifications_go//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "notifier_test.go",
+        "suite_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/event:go_default_library",
+        "//internal/read/tweets:go_default_library",
+        "//internal/shared/tweets:go_default_library",
+        "//internal/write/tweets/queries:go_default_library",
+        "@com_github_google_uuid//:go_default_library",
+        "@com_github_khaiql_dbcleaner//:go_default_library",
+        "@com_github_khaiql_dbcleaner//engine:go_default_library",
+        "@com_github_pusher_push_notifications_go//:go_default_library",
+        "@com_github_stretchr_testify//suite:go_default_library",
     ],
 )
