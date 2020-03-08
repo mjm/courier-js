@@ -9,6 +9,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/wire"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 
@@ -18,11 +19,15 @@ import (
 
 var DefaultSet = wire.NewSet(New, NewConfig)
 
+type tasksClient interface {
+	CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error)
+}
+
 type Tasks struct {
 	url            string
 	queue          string
 	serviceAccount string
-	client         *cloudtasks.Client
+	client         tasksClient
 }
 
 func New(cfg Config, secretCfg secret.GCPConfig) (*Tasks, error) {
