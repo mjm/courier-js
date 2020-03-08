@@ -79,7 +79,10 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		Subscriptions:     billingSubscriptionQueries,
 	}
 	commandBus := write.NewCommandBus()
-	tasksConfig := tasks.NewConfig()
+	tasksConfig, err := tasks.NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
 	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
 	if err != nil {
 		return nil, err

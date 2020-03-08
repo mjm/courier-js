@@ -39,7 +39,10 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	bus := event.NewBus()
 	feedQueries := feeds.NewFeedQueries(dbDB, bus)
-	tasksConfig := tasks.NewConfig()
+	tasksConfig, err := tasks.NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
 	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
 	if err != nil {
 		return nil, err

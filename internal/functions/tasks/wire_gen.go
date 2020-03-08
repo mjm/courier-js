@@ -41,7 +41,10 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	bus := event.NewBus()
 	publisher := event.NewPublisher(publisherConfig, pubsubClient, bus)
-	tasksConfig := tasks.NewConfig()
+	tasksConfig, err := tasks.NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
 	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
 	if err != nil {
 		return nil, err

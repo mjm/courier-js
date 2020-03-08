@@ -1,19 +1,18 @@
 package tasks
 
 import (
-	"os"
+	"context"
+
+	"github.com/mjm/courier-js/internal/config"
 )
 
 type Config struct {
-	TaskURL        string
-	Queue          string
-	ServiceAccount string
+	TaskURL        string `env:"TASKS_URL"`
+	Queue          string `env:"GCP_TASKS_QUEUE"`
+	ServiceAccount string `env:"TASKS_SERVICE_ACCOUNT"`
 }
 
-func NewConfig() Config {
-	return Config{
-		TaskURL:        os.Getenv("TASKS_URL"),
-		Queue:          os.Getenv("GCP_TASKS_QUEUE"),
-		ServiceAccount: os.Getenv("TASKS_SERVICE_ACCOUNT"),
-	}
+func NewConfig(l *config.Loader) (cfg Config, err error) {
+	err = l.Load(context.Background(), &cfg)
+	return
 }
