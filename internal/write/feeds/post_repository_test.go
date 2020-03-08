@@ -17,9 +17,7 @@ func (suite *feedsSuite) TestCreateNone() {
 
 func (suite *feedsSuite) TestCreateOne() {
 	ctx := context.Background()
-	feedID := feeds.NewFeedID()
-	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
-	suite.NoError(err)
+	feedID := feeds.FeedID("46c2aa85-5124-40c1-896d-1e2ca4eb8587")
 
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 	newPost := CreatePostParams{
@@ -49,9 +47,7 @@ func (suite *feedsSuite) TestCreateOne() {
 
 func (suite *feedsSuite) TestCreateMany() {
 	ctx := context.Background()
-	feedID := feeds.NewFeedID()
-	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
-	suite.NoError(err)
+	feedID := feeds.FeedID("46c2aa85-5124-40c1-896d-1e2ca4eb8587")
 
 	var newPosts []CreatePostParams
 	for i := 0; i < 10; i++ {
@@ -81,9 +77,7 @@ func (suite *feedsSuite) TestCreateMany() {
 
 func (suite *feedsSuite) TestLoadByItemID() {
 	ctx := context.Background()
-	feedID := feeds.NewFeedID()
-	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
-	suite.NoError(err)
+	feedID := feeds.FeedID("46c2aa85-5124-40c1-896d-1e2ca4eb8587")
 
 	var newPosts []CreatePostParams
 	for i := 0; i < 5; i++ {
@@ -118,9 +112,7 @@ func (suite *feedsSuite) TestLoadByItemID() {
 
 func (suite *feedsSuite) TestLoadByItemIDWrongFeed() {
 	ctx := context.Background()
-	feedID := feeds.NewFeedID()
-	err := suite.feedRepo.Create(ctx, feedID, "https://example.com/feed.json")
-	suite.NoError(err)
+	feedID := feeds.FeedID("46c2aa85-5124-40c1-896d-1e2ca4eb8587")
 
 	var newPosts []CreatePostParams
 	for i := 0; i < 5; i++ {
@@ -138,7 +130,7 @@ func (suite *feedsSuite) TestLoadByItemIDWrongFeed() {
 		newPosts = append(newPosts, newPost)
 	}
 
-	_, err = suite.postRepo.Create(ctx, feedID, newPosts)
+	_, err := suite.postRepo.Create(ctx, feedID, newPosts)
 	suite.NoError(err)
 
 	posts, err := suite.postRepo.FindByItemIDs(ctx, feeds.NewFeedID(), []string{

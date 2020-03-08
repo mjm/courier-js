@@ -42,12 +42,14 @@ go_test(
     srcs = [
         "post_repository_test.go",
         "suite_test.go",
+        "update_options_command_test.go",
     ],
     embed = [":go_default_library"],
     deps = [
         "//internal/db:go_default_library",
         "//internal/event:go_default_library",
         "//internal/shared/feeds:go_default_library",
+        "//internal/write:go_default_library",
         "@com_github_khaiql_dbcleaner//:go_default_library",
         "@com_github_khaiql_dbcleaner//engine:go_default_library",
         "@com_github_stretchr_testify//suite:go_default_library",

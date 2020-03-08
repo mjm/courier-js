@@ -1,6 +1,7 @@
 package feeds
 
 import (
+	"context"
 	"testing"
 
 	"github.com/khaiql/dbcleaner"
@@ -9,14 +10,18 @@ import (
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/feeds/queries"
 )
 
 var cleaner = dbcleaner.New()
 
 type feedsSuite struct {
 	suite.Suite
-	db       db.DB
-	eventBus *event.Bus
+	db             db.DB
+	commandBus     *write.CommandBus
+	eventBus       *event.Bus
+	eventCollector *event.Collector
 
 	feedRepo *FeedRepository
 	subRepo  *SubscriptionRepository
@@ -27,18 +32,29 @@ func (suite *feedsSuite) SetupSuite() {
 	suite.db = db.NewTestingDB()
 	cleaner.SetEngine(engine.NewPostgresEngine(db.TestingDSN))
 
+	suite.commandBus = write.NewCommandBus()
 	suite.eventBus = event.NewBus()
+	suite.eventCollector = &event.Collector{}
 	suite.feedRepo = NewFeedRepository(suite.db)
 	suite.subRepo = NewSubscriptionRepository(suite.db)
 	suite.postRepo = NewPostRepository(suite.db)
+
+	NewCommandHandler(suite.commandBus, suite.eventBus, suite.feedRepo, suite.subRepo, suite.postRepo)
 }
 
 func (suite *feedsSuite) SetupTest() {
+	suite.eventCollector.Reset()
 	cleaner.Acquire("feeds", "feed_subscriptions", "posts")
+	_, err := suite.db.ExecContext(context.Background(), queries.FixturesExample)
+	suite.NoError(err)
 }
 
 func (suite *feedsSuite) TearDownTest() {
 	cleaner.Clean("feeds", "feed_subscriptions", "posts")
+}
+
+func (suite *feedsSuite) collectEvents(types ...interface{}) {
+	suite.eventBus.Notify(suite.eventCollector, types...)
 }
 
 func TestFeedsSuite(t *testing.T) {
