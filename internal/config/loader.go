@@ -46,9 +46,11 @@ func (l *Loader) Load(ctx context.Context, dst interface{}) error {
 				return err
 			}
 
-			// TODO check the type is a string
-			v.Field(i).SetString(val)
-			continue
+			if val != "" {
+				// TODO check the type is a string
+				v.Field(i).SetString(val)
+				continue
+			}
 		}
 
 		secretKey := field.Tag.Get("secret")
@@ -58,9 +60,11 @@ func (l *Loader) Load(ctx context.Context, dst interface{}) error {
 				return err
 			}
 
-			// TODO check the type is a string
-			v.Field(i).SetString(val)
-			continue
+			if val != "" {
+				// TODO check the type is a string
+				v.Field(i).SetString(val)
+				continue
+			}
 		}
 	}
 

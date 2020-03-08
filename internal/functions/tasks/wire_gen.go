@@ -74,7 +74,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	billingConfig, err := billing.NewConfigFromSecrets(gcpSecretKeeper)
+	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}

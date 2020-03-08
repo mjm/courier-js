@@ -72,3 +72,21 @@ func TestLoadSecretStrings(t *testing.T) {
 	assert.Equal(t, "a secret value", cfg.Foo)
 	assert.Equal(t, "another secret value", cfg.Bar)
 }
+
+func TestLoadPrioritizeEnvVar(t *testing.T) {
+	ctx := context.Background()
+	loader := NewLoader(envMap{
+		"FOO": "foo",
+	}, secretMap{
+		"foo": "a secret value",
+		"bar": "another secret value",
+	})
+
+	var cfg struct {
+		Foo string `env:"FOO" secret:"foo"`
+		Bar string `env:"BAR" secret:"bar"`
+	}
+	assert.NoError(t, loader.Load(ctx, &cfg))
+	assert.Equal(t, "foo", cfg.Foo)
+	assert.Equal(t, "another secret value", cfg.Bar)
+}

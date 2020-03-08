@@ -27,14 +27,14 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	billingConfig, err := billing.NewConfigFromSecrets(gcpSecretKeeper)
+	defaultEnv := &config.DefaultEnv{}
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
 	bus := event.NewBus()
 	api := billing.NewClient(billingConfig)
-	defaultEnv := &config.DefaultEnv{}
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err

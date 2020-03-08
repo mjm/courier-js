@@ -23,7 +23,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		trace.NewConfigFromSecrets,
 		auth.DefaultSet,
 		billing.NewSubscriptionQueries,
-		billing2.NewClient,
-		billing2.NewConfigFromSecrets,
+		billing2.DefaultSet,
 	))
 }

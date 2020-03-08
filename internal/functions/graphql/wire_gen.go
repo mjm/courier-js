@@ -52,14 +52,14 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	postQueries := feeds.NewPostQueries(dbDB, bus)
 	tweetQueries := tweets.NewTweetQueries(dbDB, bus)
 	eventQueries := user.NewEventQueries(dbDB)
-	billingConfig, err := billing.NewConfigFromSecrets(gcpSecretKeeper)
+	defaultEnv := &config.DefaultEnv{}
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
 	api := billing.NewClient(billingConfig)
 	customerQueries := billing2.NewCustomerQueries(api)
-	defaultEnv := &config.DefaultEnv{}
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
