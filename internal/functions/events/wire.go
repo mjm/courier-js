@@ -18,11 +18,11 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	panic(wire.Build(
 		NewHandler,
 		NewPusher,
+		secret.GCPSet,
 		notifications.NewNotifier,
 		event.NewPusherClient,
 		event.NewBeamsClient,
 		event.NewBus,
-		secret.GCPSet,
 		trace.NewConfigFromSecrets,
 		db.NewConfigFromSecrets,
 		db.New,

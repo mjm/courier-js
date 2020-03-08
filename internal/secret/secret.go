@@ -1,9 +1,8 @@
 package secret
 
 import (
-	"context"
+	"github.com/mjm/courier-js/internal/config"
 )
 
-type Keeper interface {
-	GetString(context.Context, string) (string, error)
-}
+// for compatibility
+type Keeper config.Secrets

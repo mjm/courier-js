@@ -8,6 +8,7 @@ package tasks
 import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/secret"
@@ -26,7 +27,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	config, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
+	traceConfig, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +55,9 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	tweetRepository := tweets.NewTweetRepository(dbDB)
 	feedSubscriptionRepository := tweets.NewFeedSubscriptionRepository(dbDB)
 	postRepository := tweets.NewPostRepository(dbDB)
-	authConfig, err := auth.NewConfigFromSecrets(gcpSecretKeeper)
+	defaultEnv := &config.DefaultEnv{}
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
@@ -82,6 +85,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
 	feedsPostRepository := feeds.NewPostRepository(dbDB)
 	feedsCommandHandler := feeds.NewCommandHandler(commandBus, bus, feedRepository, subscriptionRepository, feedsPostRepository)
-	handler := NewHandler(config, commandBus, publisher, commandHandler, feedsCommandHandler)
+	handler := NewHandler(traceConfig, commandBus, publisher, commandHandler, feedsCommandHandler)
 	return handler, nil
 }

@@ -11,6 +11,7 @@ go_library(
     deps = [
         "//internal/auth:go_default_library",
         "//internal/billing:go_default_library",
+        "//internal/config:go_default_library",
         "//internal/event:go_default_library",
         "//internal/functions:go_default_library",
         "//internal/read/billing:go_default_library",

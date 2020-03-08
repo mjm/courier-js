@@ -7,6 +7,7 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	billing2 "github.com/mjm/courier-js/internal/billing"
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/resolvers"
@@ -28,10 +29,10 @@ func InitializeHandler(
 		wire.Build(
 			NewHandler,
 			NewSchema,
+			config.DefaultSet,
 			secret.GCPSet,
 			trace.NewConfigFromSecrets,
 			resolvers.DefaultSet,
-			auth.NewConfigFromSecrets,
 			auth.DefaultSet,
 			db.NewConfigFromSecrets,
 			db.New,

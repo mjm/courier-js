@@ -8,6 +8,7 @@ package graphql
 import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	billing2 "github.com/mjm/courier-js/internal/read/billing"
@@ -33,7 +34,7 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		return nil, err
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	config, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
+	traceConfig, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +58,9 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	}
 	api := billing.NewClient(billingConfig)
 	customerQueries := billing2.NewCustomerQueries(api)
-	authConfig, err := auth.NewConfigFromSecrets(gcpSecretKeeper)
+	defaultEnv := &config.DefaultEnv{}
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
@@ -117,6 +120,6 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		return nil, err
 	}
 	publisher := event.NewPublisher(publisherConfig, pubsubClient, bus)
-	handler := NewHandler(config, schema, authenticator, publisher)
+	handler := NewHandler(traceConfig, schema, authenticator, publisher)
 	return handler, nil
 }

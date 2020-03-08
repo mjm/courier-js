@@ -7,6 +7,7 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/secret"
@@ -20,17 +21,17 @@ import (
 func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	panic(wire.Build(
 		NewHandler,
+		config.DefaultSet,
+		secret.GCPSet,
 		tasks.DefaultSet,
 		event.PublishingSet,
 		write.NewCommandBus,
-		secret.GCPSet,
 		trace.NewConfigFromSecrets,
 		db.NewConfigFromSecrets,
 		db.New,
 		tweets.DefaultSet,
 		tweets.NewTwitterConfigFromSecrets,
 		feeds.DefaultSet,
-		auth.NewConfigFromSecrets,
 		auth.DefaultSet,
 		billing.NewClient,
 		billing.NewConfigFromSecrets,

@@ -43,7 +43,7 @@ func New(cfg Config) (DB, error) {
 }
 
 func NewConfigFromSecrets(sk secret.Keeper) (cfg Config, err error) {
-	cfg.URL, err = sk.GetString(context.Background(), "database-url")
+	cfg.URL, err = sk.GetSecret(context.Background(), "database-url")
 
 	return
 }

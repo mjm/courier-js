@@ -7,6 +7,7 @@ package pusherauth
 
 import (
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
@@ -20,11 +21,13 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	config, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
+	traceConfig, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
-	authConfig, err := auth.NewConfigFromSecrets(gcpSecretKeeper)
+	defaultEnv := &config.DefaultEnv{}
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
@@ -42,6 +45,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	handler := NewHandler(config, authenticator, pusherClient, pushNotifications)
+	handler := NewHandler(traceConfig, authenticator, pusherClient, pushNotifications)
 	return handler, nil
 }

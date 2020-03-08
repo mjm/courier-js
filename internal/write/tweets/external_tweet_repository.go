@@ -28,12 +28,12 @@ type TwitterConfig struct {
 func NewTwitterConfigFromSecrets(sk secret.Keeper) (cfg TwitterConfig, err error) {
 	ctx := context.Background()
 
-	consumerKey, err := sk.GetString(ctx, "twitter-consumer-key")
+	consumerKey, err := sk.GetSecret(ctx, "twitter-consumer-key")
 	if err != nil {
 		return
 	}
 
-	consumerSecret, err := sk.GetString(ctx, "twitter-consumer-secret")
+	consumerSecret, err := sk.GetSecret(ctx, "twitter-consumer-secret")
 	if err != nil {
 		return
 	}

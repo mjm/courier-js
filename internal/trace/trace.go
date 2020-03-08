@@ -36,7 +36,7 @@ type Config struct {
 }
 
 func NewConfigFromSecrets(sk secret.Keeper) (cfg Config, err error) {
-	cfg.WriteKey, err = sk.GetString(context.Background(), "honey-write-key")
+	cfg.WriteKey, err = sk.GetSecret(context.Background(), "honey-write-key")
 	if err != nil {
 		return
 	}

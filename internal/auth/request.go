@@ -4,18 +4,16 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/google/wire"
 	"gopkg.in/auth0.v3/management"
 	"gopkg.in/dgrijalva/jwt-go.v3"
 
-	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
-var DefaultSet = wire.NewSet(NewAuthenticator, NewManagementClient, NewJWKSClient)
+var DefaultSet = wire.NewSet(NewAuthenticator, NewConfig, NewManagementClient, NewJWKSClient)
 
 type userContextKey struct{}
 
@@ -33,23 +31,6 @@ func NewAuthenticator(cfg Config, m *management.Management, jwks *JWKSClient) *A
 		management: m,
 		jwks:       jwks,
 	}
-}
-
-type Config struct {
-	AuthDomain   string
-	ClientID     string
-	ClientSecret string
-}
-
-func NewConfigFromSecrets(sk secret.Keeper) (cfg Config, err error) {
-	cfg.ClientSecret, err = sk.GetString(context.Background(), "auth0-backend-secret")
-	if err != nil {
-		return
-	}
-
-	cfg.ClientID = os.Getenv("BACKEND_CLIENT_ID")
-	cfg.AuthDomain = os.Getenv("AUTH_DOMAIN")
-	return
 }
 
 // Authenticate reads a JWT token from the request and returns a new context with an

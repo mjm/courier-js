@@ -29,6 +29,7 @@ require (
 	github.com/golang/protobuf v1.3.3
 	github.com/google/uuid v1.1.1
 	github.com/google/wire v0.4.0
+	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/gorilla/rpc v1.2.0
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/honeycombio/libhoney-go v1.12.2

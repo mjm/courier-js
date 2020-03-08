@@ -16,7 +16,7 @@ func NewPusherClient(sk secret.Keeper) (*pusher.Client, error) {
 		key = "pusher-url-dev"
 	}
 
-	url, err := sk.GetString(context.Background(), key)
+	url, err := sk.GetSecret(context.Background(), key)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func NewPusherClient(sk secret.Keeper) (*pusher.Client, error) {
 }
 
 func NewBeamsClient(sk secret.Keeper) (pushnotifications.PushNotifications, error) {
-	key, err := sk.GetString(context.Background(), "beams-secret-key")
+	key, err := sk.GetSecret(context.Background(), "beams-secret-key")
 	if err != nil {
 		return nil, err
 	}

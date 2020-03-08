@@ -22,14 +22,14 @@ func NewClient(cfg Config) *client.API {
 }
 
 func NewConfigFromSecrets(sk secret.Keeper) (cfg Config, err error) {
-	cfg.SecretKey, err = sk.GetString(context.Background(), "stripe-secret-key")
+	cfg.SecretKey, err = sk.GetSecret(context.Background(), "stripe-secret-key")
 	if err != nil {
 		return
 	}
 
 	cfg.WebhookSecret = os.Getenv("STRIPE_WEBHOOK_SECRET")
 	if cfg.WebhookSecret == "" {
-		cfg.WebhookSecret, err = sk.GetString(context.Background(), "stripe-webhook-secret")
+		cfg.WebhookSecret, err = sk.GetSecret(context.Background(), "stripe-webhook-secret")
 		if err != nil {
 			return
 		}

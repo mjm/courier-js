@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "auth0.go",
         "claims.go",
+        "config.go",
         "jwks.go",
         "mock.go",
         "request.go",
@@ -13,7 +14,7 @@ go_library(
     importpath = "github.com/mjm/courier-js/internal/auth",
     visibility = ["//:__subpackages__"],
     deps = [
-        "//internal/secret:go_default_library",
+        "//internal/config:go_default_library",
         "//internal/trace:go_default_library",
         "@com_github_google_wire//:go_default_library",
         "@in_gopkg_auth0_v3//management:go_default_library",

@@ -8,6 +8,7 @@ package stripecb
 import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/event"
 	billing2 "github.com/mjm/courier-js/internal/read/billing"
 	"github.com/mjm/courier-js/internal/secret"
@@ -22,7 +23,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	config, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
+	traceConfig, err := trace.NewConfigFromSecrets(gcpSecretKeeper)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +33,9 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	bus := event.NewBus()
 	api := billing.NewClient(billingConfig)
-	authConfig, err := auth.NewConfigFromSecrets(gcpSecretKeeper)
+	defaultEnv := &config.DefaultEnv{}
+	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +50,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	publisher := event.NewPublisher(publisherConfig, pubsubClient, bus)
-	handler := NewHandler(config, billingConfig, bus, subscriptionQueries, publisher)
+	handler := NewHandler(traceConfig, billingConfig, bus, subscriptionQueries, publisher)
 	return handler, nil
 }
