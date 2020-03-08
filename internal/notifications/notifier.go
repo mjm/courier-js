@@ -111,12 +111,12 @@ func (n *Notifier) handleTweetPosted(ctx context.Context, evt tweets.TweetPosted
 	}
 
 	payload := make(map[string]interface{})
-	payload["tweetId"] = tweetID
+	payload["tweetId"] = tweetID.String()
 	aps := make(map[string]interface{})
 	payload["aps"] = aps
 
 	aps["category"] = "POSTED_TWEET"
-	aps["thread-id"] = tweet.ID
+	aps["thread-id"] = tweet.ID.String()
 	alert := make(map[string]interface{})
 	aps["alert"] = alert
 

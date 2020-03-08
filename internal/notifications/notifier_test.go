@@ -154,3 +154,26 @@ func (suite *notificationsSuite) TestImportMultipleTweetsAutopost() {
 	suite.Equal("IMPORTED_TWEETS_AUTOPOST", alert["title-loc-key"])
 	suite.Equal("", alert["body"])
 }
+
+func (suite *notificationsSuite) TestPostTweet() {
+	ctx := context.Background()
+
+	suite.eventBus.Fire(ctx, tweets.TweetPosted{
+		UserId:  "test_user3",
+		TweetId: "7f297943-854e-4e59-abe2-b377fde9aa12",
+	})
+
+	suite.Equal(1, len(suite.notifications.notes))
+	note := suite.notifications.notes[0]
+	suite.Equal([]string{"test_user3"}, note.users)
+
+	payload := note.payload["apns"].(map[string]interface{})
+	aps := payload["aps"].(map[string]interface{})
+	alert := aps["alert"].(map[string]interface{})
+
+	suite.Equal("7f297943-854e-4e59-abe2-b377fde9aa12", payload["tweetId"])
+	suite.Equal("7f297943-854e-4e59-abe2-b377fde9aa12", aps["thread-id"])
+	suite.Equal("POSTED_TWEET", aps["category"])
+	suite.Equal("POSTED_TWEET_TITLE", alert["title-loc-key"])
+	suite.Equal("A Titled Post https://example.com/item-2", alert["body"])
+}
