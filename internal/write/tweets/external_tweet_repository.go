@@ -17,34 +17,27 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
 type TwitterConfig struct {
-	*oauth1.Config
+	ConsumerKey    string `secret:"twitter-consumer-key"`
+	ConsumerSecret string `secret:"twitter-consumer-secret"`
 }
 
-func NewTwitterConfigFromSecrets(sk secret.Keeper) (cfg TwitterConfig, err error) {
-	ctx := context.Background()
-
-	consumerKey, err := sk.GetSecret(ctx, "twitter-consumer-key")
-	if err != nil {
-		return
-	}
-
-	consumerSecret, err := sk.GetSecret(ctx, "twitter-consumer-secret")
-	if err != nil {
-		return
-	}
-
-	cfg.Config = oauth1.NewConfig(consumerKey, consumerSecret)
+func NewTwitterConfig(l *config.Loader) (cfg TwitterConfig, err error) {
+	err = l.Load(context.Background(), &cfg)
 	return
+}
+
+func (cfg TwitterConfig) OAuthConfig() *oauth1.Config {
+	return oauth1.NewConfig(cfg.ConsumerKey, cfg.ConsumerSecret)
 }
 
 type ExternalTweetRepository struct {
 	authDomain string
-	config     TwitterConfig
+	config     *oauth1.Config
 	http       *http.Client
 }
 
@@ -61,7 +54,7 @@ func NewExternalTweetRepository(authConfig auth.Config, twitterConfig TwitterCon
 	}
 	return &ExternalTweetRepository{
 		authDomain: authConfig.AuthDomain,
-		config:     twitterConfig,
+		config:     twitterConfig.OAuthConfig(),
 		http:       conf.Client(context.Background()),
 	}
 }

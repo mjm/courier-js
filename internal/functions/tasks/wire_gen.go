@@ -67,7 +67,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	twitterConfig, err := tweets.NewTwitterConfigFromSecrets(gcpSecretKeeper)
+	twitterConfig, err := tweets.NewTwitterConfig(loader)
 	if err != nil {
 		return nil, err
 	}

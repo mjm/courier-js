@@ -29,7 +29,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		trace.NewConfig,
 		db.DefaultSet,
 		tweets.DefaultSet,
-		tweets.NewTwitterConfigFromSecrets,
 		feeds.DefaultSet,
 		auth.DefaultSet,
 		billing.DefaultSet,

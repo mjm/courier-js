@@ -37,11 +37,15 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	jwksClient := auth.NewJWKSClient(authConfig)
 	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
-	pusherClient, err := event.NewPusherClient(gcpSecretKeeper)
+	pusherConfig, err := event.NewPusherConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	pushNotifications, err := event.NewBeamsClient(gcpSecretKeeper)
+	pusherClient, err := event.NewPusherClient(pusherConfig)
+	if err != nil {
+		return nil, err
+	}
+	pushNotifications, err := event.NewBeamsClient(pusherConfig)
 	if err != nil {
 		return nil, err
 	}

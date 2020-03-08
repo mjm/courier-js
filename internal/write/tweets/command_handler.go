@@ -20,6 +20,7 @@ var DefaultSet = wire.NewSet(
 	NewFeedSubscriptionRepository,
 	NewPostRepository,
 	NewExternalTweetRepository,
+	NewTwitterConfig,
 	NewUserRepository,
 	NewKeyManagementClient,
 )
