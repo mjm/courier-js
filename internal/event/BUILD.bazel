@@ -12,6 +12,7 @@ go_library(
     importpath = "github.com/mjm/courier-js/internal/event",
     visibility = ["//:__subpackages__"],
     deps = [
+        "//internal/config:go_default_library",
         "//internal/secret:go_default_library",
         "//internal/trace:go_default_library",
         "@com_github_golang_protobuf//proto:go_default_library",

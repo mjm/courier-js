@@ -2,7 +2,6 @@ package event
 
 import (
 	"context"
-	"os"
 	"reflect"
 
 	"cloud.google.com/go/pubsub"
@@ -10,6 +9,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/wire"
 
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
 )
@@ -18,7 +18,7 @@ var PublishingSet = wire.NewSet(NewBus, NewPubSubClient, NewPublisher, NewPublis
 
 type PublisherConfig struct {
 	secret.GCPConfig
-	TopicID string
+	TopicID string `env:"GCP_TOPIC_ID"`
 }
 
 type Publisher struct {
@@ -37,11 +37,9 @@ func NewPublisher(cfg PublisherConfig, client *pubsub.Client, bus *Bus) *Publish
 	return p
 }
 
-func NewPublisherConfig(secretConfig secret.GCPConfig) PublisherConfig {
-	return PublisherConfig{
-		GCPConfig: secretConfig,
-		TopicID:   os.Getenv("GCP_TOPIC_ID"),
-	}
+func NewPublisherConfig(l *config.Loader) (cfg PublisherConfig, err error) {
+	err = l.Load(context.Background(), &cfg)
+	return
 }
 
 func (p *Publisher) HandleEvent(ctx context.Context, evt interface{}) {

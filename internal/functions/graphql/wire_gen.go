@@ -117,7 +117,10 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	}
 	jwksClient := auth.NewJWKSClient(authConfig)
 	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
-	publisherConfig := event.NewPublisherConfig(gcpConfig)
+	publisherConfig, err := event.NewPublisherConfig(loader)
+	if err != nil {
+		return nil, err
+	}
 	pubsubClient, err := event.NewPubSubClient(gcpConfig)
 	if err != nil {
 		return nil, err

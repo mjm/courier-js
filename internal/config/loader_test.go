@@ -90,3 +90,27 @@ func TestLoadPrioritizeEnvVar(t *testing.T) {
 	assert.Equal(t, "foo", cfg.Foo)
 	assert.Equal(t, "another secret value", cfg.Bar)
 }
+
+type embedded struct {
+	Foo string `secret:"foo"`
+	Bar string `secret:"bar"`
+}
+
+func TestLoadEmbeddedStruct(t *testing.T) {
+	ctx := context.Background()
+	loader := NewLoader(envMap{
+		"FOO": "foo",
+	}, secretMap{
+		"foo": "a secret value",
+		"bar": "another secret value",
+	})
+
+	var cfg struct {
+		embedded
+		Foo string `env:"FOO"`
+	}
+	assert.NoError(t, loader.Load(ctx, &cfg))
+	assert.Equal(t, "foo", cfg.Foo)
+	assert.Equal(t, "a secret value", cfg.embedded.Foo)
+	assert.Equal(t, "another secret value", cfg.Bar)
+}
