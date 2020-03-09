@@ -7,7 +7,6 @@ import (
 )
 
 func (suite *feedsSuite) TestUpdateOptionsCommand() {
-	suite.collectEvents(feeds.FeedOptionsChanged{})
 	ctx := context.Background()
 
 	cmd := UpdateOptionsCommand{
@@ -28,7 +27,6 @@ func (suite *feedsSuite) TestUpdateOptionsCommand() {
 }
 
 func (suite *feedsSuite) TestUpdateOptionsCommandFails() {
-	suite.collectEvents(feeds.FeedOptionsChanged{})
 	ctx := context.Background()
 
 	cmd := UpdateOptionsCommand{

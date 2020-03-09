@@ -17,12 +17,12 @@ type Notifier struct {
 	tweets readtweets.TweetQueries
 }
 
-func NewNotifier(bus *event.Bus, beams pushnotifications.PushNotifications, tweetQueries readtweets.TweetQueries) *Notifier {
+func NewNotifier(events event.Source, beams pushnotifications.PushNotifications, tweetQueries readtweets.TweetQueries) *Notifier {
 	n := &Notifier{
 		beams:  beams,
 		tweets: tweetQueries,
 	}
-	bus.Notify(n, tweets.TweetsImported{}, tweets.TweetPosted{})
+	events.Notify(n)
 	return n
 }
 

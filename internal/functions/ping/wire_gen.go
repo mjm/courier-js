@@ -8,7 +8,6 @@ package ping
 import (
 	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
@@ -37,8 +36,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	bus := event.NewBus()
-	feedQueries := feeds.NewFeedQueries(dbDB, bus)
+	feedQueries := feeds.NewFeedQueries(dbDB)
 	tasksConfig, err := tasks.NewConfig(loader)
 	if err != nil {
 		return nil, err

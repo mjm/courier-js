@@ -8,7 +8,6 @@ import (
 	"github.com/google/wire"
 
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/shared/billing"
 	"github.com/mjm/courier-js/internal/write"
 )
 
@@ -19,25 +18,23 @@ var DefaultSet = wire.NewSet(
 
 type CommandHandler struct {
 	bus      *write.CommandBus
-	eventBus *event.Bus
+	events   event.Sink
 	userRepo *UserRepository
 }
 
 func NewCommandHandler(
 	bus *write.CommandBus,
-	eventBus *event.Bus,
+	events event.Sink,
 	userRepo *UserRepository,
 ) *CommandHandler {
 	h := &CommandHandler{
 		bus:      bus,
-		eventBus: eventBus,
+		events:   events,
 		userRepo: userRepo,
 	}
 	bus.Register(h,
-		UpdateCustomerCommand{})
-	eventBus.Notify(h,
-		billing.CustomerCreated{},
-		billing.SubscriptionCreated{})
+		UpdateCustomerCommand{},
+		UpdateSubscriptionCommand{})
 	return h
 }
 
@@ -53,16 +50,4 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 	}
 
 	panic(fmt.Errorf("tweets.CommandHandler does not know how to handle command type %v", reflect.TypeOf(cmd)))
-}
-
-func (h *CommandHandler) HandleEvent(ctx context.Context, evt interface{}) {
-	switch evt := evt.(type) {
-
-	case billing.CustomerCreated:
-		h.handleCustomerCreated(ctx, evt)
-
-	case billing.SubscriptionCreated:
-		h.handleSubscriptionCreated(ctx, evt)
-
-	}
 }

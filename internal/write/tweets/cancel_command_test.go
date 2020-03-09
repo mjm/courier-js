@@ -7,7 +7,6 @@ import (
 )
 
 func (suite *tweetsSuite) TestCancelCommand() {
-	suite.collectEvents(tweets.TweetCanceled{})
 	ctx := context.Background()
 
 	cmd := CancelCommand{
@@ -26,7 +25,6 @@ func (suite *tweetsSuite) TestCancelCommand() {
 }
 
 func (suite *tweetsSuite) TestCancelCommandFails() {
-	suite.collectEvents(tweets.TweetCanceled{})
 	ctx := context.Background()
 
 	cmd := CancelCommand{

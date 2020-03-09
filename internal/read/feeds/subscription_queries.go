@@ -9,11 +9,9 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/feeds/queries"
-	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 var (
@@ -36,15 +34,11 @@ type subscriptionQueries struct {
 	loader *dataloader.Loader
 }
 
-// NewSubscriptionQueries returns queries targeting a given database and event bus.
-// The event bus is used to invalidate cached data when the write model makes changes.
-func NewSubscriptionQueries(db db.DB, eventBus *event.Bus) SubscriptionQueries {
-	q := &subscriptionQueries{
+func NewSubscriptionQueries(db db.DB) SubscriptionQueries {
+	return &subscriptionQueries{
 		db:     db,
 		loader: newSubscriptionLoader(db),
 	}
-	eventBus.Notify(q, feeds.FeedSubscribed{})
-	return q
 }
 
 func newSubscriptionLoader(db db.DB) *dataloader.Loader {
@@ -91,13 +85,4 @@ func (q *subscriptionQueries) GetEdge(ctx context.Context, id SubscriptionID) (*
 
 func (q *subscriptionQueries) Paged(ctx context.Context, userID string, opts pager.Options) (*pager.Connection, error) {
 	return pager.Paged(ctx, q.db, &subscriptionPager{UserID: userID}, opts)
-}
-
-func (q *subscriptionQueries) HandleEvent(ctx context.Context, evt interface{}) {
-	switch evt := evt.(type) {
-
-	case feeds.FeedSubscribed:
-		q.loader.Clear(ctx, dataloader.StringKey(evt.FeedSubscriptionId))
-
-	}
 }

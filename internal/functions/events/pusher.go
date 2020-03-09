@@ -18,12 +18,12 @@ type Pusher struct {
 	client *pusher.Client
 }
 
-func NewPusher(bus *event.Bus, client *pusher.Client) *Pusher {
+func NewPusher(events event.Source, client *pusher.Client) *Pusher {
 	p := &Pusher{
 		client: client,
 	}
 
-	bus.NotifyAll(p)
+	events.Notify(p)
 	return p
 }
 

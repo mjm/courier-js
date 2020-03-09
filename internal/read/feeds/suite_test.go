@@ -34,11 +34,11 @@ func (suite *feedsSuite) SetupSuite() {
 	cleaner.SetEngine(engine.NewPostgresEngine(db.TestingDSN))
 
 	suite.eventBus = event.NewBus()
-	suite.feedQueries = NewFeedQueries(suite.db, suite.eventBus).(*feedQueries)
+	suite.feedQueries = NewFeedQueries(suite.db).(*feedQueries)
 	suite.feedRepo = feeds.NewFeedRepository(suite.db)
-	suite.subQueries = NewSubscriptionQueries(suite.db, suite.eventBus).(*subscriptionQueries)
+	suite.subQueries = NewSubscriptionQueries(suite.db).(*subscriptionQueries)
 	suite.subRepo = feeds.NewSubscriptionRepository(suite.db)
-	suite.postQueries = NewPostQueries(suite.db, suite.eventBus).(*postQueries)
+	suite.postQueries = NewPostQueries(suite.db).(*postQueries)
 	suite.postRepo = feeds.NewPostRepository(suite.db)
 }
 

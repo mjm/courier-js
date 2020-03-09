@@ -19,26 +19,26 @@ var DefaultSet = wire.NewSet(
 )
 
 type CommandHandler struct {
-	bus      *write.CommandBus
-	eventBus *event.Bus
-	config   billing.Config
-	cusRepo  *CustomerRepository
-	subRepo  *SubscriptionRepository
+	bus     *write.CommandBus
+	events  event.Sink
+	config  billing.Config
+	cusRepo *CustomerRepository
+	subRepo *SubscriptionRepository
 }
 
 func NewCommandHandler(
 	bus *write.CommandBus,
-	eventBus *event.Bus,
+	events event.Sink,
 	config billing.Config,
 	cusRepo *CustomerRepository,
 	subRepo *SubscriptionRepository,
 ) *CommandHandler {
 	h := &CommandHandler{
-		bus:      bus,
-		eventBus: eventBus,
-		config:   config,
-		cusRepo:  cusRepo,
-		subRepo:  subRepo,
+		bus:     bus,
+		events:  events,
+		config:  config,
+		cusRepo: cusRepo,
+		subRepo: subRepo,
 	}
 	bus.Register(h,
 		SubscribeCommand{},

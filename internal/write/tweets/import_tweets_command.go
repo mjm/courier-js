@@ -108,7 +108,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	}
 
 	if len(evt.CreatedTweetIds) > 0 || len(evt.UpdatedTweetIds) > 0 {
-		h.eventBus.Fire(ctx, evt)
+		h.events.Fire(ctx, evt)
 	}
 
 	return nil

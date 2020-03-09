@@ -10,31 +10,13 @@ import (
 	"github.com/google/wire"
 
 	"github.com/mjm/courier-js/internal/config"
-	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
-var PublishingSet = wire.NewSet(NewBus, NewPubSubClient, NewPublisher, NewPublisherConfig)
+var PublishingSet = wire.NewSet(wire.Bind(new(Sink), new(*Publisher)), NewPubSubClient, NewPublisher, NewPublisherConfig)
 
 type PublisherConfig struct {
-	secret.GCPConfig
 	TopicID string `env:"GCP_TOPIC_ID"`
-}
-
-type Publisher struct {
-	topic *pubsub.Topic
-	bus   *Bus
-}
-
-func NewPublisher(cfg PublisherConfig, client *pubsub.Client, bus *Bus) *Publisher {
-	t := client.Topic(cfg.TopicID)
-
-	p := &Publisher{
-		topic: t,
-		bus:   bus,
-	}
-	bus.NotifyAll(p)
-	return p
 }
 
 func NewPublisherConfig(l *config.Loader) (cfg PublisherConfig, err error) {
@@ -42,7 +24,19 @@ func NewPublisherConfig(l *config.Loader) (cfg PublisherConfig, err error) {
 	return
 }
 
-func (p *Publisher) HandleEvent(ctx context.Context, evt interface{}) {
+type Publisher struct {
+	topic *pubsub.Topic
+}
+
+func NewPublisher(cfg PublisherConfig, client *pubsub.Client) *Publisher {
+	t := client.Topic(cfg.TopicID)
+
+	return &Publisher{
+		topic: t,
+	}
+}
+
+func (p *Publisher) Fire(ctx context.Context, evt interface{}) {
 	ctx = trace.Start(ctx, "Publish event")
 	defer trace.Finish(ctx)
 

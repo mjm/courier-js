@@ -8,7 +8,6 @@ import (
 	"github.com/google/wire"
 
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 )
@@ -28,7 +27,7 @@ var DefaultSet = wire.NewSet(
 // CommandHandler processes tweet-related commands and updates the data store appropriately.
 type CommandHandler struct {
 	bus               *write.CommandBus
-	eventBus          *event.Bus
+	events            event.Sink
 	tasks             *tasks.Tasks
 	tweetRepo         *TweetRepository
 	subRepo           *FeedSubscriptionRepository
@@ -40,7 +39,7 @@ type CommandHandler struct {
 // NewCommandHandler creates a new command handler for tweet commands.
 func NewCommandHandler(
 	bus *write.CommandBus,
-	eventBus *event.Bus,
+	events event.Sink,
 	tasks *tasks.Tasks,
 	tweetRepo *TweetRepository,
 	subRepo *FeedSubscriptionRepository,
@@ -50,7 +49,7 @@ func NewCommandHandler(
 ) *CommandHandler {
 	h := &CommandHandler{
 		bus:               bus,
-		eventBus:          eventBus,
+		events:            events,
 		tasks:             tasks,
 		tweetRepo:         tweetRepo,
 		subRepo:           subRepo,
@@ -69,10 +68,6 @@ func NewCommandHandler(
 		ImportRecentPostsCommand{},
 		SyndicateCommand{},
 		SetupSyndicationCommand{},
-	)
-	eventBus.Notify(h,
-		feeds.PostsImported{},
-		feeds.FeedSubscribed{},
 	)
 	return h
 }
@@ -114,16 +109,4 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 	}
 
 	panic(fmt.Errorf("tweets.CommandHandler does not know how to handle command type %v", reflect.TypeOf(cmd)))
-}
-
-func (h *CommandHandler) HandleEvent(ctx context.Context, evt interface{}) {
-	switch evt := evt.(type) {
-
-	case feeds.PostsImported:
-		h.handlePostsImported(ctx, evt)
-
-	case feeds.FeedSubscribed:
-		h.handleFeedSubscribed(ctx, evt)
-
-	}
 }

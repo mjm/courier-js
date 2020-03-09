@@ -9,7 +9,6 @@ import (
 )
 
 func (suite *tweetsSuite) TestUpdateCommand() {
-	suite.collectEvents(tweets.TweetEdited{})
 	ctx := context.Background()
 
 	cmd := UpdateCommand{
@@ -42,7 +41,6 @@ func (suite *tweetsSuite) TestUpdateCommand() {
 }
 
 func (suite *tweetsSuite) TestUpdateCommandMediaUnchanged() {
-	suite.collectEvents(tweets.TweetEdited{})
 	ctx := context.Background()
 
 	cmd := UpdateCommand{
@@ -70,7 +68,6 @@ func (suite *tweetsSuite) TestUpdateCommandMediaUnchanged() {
 }
 
 func (suite *tweetsSuite) TestUpdateCommandNonDraft() {
-	suite.collectEvents(tweets.TweetEdited{})
 	ctx := context.Background()
 
 	cmd := UpdateCommand{
@@ -89,7 +86,6 @@ func (suite *tweetsSuite) TestUpdateCommandNonDraft() {
 }
 
 func (suite *tweetsSuite) TestUpdateCommandRetweet() {
-	suite.collectEvents(tweets.TweetEdited{})
 	ctx := context.Background()
 
 	cmd := UpdateCommand{

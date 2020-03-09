@@ -42,8 +42,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	bus := event.NewBus()
-	publisher := event.NewPublisher(publisherConfig, pubsubClient, bus)
+	publisher := event.NewPublisher(publisherConfig, pubsubClient)
 	tasksConfig, err := tasks.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -86,11 +85,11 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	api := billing.NewClient(billingConfig)
 	userRepository := tweets.NewUserRepository(management, keyManagementClient, gcpConfig, api)
-	commandHandler := tweets.NewCommandHandler(commandBus, bus, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository)
+	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository)
 	feedRepository := feeds.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
 	feedsPostRepository := feeds.NewPostRepository(dbDB)
-	feedsCommandHandler := feeds.NewCommandHandler(commandBus, bus, feedRepository, subscriptionRepository, feedsPostRepository)
-	handler := NewHandler(traceConfig, commandBus, publisher, commandHandler, feedsCommandHandler)
+	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, feedRepository, subscriptionRepository, feedsPostRepository)
+	handler := NewHandler(traceConfig, commandBus, commandHandler, feedsCommandHandler)
 	return handler, nil
 }

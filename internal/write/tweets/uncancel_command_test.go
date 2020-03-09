@@ -7,7 +7,6 @@ import (
 )
 
 func (suite *tweetsSuite) TestUncancelCommand() {
-	suite.collectEvents(tweets.TweetUncanceled{})
 	ctx := context.Background()
 
 	cmd := UncancelCommand{
@@ -26,7 +25,6 @@ func (suite *tweetsSuite) TestUncancelCommand() {
 }
 
 func (suite *tweetsSuite) TestUncancelCommandFails() {
-	suite.collectEvents(tweets.TweetUncanceled{})
 	ctx := context.Background()
 
 	cmd := UncancelCommand{

@@ -4,12 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"os"
 
 	"github.com/honeycombio/libhoney-go"
 	"github.com/honeycombio/libhoney-go/transmission"
 
+	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
@@ -29,25 +30,30 @@ func main() {
 	}
 
 	ctx := context.Background()
+	l := config.NewLoader(config.DefaultEnv{}, nil)
+
+	var gcpConfig secret.GCPConfig
+	if err := l.Load(ctx, &gcpConfig); err != nil {
+		panic(err)
+	}
 
 	var cfg event.PublisherConfig
-	cfg.ProjectID = os.Getenv("GOOGLE_PROJECT")
-	cfg.CredentialsFile = os.Getenv("GCP_CREDENTIALS_FILE")
-	cfg.TopicID = os.Getenv("GCP_TOPIC_ID")
+	if err := l.Load(ctx, &cfg); err != nil {
+		panic(err)
+	}
 
-	bus := event.NewBus()
-	client, err := event.NewPubSubClient(cfg.GCPConfig)
+	client, err := event.NewPubSubClient(gcpConfig)
 	if err != nil {
 		panic(err)
 	}
-	event.NewPublisher(cfg, client, bus)
+	publisher := event.NewPublisher(cfg, client)
 
 	evt, err := createEvent()
 	if err != nil {
 		panic(err)
 	}
 
-	bus.Fire(ctx, evt)
+	publisher.Fire(ctx, evt)
 }
 
 func createEvent() (interface{}, error) {

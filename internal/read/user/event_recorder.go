@@ -17,25 +17,11 @@ type EventRecorder struct {
 	db db.DB
 }
 
-func NewEventRecorder(db db.DB, eventBus *event.Bus) *EventRecorder {
+func NewEventRecorder(db db.DB, events event.Source) *EventRecorder {
 	r := &EventRecorder{
 		db: db,
 	}
-	eventBus.Notify(r,
-		feeds.FeedSubscribed{},
-		feeds.FeedRefreshed{},
-		feeds.FeedOptionsChanged{},
-		feeds.FeedUnsubscribed{},
-		tweets.TweetCanceled{},
-		tweets.TweetUncanceled{},
-		tweets.TweetEdited{},
-		tweets.TweetPosted{},
-		billing.SubscriptionCreated{},
-		billing.SubscriptionRenewed{},
-		billing.SubscriptionCanceled{},
-		billing.SubscriptionReactivated{},
-		billing.SubscriptionExpired{},
-	)
+	events.Notify(r)
 	return r
 }
 

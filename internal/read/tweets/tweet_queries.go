@@ -9,11 +9,9 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/tweets/queries"
-	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/pkg/htmltweets"
 )
 
@@ -37,20 +35,11 @@ type tweetQueries struct {
 	loader *dataloader.Loader
 }
 
-// NewTweetQueries returns queries targeting a given database and event bus.
-// The event bus is used to invalidate cached data when the write model makes changes.
-func NewTweetQueries(db db.DB, eventBus *event.Bus) TweetQueries {
-	q := &tweetQueries{
+func NewTweetQueries(db db.DB) TweetQueries {
+	return &tweetQueries{
 		db:     db,
 		loader: newTweetLoader(db),
 	}
-	eventBus.Notify(q,
-		tweets.TweetCanceled{},
-		tweets.TweetUncanceled{},
-		tweets.TweetEdited{},
-		tweets.TweetsImported{},
-	)
-	return q
 }
 
 func newTweetLoader(db db.DB) *dataloader.Loader {
@@ -135,27 +124,4 @@ func (q *tweetQueries) GeneratePreviews(_ context.Context, p PreviewPost) ([]*Pr
 	}
 
 	return ts, nil
-}
-
-func (q *tweetQueries) HandleEvent(ctx context.Context, evt interface{}) {
-	switch evt := evt.(type) {
-
-	case tweets.TweetCanceled:
-		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetId))
-
-	case tweets.TweetUncanceled:
-		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetId))
-
-	case tweets.TweetEdited:
-		q.loader.Clear(ctx, dataloader.StringKey(evt.TweetId))
-
-	case tweets.TweetsImported:
-		for _, id := range evt.CreatedTweetIds {
-			q.loader.Clear(ctx, dataloader.StringKey(id))
-		}
-		for _, id := range evt.UpdatedTweetIds {
-			q.loader.Clear(ctx, dataloader.StringKey(id))
-		}
-
-	}
 }

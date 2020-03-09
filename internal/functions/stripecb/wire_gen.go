@@ -33,7 +33,15 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	bus := event.NewBus()
+	publisherConfig, err := event.NewPublisherConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	pubsubClient, err := event.NewPubSubClient(gcpConfig)
+	if err != nil {
+		return nil, err
+	}
+	publisher := event.NewPublisher(publisherConfig, pubsubClient)
 	api := billing.NewClient(billingConfig)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
@@ -44,15 +52,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	subscriptionQueries := billing2.NewSubscriptionQueries(api, management)
-	publisherConfig, err := event.NewPublisherConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	pubsubClient, err := event.NewPubSubClient(gcpConfig)
-	if err != nil {
-		return nil, err
-	}
-	publisher := event.NewPublisher(publisherConfig, pubsubClient, bus)
-	handler := NewHandler(traceConfig, billingConfig, bus, subscriptionQueries, publisher)
+	handler := NewHandler(traceConfig, billingConfig, publisher, subscriptionQueries, publisher)
 	return handler, nil
 }

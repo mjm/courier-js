@@ -4,7 +4,7 @@ go_library(
     name = "go_default_library",
     srcs = [
         "command_handler.go",
-        "event.go",
+        "event_handler.go",
         "update_customer_command.go",
         "update_subscription_command.go",
         "user_repository.go",

@@ -2,40 +2,29 @@ package event
 
 import (
 	"context"
-	"reflect"
 	"sync"
+
+	"github.com/google/wire"
 )
+
+var SourceSet = wire.NewSet(wire.Bind(new(Source), new(*Bus)), NewBus)
 
 type Handler interface {
 	HandleEvent(ctx context.Context, evt interface{})
 }
 
 type Bus struct {
-	handlers    map[reflect.Type]map[Handler]struct{}
-	handlersAll map[Handler]struct{}
+	handlers map[Handler]struct{}
 }
 
 func NewBus() *Bus {
 	return &Bus{
-		handlers:    make(map[reflect.Type]map[Handler]struct{}),
-		handlersAll: make(map[Handler]struct{}),
+		handlers: make(map[Handler]struct{}),
 	}
 }
 
-func (b *Bus) Notify(h Handler, vs ...interface{}) {
-	for _, v := range vs {
-		t := reflect.TypeOf(v)
-		hMap, ok := b.handlers[t]
-		if !ok {
-			hMap = make(map[Handler]struct{})
-			b.handlers[t] = hMap
-		}
-		hMap[h] = struct{}{}
-	}
-}
-
-func (b *Bus) NotifyAll(h Handler) {
-	b.handlersAll[h] = struct{}{}
+func (b *Bus) Notify(h Handler) {
+	b.handlers[h] = struct{}{}
 }
 
 func (b *Bus) Fire(ctx context.Context, evt interface{}) {
@@ -51,11 +40,7 @@ func (b *Bus) Fire(ctx context.Context, evt interface{}) {
 
 	// Run all handlers for the event in parallel, but wait for them to complete so they
 	// can't outlive the request.
-	hs := b.handlers[reflect.TypeOf(evt)]
-	for h := range hs {
-		handle(h)
-	}
-	for h := range b.handlersAll {
+	for h := range b.handlers {
 		handle(h)
 	}
 

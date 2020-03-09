@@ -8,7 +8,6 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/feeds/queries"
@@ -31,15 +30,11 @@ type postQueries struct {
 	loader *dataloader.Loader
 }
 
-// NewPostQueries returns queries targeting a given database and event bus. The event bus
-// is used to invalidate cached data when the write model makes changes.
-func NewPostQueries(db db.DB, eventBus *event.Bus) PostQueries {
-	q := &postQueries{
+func NewPostQueries(db db.DB) PostQueries {
+	return &postQueries{
 		db:     db,
 		loader: newPostLoader(db),
 	}
-	// eventBus.Notify(q, feeds.FeedRefreshed{})
-	return q
 }
 
 func newPostLoader(db db.DB) *dataloader.Loader {

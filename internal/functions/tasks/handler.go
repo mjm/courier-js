@@ -10,7 +10,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 
-	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace"
@@ -23,7 +22,7 @@ type Handler struct {
 	commandBus *write.CommandBus
 }
 
-func NewHandler(traceCfg trace.Config, commandBus *write.CommandBus, _ *event.Publisher, _ *writetweets.CommandHandler, _ *writefeeds.CommandHandler) *Handler {
+func NewHandler(traceCfg trace.Config, commandBus *write.CommandBus, _ *writetweets.CommandHandler, _ *writefeeds.CommandHandler) *Handler {
 	trace.Init(traceCfg)
 
 	return &Handler{

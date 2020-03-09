@@ -50,7 +50,7 @@ func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) er
 		return err
 	}
 
-	h.eventBus.Fire(ctx, tweets.TweetEdited{
+	h.events.Fire(ctx, tweets.TweetEdited{
 		UserId:  cmd.UserID,
 		TweetId: cmd.TweetID.String(),
 	})

@@ -19,16 +19,16 @@ import (
 
 type Handler struct {
 	webhookSecret string
-	eventBus      *event.Bus
+	events        event.Sink
 	subQueries    billing.SubscriptionQueries
 }
 
-func NewHandler(traceCfg trace.Config, stripeCfg billing2.Config, eventBus *event.Bus, subQueries billing.SubscriptionQueries, _ *event.Publisher) *Handler {
+func NewHandler(traceCfg trace.Config, stripeCfg billing2.Config, events event.Sink, subQueries billing.SubscriptionQueries, _ *event.Publisher) *Handler {
 	trace.Init(traceCfg)
 
 	return &Handler{
 		webhookSecret: stripeCfg.WebhookSecret,
-		eventBus:      eventBus,
+		events:        events,
 		subQueries:    subQueries,
 	}
 }
@@ -137,6 +137,6 @@ func (h *Handler) fireSubscriptionEvent(ctx context.Context, evt *stripe.Event, 
 
 	e := f(subID, userID)
 	trace.AddField(ctx, "stripe.emitted_event_type", fmt.Sprintf("%T", e))
-	h.eventBus.Fire(ctx, e)
+	h.events.Fire(ctx, e)
 	return nil
 }

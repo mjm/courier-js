@@ -8,10 +8,8 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/read/feeds/queries"
-	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 var (
@@ -32,15 +30,11 @@ type feedQueries struct {
 	loader *dataloader.Loader
 }
 
-// NewFeedQueries returns queries targeting a given database and event bus. The event bus
-// is used to invalidate cached data when the write model makes changes.
-func NewFeedQueries(db db.DB, eventBus *event.Bus) FeedQueries {
-	q := &feedQueries{
+func NewFeedQueries(db db.DB) FeedQueries {
+	return &feedQueries{
 		db:     db,
 		loader: newFeedLoader(db),
 	}
-	eventBus.Notify(q, feeds.FeedRefreshed{})
-	return q
 }
 
 func newFeedLoader(db db.DB) *dataloader.Loader {
@@ -78,13 +72,4 @@ func (q *feedQueries) ByHomePageURL(ctx context.Context, url string) ([]*Feed, e
 	}
 
 	return feeds, nil
-}
-
-func (q *feedQueries) HandleEvent(ctx context.Context, evt interface{}) {
-	switch evt := evt.(type) {
-
-	case feeds.FeedRefreshed:
-		q.loader.Clear(ctx, dataloader.StringKey(evt.FeedId))
-
-	}
 }

@@ -8,6 +8,8 @@ go_library(
         "publisher.go",
         "pubsub.go",
         "pusher.go",
+        "sink.go",
+        "source.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/event",
     visibility = ["//:__subpackages__"],

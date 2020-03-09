@@ -35,6 +35,7 @@ func (suite *feedsSuite) SetupSuite() {
 	suite.commandBus = write.NewCommandBus()
 	suite.eventBus = event.NewBus()
 	suite.eventCollector = &event.Collector{}
+	suite.eventBus.Notify(suite.eventCollector)
 	suite.feedRepo = NewFeedRepository(suite.db)
 	suite.subRepo = NewSubscriptionRepository(suite.db)
 	suite.postRepo = NewPostRepository(suite.db)
@@ -44,6 +45,7 @@ func (suite *feedsSuite) SetupSuite() {
 
 func (suite *feedsSuite) SetupTest() {
 	suite.eventCollector.Reset()
+
 	cleaner.Acquire("feeds", "feed_subscriptions", "posts")
 	_, err := suite.db.ExecContext(context.Background(), queries.FixturesExample)
 	suite.NoError(err)
@@ -51,10 +53,6 @@ func (suite *feedsSuite) SetupTest() {
 
 func (suite *feedsSuite) TearDownTest() {
 	cleaner.Clean("feeds", "feed_subscriptions", "posts")
-}
-
-func (suite *feedsSuite) collectEvents(types ...interface{}) {
-	suite.eventBus.Notify(suite.eventCollector, types...)
 }
 
 func TestFeedsSuite(t *testing.T) {

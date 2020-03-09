@@ -18,7 +18,6 @@ go_library(
     deps = [
         "//internal/auth:go_default_library",
         "//internal/db:go_default_library",
-        "//internal/event:go_default_library",
         "//internal/loader:go_default_library",
         "//internal/pager:go_default_library",
         "//internal/read/feeds/queries:go_default_library",

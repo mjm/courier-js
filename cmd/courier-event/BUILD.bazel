@@ -6,7 +6,9 @@ go_library(
     importpath = "github.com/mjm/courier-js/cmd/courier-event",
     visibility = ["//visibility:private"],
     deps = [
+        "//internal/config:go_default_library",
         "//internal/event:go_default_library",
+        "//internal/secret:go_default_library",
         "//internal/shared/feeds:go_default_library",
         "@com_github_honeycombio_libhoney_go//:go_default_library",
         "@com_github_honeycombio_libhoney_go//transmission:go_default_library",

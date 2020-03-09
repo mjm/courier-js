@@ -48,11 +48,10 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	if err != nil {
 		return nil, err
 	}
-	bus := event.NewBus()
-	feedQueries := feeds.NewFeedQueries(dbDB, bus)
-	subscriptionQueries := feeds.NewSubscriptionQueries(dbDB, bus)
-	postQueries := feeds.NewPostQueries(dbDB, bus)
-	tweetQueries := tweets.NewTweetQueries(dbDB, bus)
+	feedQueries := feeds.NewFeedQueries(dbDB)
+	subscriptionQueries := feeds.NewSubscriptionQueries(dbDB)
+	postQueries := feeds.NewPostQueries(dbDB)
+	tweetQueries := tweets.NewTweetQueries(dbDB)
 	eventQueries := user.NewEventQueries(dbDB)
 	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
@@ -87,10 +86,19 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	if err != nil {
 		return nil, err
 	}
+	publisherConfig, err := event.NewPublisherConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	pubsubClient, err := event.NewPubSubClient(gcpConfig)
+	if err != nil {
+		return nil, err
+	}
+	publisher := event.NewPublisher(publisherConfig, pubsubClient)
 	feedRepository := feeds2.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
 	postRepository := feeds2.NewPostRepository(dbDB)
-	commandHandler := feeds2.NewCommandHandler(commandBus, bus, feedRepository, subscriptionRepository, postRepository)
+	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, feedRepository, subscriptionRepository, postRepository)
 	tweetRepository := tweets2.NewTweetRepository(dbDB)
 	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
 	tweetsPostRepository := tweets2.NewPostRepository(dbDB)
@@ -104,12 +112,12 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		return nil, err
 	}
 	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig, api)
-	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, bus, tasksTasks, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository, userRepository)
+	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository, userRepository)
 	customerRepository := billing3.NewCustomerRepository(api)
 	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
-	billingCommandHandler := billing3.NewCommandHandler(commandBus, bus, billingConfig, customerRepository, billingSubscriptionRepository)
+	billingCommandHandler := billing3.NewCommandHandler(commandBus, publisher, billingConfig, customerRepository, billingSubscriptionRepository)
 	userUserRepository := user2.NewUserRepository(management)
-	userCommandHandler := user2.NewCommandHandler(commandBus, bus, userUserRepository)
+	userCommandHandler := user2.NewCommandHandler(commandBus, publisher, userUserRepository)
 	root := resolvers.New(queries, commandBus, tasksTasks, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
@@ -117,15 +125,6 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	}
 	jwksClient := auth.NewJWKSClient(authConfig)
 	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
-	publisherConfig, err := event.NewPublisherConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	pubsubClient, err := event.NewPubSubClient(gcpConfig)
-	if err != nil {
-		return nil, err
-	}
-	publisher := event.NewPublisher(publisherConfig, pubsubClient, bus)
 	handler := NewHandler(traceConfig, schema, authenticator, publisher)
 	return handler, nil
 }

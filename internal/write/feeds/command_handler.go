@@ -21,7 +21,7 @@ var DefaultSet = wire.NewSet(
 // CommandHandler processes feed-related commands and updates the data store appropriately.
 type CommandHandler struct {
 	bus      *write.CommandBus
-	eventBus *event.Bus
+	events   event.Sink
 	feedRepo *FeedRepository
 	subRepo  *SubscriptionRepository
 	postRepo *PostRepository
@@ -30,13 +30,13 @@ type CommandHandler struct {
 // NewCommandHandler creates a new command handler for feed commands.
 func NewCommandHandler(
 	bus *write.CommandBus,
-	eventBus *event.Bus,
+	events event.Sink,
 	feedRepo *FeedRepository,
 	subRepo *SubscriptionRepository,
 	postRepo *PostRepository) *CommandHandler {
 	h := &CommandHandler{
 		bus:      bus,
-		eventBus: eventBus,
+		events:   events,
 		feedRepo: feedRepo,
 		subRepo:  subRepo,
 		postRepo: postRepo,

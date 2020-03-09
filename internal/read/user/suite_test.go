@@ -28,16 +28,13 @@ func (suite *userSuite) SetupSuite() {
 func (suite *userSuite) SetupTest() {
 	suite.eventBus = event.NewBus()
 	suite.eventCollector = &event.Collector{}
+	suite.eventBus.Notify(suite.eventCollector)
 
 	cleaner.Acquire("events")
 }
 
 func (suite *userSuite) TearDownTest() {
 	cleaner.Clean("events")
-}
-
-func (suite *userSuite) collectEvents(types ...interface{}) {
-	suite.eventBus.Notify(suite.eventCollector, types...)
 }
 
 func TestUserSuite(t *testing.T) {

@@ -38,7 +38,7 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 	}
 
 	trace.FeedSubscriptionID(ctx, subID)
-	h.eventBus.Fire(ctx, feeds.FeedSubscribed{
+	h.events.Fire(ctx, feeds.FeedSubscribed{
 		UserId:             cmd.UserID,
 		FeedId:             feedID.String(),
 		FeedSubscriptionId: subID.String(),

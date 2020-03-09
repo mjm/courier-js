@@ -39,6 +39,7 @@ func (suite *tweetsSuite) SetupSuite() {
 	suite.commandBus = write.NewCommandBus()
 	suite.eventBus = event.NewBus()
 	suite.eventCollector = &event.Collector{}
+	suite.eventBus.Notify(suite.eventCollector)
 
 	suite.subRepo = NewFeedSubscriptionRepository(suite.db)
 	suite.postRepo = NewPostRepository(suite.db)
@@ -60,10 +61,6 @@ func (suite *tweetsSuite) SetupTest() {
 
 func (suite *tweetsSuite) TearDownTest() {
 	cleaner.Clean("feeds", "feed_subscriptions", "posts", "tweets")
-}
-
-func (suite *tweetsSuite) collectEvents(types ...interface{}) {
-	suite.eventBus.Notify(suite.eventCollector, types...)
 }
 
 func TestTweetsSuite(t *testing.T) {

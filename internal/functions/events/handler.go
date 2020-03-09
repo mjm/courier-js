@@ -15,13 +15,23 @@ import (
 	"github.com/mjm/courier-js/internal/notifications"
 	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/write/tweets"
+	user2 "github.com/mjm/courier-js/internal/write/user"
 )
 
 type Handler struct {
 	bus *event.Bus
 }
 
-func NewHandler(traceCfg trace.Config, bus *event.Bus, _ *user.EventRecorder, _ *Pusher, _ *notifications.Notifier) *Handler {
+func NewHandler(
+	traceCfg trace.Config,
+	bus *event.Bus,
+	_ *user.EventRecorder,
+	_ *Pusher,
+	_ *notifications.Notifier,
+	_ *tweets.EventHandler,
+	_ *user2.EventHandler,
+) *Handler {
 	trace.Init(traceCfg)
 
 	return &Handler{bus: bus}

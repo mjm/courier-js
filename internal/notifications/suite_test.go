@@ -32,7 +32,7 @@ func (suite *notificationsSuite) SetupSuite() {
 
 	suite.eventBus = event.NewBus()
 	suite.notifications = &fakePushNotifications{}
-	suite.tweets = tweets2.NewTweetQueries(suite.db, suite.eventBus)
+	suite.tweets = tweets2.NewTweetQueries(suite.db)
 	suite.notifier = NewNotifier(suite.eventBus, suite.notifications, suite.tweets)
 }
 

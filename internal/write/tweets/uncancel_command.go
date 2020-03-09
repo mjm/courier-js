@@ -23,7 +23,7 @@ func (h *CommandHandler) handleUncancel(ctx context.Context, cmd UncancelCommand
 		return err
 	}
 
-	h.eventBus.Fire(ctx, tweets.TweetUncanceled{
+	h.events.Fire(ctx, tweets.TweetUncanceled{
 		UserId:  cmd.UserID,
 		TweetId: cmd.TweetID.String(),
 	})

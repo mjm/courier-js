@@ -47,7 +47,7 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 			ids = append(ids, p.ID.String())
 		}
 
-		h.eventBus.Fire(ctx, feeds.PostsImported{
+		h.events.Fire(ctx, feeds.PostsImported{
 			FeedId:  cmd.FeedID.String(),
 			PostIds: ids,
 		})

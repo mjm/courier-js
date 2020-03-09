@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "cancel_command.go",
         "command_handler.go",
+        "event_handler.go",
         "external_tweet_repository.go",
         "feed_subscription.go",
         "feed_subscription_repository.go",

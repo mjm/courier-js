@@ -25,7 +25,7 @@ func (h *CommandHandler) handleUpdateOptions(ctx context.Context, cmd UpdateOpti
 		return err
 	}
 
-	h.eventBus.Fire(ctx, feeds.FeedOptionsChanged{
+	h.events.Fire(ctx, feeds.FeedOptionsChanged{
 		FeedSubscriptionId: cmd.SubscriptionID.String(),
 		UserId:             cmd.UserID,
 		Autopost:           cmd.Autopost,

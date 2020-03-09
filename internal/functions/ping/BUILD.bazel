@@ -11,7 +11,6 @@ go_library(
     deps = [
         "//internal/config:go_default_library",
         "//internal/db:go_default_library",
-        "//internal/event:go_default_library",
         "//internal/functions:go_default_library",
         "//internal/read/feeds:go_default_library",
         "//internal/secret:go_default_library",

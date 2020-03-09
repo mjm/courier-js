@@ -45,7 +45,7 @@ func (h *CommandHandler) handleCreate(ctx context.Context, cmd CreateCommand) (F
 		feedID = f.ID
 	}
 
-	h.eventBus.Fire(ctx, feeds.FeedCreated{
+	h.events.Fire(ctx, feeds.FeedCreated{
 		UserId: cmd.UserID,
 		FeedId: feedID.String(),
 		Url:    u.String(),
