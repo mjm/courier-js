@@ -41,7 +41,11 @@ func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
 	trace.AddField(ctx, "event.name", eventName)
 
 	// for now, only send events when a user ID matches
-	userID := reflect.ValueOf(evt).FieldByName("UserId").String()
+	userIDField := reflect.ValueOf(evt).FieldByName("UserId")
+	if userIDField.Kind() == reflect.Invalid {
+		return
+	}
+	userID := userIDField.String()
 	if userID == "" {
 		return
 	}
