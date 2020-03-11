@@ -7,6 +7,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/honeycombio/libhoney-go"
+	"github.com/honeycombio/opentelemetry-exporter-go/honeycomb"
+	"go.opentelemetry.io/otel/api/global"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
 type contextKey struct{}
@@ -28,7 +31,28 @@ type traceContext struct {
 type Fields map[string]interface{}
 
 // Init initializes tracing support so it is correctly configured.
-func Init(cfg Config) {
+func Init(cfg Config) error {
+	exporter, err := honeycomb.NewExporter(
+		honeycomb.Config{
+			APIKey: cfg.WriteKey,
+		},
+		honeycomb.TargetingDataset(cfg.Dataset),
+		honeycomb.WithField("env", os.Getenv("APP_ENV")))
+	if err != nil {
+		return err
+	}
+
+	tp, err := sdktrace.NewProvider(
+		sdktrace.WithConfig(sdktrace.Config{
+			DefaultSampler: sdktrace.AlwaysSample(),
+		}),
+		sdktrace.WithSyncer(exporter))
+	if err != nil {
+		return err
+	}
+
+	global.SetTraceProvider(tp)
+
 	var logger libhoney.Logger
 	if os.Getenv("APP_ENV") == "dev" {
 		logger = &libhoney.DefaultLogger{}
@@ -40,6 +64,7 @@ func Init(cfg Config) {
 	})
 
 	libhoney.AddField("env", os.Getenv("APP_ENV"))
+	return nil
 }
 
 func SetServiceName(svcname string) {

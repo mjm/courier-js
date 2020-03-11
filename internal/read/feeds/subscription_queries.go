@@ -42,7 +42,7 @@ func NewSubscriptionQueries(db db.DB) SubscriptionQueries {
 }
 
 func newSubscriptionLoader(db db.DB) *dataloader.Loader {
-	return loader.New("Feed Subscription Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	return loader.New("FeedSubscriptionLoader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		userID, err := auth.GetUser(ctx).ID()
 		if err != nil {
 			return nil

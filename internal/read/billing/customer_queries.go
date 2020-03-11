@@ -28,7 +28,7 @@ func NewCustomerQueries(sc *client.API) CustomerQueries {
 }
 
 func newCustomerLoader(sc *client.API) *dataloader.Loader {
-	return loader.New("Customer Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	return loader.New("CustomerLoader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		results := make([]*dataloader.Result, 0, len(keys))
 		for _, key := range keys {
 			customer, err := loadCustomer(ctx, sc, key.String())

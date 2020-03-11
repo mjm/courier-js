@@ -38,7 +38,7 @@ func NewFeedQueries(db db.DB) FeedQueries {
 }
 
 func newFeedLoader(db db.DB) *dataloader.Loader {
-	return loader.New("Feed Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	return loader.New("FeedLoader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		rows, err := db.QueryxContext(ctx, queries.FeedsLoad, loader.StringArray(keys))
 		if err != nil {
 			panic(err)

@@ -43,7 +43,7 @@ func NewTweetQueries(db db.DB) TweetQueries {
 }
 
 func newTweetLoader(db db.DB) *dataloader.Loader {
-	return loader.New("Tweet Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	return loader.New("TweetLoader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		userID, err := auth.GetUser(ctx).ID()
 		if err != nil {
 			return nil

@@ -36,7 +36,7 @@ func NewSubscriptionQueries(sc *client.API, m *management.Management) Subscripti
 }
 
 func newSubscriptionLoader(sc *client.API) *dataloader.Loader {
-	return loader.New("Subscription Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	return loader.New("SubscriptionLoader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		results := make([]*dataloader.Result, 0, len(keys))
 		for _, key := range keys {
 			subscription, err := loadSubscription(ctx, sc, key.String())

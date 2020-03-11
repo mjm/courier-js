@@ -38,7 +38,7 @@ func NewPostQueries(db db.DB) PostQueries {
 }
 
 func newPostLoader(db db.DB) *dataloader.Loader {
-	return loader.New("Post Loader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	return loader.New("PostLoader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		rows, err := db.QueryxContext(ctx, queries.PostsLoad, loader.StringArray(keys))
 		if err != nil {
 			panic(err)

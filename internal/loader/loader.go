@@ -8,15 +8,13 @@ import (
 	"github.com/graph-gophers/dataloader"
 	"github.com/jmoiron/sqlx"
 	"github.com/lib/pq"
-
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 // New creates a new loader that is set up correctly for tracing.
 func New(label string, batchLoadFn dataloader.BatchFunc) *dataloader.Loader {
 	return dataloader.NewBatchedLoader(
 		batchLoadFn,
-		dataloader.WithTracer(&trace.DataloaderTracer{
+		dataloader.WithTracer(&DataloaderTracer{
 			Label: label,
 		}),
 		dataloader.WithCache(&contextCache{prefix: uuid.New().String()}),
