@@ -3,7 +3,6 @@ package loader
 import (
 	"database/sql"
 	"database/sql/driver"
-	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/graph-gophers/dataloader"
@@ -54,37 +53,6 @@ func Gather(keys dataloader.Keys, rows *sqlx.Rows, fn GatherFunc) []*dataloader.
 	}
 
 	return results
-}
-
-// IntArray transforms an array of keys into an integer array that PostgreSQL will accept.
-func IntArray(keys dataloader.Keys) interface {
-	driver.Valuer
-	sql.Scanner
-} {
-	vals := make([]int64, 0, len(keys))
-	for _, key := range keys {
-		v, err := strconv.ParseInt(key.String(), 10, 64)
-		if err != nil {
-			panic(err)
-		}
-		vals = append(vals, v)
-	}
-	return (*pq.Int64Array)(&vals)
-}
-
-// IntKey allows passing an integer ID as a dataloader key.
-type IntKey int
-
-var _ dataloader.Key = IntKey(0)
-
-// Raw implements dataloader.Key
-func (i IntKey) Raw() interface{} {
-	return i
-}
-
-// String implements dataloader.Key
-func (i IntKey) String() string {
-	return strconv.Itoa(int(i))
 }
 
 // StringArray transforms an array of keys into a string array that PostgreSQL will accept.
