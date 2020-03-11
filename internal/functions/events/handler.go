@@ -37,19 +37,26 @@ func NewHandler(
 	return &Handler{bus: bus}
 }
 
-type PubSubMessage struct {
-	Message struct {
-		Data []byte `json:"data,omitempty"`
-		ID   string `json:"id"`
-	}
-	Subscription string `json:"subscription"`
+type PubSubPayload struct {
+	Message      Message `json:"message"`
+	Subscription string  `json:"subscription"`
+}
+
+type Message struct {
+	Data       []byte            `json:"data,omitempty"`
+	Attributes map[string]string `json:"attributes,omitempty"`
+	ID         string            `json:"id"`
 }
 
 func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
-	var message PubSubMessage
+	var message PubSubPayload
 	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 		return err
 	}
+
+	traceID := message.Message.Attributes["trace_id"]
+	parentID := message.Message.Attributes["span_id"]
+	trace.SetParent(ctx, traceID, parentID)
 
 	var a any.Any
 	if err := proto.Unmarshal(message.Message.Data, &a); err != nil {

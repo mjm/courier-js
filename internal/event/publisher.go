@@ -69,6 +69,10 @@ func (p *Publisher) Fire(ctx context.Context, evt interface{}) {
 
 	msg := &pubsub.Message{
 		Data: data,
+		Attributes: map[string]string{
+			"trace_id": trace.GetTraceID(ctx),
+			"span_id":  trace.GetSpanID(ctx),
+		},
 	}
 	res := p.topic.Publish(ctx, msg)
 	id, err := res.Get(ctx)

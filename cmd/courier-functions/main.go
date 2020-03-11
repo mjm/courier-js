@@ -72,13 +72,11 @@ func pollForEvents() {
 	err = sub.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
 		log.Printf("got pubsub message")
 
-		sentMsg := events.PubSubMessage{
-			Message: struct {
-				Data []byte `json:"data,omitempty"`
-				ID   string `json:"id"`
-			}{
-				Data: msg.Data,
-				ID:   msg.ID,
+		sentMsg := events.PubSubPayload{
+			Message: events.Message{
+				Data:       msg.Data,
+				Attributes: msg.Attributes,
+				ID:         msg.ID,
 			},
 			Subscription: sub.ID(),
 		}
