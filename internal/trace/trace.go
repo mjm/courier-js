@@ -138,6 +138,38 @@ func Error(ctx context.Context, err error) {
 	AddField(ctx, "error", err.Error())
 }
 
+func GetTraceID(ctx context.Context) string {
+	trace := getTraceContext(ctx)
+	if trace == nil {
+		return ""
+	}
+
+	return trace.traceID
+}
+
+func GetSpanID(ctx context.Context) string {
+	trace := getTraceContext(ctx)
+	if trace == nil {
+		return ""
+	}
+
+	return trace.spanID
+}
+
+func SetParent(ctx context.Context, traceID string, parentID string) {
+	if traceID == "" || parentID == "" {
+		return
+	}
+
+	trace := getTraceContext(ctx)
+	if trace == nil {
+		return
+	}
+
+	trace.traceID = traceID
+	trace.parentID = parentID
+}
+
 func getTraceContext(ctx context.Context) *traceContext {
 	v := ctx.Value(&traceContextKey)
 	if v == nil {

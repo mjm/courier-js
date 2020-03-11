@@ -31,6 +31,10 @@ func NewHandler(traceCfg trace.Config, commandBus *write.CommandBus, _ *writetwe
 }
 
 func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	traceID := r.Header.Get("X-Trace-Id")
+	parentID := r.Header.Get("X-Trace-Span-Id")
+	trace.SetParent(ctx, traceID, parentID)
+
 	taskName := r.Header.Get("X-CloudTasks-TaskName")
 	trace.AddField(ctx, "task.name", taskName)
 

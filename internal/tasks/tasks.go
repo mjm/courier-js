@@ -122,6 +122,10 @@ func (t *Tasks) newTaskRequest(ctx context.Context, task proto.Message) (*tasksp
 		Body:       data,
 		HttpMethod: taskspb.HttpMethod_POST,
 		Url:        t.url,
+		Headers: map[string]string{
+			"X-Trace-Id":      trace.GetTraceID(ctx),
+			"X-Trace-Span-Id": trace.GetSpanID(ctx),
+		},
 	}
 
 	if t.serviceAccount != "" {
