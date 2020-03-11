@@ -52,7 +52,9 @@ func (a *Authenticator) Authenticate(parentCtx context.Context, r *http.Request)
 
 	trace.AddField(ctx, "token_present", true)
 
-	var claims Claims
+	claims := Claims{
+		Expectations: a.Config.ClaimsExpectations(),
+	}
 	token, err := jwt.ParseWithClaims(tokenStr, &claims, func(token *jwt.Token) (interface{}, error) {
 		return a.jwks.SigningKey(ctx, token)
 	})
