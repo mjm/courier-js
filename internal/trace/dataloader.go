@@ -4,20 +4,26 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/graph-gophers/dataloader"
 )
 
 type DataloaderTracer struct {
 	Label string
+
+	loadContexts []context.Context
+	lock         sync.Mutex
 }
 
-var _ dataloader.Tracer = DataloaderTracer{}
+var _ dataloader.Tracer = (*DataloaderTracer)(nil)
 
 // TraceLoad will trace the calls to Load
-func (t DataloaderTracer) TraceLoad(ctx context.Context, key dataloader.Key) (context.Context, dataloader.TraceLoadFinishFunc) {
+func (t *DataloaderTracer) TraceLoad(ctx context.Context, key dataloader.Key) (context.Context, dataloader.TraceLoadFinishFunc) {
 	ctx = Start(ctx, fmt.Sprintf("%s: Load one request", t.Label))
 	AddField(ctx, "loader.key", key.String())
+
+	t.addLoadContext(ctx)
 
 	return ctx, func(thunk dataloader.Thunk) {
 		_, err := thunk()
@@ -29,9 +35,11 @@ func (t DataloaderTracer) TraceLoad(ctx context.Context, key dataloader.Key) (co
 }
 
 // TraceLoadMany will trace the calls to LoadMany
-func (t DataloaderTracer) TraceLoadMany(ctx context.Context, keys dataloader.Keys) (context.Context, dataloader.TraceLoadManyFinishFunc) {
+func (t *DataloaderTracer) TraceLoadMany(ctx context.Context, keys dataloader.Keys) (context.Context, dataloader.TraceLoadManyFinishFunc) {
 	ctx = Start(ctx, fmt.Sprintf("%s: Load many request", t.Label))
 	AddField(ctx, "loader.key_count", len(keys))
+
+	t.addLoadContext(ctx)
 
 	return ctx, func(thunk dataloader.ThunkMany) {
 		_, errs := thunk()
@@ -63,9 +71,11 @@ func (t DataloaderTracer) TraceLoadMany(ctx context.Context, keys dataloader.Key
 }
 
 // TraceBatch will trace data loader batches
-func (t DataloaderTracer) TraceBatch(ctx context.Context, keys dataloader.Keys) (context.Context, dataloader.TraceBatchFinishFunc) {
+func (t *DataloaderTracer) TraceBatch(ctx context.Context, keys dataloader.Keys) (context.Context, dataloader.TraceBatchFinishFunc) {
 	ctx = Start(ctx, fmt.Sprintf("%s: Batch load", t.Label))
 	AddField(ctx, "loader.key_count", len(keys))
+
+	t.createLinks(ctx)
 
 	return ctx, func(results []*dataloader.Result) {
 		var successCount, errCount int
@@ -94,4 +104,21 @@ func (t DataloaderTracer) TraceBatch(ctx context.Context, keys dataloader.Keys) 
 
 		Finish(ctx)
 	}
+}
+
+func (t *DataloaderTracer) addLoadContext(ctx context.Context) {
+	t.lock.Lock()
+	defer t.lock.Unlock()
+
+	t.loadContexts = append(t.loadContexts, ctx)
+}
+
+func (t *DataloaderTracer) createLinks(ctx context.Context) {
+	t.lock.Lock()
+	defer t.lock.Unlock()
+
+	for _, loadCtx := range t.loadContexts {
+		CreateLink(loadCtx, ctx)
+	}
+	t.loadContexts = nil
 }

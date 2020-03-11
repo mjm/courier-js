@@ -17,7 +17,7 @@ import (
 func New(label string, batchLoadFn dataloader.BatchFunc) *dataloader.Loader {
 	return dataloader.NewBatchedLoader(
 		batchLoadFn,
-		dataloader.WithTracer(trace.DataloaderTracer{
+		dataloader.WithTracer(&trace.DataloaderTracer{
 			Label: label,
 		}),
 		dataloader.WithCache(&contextCache{prefix: uuid.New().String()}),
