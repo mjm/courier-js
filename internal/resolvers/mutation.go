@@ -66,10 +66,9 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 		return
 	}
 
-	cmd := feeds.RefreshCommand{
+	cmd := feeds.QueueRefreshCommand{
 		UserID: userID,
 		FeedID: id,
-		Force:  false,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return

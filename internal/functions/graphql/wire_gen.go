@@ -98,7 +98,7 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	feedRepository := feeds2.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
 	postRepository := feeds2.NewPostRepository(dbDB)
-	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, feedRepository, subscriptionRepository, postRepository)
+	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository)
 	tweetRepository := tweets2.NewTweetRepository(dbDB)
 	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
 	tweetsPostRepository := tweets2.NewPostRepository(dbDB)

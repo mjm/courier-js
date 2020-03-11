@@ -89,7 +89,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	feedRepository := feeds.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
 	feedsPostRepository := feeds.NewPostRepository(dbDB)
-	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, feedRepository, subscriptionRepository, feedsPostRepository)
+	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, feedsPostRepository)
 	handler := NewHandler(traceConfig, commandBus, commandHandler, feedsCommandHandler)
 	return handler, nil
 }

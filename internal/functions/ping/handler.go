@@ -9,24 +9,24 @@ import (
 
 	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/read/feeds"
-	feeds2 "github.com/mjm/courier-js/internal/shared/feeds"
-	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/write"
+	writefeeds "github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/pkg/scraper"
 )
 
 type Handler struct {
-	rpc   *rpc.Server
-	feeds feeds.FeedQueries
-	tasks *tasks.Tasks
+	rpc        *rpc.Server
+	commandBus *write.CommandBus
+	feeds      feeds.FeedQueries
 }
 
-func NewHandler(traceCfg trace.Config, feedQueries feeds.FeedQueries, tasks *tasks.Tasks) *Handler {
+func NewHandler(traceCfg trace.Config, feedQueries feeds.FeedQueries, commandBus *write.CommandBus, _ *writefeeds.CommandHandler) *Handler {
 	trace.Init(traceCfg)
 
 	h := &Handler{
-		feeds: feedQueries,
-		tasks: tasks,
+		feeds:      feedQueries,
+		commandBus: commandBus,
 	}
 
 	rpcHandler := rpc.NewServer()
@@ -70,8 +70,8 @@ func (h *Handler) Ping(r *http.Request, args *struct {
 	trace.AddField(ctx, "feed.count", len(fs))
 
 	for _, feed := range fs {
-		if _, err := h.tasks.Enqueue(ctx, &feeds2.RefreshFeedTask{
-			FeedId: feed.ID.String(),
+		if _, err := h.commandBus.Run(ctx, writefeeds.QueueRefreshCommand{
+			FeedID: feed.ID,
 		}); err != nil {
 			trace.Error(ctx, err)
 			return err

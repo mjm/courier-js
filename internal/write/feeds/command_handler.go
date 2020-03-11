@@ -8,6 +8,7 @@ import (
 	"github.com/google/wire"
 
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 )
 
@@ -22,6 +23,7 @@ var DefaultSet = wire.NewSet(
 type CommandHandler struct {
 	bus      *write.CommandBus
 	events   event.Sink
+	tasks    *tasks.Tasks
 	feedRepo *FeedRepository
 	subRepo  *SubscriptionRepository
 	postRepo *PostRepository
@@ -31,12 +33,14 @@ type CommandHandler struct {
 func NewCommandHandler(
 	bus *write.CommandBus,
 	events event.Sink,
+	tasks *tasks.Tasks,
 	feedRepo *FeedRepository,
 	subRepo *SubscriptionRepository,
 	postRepo *PostRepository) *CommandHandler {
 	h := &CommandHandler{
 		bus:      bus,
 		events:   events,
+		tasks:    tasks,
 		feedRepo: feedRepo,
 		subRepo:  subRepo,
 		postRepo: postRepo,
@@ -44,6 +48,7 @@ func NewCommandHandler(
 	bus.Register(h,
 		CreateCommand{},
 		SubscribeCommand{},
+		QueueRefreshCommand{},
 		RefreshCommand{},
 		UpdateOptionsCommand{},
 		UnsubscribeCommand{},
@@ -62,6 +67,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 	case SubscribeCommand:
 		subID, err := h.handleSubscribe(ctx, cmd)
 		return subID, err
+
+	case QueueRefreshCommand:
+		return nil, h.handleQueueRefresh(ctx, cmd)
 
 	case RefreshCommand:
 		err := h.handleRefresh(ctx, cmd)
