@@ -7,9 +7,11 @@ import (
 
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
+	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/config"
-	"github.com/mjm/courier-js/internal/trace"
 
 	// ensure the postgres driver is present
 	_ "github.com/lib/pq"
@@ -31,6 +33,13 @@ type DB interface {
 	QueryRowxContext(context.Context, string, ...interface{}) *sqlx.Row
 }
 
+var tracer = global.TraceProvider().Tracer("courier.blog/internal/db")
+
+var (
+	queryKey    = key.New("sql.query")
+	rowCountKey = key.New("sql.row_count")
+)
+
 type tracingDB struct {
 	DB *sqlx.DB
 }
@@ -51,80 +60,63 @@ func NewConfig(l *config.Loader) (cfg Config, err error) {
 }
 
 func (db *tracingDB) SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
-	ctx = trace.Start(ctx, "SQL query")
-	defer trace.Finish(ctx)
-
-	trace.Add(ctx, trace.Fields{
-		"sql.query": query,
-	})
+	ctx, span := tracer.Start(ctx, "db.SelectContext",
+		trace.WithAttributes(queryKey.String(query)))
+	defer span.End()
 
 	if err := db.DB.SelectContext(ctx, dest, query, args...); err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return err
 	}
 
-	trace.Add(ctx, trace.Fields{
-		"sql.row_count": reflect.ValueOf(dest).Elem().Len(),
-	})
+	span.SetAttributes(rowCountKey.Int(reflect.ValueOf(dest).Elem().Len()))
 	return nil
 }
 
 func (db *tracingDB) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
-	ctx = trace.Start(ctx, "SQL query")
-	defer trace.Finish(ctx)
-
-	trace.Add(ctx, trace.Fields{
-		"sql.query": query,
-	})
+	ctx, span := tracer.Start(ctx, "db.ExecContext",
+		trace.WithAttributes(queryKey.String(query)))
+	defer span.End()
 
 	res, err := db.DB.ExecContext(ctx, query, args...)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 	}
 	return res, err
 }
 
 func (db *tracingDB) QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error) {
-	ctx = trace.Start(ctx, "SQL query")
-	defer trace.Finish(ctx)
-
-	trace.Add(ctx, trace.Fields{
-		"sql.query": query,
-	})
+	ctx, span := tracer.Start(ctx, "db.QueryxContext",
+		trace.WithAttributes(queryKey.String(query)))
+	defer span.End()
 
 	rows, err := db.DB.QueryxContext(ctx, query, args...)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 	}
 	return rows, err
 }
 
 func (db *tracingDB) QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row {
-	ctx = trace.Start(ctx, "SQL query")
-	defer trace.Finish(ctx)
-
-	trace.Add(ctx, trace.Fields{
-		"sql.query": query,
-	})
+	ctx, span := tracer.Start(ctx, "db.QueryRowxContext",
+		trace.WithAttributes(queryKey.String(query)))
+	defer span.End()
 
 	row := db.DB.QueryRowxContext(ctx, query, args...)
 	if row.Err() != nil {
-		trace.Error(ctx, row.Err())
+		span.RecordError(ctx, row.Err())
 	}
 	return row
 }
 
 func (db *tracingDB) NamedQueryContext(ctx context.Context, query string, arg interface{}) (*sqlx.Rows, error) {
-	ctx = trace.Start(ctx, "SQL query")
-	defer trace.Finish(ctx)
-
-	trace.Add(ctx, trace.Fields{
-		"sql.query": query,
-	})
+	ctx, span := tracer.Start(ctx, "db.NamedQueryContext",
+		trace.WithAttributes(queryKey.String(query)))
+	defer span.End()
 
 	rows, err := db.DB.NamedQueryContext(ctx, query, arg)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 	}
 	return rows, err
 }
