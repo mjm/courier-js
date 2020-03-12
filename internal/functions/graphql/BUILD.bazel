@@ -6,6 +6,7 @@ go_library(
         "graphql.go",
         "request.go",
         "schema.go",
+        "trace.go",
         "wire_gen.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/functions/graphql",
@@ -33,5 +34,10 @@ go_library(
         "//internal/write/user:go_default_library",
         "@com_github_mjm_graphql_go//:go_default_library",
         "@com_github_mjm_graphql_go//errors:go_default_library",
+        "@com_github_mjm_graphql_go//introspection:go_default_library",
+        "@com_github_mjm_graphql_go//trace:go_default_library",
+        "@io_opentelemetry_go_otel//api/global:go_default_library",
+        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/trace:go_default_library",
     ],
 )
