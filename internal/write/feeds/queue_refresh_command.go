@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
-	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
@@ -21,7 +20,7 @@ func (h *CommandHandler) handleQueueRefresh(ctx context.Context, cmd QueueRefres
 		UserId: cmd.UserID,
 		FeedId: cmd.FeedID.String(),
 	}
-	if _, err := h.tasks.Enqueue(ctx, task, tasks.Named(cmd.FeedID.String())); err != nil {
+	if _, err := h.tasks.Enqueue(ctx, task); err != nil {
 		return err
 	}
 

@@ -1,9 +1,21 @@
 package functions
 
 import (
+	"context"
+	"net/http"
+
 	"go.opentelemetry.io/otel/api/correlation"
+	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/propagation"
 	"go.opentelemetry.io/otel/api/trace"
+)
+
+var tracer = global.TraceProvider().Tracer("courier.blog/internal/functions")
+
+var (
+	httpMethodKey = key.New("http.method")
+	httpStatusKey = key.New("http.response.status")
 )
 
 var (
@@ -15,3 +27,7 @@ var (
 		propagation.WithExtractors(tcPropagator, ccPropagator),
 	)
 )
+
+type HTTPExtractor interface {
+	Extract(r *http.Request, propagators propagation.Propagators) (context.Context, error)
+}

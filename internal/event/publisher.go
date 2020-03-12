@@ -8,9 +8,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/wire"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/config"
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 var PublishingSet = wire.NewSet(wire.Bind(new(Sink), new(*Publisher)), NewPubSubClient, NewPublisher, NewPublisherConfig)
@@ -37,49 +37,50 @@ func NewPublisher(cfg PublisherConfig, client *pubsub.Client) *Publisher {
 }
 
 func (p *Publisher) Fire(ctx context.Context, evt interface{}) {
-	ctx = trace.Start(ctx, "Publish event")
-	defer trace.Finish(ctx)
-
-	trace.AddField(ctx, "event.type", reflect.TypeOf(evt).String())
+	ctx, span := tracer.Start(ctx, "Publisher.Fire",
+		trace.WithAttributes(typeKey(reflect.TypeOf(evt).String())))
+	defer span.End()
 
 	evtPtr := reflect.New(reflect.TypeOf(evt))
 	evtPtr.Elem().Set(reflect.ValueOf(evt))
 
 	evtMsg, ok := evtPtr.Interface().(proto.Message)
 	if !ok {
-		trace.AddField(ctx, "event.is_proto", false)
+		span.SetAttributes(isProtoKey(false))
 		return
 	}
 
-	trace.AddField(ctx, "event.is_proto", true)
+	span.SetAttributes(isProtoKey(true))
 
 	a, err := ptypes.MarshalAny(evtMsg)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return
 	}
 
 	data, err := proto.Marshal(a)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return
 	}
 
-	trace.AddField(ctx, "event.data_length", len(data))
+	span.SetAttributes(dataLenKey(len(data)))
+
+	sc := span.SpanContext()
 
 	msg := &pubsub.Message{
 		Data: data,
 		Attributes: map[string]string{
-			"trace_id": trace.GetTraceID(ctx),
-			"span_id":  trace.GetSpanID(ctx),
+			"trace_id": sc.TraceIDString(),
+			"span_id":  sc.SpanIDString(),
 		},
 	}
 	res := p.topic.Publish(ctx, msg)
 	id, err := res.Get(ctx)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return
 	}
 
-	trace.AddField(ctx, "event.published_id", id)
+	span.SetAttributes(publishedIDKey(id))
 }

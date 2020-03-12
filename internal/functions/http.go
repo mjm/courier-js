@@ -6,18 +6,9 @@ import (
 	"net/http"
 	"sync"
 
-	"go.opentelemetry.io/otel/api/correlation"
-	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/propagation"
 	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/plugin/httptrace"
-)
-
-var tracer = global.TraceProvider().Tracer("courier.blog/internal/functions")
-
-var (
-	httpMethodKey = key.New("http.method")
-	httpStatusKey = key.New("http.response.status")
 )
 
 func NewHTTP(svcname string, creator func() (HTTPHandler, error)) http.Handler {
@@ -43,16 +34,24 @@ type HTTPHandler interface {
 
 func wrapHTTP(h HTTPHandler, svcname string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		attrs, tags, spanCtx := httptrace.Extract(r.Context(), r)
-		r = r.WithContext(correlation.ContextWithMap(r.Context(), correlation.NewMap(correlation.MapUpdate{
-			MultiKV: tags,
-		})))
-
-		ctx, span := tracer.Start(trace.ContextWithRemoteSpanContext(r.Context(), spanCtx),
-			"HandleHTTP",
-			trace.WithAttributes(attrs...),
-			trace.WithAttributes(httpMethodKey.String(r.Method)))
+		var ctx context.Context
+		if extractor, ok := h.(HTTPExtractor); ok {
+			var err error
+			ctx, err = extractor.Extract(r, Propagators)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		} else {
+			ctx = propagation.ExtractHTTP(r.Context(), Propagators, r.Header)
+		}
+		ctx, span := tracer.Start(ctx, "HandleHTTP",
+			trace.WithAttributes(
+				httptrace.URLKey.String(r.URL.String()),
+				httpMethodKey.String(r.Method)))
 		defer span.End()
+
+		r = r.WithContext(ctx)
 
 		// TODO get the service name into all traces
 		// trace.Set(ctx, "service_name", svcname)
