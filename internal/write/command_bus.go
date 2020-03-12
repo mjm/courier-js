@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/mjm/courier-js/internal/trace"
+	"go.opentelemetry.io/otel/api/global"
 )
+
+var tracer = global.TraceProvider().Tracer("courier.blog/internal/write")
 
 // CommandHandler is a type that can handle executing one or more types of commands.
 type CommandHandler interface {
@@ -44,8 +46,8 @@ func (b *CommandBus) Register(h CommandHandler, vs ...interface{}) {
 // If no handler is registered for the type of the command given, the program will
 // panic.
 func (b *CommandBus) Run(ctx context.Context, cmd interface{}) (interface{}, error) {
-	ctx = trace.Start(ctx, fmt.Sprintf("Run command: %T", cmd))
-	defer trace.Finish(ctx)
+	ctx, span := tracer.Start(ctx, fmt.Sprintf("%T", cmd))
+	defer span.End()
 
 	t := reflect.TypeOf(cmd)
 	h, ok := b.handlers[t]
@@ -57,7 +59,7 @@ func (b *CommandBus) Run(ctx context.Context, cmd interface{}) (interface{}, err
 
 	res, err := h.HandleCommand(ctx, cmd)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 	}
 	return res, err
 }

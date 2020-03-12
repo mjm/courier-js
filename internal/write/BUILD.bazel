@@ -5,5 +5,5 @@ go_library(
     srcs = ["command_bus.go"],
     importpath = "github.com/mjm/courier-js/internal/write",
     visibility = ["//:__subpackages__"],
-    deps = ["//internal/trace:go_default_library"],
+    deps = ["@io_opentelemetry_go_otel//api/global:go_default_library"],
 )
