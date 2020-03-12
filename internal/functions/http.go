@@ -6,7 +6,18 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/mjm/courier-js/internal/trace"
+	"go.opentelemetry.io/otel/api/correlation"
+	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel/plugin/httptrace"
+)
+
+var tracer = global.TraceProvider().Tracer("courier.blog/internal/functions")
+
+var (
+	httpMethodKey = key.New("http.method")
+	httpStatusKey = key.New("http.response.status")
 )
 
 func NewHTTP(svcname string, creator func() (HTTPHandler, error)) http.Handler {
@@ -32,26 +43,29 @@ type HTTPHandler interface {
 
 func wrapHTTP(h HTTPHandler, svcname string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		defer trace.Flush()
+		attrs, tags, spanCtx := httptrace.Extract(r.Context(), r)
+		r = r.WithContext(correlation.ContextWithMap(r.Context(), correlation.NewMap(correlation.MapUpdate{
+			MultiKV: tags,
+		})))
 
-		ctx := trace.Start(r.Context(), "HTTP request")
-		defer trace.Finish(ctx)
+		ctx, span := tracer.Start(trace.ContextWithRemoteSpanContext(r.Context(), spanCtx),
+			"HandleHTTP",
+			trace.WithAttributes(attrs...),
+			trace.WithAttributes(httpMethodKey.String(r.Method)))
+		defer span.End()
 
-		trace.Set(ctx, "service_name", svcname)
-		trace.Add(ctx, trace.Fields{
-			"http.url":    r.URL.Path,
-			"http.method": r.Method,
-		})
+		// TODO get the service name into all traces
+		// trace.Set(ctx, "service_name", svcname)
 
 		if err := h.HandleHTTP(ctx, w, r); err != nil {
-			trace.Error(ctx, err)
+			span.RecordError(ctx, err)
 			var httpErr HTTPError
 			if errors.As(err, &httpErr) {
 				http.Error(w, httpErr.Error(), httpErr.statusCode)
-				trace.AddField(ctx, "http.response.status", httpErr.statusCode)
+				span.SetAttributes(httpStatusKey.Int(httpErr.statusCode))
 			} else {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
-				trace.AddField(ctx, "http.response.status", http.StatusInternalServerError)
+				span.SetAttributes(httpStatusKey.Int(http.StatusInternalServerError))
 			}
 			return
 		}
