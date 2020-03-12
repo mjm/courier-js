@@ -7,15 +7,24 @@ import (
 	"strings"
 
 	"github.com/google/wire"
+	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 	"gopkg.in/auth0.v3/management"
 	"gopkg.in/dgrijalva/jwt-go.v3"
-
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 var DefaultSet = wire.NewSet(NewAuthenticator, NewConfig, NewManagementClient, NewJWKSClient)
 
 type userContextKey struct{}
+
+var tracer = global.TraceProvider().Tracer("courier.blog/internal/auth")
+
+var (
+	authDomainKey    = key.New("auth_domain")
+	apiIdentifierKey = key.New("auth.api_identifier")
+	tokenPresentKey  = key.New("auth.token_present")
+)
 
 // Authenticator is responsible for populating a context with a User that can be used by
 // resolvers and other downstream logic.
@@ -39,18 +48,19 @@ func NewAuthenticator(cfg Config, m *management.Management, jwks *JWKSClient) *A
 // Requests that don't include a token will still get a user, but it will be anonymous.
 // APIs that require a valid user should check that with the user.
 func (a *Authenticator) Authenticate(parentCtx context.Context, r *http.Request) (context.Context, error) {
-	ctx := trace.Start(parentCtx, "Authenticate")
-	defer trace.Finish(ctx)
-
-	trace.AddField(ctx, "auth_domain", a.AuthDomain)
+	ctx, span := tracer.Start(parentCtx, "Authenticate",
+		trace.WithAttributes(
+			authDomainKey.String(a.AuthDomain),
+			apiIdentifierKey.String(a.APIIdentifier)))
+	defer span.End()
 
 	tokenStr := getTokenString(r)
 	if tokenStr == "" {
-		trace.AddField(ctx, "token_present", false)
+		span.SetAttributes(tokenPresentKey.Bool(false))
 		return context.WithValue(parentCtx, userContextKey{}, AnonymousUser{}), nil
 	}
 
-	trace.AddField(ctx, "token_present", true)
+	span.SetAttributes(tokenPresentKey.Bool(true))
 
 	claims := Claims{
 		Expectations: a.Config.ClaimsExpectations(),
@@ -60,7 +70,7 @@ func (a *Authenticator) Authenticate(parentCtx context.Context, r *http.Request)
 	})
 
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return parentCtx, fmt.Errorf("invalid token: %w", err)
 	}
 	return context.WithValue(parentCtx, userContextKey{}, &TokenUser{

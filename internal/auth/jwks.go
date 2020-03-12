@@ -8,9 +8,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"go.opentelemetry.io/otel/api/key"
 	"gopkg.in/dgrijalva/jwt-go.v3"
-
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 var (
@@ -20,6 +19,11 @@ var (
 	// ErrNoX509 is returned when the key that matches the token does not contain an "x5c"
 	// key with the public key.
 	ErrNoX509 = errors.New("no x.509 data in matched key")
+)
+
+var (
+	urlKey      = key.New("url")
+	keyCountKey = key.New("jwks.key_count")
 )
 
 // JWKSClient fetches signing keys in JSON Web Key Set format and finds a public key that
@@ -33,32 +37,32 @@ func NewJWKSClient(cfg Config) *JWKSClient {
 }
 
 func (c *JWKSClient) SigningKey(ctx context.Context, token *jwt.Token) (*rsa.PublicKey, error) {
-	ctx = trace.Start(ctx, "Get signing key")
-	defer trace.Finish(ctx)
+	ctx, span := tracer.Start(ctx, "JWKSClient.SigningKey")
+	defer span.End()
 
 	url := fmt.Sprintf("https://%s/.well-known/jwks.json", c.AuthDomain)
-	trace.AddField(ctx, "url", url)
+	span.SetAttributes(urlKey.String(url))
 
 	resp, err := http.Get(url)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	var keySet jsonWebKeySet
 	if err := json.NewDecoder(resp.Body).Decode(&keySet); err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
-	trace.AddField(ctx, "key_count", len(keySet.Keys))
+	span.SetAttributes(keyCountKey.Int(len(keySet.Keys)))
 
 	for _, key := range keySet.Keys {
 		if token.Header["kid"] == key.KID {
 			key, err := extractPublicKey(key)
 			if err != nil {
-				trace.Error(ctx, err)
+				span.RecordError(ctx, err)
 				return nil, err
 			}
 
@@ -66,7 +70,7 @@ func (c *JWKSClient) SigningKey(ctx context.Context, token *jwt.Token) (*rsa.Pub
 		}
 	}
 
-	trace.Error(ctx, ErrNoMatchingKid)
+	span.RecordError(ctx, ErrNoMatchingKid)
 	return nil, ErrNoMatchingKid
 }
 
