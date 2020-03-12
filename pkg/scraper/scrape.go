@@ -2,6 +2,7 @@ package scraper
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"mime"
 	"net/http"
@@ -9,39 +10,62 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/purell"
+	"go.opentelemetry.io/otel/api/trace"
+)
+
+var (
+	ErrBadStatus     = errors.New("unexpected response status")
+	ErrNoContentType = errors.New("no content type in response")
+	ErrInvalid       = errors.New("not a valid feed")
 )
 
 func Scrape(ctx context.Context, u *url.URL, cachingHeaders *CachingHeaders) (*Feed, error) {
+	ctx, span := tracer.Start(ctx, "scraper.Scrape",
+		trace.WithAttributes(urlKey(u.String())))
+	defer span.End()
+
 	r, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
 	if cachingHeaders != nil {
+		span.SetAttributes(
+			ifNoneMatchKey(cachingHeaders.Etag),
+			ifModifiedSinceKey(cachingHeaders.LastModified))
 		r.Header.Set("If-None-Match", cachingHeaders.Etag)
 		r.Header.Set("If-Modified-Since", cachingHeaders.LastModified)
 	}
 
 	res, err := http.DefaultClient.Do(r)
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
+
+	span.SetAttributes(statusKey(res.StatusCode))
 
 	if res.StatusCode == http.StatusNotModified {
 		return nil, nil
 	}
 
 	if res.StatusCode > 299 {
-		return nil, fmt.Errorf("unexpected response code %d", res.StatusCode)
+		err = fmt.Errorf("%w: %d", ErrBadStatus, res.StatusCode)
+		span.RecordError(ctx, err)
+		return nil, err
 	}
 
 	contentType := res.Header.Get("Content-Type")
+	span.SetAttributes(contentTypeKey(contentType))
 	if contentType == "" {
-		return nil, fmt.Errorf("no content type in response")
+		span.RecordError(ctx, err)
+		return nil, ErrNoContentType
 	}
 
 	contentType, _, err = mime.ParseMediaType(contentType)
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
@@ -56,16 +80,19 @@ func Scrape(ctx context.Context, u *url.URL, cachingHeaders *CachingHeaders) (*F
 	}
 
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
 	if f != nil {
 		f.CachingHeaders.Etag = res.Header.Get("Etag")
 		f.CachingHeaders.LastModified = res.Header.Get("Last-Modified")
+		span.SetAttributes(etagKey(f.CachingHeaders.Etag), lastModifiedKey(f.CachingHeaders.LastModified))
 		return f, nil
 	}
 
-	return nil, fmt.Errorf("not a valid feed")
+	span.RecordError(ctx, ErrInvalid)
+	return nil, ErrInvalid
 }
 
 func NormalizeURL(url string) string {

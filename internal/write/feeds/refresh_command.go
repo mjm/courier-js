@@ -45,7 +45,13 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 			LastModified: f.CachingHeaders.LastModified,
 		}
 	}
-	scraped, err := scrapeFeed(ctx, f.URL, headers)
+
+	u, err := url.Parse(f.URL)
+	if err != nil {
+		return err
+	}
+
+	scraped, err := scraper.Scrape(ctx, u, headers)
 	if err != nil {
 		return err
 	}

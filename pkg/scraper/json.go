@@ -29,14 +29,23 @@ type jsonFeedItem struct {
 func parseJSONFeed(ctx context.Context, res *http.Response) (*Feed, error) {
 	defer res.Body.Close()
 
+	ctx, span := tracer.Start(ctx, "scraper.parseJSONFeed")
+	defer span.End()
+
 	var feed jsonFeed
 	if err := json.NewDecoder(res.Body).Decode(&feed); err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
 	var f Feed
 	f.Title = feed.Title
 	f.HomePageURL = NormalizeURL(feed.HomePageURL)
+
+	span.SetAttributes(
+		feedTitleKey(f.Title),
+		feedHomeURL(f.HomePageURL),
+		feedItemCountKey(len(feed.Items)))
 
 	for _, item := range feed.Items {
 		var entry Entry

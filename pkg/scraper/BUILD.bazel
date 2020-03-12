@@ -6,6 +6,7 @@ go_library(
         "feed.go",
         "json.go",
         "scrape.go",
+        "trace.go",
         "xml.go",
     ],
     importpath = "github.com/mjm/courier-js/pkg/scraper",
@@ -13,6 +14,9 @@ go_library(
     deps = [
         "@com_github_mmcdole_gofeed//:go_default_library",
         "@com_github_puerkitobio_purell//:go_default_library",
+        "@io_opentelemetry_go_otel//api/global:go_default_library",
+        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/trace:go_default_library",
     ],
 )
 
