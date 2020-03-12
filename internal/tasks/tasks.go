@@ -10,11 +10,13 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/wire"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/api/propagation"
+	"go.opentelemetry.io/otel/api/trace"
 	"google.golang.org/api/option"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 
+	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/secret"
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 var DefaultSet = wire.NewSet(New, NewConfig)
@@ -76,12 +78,12 @@ func Named(name string) taskOption {
 }
 
 func (t *Tasks) Enqueue(ctx context.Context, task proto.Message, opts ...taskOption) (string, error) {
-	ctx = trace.Start(ctx, "Enqueue task")
-	defer trace.Finish(ctx)
+	ctx, span := tracer.Start(ctx, "Tasks.Enqueue", trace.WithSpanKind(trace.SpanKindProducer))
+	defer span.End()
 
 	req, err := t.newTaskRequest(ctx, task)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return "", err
 	}
 
@@ -91,20 +93,22 @@ func (t *Tasks) Enqueue(ctx context.Context, task proto.Message, opts ...taskOpt
 
 	createdTask, err := t.client.CreateTask(ctx, req)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return "", err
 	}
 
-	trace.AddField(ctx, "task.name", createdTask.GetName())
+	span.SetAttributes(nameKey.String(createdTask.GetName()))
 
 	return createdTask.GetName(), nil
 }
 
 func (t *Tasks) newTaskRequest(ctx context.Context, task proto.Message) (*taskspb.CreateTaskRequest, error) {
-	trace.AddField(ctx, "task.type", fmt.Sprintf("%T", task))
-	trace.AddField(ctx, "task.queue", t.queue)
-	trace.AddField(ctx, "task.url", t.url)
-	trace.AddField(ctx, "task.service_account", t.serviceAccount)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(
+		typeKey.String(fmt.Sprintf("%T", task)),
+		queueKey.String(t.queue),
+		urlKey.String(t.url),
+		serviceAccountKey.String(t.serviceAccount))
 
 	a, err := ptypes.MarshalAny(task)
 	if err != nil {
@@ -116,16 +120,16 @@ func (t *Tasks) newTaskRequest(ctx context.Context, task proto.Message) (*tasksp
 		return nil, err
 	}
 
-	trace.AddField(ctx, "task.data_length", len(data))
+	span.SetAttributes(dataLenKey.Int(len(data)))
+
+	headers := make(taskHeaders)
+	propagation.InjectHTTP(ctx, functions.Propagators, headers)
 
 	httpReq := &taskspb.HttpRequest{
 		Body:       data,
 		HttpMethod: taskspb.HttpMethod_POST,
 		Url:        t.url,
-		Headers: map[string]string{
-			"X-Trace-Id":      trace.GetTraceID(ctx),
-			"X-Trace-Span-Id": trace.GetSpanID(ctx),
-		},
+		Headers:    headers,
 	}
 
 	if t.serviceAccount != "" {

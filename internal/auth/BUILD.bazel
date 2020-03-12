@@ -15,7 +15,6 @@ go_library(
     visibility = ["//:__subpackages__"],
     deps = [
         "//internal/config:go_default_library",
-        "//internal/trace:go_default_library",
         "@com_github_google_wire//:go_default_library",
         "@in_gopkg_auth0_v3//management:go_default_library",
         "@in_gopkg_dgrijalva_jwt_go_v3//:go_default_library",
