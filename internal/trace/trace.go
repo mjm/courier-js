@@ -2,13 +2,16 @@ package trace
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/honeycombio/libhoney-go"
 	"github.com/honeycombio/opentelemetry-exporter-go/honeycomb"
+	"go.opentelemetry.io/otel/api/core"
 	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/api/key"
+	trace "go.opentelemetry.io/otel/api/trace"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
@@ -90,77 +93,42 @@ func Set(ctx context.Context, key string, value interface{}) {
 	trace.builder.AddField(key, value)
 }
 
+var tracer = global.TraceProvider().Tracer("courier.blog/internal/trace")
+
 // Start beings a new trace or span.
 func Start(ctx context.Context, name string) context.Context {
-	var trace *traceContext
-	parent := getTraceContext(ctx)
-	if parent == nil {
-		trace = &traceContext{
-			traceID: uuid.New().String(),
-			builder: libhoney.NewBuilder(),
-		}
-	} else {
-		trace = &traceContext{
-			traceID:  parent.traceID,
-			parentID: parent.spanID,
-			builder:  parent.builder,
-		}
-	}
-	trace.spanID = uuid.New().String()
-	trace.name = name
-	trace.fields = make(Fields)
-	trace.timestamp = time.Now()
-
-	return context.WithValue(ctx, &traceContextKey, trace)
+	ctx, _ = tracer.Start(ctx, name)
+	return ctx
 }
 
 // Finish finishes a span or tracing, sending the corresponding event.
 func Finish(ctx context.Context) {
-	trace := getTraceContext(ctx)
-	if trace == nil {
-		return
-	}
-
-	e := trace.builder.NewEvent()
-	e.Timestamp = trace.timestamp
-	e.AddField("duration_ms", time.Since(trace.timestamp).Milliseconds())
-	e.AddField("name", trace.name)
-	e.AddField("trace.trace_id", trace.traceID)
-	e.AddField("trace.span_id", trace.spanID)
-	if trace.parentID != "" {
-		e.AddField("trace.parent_id", trace.parentID)
-	}
-	e.Add(trace.fields)
-
-	e.Send()
-	trace.sent = true
+	span := trace.SpanFromContext(ctx)
+	span.End()
 }
 
 // AddField sets a single field on the current span.
-func AddField(ctx context.Context, key string, value interface{}) {
-	trace := getTraceContext(ctx)
-	if trace == nil {
-		return
-	}
-
-	trace.fields[key] = value
+func AddField(ctx context.Context, k string, value interface{}) {
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(key.String(k, fmt.Sprintf("%s", value)))
 }
 
 // Add sets a map of fields on the current span.
 func Add(ctx context.Context, fields Fields) {
-	trace := getTraceContext(ctx)
-	if trace == nil {
-		return
+	span := trace.SpanFromContext(ctx)
+
+	var kvs []core.KeyValue
+	for k, v := range fields {
+		kvs = append(kvs, key.String(k, fmt.Sprintf("%s", v)))
 	}
 
-	for k, v := range fields {
-		trace.fields[k] = v
-	}
+	span.SetAttributes(kvs...)
 }
 
 // Error sets the error on the current span.
 func Error(ctx context.Context, err error) {
-	AddField(ctx, "error", err.Error())
+	span := trace.SpanFromContext(ctx)
+	span.RecordError(ctx, err)
 }
 
 func GetTraceID(ctx context.Context) string {

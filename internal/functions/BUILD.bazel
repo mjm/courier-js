@@ -5,5 +5,11 @@ go_library(
     srcs = ["http.go"],
     importpath = "github.com/mjm/courier-js/internal/functions",
     visibility = ["//:__subpackages__"],
-    deps = ["//internal/trace:go_default_library"],
+    deps = [
+        "@io_opentelemetry_go_otel//api/correlation:go_default_library",
+        "@io_opentelemetry_go_otel//api/global:go_default_library",
+        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/trace:go_default_library",
+        "@io_opentelemetry_go_otel//plugin/httptrace:go_default_library",
+    ],
 )
