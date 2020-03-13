@@ -7,7 +7,6 @@ import (
 	"github.com/mjm/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
@@ -375,7 +374,7 @@ func (r *Root) CompleteIndieAuth(ctx context.Context, args struct {
 		return
 	}
 
-	result, err := completeIndieAuth(ctx, args.Input.Code, args.Input.State, args.Input.Data)
+	result, err := indieauth.Complete(ctx, args.Input.Code, args.Input.State, args.Input.Data)
 	if err != nil {
 		return
 	}
@@ -390,17 +389,4 @@ func (r *Root) CompleteIndieAuth(ctx context.Context, args struct {
 
 	payload.Origin = result.Origin
 	return
-}
-
-func completeIndieAuth(ctx context.Context, code, state, data string) (*indieauth.Result, error) {
-	ctx = trace.Start(ctx, "Get IndieAuth token")
-	defer trace.Finish(ctx)
-
-	res, err := indieauth.Complete(ctx, code, state, data)
-	if err != nil {
-		trace.Error(ctx, err)
-		return nil, err
-	}
-
-	return res, nil
 }

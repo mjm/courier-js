@@ -3,9 +3,13 @@ package indieauth
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
 	"net/url"
+
+	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 )
 
 type Data struct {
@@ -23,38 +27,85 @@ type Result struct {
 	Token  string `json:"token"`
 }
 
+var (
+	ErrNoCode  = errors.New("code is required")
+	ErrNoState = errors.New("state is required")
+	ErrStale   = errors.New("stale login attempt")
+)
+
+var tracer = global.TraceProvider().Tracer("courier.blog/pkg/indieauth")
+
+var (
+	codeLenKey  = key.New("code_length").Int
+	stateLenKey = key.New("state_length").Int
+	dataLenKey  = key.New("data_length").Int
+
+	tokenEndpointKey = key.New("data.token_endpoint").String
+	meKey            = key.New("data.me").String
+	clientIDKey      = key.New("data.client_id").String
+	redirectURIKey   = key.New("data.redirect_uri").String
+	originKey        = key.New("data.origin").String
+)
+
 func CompleteRequest(ctx context.Context, r *http.Request) (*Result, error) {
+	ctx, span := tracer.Start(ctx, "indieauth.CompleteRequest")
+	defer span.End()
+
 	c, err := r.Cookie("indieauth")
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
 	encodedData, err := url.QueryUnescape(c.Value)
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
+	span.SetAttributes(dataLenKey(len(encodedData)))
+
 	q := r.URL.Query()
 	code, state := q.Get("code"), q.Get("state")
+
+	span.SetAttributes(codeLenKey(len(code)), stateLenKey(len(state)))
 
 	return Complete(ctx, code, state, encodedData)
 }
 
 func Complete(ctx context.Context, code string, state string, dataStr string) (*Result, error) {
+	ctx, span := tracer.Start(ctx, "indieauth.Complete",
+		trace.WithAttributes(
+			codeLenKey(len(code)),
+			stateLenKey(len(state)),
+			dataLenKey(len(dataStr))))
+	defer span.End()
+
 	if code == "" {
-		return nil, fmt.Errorf("query parameter %q is required", "code")
+		span.RecordError(ctx, ErrNoCode)
+		return nil, ErrNoCode
 	}
 	if state == "" {
-		return nil, fmt.Errorf("query parameter %q is required", "state")
+		span.RecordError(ctx, ErrNoState)
+		return nil, ErrNoState
 	}
 
 	var data Data
 	if err := json.Unmarshal([]byte(dataStr), &data); err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
+	span.SetAttributes(
+		tokenEndpointKey(data.TokenEndpoint),
+		meKey(data.Me),
+		clientIDKey(data.ClientID),
+		redirectURIKey(data.RedirectURI),
+		originKey(data.Origin))
+
 	if state != data.Nonce {
-		return nil, fmt.Errorf("stale login attempt")
+		span.RecordError(ctx, ErrStale)
+		return nil, ErrStale
 	}
 
 	v := make(url.Values)
@@ -67,12 +118,14 @@ func Complete(ctx context.Context, code string, state string, dataStr string) (*
 	tokenURL := data.TokenEndpoint + "?" + v.Encode()
 	req, err := http.NewRequestWithContext(ctx, "POST", tokenURL, nil)
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
 	req.Header.Set("Accept", "application/json")
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 	defer res.Body.Close()
@@ -81,6 +134,7 @@ func Complete(ctx context.Context, code string, state string, dataStr string) (*
 		AccessToken string `json:"access_token"`
 	}
 	if err := json.NewDecoder(res.Body).Decode(&resData); err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
