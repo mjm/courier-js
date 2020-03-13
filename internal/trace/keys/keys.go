@@ -7,4 +7,6 @@ import (
 var (
 	Error       = ErrorKey(key.New("error"))
 	ServiceName = key.New("service_name")
+
+	UserID = key.New("user_id").String
 )

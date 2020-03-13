@@ -8,11 +8,15 @@ import (
 
 	"github.com/mjm/graphql-go/relay"
 	"github.com/pusher/pusher-http-go"
+	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/api/key"
 
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/resolvers"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
+
+var tracer = global.TraceProvider().Tracer("courier.blog/internal/functions/events")
 
 type Pusher struct {
 	client *pusher.Client
@@ -28,17 +32,17 @@ func NewPusher(events event.Source, client *pusher.Client) *Pusher {
 }
 
 func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
-	ctx = trace.Start(ctx, "Push event")
-	defer trace.Finish(ctx)
+	ctx, span := tracer.Start(ctx, "Pusher.HandleEvent")
+	defer span.End()
 
 	var pushed bool
 	defer func() {
-		trace.AddField(ctx, "event.pushed", pushed)
+		span.SetAttributes(key.Bool("event.pusher", pushed))
 	}()
 
 	t := reflect.TypeOf(evt)
 	eventName := t.Name()
-	trace.AddField(ctx, "event.name", eventName)
+	span.SetAttributes(key.String("event.name", eventName))
 
 	// for now, only send events when a user ID matches
 	userIDField := reflect.ValueOf(evt).FieldByName("UserId")
@@ -50,15 +54,15 @@ func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
 		return
 	}
 
-	trace.UserID(ctx, userID)
+	span.SetAttributes(keys.UserID(userID))
 
 	channelName := fmt.Sprintf("private-events-%s", strings.ReplaceAll(userID, "|", "_"))
-	trace.AddField(ctx, "event.channel_name", channelName)
+	span.SetAttributes(key.String("event.channel_name", channelName))
 
 	evt = convertIDsToGraphQL(evt)
 
 	if err := p.client.Trigger(channelName, eventName, evt); err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return
 	}
 

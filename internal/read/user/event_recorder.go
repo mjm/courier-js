@@ -4,13 +4,15 @@ import (
 	"context"
 	"reflect"
 
+	"go.opentelemetry.io/otel/api/trace"
+
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/read/user/queries"
 	"github.com/mjm/courier-js/internal/shared/billing"
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 type EventRecorder struct {
@@ -26,10 +28,9 @@ func NewEventRecorder(db db.DB, events event.Source) *EventRecorder {
 }
 
 func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
-	ctx = trace.Start(ctx, "Record event")
-	defer trace.Finish(ctx)
-
-	trace.AddField(ctx, "event.type_internal", reflect.TypeOf(evt).String())
+	ctx, span := tracer.Start(ctx, "EventRecorder.HandleEvent",
+		trace.WithAttributes(internalTypeKey(reflect.TypeOf(evt).String())))
+	defer span.End()
 
 	switch evt := evt.(type) {
 
@@ -109,12 +110,12 @@ func (r *EventRecorder) HandleEvent(ctx context.Context, evt interface{}) {
 }
 
 func (r *EventRecorder) record(ctx context.Context, userID string, t EventType, p EventParams) {
-	trace.UserID(ctx, userID)
-	trace.Add(ctx, trace.Fields{
-		"event.type_external": string(t),
-	})
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(
+		keys.UserID(userID),
+		externalTypeKey(string(t)))
 
 	if _, err := r.db.ExecContext(ctx, queries.EventsRecord, userID, t, p); err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 	}
 }
