@@ -23,7 +23,7 @@ func (h *CommandHandler) handleCreate(ctx context.Context, cmd CreateCommand) (F
 		return "", err
 	}
 
-	u, err = locateFeed(ctx, u)
+	u, err = locatefeed.Locate(ctx, u)
 	if err != nil {
 		return "", err
 	}
@@ -58,19 +58,4 @@ func (h *CommandHandler) handleCreate(ctx context.Context, cmd CreateCommand) (F
 
 	trace.FeedID(ctx, feedID)
 	return feedID, nil
-}
-
-func locateFeed(ctx context.Context, u *url.URL) (*url.URL, error) {
-	ctx = trace.Start(ctx, "Locate feed")
-	defer trace.Finish(ctx)
-
-	trace.FeedURL(ctx, u.String())
-
-	u, err := locatefeed.Locate(ctx, u)
-	if err != nil {
-		trace.Error(ctx, err)
-		return nil, err
-	}
-
-	return u, nil
 }

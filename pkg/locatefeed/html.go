@@ -2,27 +2,40 @@ package locatefeed
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 	"golang.org/x/net/html"
 )
 
-var feedTypes []string = []string{
+var (
+	ErrNoValidLinks = errors.New("no valid feed links found")
+)
+
+var feedTypes = []string{
 	"json", "atom", "rss",
 }
 
 func handleHTML(ctx context.Context, u *url.URL, res *http.Response) (*url.URL, error) {
+	ctx, span := tracer.Start(ctx, "locatefeed.handleHTML",
+		trace.WithAttributes(urlKey(u.String())))
+	defer span.End()
+
 	defer res.Body.Close()
 
 	doc, err := html.Parse(res.Body)
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
 	links := linkNodes(doc)
+	span.SetAttributes(key.Int("link_count", len(links)))
 
 	for _, feedType := range feedTypes {
 		for _, link := range links {
@@ -44,7 +57,8 @@ func handleHTML(ctx context.Context, u *url.URL, res *http.Response) (*url.URL, 
 		}
 	}
 
-	return nil, fmt.Errorf("no valid feed links found on %q", u.String())
+	span.RecordError(ctx, ErrNoValidLinks)
+	return nil, fmt.Errorf("%w on %q", ErrNoValidLinks, u.String())
 }
 
 func linkNodes(doc *html.Node) []*html.Node {

@@ -9,17 +9,25 @@ import (
 	"github.com/mmcdole/gofeed"
 	ext "github.com/mmcdole/gofeed/extensions"
 	"github.com/mmcdole/gofeed/rss"
+	"go.opentelemetry.io/otel/api/trace"
 )
 
 func handleFeed(ctx context.Context, u *url.URL, res *http.Response) (*url.URL, error) {
+	ctx, span := tracer.Start(ctx, "locatefeed.handleFeed",
+		trace.WithAttributes(urlKey(u.String())))
+	defer span.End()
+
 	defer res.Body.Close()
 
 	fp := gofeed.NewParser()
 	fp.RSSTranslator = newRSSTranslator()
 	feed, err := fp.Parse(res.Body)
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
+
+	span.SetAttributes(canonicalURLKey(feed.FeedLink))
 
 	if feed.FeedLink != "" {
 		newURL, err := url.Parse(feed.FeedLink)
