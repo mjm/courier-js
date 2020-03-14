@@ -15,7 +15,6 @@ go_library(
     deps = [
         "//internal/event:go_default_library",
         "//internal/shared/billing:go_default_library",
-        "//internal/trace:go_default_library",
         "//internal/trace/keys:go_default_library",
         "//internal/write:go_default_library",
         "@com_github_google_wire//:go_default_library",

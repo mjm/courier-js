@@ -6,9 +6,9 @@ import (
 	"github.com/graph-gophers/dataloader"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/client"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/loader"
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 type CustomerQueries interface {
@@ -51,18 +51,15 @@ func (q *customerQueries) Get(ctx context.Context, id string) (*stripe.Customer,
 }
 
 func loadCustomer(ctx context.Context, sc *client.API, id string) (*stripe.Customer, error) {
-	ctx = trace.Start(ctx, "Stripe: Get customer")
-	defer trace.Finish(ctx)
-
-	trace.Add(ctx, trace.Fields{
-		"stripe.customer_id": id,
-	})
+	ctx, span := tracer.Start(ctx, "loadCustomer",
+		trace.WithAttributes(customerIDKey(id)))
+	defer span.End()
 
 	params := &stripe.CustomerParams{}
 	params.AddExpand("default_source")
 	customer, err := sc.Customers.Get(id, params)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
