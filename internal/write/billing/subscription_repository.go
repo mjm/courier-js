@@ -5,8 +5,7 @@ import (
 
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/client"
-
-	"github.com/mjm/courier-js/internal/trace"
+	"go.opentelemetry.io/otel/api/trace"
 )
 
 type SubscriptionRepository struct {
@@ -18,14 +17,13 @@ func NewSubscriptionRepository(stripe *client.API) *SubscriptionRepository {
 }
 
 func (r *SubscriptionRepository) Get(ctx context.Context, id string) (*stripe.Subscription, error) {
-	ctx = trace.Start(ctx, "Stripe: Get subscription")
-	defer trace.Finish(ctx)
-
-	trace.AddField(ctx, "stripe.subscription_id", id)
+	ctx, span := tracer.Start(ctx, "SubscriptionRepository.Get",
+		trace.WithAttributes(subscriptionIDKey(id)))
+	defer span.End()
 
 	sub, err := r.stripe.Subscriptions.Get(id, nil)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
@@ -33,13 +31,11 @@ func (r *SubscriptionRepository) Get(ctx context.Context, id string) (*stripe.Su
 }
 
 func (r *SubscriptionRepository) Create(ctx context.Context, cusID string, planID string) (string, error) {
-	ctx = trace.Start(ctx, "Stripe: Create subscription")
-	defer trace.Finish(ctx)
-
-	trace.Add(ctx, trace.Fields{
-		"stripe.customer_id": cusID,
-		"stripe.plan_id":     planID,
-	})
+	ctx, span := tracer.Start(ctx, "SubscriptionRepository.Create",
+		trace.WithAttributes(
+			customerIDKey(cusID),
+			planIDKey(planID)))
+	defer span.End()
 
 	sub, err := r.stripe.Subscriptions.New(&stripe.SubscriptionParams{
 		Customer: &cusID,
@@ -48,26 +44,23 @@ func (r *SubscriptionRepository) Create(ctx context.Context, cusID string, planI
 		},
 	})
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return "", err
 	}
 
-	trace.AddField(ctx, "stripe.subscription_id", sub.ID)
+	span.SetAttributes(subscriptionIDKey(sub.ID))
 	return sub.ID, nil
 }
 
 func (r *SubscriptionRepository) Uncancel(ctx context.Context, subID string) error {
-	ctx = trace.Start(ctx, "Stripe: Uncancel subscription")
-	defer trace.Finish(ctx)
-
-	trace.Add(ctx, trace.Fields{
-		"stripe.subscription_id": subID,
-	})
+	ctx, span := tracer.Start(ctx, "SubscriptionRepository.Uncancel",
+		trace.WithAttributes(subscriptionIDKey(subID)))
+	defer span.End()
 
 	if _, err := r.stripe.Subscriptions.Update(subID, &stripe.SubscriptionParams{
 		CancelAtPeriodEnd: stripe.Bool(false),
 	}); err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return err
 	}
 
@@ -75,17 +68,14 @@ func (r *SubscriptionRepository) Uncancel(ctx context.Context, subID string) err
 }
 
 func (r *SubscriptionRepository) CancelLater(ctx context.Context, subID string) error {
-	ctx = trace.Start(ctx, "Stripe: Cancel subscription")
-	defer trace.Finish(ctx)
+	ctx, span := tracer.Start(ctx, "SubscriptionRepository.CancelLater",
+		trace.WithAttributes(subscriptionIDKey(subID)))
+	defer span.End()
 
-	trace.Add(ctx, trace.Fields{
-		"stripe.subscription_id": subID,
-		"stripe.cancel_now":      false,
-	})
 	if _, err := r.stripe.Subscriptions.Update(subID, &stripe.SubscriptionParams{
 		CancelAtPeriodEnd: stripe.Bool(true),
 	}); err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return err
 	}
 
@@ -93,16 +83,12 @@ func (r *SubscriptionRepository) CancelLater(ctx context.Context, subID string) 
 }
 
 func (r *SubscriptionRepository) CancelNow(ctx context.Context, subID string) error {
-	ctx = trace.Start(ctx, "Stripe: Cancel subscription")
-	defer trace.Finish(ctx)
-
-	trace.Add(ctx, trace.Fields{
-		"stripe.subscription_id": subID,
-		"stripe.cancel_now":      true,
-	})
+	ctx, span := tracer.Start(ctx, "SubscriptionRepository.CancelNow",
+		trace.WithAttributes(subscriptionIDKey(subID)))
+	defer span.End()
 
 	if _, err := r.stripe.Subscriptions.Cancel(subID, nil); err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return err
 	}
 

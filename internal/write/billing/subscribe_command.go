@@ -2,13 +2,15 @@ package billing
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/stripe/stripe-go"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/shared/billing"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 type SubscribeCommand struct {
@@ -17,22 +19,37 @@ type SubscribeCommand struct {
 	Email   string
 }
 
+var (
+	newCustomerKey     = key.New("billing.create_new_customer").Bool
+	hasSubscriptionKey = key.New("billing.has_subscription").Bool
+
+	existingSubIDKey = key.New("billing.existing_subscription_id").String
+	statusKey        = key.New("billing.status").String
+	cancelAtEndKey   = key.New("billing.cancel_at_period_end").Bool
+)
+
+var (
+	ErrAlreadyActive   = errors.New("cannot unsubscribe: you already have an active subscription")
+	ErrNoPaymentMethod = errors.New("no existing payment method to subscribe with")
+)
+
 func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeCommand) error {
+	span := trace.SpanFromContext(ctx)
 	createNewCustomer := cmd.Email != "" && cmd.TokenID != ""
-	trace.AddField(ctx, "billing.create_new_customer", createNewCustomer)
+
+	span.SetAttributes(newCustomerKey(createNewCustomer))
 
 	sub, err := h.getExistingSubscription(ctx)
 	if err != nil {
 		return err
 	}
-	trace.AddField(ctx, "billing.has_subscription", sub != nil)
+	span.SetAttributes(hasSubscriptionKey(sub != nil))
 
 	if sub != nil {
-		trace.Add(ctx, trace.Fields{
-			"billing.existing_subscription_id": sub.ID,
-			"billing.status":                   sub.Status,
-			"billing.cancel_at_period_end":     sub.CancelAtPeriodEnd,
-		})
+		span.SetAttributes(
+			existingSubIDKey(sub.ID),
+			statusKey(string(sub.Status)),
+			cancelAtEndKey(sub.CancelAtPeriodEnd))
 
 		if sub.Status == stripe.SubscriptionStatusActive {
 			if sub.CancelAtPeriodEnd {
@@ -42,7 +59,7 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 				return nil
 			}
 
-			return fmt.Errorf("cannot unsubscribe: you already have an active subscription")
+			return ErrAlreadyActive
 		}
 
 		if sub.Status != stripe.SubscriptionStatusCanceled {
@@ -66,14 +83,14 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 		return err
 	}
 
-	trace.CustomerID(ctx, cusID)
+	span.SetAttributes(keys.CustomerID(cusID))
 
 	subID, err := h.subRepo.Create(ctx, cusID, h.config.MonthlyPlanID)
 	if err != nil {
 		return err
 	}
 
-	trace.SubscriptionID(ctx, subID)
+	span.SetAttributes(keys.SubscriptionID(subID))
 	h.events.Fire(ctx, billing.SubscriptionCreated{
 		UserId:         cmd.UserID,
 		SubscriptionId: subID,
@@ -94,7 +111,7 @@ func (h *CommandHandler) getExistingSubscription(ctx context.Context) (*stripe.S
 func (h *CommandHandler) requireExistingCustomer(ctx context.Context) (string, error) {
 	cusID := auth.GetUser(ctx).CustomerID()
 	if cusID == "" {
-		return "", fmt.Errorf("no existing payment method to subscribe with")
+		return "", ErrNoPaymentMethod
 	}
 
 	return cusID, nil

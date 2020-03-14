@@ -5,8 +5,7 @@ import (
 
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/client"
-
-	"github.com/mjm/courier-js/internal/trace"
+	"go.opentelemetry.io/otel/api/trace"
 )
 
 type CustomerRepository struct {
@@ -18,10 +17,10 @@ func NewCustomerRepository(stripe *client.API) *CustomerRepository {
 }
 
 func (r *CustomerRepository) Create(ctx context.Context, email string, tokenID string) (string, error) {
-	ctx = trace.Start(ctx, "Stripe: Create customer")
-	defer trace.Finish(ctx)
+	ctx, span := tracer.Start(ctx, "CustomerRepository.Create",
+		trace.WithAttributes(tokenIDKey(tokenID)))
+	defer span.End()
 
-	trace.AddField(ctx, "stripe.token_id", tokenID)
 	cus, err := r.stripe.Customers.New(&stripe.CustomerParams{
 		Email: &email,
 		Source: &stripe.SourceParams{
@@ -29,10 +28,10 @@ func (r *CustomerRepository) Create(ctx context.Context, email string, tokenID s
 		},
 	})
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return "", err
 	}
 
-	trace.AddField(ctx, "stripe.customer_id", cus.ID)
+	span.SetAttributes(customerIDKey(cus.ID))
 	return cus.ID, nil
 }

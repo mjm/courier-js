@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 
+	"go.opentelemetry.io/otel/api/trace"
+
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 var (
@@ -17,7 +19,8 @@ type CancelCommand struct {
 }
 
 func (h *CommandHandler) handleCancel(ctx context.Context, cmd CancelCommand) error {
-	trace.UserID(ctx, cmd.UserID)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(keys.UserID(cmd.UserID))
 
 	user := auth.GetUser(ctx)
 	subID := user.SubscriptionID()
@@ -25,7 +28,7 @@ func (h *CommandHandler) handleCancel(ctx context.Context, cmd CancelCommand) er
 		return ErrNotSubscribed
 	}
 
-	trace.SubscriptionID(ctx, subID)
+	span.SetAttributes(keys.SubscriptionID(subID))
 	if err := h.subRepo.CancelLater(ctx, subID); err != nil {
 		return err
 	}
