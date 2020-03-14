@@ -5,10 +5,20 @@ import (
 	"time"
 
 	"github.com/lib/pq"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/pkg/scraper"
+)
+
+var (
+	entryCountKey     = key.New("import.entry_count").Int
+	createdCountKey   = key.New("import.created_count").Int
+	updatedCountKey   = key.New("import.updated_count").Int
+	unchangedCountKey = key.New("import.unchanged_count").Int
+	changedCountKey   = key.New("import.changed_count").Int
 )
 
 // ImportPostsCommand is a request to import posts that were scraped from a feed into
@@ -19,28 +29,25 @@ type ImportPostsCommand struct {
 }
 
 func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsCommand) error {
-	trace.FeedID(ctx, cmd.FeedID)
-	trace.Add(ctx, trace.Fields{
-		"import.entry_count": len(cmd.Entries),
-	})
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(keys.FeedID(cmd.FeedID), entryCountKey(len(cmd.Entries)))
 
 	toCreate, toUpdate, unchanged, err := h.planPostChanges(ctx, cmd.FeedID, cmd.Entries)
 	if err != nil {
 		return err
 	}
 
-	trace.Add(ctx, trace.Fields{
-		"import.created_count":   len(toCreate),
-		"import.updated_count":   len(toUpdate),
-		"import.unchanged_count": unchanged,
-	})
+	span.SetAttributes(
+		createdCountKey(len(toCreate)),
+		updatedCountKey(len(toUpdate)),
+		unchangedCountKey(unchanged))
 
 	changed, err := h.applyPostChanges(ctx, cmd.FeedID, toCreate, toUpdate)
 	if err != nil {
 		return err
 	}
 
-	trace.AddField(ctx, "import.changed_count", len(changed))
+	span.SetAttributes(changedCountKey(len(changed)))
 	if len(changed) > 0 {
 		var ids []string
 		for _, p := range changed {

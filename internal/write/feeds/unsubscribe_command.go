@@ -3,8 +3,10 @@ package feeds
 import (
 	"context"
 
+	"go.opentelemetry.io/otel/api/trace"
+
 	"github.com/mjm/courier-js/internal/shared/feeds"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 // UnsubscribeCommand is a request to unsubscribe a user from a feed.
@@ -17,8 +19,8 @@ type UnsubscribeCommand struct {
 }
 
 func (h *CommandHandler) handleUnsubscribe(ctx context.Context, cmd UnsubscribeCommand) error {
-	trace.UserID(ctx, cmd.UserID)
-	trace.FeedSubscriptionID(ctx, cmd.SubscriptionID)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedSubscriptionID(cmd.SubscriptionID))
 
 	if err := h.subRepo.Deactivate(ctx, cmd.UserID, cmd.SubscriptionID); err != nil {
 		return err

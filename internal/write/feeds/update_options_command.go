@@ -3,8 +3,11 @@ package feeds
 import (
 	"context"
 
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
+
 	"github.com/mjm/courier-js/internal/shared/feeds"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 type UpdateOptionsCommand struct {
@@ -14,9 +17,11 @@ type UpdateOptionsCommand struct {
 }
 
 func (h *CommandHandler) handleUpdateOptions(ctx context.Context, cmd UpdateOptionsCommand) error {
-	trace.UserID(ctx, cmd.UserID)
-	trace.FeedSubscriptionID(ctx, cmd.SubscriptionID)
-	trace.FeedAutopost(ctx, cmd.Autopost)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(
+		keys.UserID(cmd.UserID),
+		keys.FeedSubscriptionID(cmd.SubscriptionID),
+		key.Bool("feed.autopost", cmd.Autopost))
 
 	if err := h.subRepo.Update(ctx, cmd.UserID, UpdateSubscriptionParams{
 		ID:       cmd.SubscriptionID,

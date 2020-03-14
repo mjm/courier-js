@@ -4,11 +4,13 @@ import (
 	"context"
 	"net/url"
 
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 	"golang.org/x/net/context/ctxhttp"
 	"willnorris.com/go/microformats"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/pkg/scraper"
 )
 
@@ -28,10 +30,16 @@ type RefreshCommand struct {
 	Force bool
 }
 
+var (
+	upToDateKey = key.New("feed.up_to_date").Bool
+)
+
 func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) error {
-	trace.UserID(ctx, cmd.UserID)
-	trace.FeedID(ctx, cmd.FeedID)
-	trace.FeedForceRefresh(ctx, cmd.Force)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(
+		keys.UserID(cmd.UserID),
+		keys.FeedID(cmd.FeedID),
+		key.Bool("feed.force_refresh", cmd.Force))
 
 	f, err := h.feedRepo.Get(ctx, cmd.FeedID)
 	if err != nil {
@@ -57,10 +65,10 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 	}
 
 	if scraped == nil {
-		trace.FeedUpToDate(ctx, true)
+		span.SetAttributes(upToDateKey(true))
 		return nil
 	}
-	trace.FeedUpToDate(ctx, false)
+	span.SetAttributes(upToDateKey(false))
 
 	_, err = h.bus.Run(ctx, ImportPostsCommand{
 		FeedID:  f.ID,
@@ -97,48 +105,20 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 	return nil
 }
 
-func scrapeFeed(ctx context.Context, urlStr string, headers *scraper.CachingHeaders) (*scraper.Feed, error) {
-	ctx = trace.Start(ctx, "Scrape feed")
-	defer trace.Finish(ctx)
-
-	trace.FeedURL(ctx, urlStr)
-	if headers != nil {
-		trace.Add(ctx, trace.Fields{
-			"feed.etag":          headers.Etag,
-			"feed.last_modified": headers.LastModified,
-		})
-	}
-
-	u, err := url.Parse(urlStr)
-	if err != nil {
-		trace.Error(ctx, err)
-		return nil, err
-	}
-
-	feed, err := scraper.Scrape(ctx, u, headers)
-	if err != nil {
-		trace.Error(ctx, err)
-		return nil, err
-	}
-
-	return feed, nil
-}
-
 func getMicropubEndpoint(ctx context.Context, urlStr string) (string, error) {
-	ctx = trace.Start(ctx, "Get Micropub endpoint")
-	defer trace.Finish(ctx)
-
-	trace.AddField(ctx, "url", urlStr)
+	ctx, span := tracer.Start(ctx, "getMicropubEndpoint",
+		trace.WithAttributes(key.String("url", urlStr)))
+	defer span.End()
 
 	u, err := url.Parse(urlStr)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return "", err
 	}
 
 	res, err := ctxhttp.Get(ctx, nil, u.String())
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return "", err
 	}
 	defer res.Body.Close()
@@ -149,7 +129,7 @@ func getMicropubEndpoint(ctx context.Context, urlStr string) (string, error) {
 		return "", nil
 	}
 
-	trace.AddField(ctx, "microformats.micropub_count", len(micropubs))
+	span.SetAttributes(key.Int("microformats.micropub_count", len(micropubs)))
 
 	if len(micropubs) == 0 {
 		return "", nil

@@ -3,8 +3,10 @@ package feeds
 import (
 	"context"
 
+	"go.opentelemetry.io/otel/api/trace"
+
 	"github.com/mjm/courier-js/internal/shared/feeds"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 // SubscribeCommand is a request to subscribe a user to a feed by URL.
@@ -18,8 +20,8 @@ type SubscribeCommand struct {
 }
 
 func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeCommand) (SubscriptionID, error) {
-	trace.UserID(ctx, cmd.UserID)
-	trace.FeedURL(ctx, cmd.URL)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedURL(cmd.URL))
 
 	v, err := h.bus.Run(ctx, CreateCommand{
 		UserID: cmd.UserID,
@@ -30,14 +32,14 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 	}
 
 	feedID := v.(FeedID)
-	trace.FeedID(ctx, feedID)
+	span.SetAttributes(keys.FeedID(feedID))
 
 	subID, err := h.subRepo.Create(ctx, cmd.UserID, feedID)
 	if err != nil {
 		return "", err
 	}
 
-	trace.FeedSubscriptionID(ctx, subID)
+	span.SetAttributes(keys.FeedSubscriptionID(subID))
 	h.events.Fire(ctx, feeds.FeedSubscribed{
 		UserId:             cmd.UserID,
 		FeedId:             feedID.String(),
