@@ -37,7 +37,7 @@ func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
 
 	var pushed bool
 	defer func() {
-		span.SetAttributes(key.Bool("event.pusher", pushed))
+		span.SetAttributes(key.Bool("event.pushed", pushed))
 	}()
 
 	t := reflect.TypeOf(evt)
