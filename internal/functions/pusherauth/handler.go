@@ -23,9 +23,7 @@ type Handler struct {
 	beams         pushnotifications.PushNotifications
 }
 
-func NewHandler(traceCfg trace.Config, auther *auth.Authenticator, client *pusher.Client, beams pushnotifications.PushNotifications) *Handler {
-	trace.Init(traceCfg)
-
+func NewHandler(auther *auth.Authenticator, client *pusher.Client, beams pushnotifications.PushNotifications) *Handler {
 	return &Handler{
 		authenticator: auther,
 		pusher:        client,

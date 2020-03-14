@@ -13,7 +13,6 @@ import (
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
-	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
@@ -22,6 +21,7 @@ import (
 // Injectors from wire.go:
 
 func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
+	commandBus := write.NewCommandBus()
 	defaultEnv := &config.DefaultEnv{}
 	client, err := secret.NewSecretManager(gcpConfig)
 	if err != nil {
@@ -29,11 +29,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
 	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	traceConfig, err := trace.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	commandBus := write.NewCommandBus()
 	publisherConfig, err := event.NewPublisherConfig(loader)
 	if err != nil {
 		return nil, err
@@ -90,6 +85,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
 	feedsPostRepository := feeds.NewPostRepository(dbDB)
 	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, feedsPostRepository)
-	handler := NewHandler(traceConfig, commandBus, commandHandler, feedsCommandHandler)
+	handler := NewHandler(commandBus, commandHandler, feedsCommandHandler)
 	return handler, nil
 }

@@ -11,7 +11,6 @@ import (
 	feeds2 "github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
-	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
 )
@@ -24,7 +23,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		write.NewCommandBus,
 		event.PublishingSet,
 		tasks.DefaultSet,
-		trace.NewConfig,
 		db.DefaultSet,
 		feeds2.NewFeedQueries,
 		feeds.DefaultSet,

@@ -11,7 +11,6 @@ import (
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/read/billing"
 	"github.com/mjm/courier-js/internal/secret"
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
@@ -20,7 +19,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		config.DefaultSet,
 		secret.GCPSet,
 		event.PublishingSet,
-		trace.NewConfig,
 		auth.DefaultSet,
 		billing.NewSubscriptionQueries,
 		billing2.DefaultSet,

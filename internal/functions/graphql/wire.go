@@ -13,7 +13,6 @@ import (
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
-	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
@@ -31,7 +30,6 @@ func InitializeHandler(
 			NewSchema,
 			config.DefaultSet,
 			secret.GCPSet,
-			trace.NewConfig,
 			resolvers.DefaultSet,
 			auth.DefaultSet,
 			db.DefaultSet,

@@ -29,7 +29,6 @@ type Handler struct {
 }
 
 func NewHandler(
-	traceCfg trace2.Config,
 	bus *event.Bus,
 	_ *user.EventRecorder,
 	_ *Pusher,
@@ -37,8 +36,6 @@ func NewHandler(
 	_ *tweets.EventHandler,
 	_ *user2.EventHandler,
 ) *Handler {
-	trace2.Init(traceCfg)
-
 	return &Handler{bus: bus}
 }
 

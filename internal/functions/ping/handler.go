@@ -21,9 +21,7 @@ type Handler struct {
 	feeds      feeds.FeedQueries
 }
 
-func NewHandler(traceCfg trace.Config, feedQueries feeds.FeedQueries, commandBus *write.CommandBus, _ *writefeeds.CommandHandler) *Handler {
-	trace.Init(traceCfg)
-
+func NewHandler(feedQueries feeds.FeedQueries, commandBus *write.CommandBus, _ *writefeeds.CommandHandler) *Handler {
 	h := &Handler{
 		feeds:      feedQueries,
 		commandBus: commandBus,

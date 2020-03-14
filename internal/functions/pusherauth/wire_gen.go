@@ -10,7 +10,6 @@ import (
 	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/secret"
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 // Injectors from wire.go:
@@ -23,10 +22,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
 	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	traceConfig, err := trace.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -49,6 +44,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	handler := NewHandler(traceConfig, authenticator, pusherClient, pushNotifications)
+	handler := NewHandler(authenticator, pusherClient, pushNotifications)
 	return handler, nil
 }

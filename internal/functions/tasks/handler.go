@@ -22,9 +22,7 @@ type Handler struct {
 	commandBus *write.CommandBus
 }
 
-func NewHandler(traceCfg trace.Config, commandBus *write.CommandBus, _ *writetweets.CommandHandler, _ *writefeeds.CommandHandler) *Handler {
-	trace.Init(traceCfg)
-
+func NewHandler(commandBus *write.CommandBus, _ *writetweets.CommandHandler, _ *writefeeds.CommandHandler) *Handler {
 	return &Handler{
 		commandBus: commandBus,
 	}

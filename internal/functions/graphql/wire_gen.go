@@ -18,7 +18,6 @@ import (
 	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
-	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	billing3 "github.com/mjm/courier-js/internal/write/billing"
 	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
@@ -36,10 +35,6 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
 	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	traceConfig, err := trace.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
 	dbConfig, err := db.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -125,6 +120,6 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	}
 	jwksClient := auth.NewJWKSClient(authConfig)
 	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
-	handler := NewHandler(traceConfig, schema, authenticator, publisher)
+	handler := NewHandler(schema, authenticator, publisher)
 	return handler, nil
 }

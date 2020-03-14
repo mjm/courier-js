@@ -12,7 +12,6 @@ import (
 	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
-	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
 )
@@ -27,10 +26,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
 	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	traceConfig, err := trace.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
 	dbConfig, err := db.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -62,6 +57,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
 	postRepository := feeds2.NewPostRepository(dbDB)
 	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository)
-	handler := NewHandler(traceConfig, feedQueries, commandBus, commandHandler)
+	handler := NewHandler(feedQueries, commandBus, commandHandler)
 	return handler, nil
 }

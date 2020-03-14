@@ -20,9 +20,7 @@ type Handler struct {
 	Authenticator *auth.Authenticator
 }
 
-func NewHandler(traceCfg trace.Config, schema *graphql.Schema, auther *auth.Authenticator, _ *event.Publisher) *Handler {
-	trace.Init(traceCfg)
-
+func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, _ *event.Publisher) *Handler {
 	return &Handler{
 		Schema:        schema,
 		Authenticator: auther,

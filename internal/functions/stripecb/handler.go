@@ -23,9 +23,7 @@ type Handler struct {
 	subQueries    billing.SubscriptionQueries
 }
 
-func NewHandler(traceCfg trace.Config, stripeCfg billing2.Config, events event.Sink, subQueries billing.SubscriptionQueries, _ *event.Publisher) *Handler {
-	trace.Init(traceCfg)
-
+func NewHandler(stripeCfg billing2.Config, events event.Sink, subQueries billing.SubscriptionQueries, _ *event.Publisher) *Handler {
 	return &Handler{
 		webhookSecret: stripeCfg.WebhookSecret,
 		events:        events,

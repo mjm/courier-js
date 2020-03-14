@@ -12,14 +12,17 @@ import (
 	"google.golang.org/api/option"
 
 	"github.com/mjm/courier-js/internal/functions/events"
+	"github.com/mjm/courier-js/internal/trace"
 )
 
 var port string
 
 func main() {
+	var svcname string
 	if len(os.Args) < 2 {
 		handleAllFunctions()
 	} else {
+		svcname = os.Args[1]
 		switch os.Args[1] {
 		case "graphql":
 			handleSingleFunction(graphQLHandler)
@@ -35,6 +38,8 @@ func main() {
 			handleSingleFunction(tasksHandler)
 		}
 	}
+
+	trace.Init(secretConfig, svcname)
 
 	port = os.Getenv("PORT")
 	if port == "" {

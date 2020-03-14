@@ -16,7 +16,6 @@ import (
 	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
-	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	tweets2 "github.com/mjm/courier-js/internal/write/tweets"
 	user2 "github.com/mjm/courier-js/internal/write/user"
@@ -25,6 +24,7 @@ import (
 // Injectors from wire.go:
 
 func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
+	bus := event.NewBus()
 	defaultEnv := &config.DefaultEnv{}
 	client, err := secret.NewSecretManager(gcpConfig)
 	if err != nil {
@@ -32,11 +32,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
 	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	traceConfig, err := trace.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	bus := event.NewBus()
 	dbConfig, err := db.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -110,6 +105,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	userUserRepository := user2.NewUserRepository(management)
 	userCommandHandler := user2.NewCommandHandler(commandBus, publisher, userUserRepository)
 	userEventHandler := user2.NewEventHandler(commandBus, bus, userCommandHandler)
-	handler := NewHandler(traceConfig, bus, eventRecorder, pusher, notifier, eventHandler, userEventHandler)
+	handler := NewHandler(bus, eventRecorder, pusher, notifier, eventHandler, userEventHandler)
 	return handler, nil
 }

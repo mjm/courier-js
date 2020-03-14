@@ -11,8 +11,11 @@ import (
 	"go.opentelemetry.io/otel/api/core"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/key"
-	trace "go.opentelemetry.io/otel/api/trace"
+	"go.opentelemetry.io/otel/api/trace"
+	exporttrace "go.opentelemetry.io/otel/sdk/export/trace"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+
+	"github.com/mjm/courier-js/internal/secret"
 )
 
 type contextKey struct{}
@@ -33,64 +36,34 @@ type traceContext struct {
 // Fields is a map of string keys for adding data to a trace event.
 type Fields map[string]interface{}
 
-// Init initializes tracing support so it is correctly configured.
-func Init(cfg Config) error {
-	exporter, err := honeycomb.NewExporter(
+type ServiceName string
+
+func newExporter(cfg Config, svcname ServiceName) (*honeycomb.Exporter, error) {
+	return honeycomb.NewExporter(
 		honeycomb.Config{
 			APIKey: cfg.WriteKey,
 		},
 		honeycomb.TargetingDataset(cfg.Dataset),
+		honeycomb.WithServiceName(string(svcname)),
 		honeycomb.WithField("env", os.Getenv("APP_ENV")))
-	if err != nil {
-		return err
-	}
+}
 
-	tp, err := sdktrace.NewProvider(
+func newProvider(exporter exporttrace.SpanSyncer) (*sdktrace.Provider, error) {
+	return sdktrace.NewProvider(
 		sdktrace.WithConfig(sdktrace.Config{
 			DefaultSampler: sdktrace.AlwaysSample(),
 		}),
 		sdktrace.WithSyncer(exporter))
+}
+
+// Init initializes tracing support so it is correctly configured.
+func Init(cfg secret.GCPConfig, svcname string) error {
+	tp, err := initProvider(cfg, ServiceName(svcname))
 	if err != nil {
 		return err
 	}
-
 	global.SetTraceProvider(tp)
-
-	var logger libhoney.Logger
-	if os.Getenv("APP_ENV") == "dev" {
-		logger = &libhoney.DefaultLogger{}
-	}
-	libhoney.Init(libhoney.Config{
-		WriteKey: cfg.WriteKey,
-		Dataset:  cfg.Dataset,
-		Logger:   logger,
-	})
-
-	libhoney.AddField("env", os.Getenv("APP_ENV"))
 	return nil
-}
-
-func SetServiceName(svcname string) {
-	libhoney.AddField("service_name", svcname)
-}
-
-// Flush ensures that any in-flight events get sent.
-func Flush() {
-	// Don't actually flush: we're running in Cloud Run which is more like a normal server, we might get
-	// multiple in-flight requests.
-
-	// if os.Getenv("APP_ENV") != "dev" {
-	// 	libhoney.Flush()
-	// }
-}
-
-func Set(ctx context.Context, key string, value interface{}) {
-	trace := getTraceContext(ctx)
-	if trace == nil {
-		return
-	}
-
-	trace.builder.AddField(key, value)
 }
 
 var tracer = global.TraceProvider().Tracer("courier.blog/internal/trace")

@@ -12,7 +12,6 @@ import (
 	"github.com/mjm/courier-js/internal/event"
 	billing2 "github.com/mjm/courier-js/internal/read/billing"
 	"github.com/mjm/courier-js/internal/secret"
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 // Injectors from wire.go:
@@ -25,10 +24,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
 	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	traceConfig, err := trace.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
 	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -52,6 +47,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	subscriptionQueries := billing2.NewSubscriptionQueries(api, management)
-	handler := NewHandler(traceConfig, billingConfig, publisher, subscriptionQueries, publisher)
+	handler := NewHandler(billingConfig, publisher, subscriptionQueries, publisher)
 	return handler, nil
 }
