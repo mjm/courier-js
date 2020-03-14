@@ -7,7 +7,6 @@ import (
 
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/shared/billing"
-	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 )
 
@@ -29,20 +28,16 @@ func (h *EventHandler) HandleEvent(ctx context.Context, evt interface{}) {
 	switch evt := evt.(type) {
 
 	case billing.CustomerCreated:
-		if _, err := h.commandBus.Run(ctx, UpdateCustomerCommand{
+		h.commandBus.Run(ctx, UpdateCustomerCommand{
 			UserID:     evt.UserId,
 			CustomerID: evt.CustomerId,
-		}); err != nil {
-			trace.Error(ctx, err)
-		}
+		})
 
 	case billing.SubscriptionCreated:
-		if _, err := h.commandBus.Run(ctx, UpdateSubscriptionCommand{
+		h.commandBus.Run(ctx, UpdateSubscriptionCommand{
 			UserID:         evt.UserId,
 			SubscriptionID: evt.SubscriptionId,
-		}); err != nil {
-			trace.Error(ctx, err)
-		}
+		})
 
 	}
 }

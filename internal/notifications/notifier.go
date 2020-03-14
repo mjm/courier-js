@@ -5,11 +5,20 @@ import (
 	"strconv"
 
 	pushnotifications "github.com/pusher/push-notifications-go"
+	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
 	readtweets "github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/shared/tweets"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
+)
+
+var tracer = global.TraceProvider().Tracer("courier.blog/internal/notifications")
+
+var (
+	publishIDKey = key.New("notification.publish_id").String
 )
 
 type Notifier struct {
@@ -36,11 +45,11 @@ func (n *Notifier) HandleEvent(ctx context.Context, evt interface{}) {
 }
 
 func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsImported) {
-	ctx = trace.Start(ctx, "Send tweets imported")
-	defer trace.Finish(ctx)
-
-	trace.UserID(ctx, evt.UserId)
-	trace.AddField(ctx, "tweet.count", len(evt.CreatedTweetIds))
+	ctx, span := tracer.Start(ctx, "Notifier.handleTweetsImported",
+		trace.WithAttributes(
+			keys.UserID(evt.UserId),
+			key.Int("tweet.count", len(evt.CreatedTweetIds))))
+	defer span.End()
 
 	if len(evt.CreatedTweetIds) == 0 {
 		return
@@ -57,11 +66,11 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 
 	if len(evt.CreatedTweetIds) == 1 {
 		tweetID := tweets.TweetID(evt.CreatedTweetIds[0])
-		trace.TweetID(ctx, tweetID)
+		span.SetAttributes(keys.TweetID(tweetID))
 
 		tweet, err := n.tweets.PrivilegedGet(ctx, tweetID)
 		if err != nil {
-			trace.Error(ctx, err)
+			span.RecordError(ctx, err)
 			return
 		}
 
@@ -88,25 +97,25 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 		"apns": payload,
 	})
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return
 	}
 
-	trace.AddField(ctx, "notification.publish_id", publishID)
+	span.SetAttributes(publishIDKey(publishID))
 }
 
 func (n *Notifier) handleTweetPosted(ctx context.Context, evt tweets.TweetPosted) {
-	ctx = trace.Start(ctx, "Send tweet posted")
-	defer trace.Finish(ctx)
-
 	tweetID := tweets.TweetID(evt.TweetId)
 
-	trace.UserID(ctx, evt.UserId)
-	trace.TweetID(ctx, tweetID)
+	ctx, span := tracer.Start(ctx, "Notifier.handleTweetPosted",
+		trace.WithAttributes(
+			keys.UserID(evt.UserId),
+			keys.TweetID(tweetID)))
+	defer span.End()
 
 	tweet, err := n.tweets.PrivilegedGet(ctx, tweetID)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return
 	}
 
@@ -127,9 +136,9 @@ func (n *Notifier) handleTweetPosted(ctx context.Context, evt tweets.TweetPosted
 		"apns": payload,
 	})
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return
 	}
 
-	trace.AddField(ctx, "notification.publish_id", publishID)
+	span.SetAttributes(publishIDKey(publishID))
 }

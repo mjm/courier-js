@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "command_handler.go",
         "event_handler.go",
+        "trace.go",
         "update_customer_command.go",
         "update_subscription_command.go",
         "user_repository.go",
@@ -15,9 +16,12 @@ go_library(
         "//internal/event:go_default_library",
         "//internal/shared/billing:go_default_library",
         "//internal/trace:go_default_library",
+        "//internal/trace/keys:go_default_library",
         "//internal/write:go_default_library",
         "@com_github_google_wire//:go_default_library",
         "@in_gopkg_auth0_v3//management:go_default_library",
+        "@io_opentelemetry_go_otel//api/global:go_default_library",
+        "@io_opentelemetry_go_otel//api/trace:go_default_library",
     ],
 )
 

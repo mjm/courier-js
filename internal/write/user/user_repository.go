@@ -3,9 +3,10 @@ package user
 import (
 	"context"
 
+	"go.opentelemetry.io/otel/api/trace"
 	"gopkg.in/auth0.v3/management"
 
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 type UserRepository struct {
@@ -49,17 +50,16 @@ func (p UserMetadataParams) apply(u *management.User) {
 }
 
 func (r *UserRepository) Update(ctx context.Context, params UpdateMetadataParams) error {
-	ctx = trace.Start(ctx, "Auth0: Update user")
-	defer trace.Finish(ctx)
-
-	trace.UserID(ctx, params.UserID)
+	ctx, span := tracer.Start(ctx, "UserRepository.Update",
+		trace.WithAttributes(keys.UserID(params.UserID)))
+	defer span.End()
 
 	u := &management.User{}
 	params.AppMetadataParams.apply(u)
 	params.UserMetadataParams.apply(u)
 
 	if err := r.management.User.Update(params.UserID, u); err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return err
 	}
 	return nil

@@ -3,7 +3,9 @@ package user
 import (
 	"context"
 
-	"github.com/mjm/courier-js/internal/trace"
+	"go.opentelemetry.io/otel/api/trace"
+
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 type UpdateCustomerCommand struct {
@@ -12,8 +14,8 @@ type UpdateCustomerCommand struct {
 }
 
 func (h *CommandHandler) handleUpdateCustomer(ctx context.Context, cmd UpdateCustomerCommand) error {
-	trace.UserID(ctx, cmd.UserID)
-	trace.CustomerID(ctx, cmd.CustomerID)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(keys.UserID(cmd.UserID), keys.CustomerID(cmd.CustomerID))
 
 	if err := h.userRepo.Update(ctx, UpdateMetadataParams{
 		UserID: cmd.UserID,
