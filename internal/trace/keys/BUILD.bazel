@@ -2,10 +2,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = [
-        "error.go",
-        "keys.go",
-    ],
+    srcs = ["keys.go"],
     importpath = "github.com/mjm/courier-js/internal/trace/keys",
     visibility = ["//:__subpackages__"],
     deps = [

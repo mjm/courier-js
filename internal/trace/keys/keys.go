@@ -9,10 +9,11 @@ import (
 )
 
 var (
-	Error       = ErrorKey(key.New("error"))
-	ServiceName = key.New("service_name")
+	UserID     = key.New("user_id").String
+	AuthDomain = key.New("auth.domain").String
 
-	UserID = key.New("user_id").String
+	HTTPMethod = key.New("http.method").String
+	HTTPURL    = key.New("http.url").String
 
 	FeedURL = key.New("feed.url").String
 

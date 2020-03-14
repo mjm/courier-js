@@ -12,6 +12,8 @@ import (
 	"go.opentelemetry.io/otel/api/trace"
 	"gopkg.in/auth0.v3/management"
 	"gopkg.in/dgrijalva/jwt-go.v3"
+
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 var DefaultSet = wire.NewSet(NewAuthenticator, NewConfig, NewManagementClient, NewJWKSClient)
@@ -21,7 +23,6 @@ type userContextKey struct{}
 var tracer = global.TraceProvider().Tracer("courier.blog/internal/auth")
 
 var (
-	authDomainKey    = key.New("auth_domain")
 	apiIdentifierKey = key.New("auth.api_identifier")
 	tokenPresentKey  = key.New("auth.token_present")
 )
@@ -50,7 +51,7 @@ func NewAuthenticator(cfg Config, m *management.Management, jwks *JWKSClient) *A
 func (a *Authenticator) Authenticate(parentCtx context.Context, r *http.Request) (context.Context, error) {
 	ctx, span := tracer.Start(parentCtx, "Authenticate",
 		trace.WithAttributes(
-			authDomainKey.String(a.AuthDomain),
+			keys.AuthDomain(a.AuthDomain),
 			apiIdentifierKey.String(a.APIIdentifier)))
 	defer span.End()
 
