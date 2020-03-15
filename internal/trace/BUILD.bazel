@@ -4,8 +4,6 @@ go_library(
     name = "go_default_library",
     srcs = [
         "config.go",
-        "keys.go",
-        "link.go",
         "trace.go",
         "wire_gen.go",
     ],
@@ -14,14 +12,8 @@ go_library(
     deps = [
         "//internal/config:go_default_library",
         "//internal/secret:go_default_library",
-        "//internal/shared/feeds:go_default_library",
-        "//internal/shared/tweets:go_default_library",
-        "@com_github_honeycombio_libhoney_go//:go_default_library",
         "@com_github_honeycombio_opentelemetry_exporter_go//honeycomb:go_default_library",
-        "@io_opentelemetry_go_otel//api/core:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
-        "@io_opentelemetry_go_otel//api/key:go_default_library",
-        "@io_opentelemetry_go_otel//api/trace:go_default_library",
         "@io_opentelemetry_go_otel//sdk/export/trace:go_default_library",
         "@io_opentelemetry_go_otel//sdk/trace:go_default_library",
     ],
