@@ -2,12 +2,15 @@ package resolvers
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 
 	"github.com/google/wire"
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 	"golang.org/x/net/context/ctxhttp"
 	"willnorris.com/go/microformats"
 
@@ -15,7 +18,6 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/tasks"
-	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
@@ -24,6 +26,10 @@ import (
 )
 
 var DefaultSet = wire.NewSet(New, QueriesProvider)
+
+var (
+	ErrUnknownKind = errors.New("unrecognized ID kind")
+)
 
 // Root is the root resolver for queries and mutations.
 type Root struct {
@@ -54,7 +60,7 @@ func New(
 // Viewer gets the user who is accessing the API.
 func (r *Root) Viewer(ctx context.Context) *User {
 	u := auth.GetUser(ctx)
-	trace.AddField(ctx, "authenticated", u.Authenticated())
+	trace.SpanFromContext(ctx).SetAttributes(key.Bool("authenticated", u.Authenticated()))
 
 	if !u.Authenticated() {
 		return nil
@@ -98,7 +104,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 		}
 		n = NewPost(r.q, p)
 	default:
-		err = fmt.Errorf("unrecognized ID kind %q", kind)
+		err = fmt.Errorf("%w %q", ErrUnknownKind, kind)
 	}
 
 	if err != nil {
@@ -170,7 +176,7 @@ func (r *Root) AllEvents(ctx context.Context, args pager.Options) (*EventConnect
 func (r *Root) Microformats(ctx context.Context, args struct {
 	URL string
 }) (*MicroformatPage, error) {
-	trace.AddField(ctx, "url", args.URL)
+	trace.SpanFromContext(ctx).SetAttributes(key.String("url", args.URL))
 
 	u, err := url.Parse(args.URL)
 	if err != nil {

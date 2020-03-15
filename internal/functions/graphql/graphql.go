@@ -7,12 +7,12 @@ import (
 
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/errors"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/loader"
-	"github.com/mjm/courier-js/internal/trace"
 )
 
 type Handler struct {
@@ -28,6 +28,8 @@ func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, _ *event.Pub
 }
 
 func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	span := trace.SpanFromContext(ctx)
+
 	// Set CORS headers for the preflight request
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -46,7 +48,7 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 
 	childCtx, err := h.Authenticator.Authenticate(ctx, r)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		response := &graphql.Response{
 			Data: json.RawMessage("null"),
 			Errors: []*errors.QueryError{

@@ -53,9 +53,6 @@ func wrapHTTP(h HTTPHandler, svcname string) http.Handler {
 
 		r = r.WithContext(ctx)
 
-		// TODO get the service name into all traces
-		// trace.Set(ctx, "service_name", svcname)
-
 		if err := h.HandleHTTP(ctx, w, r); err != nil {
 			span.RecordError(ctx, err)
 			var httpErr HTTPError

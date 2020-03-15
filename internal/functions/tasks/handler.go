@@ -2,6 +2,7 @@ package tasks
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -9,13 +10,19 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/internal/write"
 	writefeeds "github.com/mjm/courier-js/internal/write/feeds"
 	writetweets "github.com/mjm/courier-js/internal/write/tweets"
+)
+
+var (
+	ErrUnknownType = errors.New("unknown task type")
 )
 
 type Handler struct {
@@ -29,8 +36,10 @@ func NewHandler(commandBus *write.CommandBus, _ *writetweets.CommandHandler, _ *
 }
 
 func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	span := trace.SpanFromContext(ctx)
+
 	taskName := r.Header.Get("X-CloudTasks-TaskName")
-	trace.AddField(ctx, "task.name", taskName)
+	span.SetAttributes(keys.TaskName(taskName))
 
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -43,14 +52,14 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 		return err
 	}
 
-	trace.AddField(ctx, "task.type_url", a.TypeUrl)
+	span.SetAttributes(key.String("task.type_url", a.TypeUrl))
 
 	var msg ptypes.DynamicAny
 	if err := ptypes.UnmarshalAny(&a, &msg); err != nil {
 		return err
 	}
 
-	trace.AddField(ctx, "task.type", fmt.Sprintf("%T", msg.Message))
+	span.SetAttributes(key.String("task.type", fmt.Sprintf("%T", msg.Message)))
 
 	switch task := msg.Message.(type) {
 	case *tweets.PostTweetTask:
@@ -66,7 +75,7 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 			FeedID: feeds.FeedID(task.FeedId),
 		})
 	default:
-		err = fmt.Errorf("unknown task type %T", msg.Message)
+		err = fmt.Errorf("%w %T", ErrUnknownType, msg.Message)
 	}
 
 	return err

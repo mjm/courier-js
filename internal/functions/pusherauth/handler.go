@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -11,10 +12,17 @@ import (
 
 	pushnotifications "github.com/pusher/push-notifications-go"
 	"github.com/pusher/pusher-http-go"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/functions"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
+)
+
+var (
+	ErrNoMatch   = errors.New("user ID does not match")
+	ErrBadMethod = errors.New("unexpected HTTP method")
 )
 
 type Handler struct {
@@ -34,6 +42,8 @@ func NewHandler(auther *auth.Authenticator, client *pusher.Client, beams pushnot
 var _ functions.HTTPHandler = (*Handler)(nil)
 
 func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	span := trace.SpanFromContext(ctx)
+
 	// Set CORS headers for the preflight request
 	if r.Method == http.MethodOptions {
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
@@ -60,15 +70,15 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 		return functions.WrapHTTPError(err, http.StatusForbidden)
 	}
 
-	trace.UserID(ctx, userID)
+	span.SetAttributes(keys.UserID(userID))
 
 	switch r.Method {
 	case http.MethodGet:
 		expectedUserID := r.FormValue("user_id")
-		trace.AddField(ctx, "user_id_expected", expectedUserID)
+		span.SetAttributes(key.String("user_id_expected", expectedUserID))
 
 		if expectedUserID != userID {
-			return functions.WrapHTTPError(fmt.Errorf("user ID does not match"), http.StatusUnauthorized)
+			return functions.WrapHTTPError(ErrNoMatch, http.StatusUnauthorized)
 		}
 
 		beamsToken, err := h.beams.GenerateToken(userID)
@@ -90,12 +100,12 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 		r.Body.Close()
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(params))
 
-		trace.AddField(ctx, "auth.params_length", len(params))
+		span.SetAttributes(key.Int("auth.params_length", len(params)))
 
 		sanitizedUserID := strings.ReplaceAll(userID, "|", "_")
-		trace.AddField(ctx, "user_id_sanitized", sanitizedUserID)
+		span.SetAttributes(key.String("user_id_sanitized", sanitizedUserID))
 		channelName := r.FormValue("channel_name")
-		trace.AddField(ctx, "event.channel_name", channelName)
+		span.SetAttributes(key.String("event.channel_name", channelName))
 
 		if channelName != fmt.Sprintf("private-events-%s", sanitizedUserID) {
 			err := fmt.Errorf("user %q cannot subscribe to channel %q", userID, channelName)
@@ -107,11 +117,11 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 			return err
 		}
 
-		trace.AddField(ctx, "auth.response_length", len(res))
+		span.SetAttributes(key.Int("auth.response_length", len(res)))
 
 		fmt.Fprintf(w, string(res))
 		return nil
 	}
 
-	return fmt.Errorf("unexpected HTTP method %q", r.Method)
+	return fmt.Errorf("%w %q", ErrBadMethod, r.Method)
 }

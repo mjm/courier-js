@@ -8,14 +8,19 @@ import (
 
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/webhook"
+	"go.opentelemetry.io/otel/api/global"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	billing2 "github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/read/billing"
 	billingevent "github.com/mjm/courier-js/internal/shared/billing"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
+
+var tracer = global.TraceProvider().Tracer("courier.blog/internal/functions/stripecb")
 
 type Handler struct {
 	webhookSecret string
@@ -32,13 +37,15 @@ func NewHandler(stripeCfg billing2.Config, events event.Sink, subQueries billing
 }
 
 func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	span := trace.SpanFromContext(ctx)
+
 	r.Body = http.MaxBytesReader(w, r.Body, 65536)
 	payload, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return functions.WrapHTTPError(err, http.StatusBadRequest)
 	}
 
-	trace.AddField(ctx, "stripe.payload_length", len(payload))
+	span.SetAttributes(key.Int("stripe.payload_length", len(payload)))
 
 	evt, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), h.webhookSecret)
 	if err != nil {
@@ -55,10 +62,11 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 }
 
 func (h *Handler) handleStripeEvent(ctx context.Context, evt *stripe.Event) error {
-	trace.AddField(ctx, "stripe.event_id", evt.ID)
-	trace.AddField(ctx, "stripe.event_type", evt.Type)
-	trace.AddField(ctx, "stripe.account_id", evt.Account)
-	trace.AddField(ctx, "stripe.livemode", evt.Livemode)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(
+		key.String("stripe.event_id", evt.ID),
+		key.String("stripe.event_type", evt.Type),
+		key.Bool("stripe.livemode", evt.Livemode))
 
 	switch evt.Type {
 	case "customer.subscription.updated":
@@ -68,10 +76,9 @@ func (h *Handler) handleStripeEvent(ctx context.Context, evt *stripe.Event) erro
 
 		prevPeriodEnd := evt.GetPreviousValue("current_period_end")
 		curPeriodEnd := evt.GetObjectValue("current_period_end")
-		trace.Add(ctx, trace.Fields{
-			"stripe.period_end.previous": prevPeriodEnd,
-			"stripe.period_end.current":  curPeriodEnd,
-		})
+		span.SetAttributes(
+			key.String("stripe.period_end.previous", prevPeriodEnd),
+			key.String("stripe.period_end.current", curPeriodEnd))
 
 		if prevPeriodEnd != "" && prevPeriodEnd != curPeriodEnd {
 			return h.fireSubscriptionEvent(ctx, evt, func(subID string, userID string) interface{} {
@@ -120,21 +127,24 @@ func (h *Handler) handleStripeEvent(ctx context.Context, evt *stripe.Event) erro
 }
 
 func (h *Handler) fireSubscriptionEvent(ctx context.Context, evt *stripe.Event, f func(string, string) interface{}) error {
+	ctx, span := tracer.Start(ctx, "stripecb.fireSubscriptionEvent")
+	defer span.End()
+
 	subID := evt.GetObjectValue("id")
-	trace.SubscriptionID(ctx, subID)
+	span.SetAttributes(keys.SubscriptionID(subID))
 
 	userID, err := h.subQueries.GetUserID(ctx, subID)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		if err == billing.ErrNoUser {
 			return nil
 		}
 		return err
 	}
-	trace.UserID(ctx, userID)
+	span.SetAttributes(keys.UserID(userID))
 
 	e := f(subID, userID)
-	trace.AddField(ctx, "stripe.emitted_event_type", fmt.Sprintf("%T", e))
+	span.SetAttributes(key.String("stripe.emitted_event_type", fmt.Sprintf("%T", e)))
 	h.events.Fire(ctx, e)
 	return nil
 }

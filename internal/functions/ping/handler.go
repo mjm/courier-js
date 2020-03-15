@@ -6,10 +6,12 @@ import (
 
 	"github.com/divan/gorilla-xmlrpc/xml"
 	"github.com/gorilla/rpc"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/read/feeds"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/internal/write"
 	writefeeds "github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/pkg/scraper"
@@ -55,23 +57,24 @@ func (h *Handler) Ping(r *http.Request, args *struct {
 	}
 }) error {
 	ctx := r.Context()
+	span := trace.SpanFromContext(ctx)
 
 	url := scraper.NormalizeURL(args.HomePageURL)
-	trace.AddField(ctx, "feed.home_page_url", url)
+	span.SetAttributes(keys.FeedHomePageURL(url))
 
 	fs, err := h.feeds.ByHomePageURL(ctx, url)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return err
 	}
 
-	trace.AddField(ctx, "feed.count", len(fs))
+	span.SetAttributes(key.Int("feed.count", len(fs)))
 
 	for _, feed := range fs {
 		if _, err := h.commandBus.Run(ctx, writefeeds.QueueRefreshCommand{
 			FeedID: feed.ID,
 		}); err != nil {
-			trace.Error(ctx, err)
+			span.RecordError(ctx, err)
 			return err
 		}
 	}

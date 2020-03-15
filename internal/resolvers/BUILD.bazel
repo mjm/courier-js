@@ -35,7 +35,6 @@ go_library(
         "//internal/read/tweets:go_default_library",
         "//internal/read/user:go_default_library",
         "//internal/tasks:go_default_library",
-        "//internal/trace:go_default_library",
         "//internal/write:go_default_library",
         "//internal/write/billing:go_default_library",
         "//internal/write/feeds:go_default_library",
@@ -47,6 +46,8 @@ go_library(
         "@com_github_mjm_graphql_go//relay:go_default_library",
         "@com_github_stripe_stripe_go//:go_default_library",
         "@com_willnorris_go_microformats//:go_default_library",
+        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/trace:go_default_library",
         "@org_golang_x_net//context/ctxhttp:go_default_library",
     ],
 )

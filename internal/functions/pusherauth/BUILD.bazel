@@ -14,8 +14,10 @@ go_library(
         "//internal/event:go_default_library",
         "//internal/functions:go_default_library",
         "//internal/secret:go_default_library",
-        "//internal/trace:go_default_library",
+        "//internal/trace/keys:go_default_library",
         "@com_github_pusher_push_notifications_go//:go_default_library",
         "@com_github_pusher_pusher_http_go//:go_default_library",
+        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/trace:go_default_library",
     ],
 )

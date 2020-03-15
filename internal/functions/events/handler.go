@@ -13,13 +13,13 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"go.opentelemetry.io/otel/api/core"
+	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/propagation"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/notifications"
 	"github.com/mjm/courier-js/internal/read/user"
-	trace2 "github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write/tweets"
 	user2 "github.com/mjm/courier-js/internal/write/user"
 )
@@ -79,6 +79,8 @@ func (h *Handler) Extract(r *http.Request, _ propagation.Propagators) (context.C
 }
 
 func (h *Handler) HandleHTTP(ctx context.Context, _ http.ResponseWriter, r *http.Request) error {
+	span := trace.SpanFromContext(ctx)
+
 	var message PubSubPayload
 	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 		return err
@@ -89,14 +91,14 @@ func (h *Handler) HandleHTTP(ctx context.Context, _ http.ResponseWriter, r *http
 		return err
 	}
 
-	trace2.AddField(ctx, "event.type_url", a.TypeUrl)
+	span.SetAttributes(key.String("event.type_url", a.TypeUrl))
 
 	var msg ptypes.DynamicAny
 	if err := ptypes.UnmarshalAny(&a, &msg); err != nil {
 		return err
 	}
 
-	trace2.AddField(ctx, "event.type", fmt.Sprintf("%T", msg.Message))
+	span.SetAttributes(key.String("event.type", fmt.Sprintf("%T", msg.Message)))
 
 	h.bus.Fire(ctx, reflect.ValueOf(msg.Message).Elem().Interface())
 	return nil

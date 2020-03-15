@@ -21,7 +21,6 @@ go_library(
         "//internal/resolvers:go_default_library",
         "//internal/secret:go_default_library",
         "//internal/tasks:go_default_library",
-        "//internal/trace:go_default_library",
         "//internal/trace/keys:go_default_library",
         "//internal/write:go_default_library",
         "//internal/write/tweets:go_default_library",
