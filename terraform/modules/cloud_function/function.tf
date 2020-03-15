@@ -2,6 +2,7 @@ locals {
   function_env = {
     APP_ENV        = var.env
     GOOGLE_PROJECT = var.project_id
+    GIT_REVISION   = var.git_revision
   }
 }
 
