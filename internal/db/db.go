@@ -36,8 +36,9 @@ type DB interface {
 var tracer = global.TraceProvider().Tracer("courier.blog/internal/db")
 
 var (
-	queryKey    = key.New("sql.query")
-	rowCountKey = key.New("sql.row_count")
+	typeKey      = key.New("db.type").String
+	statementKey = key.New("db.statement").String
+	rowCountKey  = key.New("db.row_count").Int
 )
 
 type tracingDB struct {
@@ -61,7 +62,8 @@ func NewConfig(l *config.Loader) (cfg Config, err error) {
 
 func (db *tracingDB) SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error {
 	ctx, span := tracer.Start(ctx, "db.SelectContext",
-		trace.WithAttributes(queryKey.String(query)))
+		trace.WithSpanKind(trace.SpanKindClient),
+		trace.WithAttributes(typeKey("sql"), statementKey(query)))
 	defer span.End()
 
 	if err := db.DB.SelectContext(ctx, dest, query, args...); err != nil {
@@ -69,13 +71,14 @@ func (db *tracingDB) SelectContext(ctx context.Context, dest interface{}, query 
 		return err
 	}
 
-	span.SetAttributes(rowCountKey.Int(reflect.ValueOf(dest).Elem().Len()))
+	span.SetAttributes(rowCountKey(reflect.ValueOf(dest).Elem().Len()))
 	return nil
 }
 
 func (db *tracingDB) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
 	ctx, span := tracer.Start(ctx, "db.ExecContext",
-		trace.WithAttributes(queryKey.String(query)))
+		trace.WithSpanKind(trace.SpanKindClient),
+		trace.WithAttributes(typeKey("sql"), statementKey(query)))
 	defer span.End()
 
 	res, err := db.DB.ExecContext(ctx, query, args...)
@@ -87,7 +90,8 @@ func (db *tracingDB) ExecContext(ctx context.Context, query string, args ...inte
 
 func (db *tracingDB) QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error) {
 	ctx, span := tracer.Start(ctx, "db.QueryxContext",
-		trace.WithAttributes(queryKey.String(query)))
+		trace.WithSpanKind(trace.SpanKindClient),
+		trace.WithAttributes(typeKey("sql"), statementKey(query)))
 	defer span.End()
 
 	rows, err := db.DB.QueryxContext(ctx, query, args...)
@@ -99,7 +103,8 @@ func (db *tracingDB) QueryxContext(ctx context.Context, query string, args ...in
 
 func (db *tracingDB) QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row {
 	ctx, span := tracer.Start(ctx, "db.QueryRowxContext",
-		trace.WithAttributes(queryKey.String(query)))
+		trace.WithSpanKind(trace.SpanKindClient),
+		trace.WithAttributes(typeKey("sql"), statementKey(query)))
 	defer span.End()
 
 	row := db.DB.QueryRowxContext(ctx, query, args...)
@@ -111,7 +116,8 @@ func (db *tracingDB) QueryRowxContext(ctx context.Context, query string, args ..
 
 func (db *tracingDB) NamedQueryContext(ctx context.Context, query string, arg interface{}) (*sqlx.Rows, error) {
 	ctx, span := tracer.Start(ctx, "db.NamedQueryContext",
-		trace.WithAttributes(queryKey.String(query)))
+		trace.WithSpanKind(trace.SpanKindClient),
+		trace.WithAttributes(typeKey("sql"), statementKey(query)))
 	defer span.End()
 
 	rows, err := db.DB.NamedQueryContext(ctx, query, arg)
