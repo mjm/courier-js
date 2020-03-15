@@ -38,6 +38,7 @@ func NewPublisher(cfg PublisherConfig, client *pubsub.Client) *Publisher {
 
 func (p *Publisher) Fire(ctx context.Context, evt interface{}) {
 	ctx, span := tracer.Start(ctx, "Publisher.Fire",
+		trace.WithSpanKind(trace.SpanKindProducer),
 		trace.WithAttributes(typeKey(reflect.TypeOf(evt).String())))
 	defer span.End()
 
