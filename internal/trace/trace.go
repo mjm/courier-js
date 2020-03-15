@@ -1,7 +1,6 @@
 package trace
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/honeycombio/opentelemetry-exporter-go/honeycomb"
@@ -14,6 +13,8 @@ import (
 
 type ServiceName string
 
+var ServiceVersion string
+
 func newExporter(cfg Config, svcname ServiceName) (*honeycomb.Exporter, error) {
 	return honeycomb.NewExporter(
 		honeycomb.Config{
@@ -22,7 +23,7 @@ func newExporter(cfg Config, svcname ServiceName) (*honeycomb.Exporter, error) {
 		honeycomb.TargetingDataset(cfg.Dataset),
 		honeycomb.WithServiceName(string(svcname)),
 		honeycomb.WithField("env", os.Getenv("APP_ENV")),
-		honeycomb.WithField("service.version", fmt.Sprintf("git:%s", os.Getenv("GIT_REVISION"))))
+		honeycomb.WithField("service.version", "git:"+ServiceVersion))
 }
 
 func newProvider(exporter exporttrace.SpanSyncer) (*sdktrace.Provider, error) {

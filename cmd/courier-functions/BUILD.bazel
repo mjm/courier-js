@@ -34,4 +34,7 @@ go_binary(
     embed = [":go_default_library"],
     tags = ["no-cache"],
     visibility = ["//visibility:public"],
+    x_defs = {
+        "github.com/mjm/courier-js/internal/trace.ServiceVersion": "{GIT_COMMIT_SHA}",
+    },
 )
