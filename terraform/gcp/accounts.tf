@@ -26,3 +26,8 @@ resource "google_project_iam_binding" "secret_manager_secret_accessor" {
   role    = "roles/secretmanager.secretAccessor"
   members = local.all_function_accounts
 }
+
+resource "google_project_iam_binding" "compute_viewer" {
+  role    = "roles/compute.viewer"
+  members = local.all_function_accounts
+}
