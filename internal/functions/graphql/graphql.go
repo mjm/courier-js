@@ -8,10 +8,11 @@ import (
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/errors"
 	"go.opentelemetry.io/otel/api/trace"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/loader"
 )
 
@@ -49,25 +50,45 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 	childCtx, err := h.Authenticator.Authenticate(ctx, r)
 	if err != nil {
 		span.RecordError(ctx, err)
-		response := &graphql.Response{
-			Data: json.RawMessage("null"),
-			Errors: []*errors.QueryError{
-				{
-					Message: err.Error(),
-				},
-			},
-		}
-		return writeResponse(ctx, w, response)
+		return writeResponse(ctx, w, errResponse(err))
 	}
 	childCtx = loader.WithLoaderCache(childCtx)
 
 	var params Request
 	if err := json.NewDecoder(r.Body).Decode(&params); err != nil {
-		return functions.WrapHTTPError(err, http.StatusBadRequest)
+		return status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	response := h.Schema.Exec(childCtx, params.Query, params.OperationName, params.Variables)
+	for _, err := range response.Errors {
+		if err.ResolverError != nil {
+			if s, ok := status.FromError(err.ResolverError); ok {
+				err.Message = s.Message()
+				newExt := make(map[string]interface{})
+				for k, v := range err.Extensions {
+					newExt[k] = v
+				}
+				newExt["code"] = s.Code().String()
+				err.Extensions = newExt
+			}
+		}
+	}
 	return writeResponse(ctx, w, response)
+}
+
+func errResponse(err error) *graphql.Response {
+	s := status.Convert(err)
+	return &graphql.Response{
+		Data: json.RawMessage("null"),
+		Errors: []*errors.QueryError{
+			{
+				Message: s.Message(),
+				Extensions: map[string]interface{}{
+					"code": s.Code().String(),
+				},
+			},
+		},
+	}
 }
 
 func writeResponse(ctx context.Context, w http.ResponseWriter, resp *graphql.Response) error {

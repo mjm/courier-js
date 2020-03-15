@@ -1,14 +1,16 @@
 package auth
 
 import (
-	"errors"
 	"sync"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gopkg.in/auth0.v3/management"
 	"gopkg.in/dgrijalva/jwt-go.v3"
 )
 
-var ErrUnauthorized = errors.New("no user credentials were provided")
+// var ErrUnauthorized = errors.New("no user credentials were provided")
+var ErrUnauthorized = status.Error(codes.Unauthenticated, "no user credentials were provided")
 
 type User interface {
 	ID() (string, error)

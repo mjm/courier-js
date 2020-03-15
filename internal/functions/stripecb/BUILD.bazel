@@ -13,7 +13,6 @@ go_library(
         "//internal/billing:go_default_library",
         "//internal/config:go_default_library",
         "//internal/event:go_default_library",
-        "//internal/functions:go_default_library",
         "//internal/read/billing:go_default_library",
         "//internal/secret:go_default_library",
         "//internal/shared/billing:go_default_library",
@@ -23,5 +22,7 @@ go_library(
         "@io_opentelemetry_go_otel//api/global:go_default_library",
         "@io_opentelemetry_go_otel//api/key:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
+        "@org_golang_google_grpc//codes:go_default_library",
+        "@org_golang_google_grpc//status:go_default_library",
     ],
 )

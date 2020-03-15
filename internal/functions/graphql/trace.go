@@ -9,6 +9,8 @@ import (
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var tracer = global.TraceProvider().Tracer("courier.blog/internal/functions/graphql")
@@ -37,7 +39,7 @@ func (GraphQLTracer) TraceQuery(ctx context.Context, queryString string, operati
 
 	return ctx, func(errs []*errors.QueryError) {
 		for _, err := range errs {
-			span.RecordError(ctx, err)
+			recordQueryError(ctx, span, err)
 		}
 		span.End()
 	}
@@ -59,8 +61,17 @@ func (GraphQLTracer) TraceField(ctx context.Context, label, typeName, fieldName 
 
 	return ctx, func(err *errors.QueryError) {
 		if err != nil {
-			span.RecordError(ctx, err)
+			recordQueryError(ctx, span, err)
 		}
 		span.End()
 	}
+}
+
+func recordQueryError(ctx context.Context, span trace.Span, err *errors.QueryError) {
+	if err.ResolverError == nil {
+		span.RecordError(ctx, err, trace.WithErrorStatus(codes.Unknown))
+		return
+	}
+
+	span.RecordError(ctx, err.ResolverError, trace.WithErrorStatus(status.Code(err.ResolverError)))
 }

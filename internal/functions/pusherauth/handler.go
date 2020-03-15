@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +13,8 @@ import (
 	"github.com/pusher/pusher-http-go"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/functions"
@@ -21,8 +22,7 @@ import (
 )
 
 var (
-	ErrNoMatch   = errors.New("user ID does not match")
-	ErrBadMethod = errors.New("unexpected HTTP method")
+	ErrNoMatch = status.Error(codes.Unauthenticated, "user ID does not match")
 )
 
 type Handler struct {
@@ -62,12 +62,12 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 
 	ctx, err := h.authenticator.Authenticate(ctx, r)
 	if err != nil {
-		return functions.WrapHTTPError(err, http.StatusForbidden)
+		return err
 	}
 
 	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
-		return functions.WrapHTTPError(err, http.StatusForbidden)
+		return err
 	}
 
 	span.SetAttributes(keys.UserID(userID))
@@ -78,7 +78,7 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 		span.SetAttributes(key.String("user_id_expected", expectedUserID))
 
 		if expectedUserID != userID {
-			return functions.WrapHTTPError(ErrNoMatch, http.StatusUnauthorized)
+			return ErrNoMatch
 		}
 
 		beamsToken, err := h.beams.GenerateToken(userID)
@@ -108,8 +108,7 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 		span.SetAttributes(key.String("event.channel_name", channelName))
 
 		if channelName != fmt.Sprintf("private-events-%s", sanitizedUserID) {
-			err := fmt.Errorf("user %q cannot subscribe to channel %q", userID, channelName)
-			return functions.WrapHTTPError(err, http.StatusForbidden)
+			return status.Errorf(codes.PermissionDenied, "user %q cannot subscribe to channel %q", userID, channelName)
 		}
 
 		res, err := h.pusher.AuthenticatePrivateChannel(params)
@@ -123,5 +122,5 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 		return nil
 	}
 
-	return fmt.Errorf("%w %q", ErrBadMethod, r.Method)
+	return status.Errorf(codes.Unimplemented, "unexpected HTTP method %s", r.Method)
 }

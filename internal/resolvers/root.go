@@ -3,7 +3,6 @@ package resolvers
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/url"
 
 	"github.com/google/wire"
@@ -12,6 +11,8 @@ import (
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 	"golang.org/x/net/context/ctxhttp"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"willnorris.com/go/microformats"
 
 	"github.com/mjm/courier-js/internal/auth"
@@ -104,7 +105,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 		}
 		n = NewPost(r.q, p)
 	default:
-		err = fmt.Errorf("%w %q", ErrUnknownKind, kind)
+		err = status.Errorf(codes.InvalidArgument, "unrecognized ID kind %q", kind)
 	}
 
 	if err != nil {

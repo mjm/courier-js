@@ -12,8 +12,9 @@ go_library(
         "//pkg/tracehttp:go_default_library",
         "@io_opentelemetry_go_otel//api/correlation:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
-        "@io_opentelemetry_go_otel//api/key:go_default_library",
         "@io_opentelemetry_go_otel//api/propagation:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
+        "@org_golang_google_grpc//codes:go_default_library",
+        "@org_golang_google_grpc//status:go_default_library",
     ],
 )

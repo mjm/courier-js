@@ -21,9 +21,7 @@ func WrapHandler(handler http.Handler) http.Handler {
 
 		metrics := httpsnoop.CaptureMetrics(handler, w, r)
 
-		span.SetAttributes(
-			StatusCodeKey(metrics.Code))
-		span.SetStatus(Code(metrics.Code))
+		span.SetAttributes(StatusCodeKey(metrics.Code))
 	}
 	return http.HandlerFunc(h)
 }

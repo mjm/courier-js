@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -10,6 +9,8 @@ import (
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"gopkg.in/auth0.v3/management"
 	"gopkg.in/dgrijalva/jwt-go.v3"
 
@@ -71,8 +72,9 @@ func (a *Authenticator) Authenticate(parentCtx context.Context, r *http.Request)
 	})
 
 	if err != nil {
+		err = status.Errorf(codes.PermissionDenied, "invalid token: %v", err)
 		span.RecordError(ctx, err)
-		return parentCtx, fmt.Errorf("invalid token: %w", err)
+		return parentCtx, err
 	}
 	return context.WithValue(parentCtx, userContextKey{}, &TokenUser{
 		token:         token,

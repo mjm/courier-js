@@ -11,10 +11,11 @@ import (
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	billing2 "github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/functions"
 	"github.com/mjm/courier-js/internal/read/billing"
 	billingevent "github.com/mjm/courier-js/internal/shared/billing"
 	"github.com/mjm/courier-js/internal/trace/keys"
@@ -42,7 +43,7 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 	r.Body = http.MaxBytesReader(w, r.Body, 65536)
 	payload, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		return functions.WrapHTTPError(err, http.StatusBadRequest)
+		return status.Errorf(codes.InvalidArgument, err.Error())
 	}
 
 	span.SetAttributes(key.Int("stripe.payload_length", len(payload)))

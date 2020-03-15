@@ -4,6 +4,7 @@ go_library(
     name = "go_default_library",
     srcs = [
         "client.go",
+        "code.go",
         "server.go",
         "trace.go",
     ],

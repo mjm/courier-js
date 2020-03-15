@@ -7,6 +7,9 @@ import (
 	"sync"
 
 	"go.opentelemetry.io/otel/api/propagation"
+	"go.opentelemetry.io/otel/api/trace"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/pkg/tracehttp"
 )
@@ -55,13 +58,22 @@ func wrapHTTP(h HTTPHandler, svcname string) http.Handler {
 		handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 			if err := h.HandleHTTP(ctx, w, r); err != nil {
-				span.RecordError(ctx, err)
+				code := codes.Unknown
+				msg := err.Error()
+				httpStatus := http.StatusInternalServerError
+
 				var httpErr HTTPError
 				if errors.As(err, &httpErr) {
-					http.Error(w, httpErr.Error(), httpErr.statusCode)
+					httpStatus = httpErr.statusCode
+					code = tracehttp.Code(httpStatus)
 				} else {
-					http.Error(w, err.Error(), http.StatusInternalServerError)
+					s := status.Convert(err)
+					code = s.Code()
+					msg = s.Message()
+					httpStatus = tracehttp.StatusCode(code)
 				}
+				span.RecordError(ctx, err, trace.WithErrorStatus(code))
+				http.Error(w, msg, httpStatus)
 			}
 		})
 		handler = tracehttp.WrapHandler(handler)
