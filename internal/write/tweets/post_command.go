@@ -6,6 +6,7 @@ import (
 
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
+	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace/keys"
@@ -38,7 +39,8 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 		return err
 	}
 	if !isSubscribed {
-		return ErrNotSubscribed
+		span.RecordError(ctx, ErrNotSubscribed, trace.WithErrorStatus(status.Code(ErrNotSubscribed)))
+		return nil
 	}
 
 	tweet, err := h.tweetRepo.Get(ctx, cmd.UserID, cmd.TweetID)
@@ -55,11 +57,13 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 		return nil
 	}
 
-	span.SetAttributes(skippedKey(false))
-
 	if tweet.Status != Draft {
-		return ErrNotDraft
+		span.SetAttributes(skippedKey(true))
+		span.RecordError(ctx, ErrNotDraft, trace.WithErrorStatus(status.Code(ErrNotDraft)))
+		return nil
 	}
+
+	span.SetAttributes(skippedKey(false))
 
 	sub, err := h.subRepo.Get(ctx, tweet.FeedSubscriptionID)
 	if err != nil {
