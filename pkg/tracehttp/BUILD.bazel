@@ -2,10 +2,15 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
-    srcs = ["client.go"],
+    srcs = [
+        "client.go",
+        "server.go",
+        "trace.go",
+    ],
     importpath = "github.com/mjm/courier-js/pkg/tracehttp",
     visibility = ["//visibility:public"],
     deps = [
+        "@com_github_felixge_httpsnoop//:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
         "@io_opentelemetry_go_otel//api/key:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",

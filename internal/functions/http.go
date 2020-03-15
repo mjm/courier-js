@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"go.opentelemetry.io/otel/api/propagation"
-	"go.opentelemetry.io/otel/api/trace"
-	"go.opentelemetry.io/otel/plugin/httptrace"
+
+	"github.com/mjm/courier-js/pkg/tracehttp"
 )
 
 func NewHTTP(svcname string, creator func() (HTTPHandler, error)) http.Handler {
@@ -45,26 +45,28 @@ func wrapHTTP(h HTTPHandler, svcname string) http.Handler {
 		} else {
 			ctx = propagation.ExtractHTTP(r.Context(), Propagators, r.Header)
 		}
-		ctx, span := tracer.Start(ctx, "HandleHTTP",
-			trace.WithAttributes(
-				httptrace.URLKey.String(r.URL.String()),
-				httpMethodKey.String(r.Method)))
+
+		ctx, span := tracer.Start(ctx, "/"+svcname)
 		defer span.End()
 
 		r = r.WithContext(ctx)
 
-		if err := h.HandleHTTP(ctx, w, r); err != nil {
-			span.RecordError(ctx, err)
-			var httpErr HTTPError
-			if errors.As(err, &httpErr) {
-				http.Error(w, httpErr.Error(), httpErr.statusCode)
-				span.SetAttributes(httpStatusKey.Int(httpErr.statusCode))
-			} else {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				span.SetAttributes(httpStatusKey.Int(http.StatusInternalServerError))
+		var handler http.Handler
+		handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			if err := h.HandleHTTP(ctx, w, r); err != nil {
+				span.RecordError(ctx, err)
+				var httpErr HTTPError
+				if errors.As(err, &httpErr) {
+					http.Error(w, httpErr.Error(), httpErr.statusCode)
+				} else {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
 			}
-			return
-		}
+		})
+		handler = tracehttp.WrapHandler(handler)
+
+		handler.ServeHTTP(w, r)
 	})
 }
 

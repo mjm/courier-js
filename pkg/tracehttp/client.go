@@ -4,23 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 	"google.golang.org/grpc/codes"
-)
-
-var tracer = global.TraceProvider().Tracer("courier.blog/pkg/tracehttp")
-
-var (
-	MethodKey     = key.New("http.method").String
-	URLKey        = key.New("http.url").String
-	HostKey       = key.New("http.host").String
-	SchemeKey     = key.New("http.scheme").String
-	StatusCodeKey = key.New("http.status_code").Int
-	StatusTextKey = key.New("http.status_text").String
-	FlavorKey     = key.New("http.flavor").String
-	UserAgentKey  = key.New("http.user_agent").String
 )
 
 type Transport struct {
@@ -53,7 +38,8 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 				MethodKey(r.Method),
 				URLKey(r.URL.String()),
 				HostKey(r.Host),
-				SchemeKey(r.URL.Scheme)))
+				SchemeKey(r.URL.Scheme),
+				UserAgentKey(r.UserAgent())))
 		defer span.End()
 	}
 
@@ -69,7 +55,6 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	span.SetAttributes(
 		StatusCodeKey(res.StatusCode),
 		StatusTextKey(res.Status),
-		UserAgentKey(res.Header.Get("User-Agent")),
 		FlavorKey(res.Proto))
 	span.SetStatus(Code(res.StatusCode))
 	return res, nil

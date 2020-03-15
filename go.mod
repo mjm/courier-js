@@ -18,6 +18,7 @@ require (
 	github.com/divan/gorilla-xmlrpc v0.0.0-20190926132722-f0686da74fda
 	github.com/dlclark/regexp2 v1.2.0
 	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/felixge/httpsnoop v1.0.1
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/golang/protobuf v1.3.4
 	github.com/google/uuid v1.1.1

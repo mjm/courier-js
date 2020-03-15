@@ -22,9 +22,7 @@ func newExporter(cfg Config, svcname ServiceName) (*honeycomb.Exporter, error) {
 		honeycomb.TargetingDataset(cfg.Dataset),
 		honeycomb.WithServiceName(string(svcname)),
 		honeycomb.WithField("env", os.Getenv("APP_ENV")),
-		honeycomb.WithField("service.version", fmt.Sprintf("git:%s", os.Getenv("GIT_REVISION"))),
-		honeycomb.WithField("host", hostFields()),
-		honeycomb.WithField("cloud", cloudFields()))
+		honeycomb.WithField("service.version", fmt.Sprintf("git:%s", os.Getenv("GIT_REVISION"))))
 }
 
 func newProvider(exporter exporttrace.SpanSyncer) (*sdktrace.Provider, error) {
