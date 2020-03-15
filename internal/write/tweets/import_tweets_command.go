@@ -6,11 +6,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/tasks"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/pkg/htmltweets"
 
 	"golang.org/x/sync/errgroup"
@@ -24,13 +26,13 @@ type ImportTweetsCommand struct {
 }
 
 func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweetsCommand) error {
-	trace.UserID(ctx, cmd.Subscription.UserID)
-	trace.FeedID(ctx, cmd.Subscription.FeedID)
-	trace.FeedSubscriptionID(ctx, cmd.Subscription.ID)
-	trace.FeedAutopost(ctx, cmd.Subscription.Autopost)
-	trace.Add(ctx, trace.Fields{
-		"import.post_count": len(cmd.Posts),
-	})
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(
+		keys.UserID(cmd.Subscription.UserID),
+		keys.FeedID(cmd.Subscription.FeedID),
+		keys.FeedSubscriptionID(cmd.Subscription.ID),
+		key.Bool("feed.autopost", cmd.Subscription.Autopost),
+		key.Int("import.post_count", len(cmd.Posts)))
 
 	var postIDs []feeds.PostID
 	for _, p := range cmd.Posts {
@@ -69,10 +71,9 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 		return err
 	}
 
-	trace.Add(ctx, trace.Fields{
-		"import.tweet_create_count": len(toCreate),
-		"import.tweet_update_count": len(toUpdate),
-	})
+	span.SetAttributes(
+		key.Int("import.tweet_create_count", len(toCreate)),
+		key.Int("import.tweet_update_count", len(toUpdate)))
 
 	if err := h.tweetRepo.Create(ctx, cmd.Subscription.ID, cmd.Subscription.Autopost, toCreate); err != nil {
 		return err
@@ -115,13 +116,9 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 }
 
 func (h *CommandHandler) planTweets(ctx context.Context, post *Post, ts []*Tweet) ([]CreateTweetParams, []UpdateTweetParams, error) {
-	ctx = trace.Start(ctx, "Plan tweets")
-	defer trace.Finish(ctx)
-
-	trace.PostID(ctx, post.ID)
-	trace.Add(ctx, trace.Fields{
-		"import.existing_tweet_count": len(ts),
-	})
+	ctx, span := tracer.Start(ctx, "ImportTweetsCommand.planTweets",
+		trace.WithAttributes(keys.PostID(post.ID), key.Int("import.existing_tweet_count", len(ts))))
+	defer span.End()
 
 	translated, err := htmltweets.Translate(htmltweets.Input{
 		Title: post.Title,
@@ -129,12 +126,11 @@ func (h *CommandHandler) planTweets(ctx context.Context, post *Post, ts []*Tweet
 		HTML:  post.HTMLContent,
 	})
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, nil, err
 	}
 
-	trace.Add(ctx, trace.Fields{
-		"import.translated_tweet_count": len(translated),
-	})
+	span.SetAttributes(key.Int("import.translated_tweet_count", len(translated)))
 
 	var toCreate []CreateTweetParams
 	var toUpdate []UpdateTweetParams
@@ -181,47 +177,9 @@ func (h *CommandHandler) planTweets(ctx context.Context, post *Post, ts []*Tweet
 		}
 	}
 
-	trace.Add(ctx, trace.Fields{
-		"import.created_count": len(toCreate),
-		"import.updated_count": len(toUpdate),
-	})
+	span.SetAttributes(
+		key.Int("import.created_count", len(toCreate)),
+		key.Int("import.updated_count", len(toUpdate)))
 
 	return toCreate, toUpdate, nil
-}
-
-func (h *CommandHandler) handlePostsImported(ctx context.Context, evt feeds.PostsImported) {
-	subs, err := h.subRepo.ByFeedID(ctx, feeds.FeedID(evt.FeedId))
-	if err != nil {
-		trace.Error(ctx, err)
-		return
-	}
-
-	var postIDs []feeds.PostID
-	for _, id := range evt.PostIds {
-		postIDs = append(postIDs, feeds.PostID(id))
-	}
-
-	posts, err := h.postRepo.ByIDs(ctx, postIDs)
-	if err != nil {
-		trace.Error(ctx, err)
-		return
-	}
-
-	wg, subCtx := errgroup.WithContext(ctx)
-
-	for _, sub := range subs {
-		cmd := ImportTweetsCommand{
-			Subscription: sub,
-			Posts:        posts,
-		}
-		wg.Go(func() error {
-			_, err := h.bus.Run(subCtx, cmd)
-			return err
-		})
-	}
-
-	if err := wg.Wait(); err != nil {
-		trace.Error(ctx, err)
-		return
-	}
 }

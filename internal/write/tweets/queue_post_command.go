@@ -4,10 +4,11 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/tasks"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 type QueuePostCommand struct {
@@ -16,11 +17,11 @@ type QueuePostCommand struct {
 }
 
 func (h *CommandHandler) handleQueuePost(ctx context.Context, cmd QueuePostCommand) error {
-	trace.UserID(ctx, cmd.UserID)
-	trace.TweetID(ctx, cmd.TweetID)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(keys.UserID(cmd.UserID), keys.TweetID(cmd.TweetID))
 
 	taskName := uuid.New().String()
-	trace.AddField(ctx, "task.name", taskName)
+	span.SetAttributes(keys.TaskName(taskName))
 
 	if err := h.tweetRepo.QueuePost(ctx, cmd.TweetID, taskName); err != nil {
 		return err

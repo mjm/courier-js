@@ -4,9 +4,17 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
+)
+
+var (
+	ErrInvalidUpdate = errors.New("invalid micropub update")
 )
 
 type Update struct {
@@ -21,8 +29,13 @@ func (u Update) Valid() bool {
 }
 
 func (c *Client) Update(ctx context.Context, update Update) (interface{}, error) {
+	ctx, span := tracer.Start(ctx, "micropub.Update",
+		trace.WithAttributes(key.String("micropub.entry_url", update.URL)))
+	defer span.End()
+
 	if !update.Valid() {
-		return nil, fmt.Errorf("invalid micropub update")
+		span.RecordError(ctx, ErrInvalidUpdate)
+		return nil, ErrInvalidUpdate
 	}
 
 	var payload struct {
@@ -34,20 +47,25 @@ func (c *Client) Update(ctx context.Context, update Update) (interface{}, error)
 
 	var body bytes.Buffer
 	if err := json.NewEncoder(&body).Encode(payload); err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
+	span.SetAttributes(endpointKey(c.url.String()))
 	req, err := http.NewRequestWithContext(ctx, "POST", c.url.String(), &body)
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 
+	span.SetAttributes(key.Int("micropub.token_length", len(c.token)))
 	req.Header.Set("Authorization", "Bearer "+c.token)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 	defer res.Body.Close()
@@ -59,13 +77,18 @@ func (c *Client) Update(ctx context.Context, update Update) (interface{}, error)
 	if res.StatusCode != http.StatusOK {
 		b, err := ioutil.ReadAll(res.Body)
 		if err != nil {
+			span.RecordError(ctx, err)
 			return nil, err
 		}
-		return nil, fmt.Errorf("unexpected response %d, error: %s", res.StatusCode, string(b))
+
+		err = fmt.Errorf("unexpected response %d, error: %s", res.StatusCode, string(b))
+		span.RecordError(ctx, err)
+		return nil, err
 	}
 
 	var v interface{}
 	if err := json.NewDecoder(res.Body).Decode(&v); err != nil {
+		span.RecordError(ctx, err)
 		return nil, err
 	}
 

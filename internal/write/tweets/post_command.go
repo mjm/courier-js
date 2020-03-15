@@ -2,10 +2,21 @@ package tweets
 
 import (
 	"context"
-	"fmt"
+	"errors"
+
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/tweets"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
+)
+
+var (
+	ErrNotSubscribed = errors.New("user is not subscribed")
+)
+
+var (
+	skippedKey = key.New("task.skipped").Bool
 )
 
 type PostCommand struct {
@@ -16,16 +27,18 @@ type PostCommand struct {
 }
 
 func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error {
-	trace.UserID(ctx, cmd.UserID)
-	trace.TweetID(ctx, cmd.TweetID)
-	trace.AddField(ctx, "task.name", cmd.TaskName)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(
+		keys.UserID(cmd.UserID),
+		keys.TweetID(cmd.TweetID),
+		keys.TaskName(cmd.TaskName))
 
 	isSubscribed, err := h.userRepo.IsSubscribed(ctx, cmd.UserID)
 	if err != nil {
 		return err
 	}
 	if !isSubscribed {
-		return fmt.Errorf("user is not subscribed")
+		return ErrNotSubscribed
 	}
 
 	tweet, err := h.tweetRepo.Get(ctx, cmd.UserID, cmd.TweetID)
@@ -33,15 +46,16 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 		return err
 	}
 
-	trace.AddField(ctx, "tweet.expected_task_name", tweet.PostTaskName)
-	trace.AddField(ctx, "tweet.status", tweet.Status)
+	span.SetAttributes(
+		key.String("tweet.expected_task_name", tweet.PostTaskName),
+		keys.TweetStatus(string(tweet.Status)))
 
 	if tweet.PostTaskName == "" || (cmd.TaskName != "" && tweet.PostTaskName != cmd.TaskName) {
-		trace.AddField(ctx, "task.skipped", true)
+		span.SetAttributes(skippedKey(true))
 		return nil
 	}
 
-	trace.AddField(ctx, "task.skipped", false)
+	span.SetAttributes(skippedKey(false))
 
 	if tweet.Status != Draft {
 		return ErrNotDraft
@@ -52,7 +66,7 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 		return err
 	}
 
-	trace.FeedSubscriptionID(ctx, sub.ID)
+	span.SetAttributes(keys.FeedSubscriptionID(sub.ID))
 
 	sendCmd := SendTweetCommand{
 		Tweet:        tweet,

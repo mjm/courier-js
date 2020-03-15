@@ -5,8 +5,15 @@ go_library(
     srcs = [
         "client.go",
         "config.go",
+        "trace.go",
         "update.go",
     ],
     importpath = "github.com/mjm/courier-js/pkg/micropub",
     visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/tracehttp:go_default_library",
+        "@io_opentelemetry_go_otel//api/global:go_default_library",
+        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/trace:go_default_library",
+    ],
 )

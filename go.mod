@@ -52,6 +52,7 @@ require (
 	golang.org/x/text v0.3.2
 	google.golang.org/api v0.17.0
 	google.golang.org/genproto v0.0.0-20200218151345-dad8c97a84f5
+	google.golang.org/grpc v1.27.1
 	gopkg.in/auth0.v3 v3.0.3
 	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0
 	gopkg.in/yaml.v2 v2.2.7

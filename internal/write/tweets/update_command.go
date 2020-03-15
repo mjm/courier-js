@@ -2,10 +2,17 @@ package tweets
 
 import (
 	"context"
-	"fmt"
+	"errors"
+
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/tweets"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
+)
+
+var (
+	ErrRetweet = errors.New("cannot edit retweet")
 )
 
 type UpdateCommand struct {
@@ -16,12 +23,12 @@ type UpdateCommand struct {
 }
 
 func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) error {
-	trace.UserID(ctx, cmd.UserID)
-	trace.TweetID(ctx, cmd.TweetID)
-	trace.Add(ctx, trace.Fields{
-		"tweet.body_length":     len(cmd.Body),
-		"tweet.media_url_count": len(cmd.MediaURLs),
-	})
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(
+		keys.UserID(cmd.UserID),
+		keys.TweetID(cmd.TweetID),
+		key.Int("tweet.body_length", len(cmd.Body)),
+		key.Int("tweet.media_url_count", len(cmd.MediaURLs)))
 
 	// fetch the existing tweet so we can do some validation
 	t, err := h.tweetRepo.Get(ctx, cmd.UserID, cmd.TweetID)
@@ -29,12 +36,16 @@ func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) er
 		return err
 	}
 
+	span.SetAttributes(
+		keys.TweetStatus(string(t.Status)),
+		key.String("tweet.action", string(t.Action)))
+
 	if t.Status != Draft {
 		return ErrNotDraft
 	}
 
 	if t.Action != ActionTweet {
-		return fmt.Errorf("cannot edit retweet")
+		return ErrRetweet
 	}
 
 	params := UpdateTweetParams{

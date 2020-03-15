@@ -3,8 +3,11 @@ package tweets
 import (
 	"context"
 
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
+
 	"github.com/mjm/courier-js/internal/shared/feeds"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
 type ImportRecentPostsCommand struct {
@@ -13,8 +16,8 @@ type ImportRecentPostsCommand struct {
 }
 
 func (h *CommandHandler) handleImportRecentPosts(ctx context.Context, cmd ImportRecentPostsCommand) error {
-	trace.UserID(ctx, cmd.UserID)
-	trace.FeedSubscriptionID(ctx, cmd.SubscriptionID)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedSubscriptionID(cmd.SubscriptionID))
 
 	sub, err := h.subRepo.Get(ctx, cmd.SubscriptionID)
 	if err != nil {
@@ -26,9 +29,7 @@ func (h *CommandHandler) handleImportRecentPosts(ctx context.Context, cmd Import
 		return err
 	}
 
-	trace.Add(ctx, trace.Fields{
-		"import.recent_post_count": len(posts),
-	})
+	span.SetAttributes(key.Int("import.recent_post_count", len(posts)))
 
 	importCmd := ImportTweetsCommand{
 		Subscription: sub,
@@ -39,11 +40,4 @@ func (h *CommandHandler) handleImportRecentPosts(ctx context.Context, cmd Import
 	}
 
 	return nil
-}
-
-func (h *CommandHandler) handleFeedSubscribed(ctx context.Context, evt feeds.FeedSubscribed) {
-	_, _ = h.bus.Run(ctx, ImportRecentPostsCommand{
-		UserID:         evt.UserId,
-		SubscriptionID: feeds.SubscriptionID(evt.FeedSubscriptionId),
-	})
 }

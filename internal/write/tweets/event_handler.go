@@ -2,13 +2,15 @@ package tweets
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/wire"
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/shared/feeds"
-	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 )
 
@@ -37,6 +39,10 @@ func NewEventHandler(
 }
 
 func (h *EventHandler) HandleEvent(ctx context.Context, evt interface{}) {
+	ctx, span := tracer.Start(ctx, "tweets.HandleEvent",
+		trace.WithAttributes(key.String("event.type", fmt.Sprintf("%T", evt))))
+	defer span.End()
+
 	switch evt := evt.(type) {
 
 	case feeds.PostsImported:
@@ -47,16 +53,18 @@ func (h *EventHandler) HandleEvent(ctx context.Context, evt interface{}) {
 			UserID:         evt.UserId,
 			SubscriptionID: feeds.SubscriptionID(evt.FeedSubscriptionId),
 		}); err != nil {
-			trace.Error(ctx, err)
+			span.RecordError(ctx, err)
 		}
 
 	}
 }
 
 func (h *EventHandler) handlePostsImported(ctx context.Context, evt feeds.PostsImported) {
+	span := trace.SpanFromContext(ctx)
+
 	subs, err := h.subRepo.ByFeedID(ctx, feeds.FeedID(evt.FeedId))
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return
 	}
 
@@ -67,7 +75,7 @@ func (h *EventHandler) handlePostsImported(ctx context.Context, evt feeds.PostsI
 
 	posts, err := h.postRepo.ByIDs(ctx, postIDs)
 	if err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return
 	}
 
@@ -85,7 +93,7 @@ func (h *EventHandler) handlePostsImported(ctx context.Context, evt feeds.PostsI
 	}
 
 	if err := wg.Wait(); err != nil {
-		trace.Error(ctx, err)
+		span.RecordError(ctx, err)
 		return
 	}
 }

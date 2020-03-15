@@ -4,8 +4,11 @@ import (
 	"context"
 	"net/url"
 
+	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
+
 	"github.com/mjm/courier-js/internal/shared/feeds"
-	"github.com/mjm/courier-js/internal/trace"
+	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/pkg/micropub"
 )
 
@@ -16,24 +19,28 @@ type SyndicateCommand struct {
 }
 
 func (h *CommandHandler) handleSyndicate(ctx context.Context, cmd SyndicateCommand) error {
-	trace.UserID(ctx, cmd.UserID)
-	trace.PostID(ctx, cmd.PostID)
-	trace.AddField(ctx, "tweet.url", cmd.TweetURL)
+	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(
+		keys.UserID(cmd.UserID),
+		keys.PostID(cmd.PostID),
+		keys.TweetURL(cmd.TweetURL))
 
 	info, err := h.postRepo.MicropubInfo(ctx, cmd.PostID)
 	if err != nil {
 		return err
 	}
 
-	trace.AddField(ctx, "feed.home_page_url", info.HomePageURL)
-	trace.AddField(ctx, "post.url", info.URL)
-	trace.AddField(ctx, "feed.microbub_endpoint", info.MPEndpoint)
+	span.SetAttributes(
+		keys.FeedHomePageURL(info.HomePageURL),
+		key.String("post.url", info.URL),
+		key.String("feed.micropub_endpoint", info.MPEndpoint))
 
 	token, err := h.userRepo.MicropubToken(ctx, cmd.UserID, info.HomePageURL)
 	if err != nil {
 		return err
 	}
-	trace.AddField(ctx, "micropub.token_length", len(token))
+
+	span.SetAttributes(key.Int("micropub.token_length", len(token)))
 
 	if token == "" {
 		return nil
@@ -44,30 +51,13 @@ func (h *CommandHandler) handleSyndicate(ctx context.Context, cmd SyndicateComma
 		return err
 	}
 
-	if err := updateMicropub(ctx, u, token, info.URL, cmd.TweetURL); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func updateMicropub(ctx context.Context, endpoint *url.URL, token string, postURL string, tweetURL string) error {
-	ctx = trace.Start(ctx, "Micropub: Update entry")
-	defer trace.Finish(ctx)
-
-	trace.AddField(ctx, "micropub.endpoint", endpoint.String())
-	trace.AddField(ctx, "micropub.token_length", len(token))
-	trace.AddField(ctx, "post.url", postURL)
-	trace.AddField(ctx, "tweet.url", tweetURL)
-
-	client := micropub.NewClient(endpoint, token)
+	client := micropub.NewClient(u, token)
 	if _, err := client.Update(ctx, micropub.Update{
-		URL: postURL,
+		URL: info.URL,
 		Add: map[string][]interface{}{
-			"syndication": {tweetURL},
+			"syndication": {cmd.TweetURL},
 		},
 	}); err != nil {
-		trace.Error(ctx, err)
 		return err
 	}
 
