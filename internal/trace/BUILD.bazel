@@ -4,6 +4,7 @@ go_library(
     name = "go_default_library",
     srcs = [
         "config.go",
+        "gcp.go",
         "trace.go",
         "wire_gen.go",
     ],
