@@ -2,6 +2,8 @@ package notifications
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"strconv"
 
 	pushnotifications "github.com/pusher/push-notifications-go"
@@ -79,7 +81,11 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 		} else {
 			alert["title-loc-key"] = "IMPORTED_TWEET_TITLE_NO_AUTOPOST"
 		}
-		alert["body"] = tweet.Body
+		if os.Getenv("APP_ENV") == "production" {
+			alert["body"] = tweet.Body
+		} else {
+			alert["body"] = fmt.Sprintf("[%s] %s", os.Getenv("APP_ENV"), tweet.Body)
+		}
 
 		aps["thread-id"] = tweet.ID.String()
 		payload["tweetId"] = tweet.ID.String()
@@ -90,7 +96,11 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 		} else {
 			alert["title-loc-key"] = "IMPORTED_TWEETS_NO_AUTOPOST"
 		}
-		alert["body"] = ""
+		if os.Getenv("APP_ENV") == "production" {
+			alert["body"] = ""
+		} else {
+			alert["body"] = fmt.Sprintf("[%s]", os.Getenv("APP_ENV"))
+		}
 	}
 
 	publishID, err := n.beams.PublishToUsers([]string{evt.UserId}, map[string]interface{}{
@@ -130,7 +140,11 @@ func (n *Notifier) handleTweetPosted(ctx context.Context, evt tweets.TweetPosted
 	aps["alert"] = alert
 
 	alert["title-loc-key"] = "POSTED_TWEET_TITLE"
-	alert["body"] = tweet.Body
+	if os.Getenv("APP_ENV") == "production" {
+		alert["body"] = tweet.Body
+	} else {
+		alert["body"] = fmt.Sprintf("[%s] %s", os.Getenv("APP_ENV"), tweet.Body)
+	}
 
 	publishID, err := n.beams.PublishToUsers([]string{evt.UserId}, map[string]interface{}{
 		"apns": payload,

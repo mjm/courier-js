@@ -70,7 +70,7 @@ func (suite *notificationsSuite) TestImportSingleTweet() {
 	suite.Equal("df850b2a-a4c1-4e51-95ea-5e0ad456310f", aps["thread-id"])
 	suite.Equal("IMPORTED_TWEET", aps["category"])
 	suite.Equal("IMPORTED_TWEET_TITLE_NO_AUTOPOST", alert["title-loc-key"])
-	suite.Equal("This is my first example post", alert["body"])
+	suite.Equal("[test] This is my first example post", alert["body"])
 }
 
 func (suite *notificationsSuite) TestImportSingleTweetAutopost() {
@@ -95,7 +95,7 @@ func (suite *notificationsSuite) TestImportSingleTweetAutopost() {
 	suite.Equal("df850b2a-a4c1-4e51-95ea-5e0ad456310f", aps["thread-id"])
 	suite.Equal("IMPORTED_TWEET", aps["category"])
 	suite.Equal("IMPORTED_TWEET_TITLE_AUTOPOST", alert["title-loc-key"])
-	suite.Equal("This is my first example post", alert["body"])
+	suite.Equal("[test] This is my first example post", alert["body"])
 }
 
 func (suite *notificationsSuite) TestImportMultipleTweets() {
@@ -123,7 +123,7 @@ func (suite *notificationsSuite) TestImportMultipleTweets() {
 	suite.Empty(aps["thread-id"])
 	suite.Equal("IMPORTED_TWEET", aps["category"])
 	suite.Equal("IMPORTED_TWEETS_NO_AUTOPOST", alert["title-loc-key"])
-	suite.Equal("", alert["body"])
+	suite.Equal("[test]", alert["body"])
 }
 
 func (suite *notificationsSuite) TestImportMultipleTweetsAutopost() {
@@ -152,7 +152,7 @@ func (suite *notificationsSuite) TestImportMultipleTweetsAutopost() {
 	suite.Empty(aps["thread-id"])
 	suite.Equal("IMPORTED_TWEET", aps["category"])
 	suite.Equal("IMPORTED_TWEETS_AUTOPOST", alert["title-loc-key"])
-	suite.Equal("", alert["body"])
+	suite.Equal("[test]", alert["body"])
 }
 
 func (suite *notificationsSuite) TestPostTweet() {
@@ -175,5 +175,5 @@ func (suite *notificationsSuite) TestPostTweet() {
 	suite.Equal("7f297943-854e-4e59-abe2-b377fde9aa12", aps["thread-id"])
 	suite.Equal("POSTED_TWEET", aps["category"])
 	suite.Equal("POSTED_TWEET_TITLE", alert["title-loc-key"])
-	suite.Equal("A Titled Post https://example.com/item-2", alert["body"])
+	suite.Equal("[test] A Titled Post https://example.com/item-2", alert["body"])
 }

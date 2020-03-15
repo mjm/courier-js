@@ -2,6 +2,7 @@ package notifications
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/khaiql/dbcleaner"
@@ -26,6 +27,8 @@ type notificationsSuite struct {
 }
 
 func (suite *notificationsSuite) SetupSuite() {
+	os.Setenv("APP_ENV", "test")
+
 	suite.db = db.NewTestingDB()
 	suite.cleaner = dbcleaner.New()
 	suite.cleaner.SetEngine(engine.NewPostgresEngine(db.TestingDSN))
