@@ -163,6 +163,21 @@ jobs:
           name: terraform apply
           command: cd terraform/gcp && terraform apply -auto-approve
 
+  mark_deploy:
+    parameters:
+      dataset:
+        type: string
+    docker:
+      - image: cimg/base:2020.01
+    steps:
+      - run:
+          name: Create Honeycomb marker
+          command: |
+            curl https://api.honeycomb.io/1/markers/<< parameters.dataset >> \
+              -X POST \
+              -H "X-Honeycomb-Team: $HONEY_WRITE_KEY" \
+              -d '{"message":"Deploy $CIRCLE_BUILD_NUM", "type":"deploy", "url": "$CIRCLE_BUILD_URL"}'
+
 workflows:
   version: 2
   release:
@@ -195,6 +210,11 @@ workflows:
             - build_and_test_backend_staging
             - migrate_database_staging
             - update_auth0_staging
+      - mark_deploy:
+          name: mark_deploy_staging
+          dataset: courier-staging
+          requires:
+            - deploy_backend_staging
 
       - build_and_test_backend:
           name: build_and_test_backend_prod
@@ -230,3 +250,8 @@ workflows:
             - build_and_test_backend_prod
             - migrate_database_prod
             - update_auth0_prod
+      - mark_deploy:
+          name: mark_deploy_prod
+          dataset: courier
+          requires:
+            - deploy_backend_prod
