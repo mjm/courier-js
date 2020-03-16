@@ -145,7 +145,7 @@ const DraftActions: React.FC<DraftActionsProps> = ({
   if (isSubscribed && tweet.postAfter) {
     banner = (
       <>
-        Autoposting{" "}
+        Posting{" "}
         <Moment
           fromNow
           filter={str => {
