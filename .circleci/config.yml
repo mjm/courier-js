@@ -176,7 +176,7 @@ jobs:
             curl https://api.honeycomb.io/1/markers/<< parameters.dataset >> \
               -X POST \
               -H "X-Honeycomb-Team: $HONEY_WRITE_KEY" \
-              -d '{"message":"Deploy $CIRCLE_BUILD_NUM", "type":"deploy", "url": "$CIRCLE_BUILD_URL"}'
+              -d "{\"message\":\"Deploy $CIRCLE_BUILD_NUM\", \"type\":\"deploy\", \"url\": \"$CIRCLE_BUILD_URL\"}"
 
 workflows:
   version: 2
