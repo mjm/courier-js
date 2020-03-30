@@ -48,7 +48,7 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	res, err := t.transport.RoundTrip(r)
 	if err != nil {
 		span.RecordError(ctx, err, trace.WithErrorStatus(codes.Internal))
-		span.SetStatus(codes.Internal)
+		span.SetStatus(codes.Internal, "")
 		return nil, err
 	}
 
@@ -56,6 +56,6 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 		StatusCodeKey(res.StatusCode),
 		StatusTextKey(res.Status),
 		FlavorKey(res.Proto))
-	span.SetStatus(Code(res.StatusCode))
+	span.SetStatus(Code(res.StatusCode), "")
 	return res, nil
 }

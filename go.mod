@@ -20,14 +20,14 @@ require (
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
-	github.com/golang/protobuf v1.3.4
+	github.com/golang/protobuf v1.3.5
 	github.com/google/uuid v1.1.1
 	github.com/google/wire v0.4.0
 	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/gorilla/rpc v1.2.0
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
-	github.com/honeycombio/libhoney-go v1.12.2
-	github.com/honeycombio/opentelemetry-exporter-go v0.2.3
+	github.com/honeycombio/libhoney-go v1.12.3
+	github.com/honeycombio/opentelemetry-exporter-go v0.3.1
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/khaiql/dbcleaner v2.3.0+incompatible
@@ -44,9 +44,9 @@ require (
 	github.com/rogpeppe/go-charset v0.0.0-20190617161244-0dc95cdf6f31 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.5.1
 	github.com/stripe/stripe-go v68.13.0+incompatible
-	go.opentelemetry.io/otel v0.2.3
+	go.opentelemetry.io/otel v0.3.0
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e

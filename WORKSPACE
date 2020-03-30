@@ -432,8 +432,8 @@ go_repository(
 go_repository(
     name = "com_github_facebookgo_ensure",
     importpath = "github.com/facebookgo/ensure",
-    sum = "h1:0JZ+dUmQeA8IIVUMzysrX4/AKuQwWhV2dYQuPZdvdSQ=",
-    version = "v0.0.0-20160127193407-b4ab57deab51",
+    sum = "h1:8ISkoahWXwZR41ois5lSJBSVw4D0OV19Ht/JSTzvSv0=",
+    version = "v0.0.0-20200202191622-63f1cf65ac4c",
 )
 
 go_repository(
@@ -460,8 +460,8 @@ go_repository(
 go_repository(
     name = "com_github_facebookgo_subset",
     importpath = "github.com/facebookgo/subset",
-    sum = "h1:E2s37DuLxFhQDg5gKsWoLBOB0n+ZW8s599zru8FJ2/Y=",
-    version = "v0.0.0-20150612182917-8dac2c3c4870",
+    sum = "h1:7HZCaLC5+BZpmbhCOZJ293Lz68O7PYrF2EzeiFMwCLk=",
+    version = "v0.0.0-20200203212716-c811ad88dec4",
 )
 
 go_repository(
@@ -558,8 +558,8 @@ go_repository(
 go_repository(
     name = "com_github_golang_protobuf",
     importpath = "github.com/golang/protobuf",
-    sum = "h1:87PNWwrRvUSnqS4dlcBU/ftvOIBep4sYuBLlh6rX2wk=",
-    version = "v1.3.4",
+    sum = "h1:F768QJ1E9tib+q5Sc8MkdJi1RxLTbRcTf8LJV56aRls=",
+    version = "v1.3.5",
 )
 
 go_repository(
@@ -698,8 +698,8 @@ go_repository(
 go_repository(
     name = "com_github_honeycombio_libhoney_go",
     importpath = "github.com/honeycombio/libhoney-go",
-    sum = "h1:KA66J2HxOxV8kTEDZ4f9d97KQwb5aTKt7YZUZvkzD0c=",
-    version = "v1.12.2",
+    sum = "h1:QrzeEfRiKDi6FH9zAVncIb5dfc6yOL2RhpXdO6L/s5g=",
+    version = "v1.12.3",
 )
 
 go_repository(
@@ -1069,8 +1069,8 @@ go_repository(
 go_repository(
     name = "com_github_stretchr_testify",
     importpath = "github.com/stretchr/testify",
-    sum = "h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJyk=",
-    version = "v1.4.0",
+    sum = "h1:nOGnQDM7FYENwehXlg/kFVnos3rEvtKTjRvOWSzb6H4=",
+    version = "v1.5.1",
 )
 
 go_repository(
@@ -1419,8 +1419,8 @@ go_repository(
 go_repository(
     name = "com_github_honeycombio_opentelemetry_exporter_go",
     importpath = "github.com/honeycombio/opentelemetry-exporter-go",
-    sum = "h1:EhFpAfihyPRUFL6A7szqtYr6pHXgLC0XiAP+ByIv3rc=",
-    version = "v0.2.3",
+    sum = "h1:oQZwILb+oEyQ45Sa+YGTr3khP50sScrGTYmQI4K+g5Q=",
+    version = "v0.3.1",
 )
 
 go_repository(
@@ -1454,8 +1454,8 @@ go_repository(
 go_repository(
     name = "io_opentelemetry_go_otel",
     importpath = "go.opentelemetry.io/otel",
-    sum = "h1:o97YpRYk0PyhCyuanlJY0DepUgAlyzl3rJ+4kb+456c=",
-    version = "v0.2.3",
+    sum = "h1:x3i+dwRyD5ADPdGGF6uf8KnqxC5b3vpyvo7b2YLocEc=",
+    version = "v0.3.0",
 )
 
 go_repository(
