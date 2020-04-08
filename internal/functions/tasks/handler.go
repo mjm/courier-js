@@ -39,7 +39,14 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 	span := trace.SpanFromContext(ctx)
 
 	taskName := r.Header.Get("X-CloudTasks-TaskName")
-	span.SetAttributes(keys.TaskName(taskName))
+	queueName := r.Header.Get("X-CloudTasks-QueueName")
+	span.SetAttributes(
+		keys.TaskName(taskName),
+		key.String("messaging.message_id", taskName),
+		key.String("messaging.system", "google_cloud_tasks"),
+		key.String("messaging.destination_kind", "queue"),
+		key.String("messaging.destination", queueName),
+		key.String("messaging.operation", "process"))
 
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {

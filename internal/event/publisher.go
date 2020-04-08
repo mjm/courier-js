@@ -8,6 +8,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/wire"
+	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/config"
@@ -39,7 +40,12 @@ func NewPublisher(cfg PublisherConfig, client *pubsub.Client) *Publisher {
 func (p *Publisher) Fire(ctx context.Context, evt interface{}) {
 	ctx, span := tracer.Start(ctx, "Publisher.Fire",
 		trace.WithSpanKind(trace.SpanKindProducer),
-		trace.WithAttributes(typeKey(reflect.TypeOf(evt).String())))
+		trace.WithAttributes(
+			typeKey(reflect.TypeOf(evt).String()),
+			key.String("messaging.system", "google_cloud_pubsub"),
+			key.String("messaging.operation", "send"),
+			key.String("messaging.destination_kind", "topic"),
+			key.String("messaging.destination", p.topic.ID())))
 	defer span.End()
 
 	evtPtr := reflect.New(reflect.TypeOf(evt))
@@ -83,5 +89,7 @@ func (p *Publisher) Fire(ctx context.Context, evt interface{}) {
 		return
 	}
 
-	span.SetAttributes(publishedIDKey(id))
+	span.SetAttributes(
+		publishedIDKey(id),
+		key.String("messaging.message_id", id))
 }

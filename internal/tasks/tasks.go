@@ -10,6 +10,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/wire"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/propagation"
 	"go.opentelemetry.io/otel/api/trace"
 	"google.golang.org/api/option"
@@ -78,7 +79,14 @@ func Named(name string) taskOption {
 }
 
 func (t *Tasks) Enqueue(ctx context.Context, task proto.Message, opts ...taskOption) (string, error) {
-	ctx, span := tracer.Start(ctx, "Tasks.Enqueue", trace.WithSpanKind(trace.SpanKindProducer))
+	ctx, span := tracer.Start(ctx, "Tasks.Enqueue",
+		trace.WithSpanKind(trace.SpanKindProducer),
+		trace.WithAttributes(
+			key.String("messaging.system", "google_cloud_tasks"),
+			key.String("messaging.destination_kind", "queue"),
+			key.String("messaging.destination", t.queue),
+			key.String("messaging.url", t.url),
+			key.String("messaging.operation", "send")))
 	defer span.End()
 
 	req, err := t.newTaskRequest(ctx, task)
@@ -97,7 +105,9 @@ func (t *Tasks) Enqueue(ctx context.Context, task proto.Message, opts ...taskOpt
 		return "", err
 	}
 
-	span.SetAttributes(nameKey.String(createdTask.GetName()))
+	span.SetAttributes(
+		nameKey.String(createdTask.GetName()),
+		key.String("messaging.message_id", createdTask.GetName()))
 
 	return createdTask.GetName(), nil
 }

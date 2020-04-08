@@ -80,11 +80,19 @@ func (h *Handler) Extract(r *http.Request, _ propagation.Propagators) (context.C
 
 func (h *Handler) HandleHTTP(ctx context.Context, _ http.ResponseWriter, r *http.Request) error {
 	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(
+		key.String("messaging.system", "google_cloud_pubsub"),
+		key.String("messaging.destination_kind", "topic"),
+		key.String("messaging.operation", "process"))
 
 	var message PubSubPayload
 	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
 		return err
 	}
+
+	span.SetAttributes(
+		key.String("messaging.message_id", message.Message.ID),
+		key.String("messaging.destination", message.Subscription))
 
 	var a any.Any
 	if err := proto.Unmarshal(message.Message.Data, &a); err != nil {
