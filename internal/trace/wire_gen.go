@@ -25,11 +25,11 @@ func initProvider(gcpConfig secret.GCPConfig, serviceName ServiceName) (*trace.P
 	if err != nil {
 		return nil, err
 	}
-	exporter, err := newExporter(traceConfig, serviceName)
+	exporter, err := newExporter(traceConfig)
 	if err != nil {
 		return nil, err
 	}
-	provider, err := newProvider(exporter)
+	provider, err := newProvider(exporter, serviceName)
 	if err != nil {
 		return nil, err
 	}
