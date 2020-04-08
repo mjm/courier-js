@@ -27,7 +27,7 @@ require (
 	github.com/gorilla/rpc v1.2.0
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/honeycombio/libhoney-go v1.12.3
-	github.com/honeycombio/opentelemetry-exporter-go v0.3.1
+	github.com/honeycombio/opentelemetry-exporter-go v0.4.0
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/khaiql/dbcleaner v2.3.0+incompatible
@@ -46,7 +46,7 @@ require (
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.5.1
 	github.com/stripe/stripe-go v68.13.0+incompatible
-	go.opentelemetry.io/otel v0.3.0
+	go.opentelemetry.io/otel v0.4.2
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e

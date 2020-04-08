@@ -1419,8 +1419,8 @@ go_repository(
 go_repository(
     name = "com_github_honeycombio_opentelemetry_exporter_go",
     importpath = "github.com/honeycombio/opentelemetry-exporter-go",
-    sum = "h1:oQZwILb+oEyQ45Sa+YGTr3khP50sScrGTYmQI4K+g5Q=",
-    version = "v0.3.1",
+    sum = "h1:ShA8fY9CstxY8YFxBPGnQ/Hq0yZMB7A/2ogQkYU1Ceo=",
+    version = "v0.4.0",
 )
 
 go_repository(
@@ -1454,8 +1454,8 @@ go_repository(
 go_repository(
     name = "io_opentelemetry_go_otel",
     importpath = "go.opentelemetry.io/otel",
-    sum = "h1:x3i+dwRyD5ADPdGGF6uf8KnqxC5b3vpyvo7b2YLocEc=",
-    version = "v0.3.0",
+    sum = "h1:nT+GOqqRR1cIY92xmo1DeiXLHtIlXH1KLRgnsnhuNrs=",
+    version = "v0.4.2",
 )
 
 go_repository(
