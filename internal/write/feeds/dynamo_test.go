@@ -34,35 +34,7 @@ func (suite *dynamoSuite) SetupSuite() {
 }
 
 func (suite *dynamoSuite) SetupTest() {
-	_, err := suite.dynamo.CreateTable(&dynamodb.CreateTableInput{
-		TableName: aws.String("courier_test"),
-		KeySchema: []*dynamodb.KeySchemaElement{
-			{
-				AttributeName: aws.String(db.PK),
-				KeyType:       aws.String(dynamodb.KeyTypeHash),
-			},
-			{
-				AttributeName: aws.String(db.SK),
-				KeyType:       aws.String(dynamodb.KeyTypeRange),
-			},
-		},
-		AttributeDefinitions: []*dynamodb.AttributeDefinition{
-			{
-				AttributeName: aws.String(db.PK),
-				AttributeType: aws.String(dynamodb.ScalarAttributeTypeS),
-			},
-			{
-				AttributeName: aws.String(db.SK),
-				AttributeType: aws.String(dynamodb.ScalarAttributeTypeS),
-			},
-		},
-		GlobalSecondaryIndexes: nil,
-		ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
-			ReadCapacityUnits:  aws.Int64(5),
-			WriteCapacityUnits: aws.Int64(5),
-		},
-	})
-	suite.NoError(err)
+	suite.NoError(db.CreateDynamoTable(suite.dynamo, "courier_test"))
 }
 
 func (suite *dynamoSuite) TearDownTest() {
