@@ -11,7 +11,9 @@ go_library(
         "feed_repository_dynamo.go",
         "import_posts_command.go",
         "post.go",
+        "post_dynamo.go",
         "post_repository.go",
+        "post_repository_dynamo.go",
         "qry_gen.go",
         "queue_refresh_command.go",
         "refresh_command.go",
@@ -53,6 +55,7 @@ go_test(
     srcs = [
         "dynamo_test.go",
         "feed_repository_dynamo_test.go",
+        "post_repository_dynamo_test.go",
         "post_repository_test.go",
         "suite_test.go",
         "update_options_command_test.go",

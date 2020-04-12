@@ -18,6 +18,7 @@ type dynamoSuite struct {
 	dynamo dynamodbiface.DynamoDBAPI
 
 	feedRepo *FeedRepositoryDynamo
+	postRepo *PostRepositoryDynamo
 }
 
 func (suite *dynamoSuite) SetupSuite() {
@@ -31,6 +32,7 @@ func (suite *dynamoSuite) SetupSuite() {
 
 	cfg := db.DynamoConfig{TableName: "courier_test"}
 	suite.feedRepo = NewFeedRepositoryDynamo(suite.dynamo, cfg)
+	suite.postRepo = NewPostRepositoryDynamo(suite.dynamo, cfg)
 }
 
 func (suite *dynamoSuite) SetupTest() {
