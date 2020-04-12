@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "config.go",
         "gcp.go",
+        "testing.go",
         "trace.go",
         "wire_gen.go",
     ],
@@ -19,5 +20,6 @@ go_library(
         "@io_opentelemetry_go_otel//sdk/export/trace:go_default_library",
         "@io_opentelemetry_go_otel//sdk/resource:go_default_library",
         "@io_opentelemetry_go_otel//sdk/trace:go_default_library",
+        "@io_opentelemetry_go_otel_exporters_otlp//:go_default_library",
     ],
 )

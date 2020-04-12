@@ -530,8 +530,8 @@ go_repository(
 go_repository(
     name = "com_github_gogo_protobuf",
     importpath = "github.com/gogo/protobuf",
-    sum = "h1:xU6/SpYbvkNYiptHJYEDRseDLvYE7wSqhYYNy0QSUzI=",
-    version = "v1.2.0",
+    sum = "h1:DqDEcV5aeaTmdFBePNpYsp3FlcVH/2ISVVM9Qf8PSls=",
+    version = "v1.3.1",
 )
 
 go_repository(
@@ -677,8 +677,8 @@ go_repository(
 go_repository(
     name = "com_github_grpc_ecosystem_grpc_gateway",
     importpath = "github.com/grpc-ecosystem/grpc-gateway",
-    sum = "h1:2+KSC78XiO6Qy0hIjfc1OD9H+hsaJdJlb8Kqsd41CTE=",
-    version = "v1.8.5",
+    sum = "h1:OCJlWkOUoTnl0neNGlf4fUm3TmbEtguw7vR+nGtnDjY=",
+    version = "v1.14.3",
 )
 
 go_repository(
@@ -1020,8 +1020,8 @@ go_repository(
 go_repository(
     name = "com_github_rogpeppe_fastuuid",
     importpath = "github.com/rogpeppe/fastuuid",
-    sum = "h1:gu+uRPtBe88sKxUCEXRoeCvVG90TJmwhiqRpvdhQFng=",
-    version = "v0.0.0-20150106093220-6724a57986af",
+    sum = "h1:Ppwyp6VYCF1nvBTXL3trRso7mXMlRrw9ooo375wvi2s=",
+    version = "v1.2.0",
 )
 
 go_repository(
@@ -1498,4 +1498,34 @@ go_repository(
     importpath = "github.com/vmihailenco/tagparser",
     sum = "h1:quXMXlA39OCbd2wAdTsGDlK9RkOk6Wuw+x37wVyIuWY=",
     version = "v0.1.1",
+)
+
+go_repository(
+    name = "com_github_antihax_optional",
+    importpath = "github.com/antihax/optional",
+    sum = "h1:uZuxRZCz65cG1o6K/xUqImNcYKtmk9ylqaH0itMSvzA=",
+    version = "v0.0.0-20180407024304-ca021399b1a6",
+)
+
+go_repository(
+    name = "com_github_kisielk_errcheck",
+    importpath = "github.com/kisielk/errcheck",
+    sum = "h1:reN85Pxc5larApoH1keMBiu2GWtPqXQ1nc9gx+jOU+E=",
+    version = "v1.2.0",
+)
+
+go_repository(
+    name = "com_github_open_telemetry_opentelemetry_proto",
+    build_extra_args = ["-exclude=opentelemetry/proto"],
+    build_file_proto_mode = "disable",
+    importpath = "github.com/open-telemetry/opentelemetry-proto",
+    sum = "h1:+ASAtcayvoELyCF40+rdCMlBOhZIn5TPDez85zSYc30=",
+    version = "v0.3.0",
+)
+
+go_repository(
+    name = "io_opentelemetry_go_otel_exporters_otlp",
+    importpath = "go.opentelemetry.io/otel/exporters/otlp",
+    sum = "h1:YZyPbFK2hRdOu91m7Qi3W+doHHsTpRBE5fo327q06GE=",
+    version = "v0.4.2",
 )

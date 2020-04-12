@@ -46,6 +46,7 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/stripe/stripe-go v68.13.0+incompatible
 	go.opentelemetry.io/otel v0.4.2
+	go.opentelemetry.io/otel/exporters/otlp v0.4.2
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e

@@ -1,0 +1,45 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "feed_dynamo.go",
+        "feed_repository_dynamo.go",
+        "post_dynamo.go",
+        "post_repository_dynamo.go",
+        "trace.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/write/shared",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/write/feeds:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/dynamodb/dynamodbiface:go_default_library",
+        "@io_opentelemetry_go_otel//api/global:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "dynamo_test.go",
+        "feed_repository_dynamo_test.go",
+        "post_repository_dynamo_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/shared/feeds:go_default_library",
+        "//internal/trace:go_default_library",
+        "//internal/write/feeds:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws/credentials:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws/session:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/dynamodb/dynamodbiface:go_default_library",
+        "@com_github_stretchr_testify//suite:go_default_library",
+        "@io_opentelemetry_go_otel//api/trace:go_default_library",
+    ],
+)
