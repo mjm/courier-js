@@ -516,8 +516,8 @@ go_repository(
 go_repository(
     name = "com_github_go_sql_driver_mysql",
     importpath = "github.com/go-sql-driver/mysql",
-    sum = "h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=",
-    version = "v1.4.1",
+    sum = "h1:ozyZYNQW3x3HtqT1jira07DN2PArx2v7/mN66gGcHOs=",
+    version = "v1.5.0",
 )
 
 go_repository(
@@ -698,8 +698,8 @@ go_repository(
 go_repository(
     name = "com_github_honeycombio_libhoney_go",
     importpath = "github.com/honeycombio/libhoney-go",
-    sum = "h1:QrzeEfRiKDi6FH9zAVncIb5dfc6yOL2RhpXdO6L/s5g=",
-    version = "v1.12.3",
+    sum = "h1:rWAoxhpvu2briq85wZc04osHgKtueCLAk/3igqTX3+Q=",
+    version = "v1.12.4",
 )
 
 go_repository(
@@ -768,8 +768,8 @@ go_repository(
 go_repository(
     name = "com_github_klauspost_compress",
     importpath = "github.com/klauspost/compress",
-    sum = "h1:Znfn6hXZAHaLPNnlqUYRrBSReFHYybslgv4PTiyz6P0=",
-    version = "v1.10.2",
+    sum = "h1:OP96hzwJVBIHYU52pVTI6CczrxPvrGfgqF9N5eTO0Q8=",
+    version = "v1.10.3",
 )
 
 go_repository(
@@ -929,8 +929,8 @@ go_repository(
 go_repository(
     name = "com_github_pkg_errors",
     importpath = "github.com/pkg/errors",
-    sum = "h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=",
-    version = "v0.8.1",
+    sum = "h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=",
+    version = "v0.9.1",
 )
 
 go_repository(
@@ -1321,8 +1321,8 @@ go_repository(
 go_repository(
     name = "org_golang_x_net",
     importpath = "golang.org/x/net",
-    sum = "h1:GuSPYbZzB5/dcLNCwLQLsg3obCJtX9IJhpXkvY7kzk0=",
-    version = "v0.0.0-20200301022130-244492dfa37a",
+    sum = "h1:3G+cUijn7XD+S4eJFddp53Pv7+slrESplyjG25HgL+k=",
+    version = "v0.0.0-20200324143707-d3edc9973b7e",
 )
 
 go_repository(
@@ -1342,8 +1342,8 @@ go_repository(
 go_repository(
     name = "org_golang_x_sys",
     importpath = "golang.org/x/sys",
-    sum = "h1:sfkvUWPNGwSV+8/fNqctR5lS2AqCSqYwXdrjCxp/dXo=",
-    version = "v0.0.0-20200212091648-12a6c2dcc1e4",
+    sum = "h1:xhmwyvizuTgC2qz7ZlMluP20uW+C3Rm0FD/WLDX8884=",
+    version = "v0.0.0-20200323222414-85ca7c5b95cd",
 )
 
 go_repository(
@@ -1419,8 +1419,8 @@ go_repository(
 go_repository(
     name = "com_github_honeycombio_opentelemetry_exporter_go",
     importpath = "github.com/honeycombio/opentelemetry-exporter-go",
-    sum = "h1:ShA8fY9CstxY8YFxBPGnQ/Hq0yZMB7A/2ogQkYU1Ceo=",
-    version = "v0.4.0",
+    sum = "h1:beFjMEK29Z7XxOfzK8OMIhjpB+NFUqX5S/Y0ldjQduA=",
+    version = "v0.4.1-0.20200403221622-c399dc0c29d4",
 )
 
 go_repository(
@@ -1463,4 +1463,39 @@ go_repository(
     importpath = "github.com/felixge/httpsnoop",
     sum = "h1:lvB5Jl89CsZtGIWuTcDM1E/vkVs49/Ml7JJe07l8SPQ=",
     version = "v1.0.1",
+)
+
+go_repository(
+    name = "com_github_aws_aws_sdk_go",
+    importpath = "github.com/aws/aws-sdk-go",
+    sum = "h1:IaXfqtioP6p9SFAnNfsqdNczbR5UNbYqvcZUSsCAdTY=",
+    version = "v1.30.7",
+)
+
+go_repository(
+    name = "com_github_jmespath_go_jmespath",
+    importpath = "github.com/jmespath/go-jmespath",
+    sum = "h1:OS12ieG61fsCg5+qLJ+SsW9NicxNkg3b25OyT2yCeUc=",
+    version = "v0.3.0",
+)
+
+go_repository(
+    name = "com_github_segmentio_ksuid",
+    importpath = "github.com/segmentio/ksuid",
+    sum = "h1:9yBfKyw4ECGTdALaF09Snw3sLJmYIX6AbPJrAy6MrDc=",
+    version = "v1.0.2",
+)
+
+go_repository(
+    name = "com_github_vmihailenco_msgpack_v4",
+    importpath = "github.com/vmihailenco/msgpack/v4",
+    sum = "h1:Q47CePddpNGNhk4GCnAx9DDtASi2rasatE0cd26cZoE=",
+    version = "v4.3.11",
+)
+
+go_repository(
+    name = "com_github_vmihailenco_tagparser",
+    importpath = "github.com/vmihailenco/tagparser",
+    sum = "h1:quXMXlA39OCbd2wAdTsGDlK9RkOk6Wuw+x37wVyIuWY=",
+    version = "v0.1.1",
 )
