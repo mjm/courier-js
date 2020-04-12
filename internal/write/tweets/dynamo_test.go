@@ -1,6 +1,7 @@
 package tweets
 
 import (
+	"context"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -36,7 +37,7 @@ func (suite *dynamoSuite) SetupSuite() {
 }
 
 func (suite *dynamoSuite) SetupTest() {
-	suite.NoError(db.CreateDynamoTable(suite.dynamo, "courier_test"))
+	suite.NoError(db.CreateDynamoTable(context.Background(), suite.dynamo, "courier_test"))
 }
 
 func (suite *dynamoSuite) TearDownTest() {

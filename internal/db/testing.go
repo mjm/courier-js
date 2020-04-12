@@ -1,6 +1,8 @@
 package db
 
 import (
+	"context"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
@@ -15,8 +17,8 @@ func NewTestingDB() DB {
 	return &tracingDB{DB: sqlx.MustOpen("postgres", TestingDSN)}
 }
 
-func CreateDynamoTable(dynamo dynamodbiface.DynamoDBAPI, name string) error {
-	_, err := dynamo.CreateTable(&dynamodb.CreateTableInput{
+func CreateDynamoTable(ctx context.Context, dynamo dynamodbiface.DynamoDBAPI, name string) error {
+	_, err := dynamo.CreateTableWithContext(ctx, &dynamodb.CreateTableInput{
 		TableName: aws.String(name),
 		KeySchema: []*dynamodb.KeySchemaElement{
 			{

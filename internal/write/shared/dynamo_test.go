@@ -42,7 +42,7 @@ func (suite *dynamoSuite) SetupSuite() {
 			WithRegion("local").
 			// WithLogLevel(aws.LogDebugWithHTTPBody).
 			WithCredentials(credentials.NewStaticCredentials("test_id", "test_secret", ""))))
-	suite.Dynamo = dynamodb.New(sess)
+	suite.Dynamo = db.WrapDynamo(dynamodb.New(sess))
 
 	cfg := db.DynamoConfig{TableName: "courier_test"}
 	suite.feedRepo = NewFeedRepositoryDynamo(suite.Dynamo, cfg)
@@ -52,11 +52,11 @@ func (suite *dynamoSuite) SetupSuite() {
 func (suite *dynamoSuite) SetupTest() {
 	ctx, _ := tr.Start(suite.suiteCtx, suite.T().Name())
 	suite.Ctx = ctx
-	suite.NoError(db.CreateDynamoTable(suite.Dynamo, "courier_test"))
+	suite.NoError(db.CreateDynamoTable(ctx, suite.Dynamo, "courier_test"))
 }
 
 func (suite *dynamoSuite) TearDownTest() {
-	_, err := suite.Dynamo.DeleteTable(&dynamodb.DeleteTableInput{
+	_, err := suite.Dynamo.DeleteTableWithContext(suite.Ctx, &dynamodb.DeleteTableInput{
 		TableName: aws.String("courier_test"),
 	})
 	suite.NoError(err)

@@ -1,7 +1,6 @@
 package shared
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -10,13 +9,11 @@ import (
 )
 
 func (suite *dynamoSuite) TestCreateFeed() {
-	ctx := context.Background()
-
 	feedID := feeds.NewFeedIDDynamo()
-	err := suite.feedRepo.Create(ctx, "test_user", feedID, "https://www.example.org/feed.json")
+	err := suite.feedRepo.Create(suite.Ctx, "test_user", feedID, "https://www.example.org/feed.json")
 	suite.NoError(err)
 
-	feed, err := suite.feedRepo.Get(ctx, "test_user", feedID)
+	feed, err := suite.feedRepo.Get(suite.Ctx, "test_user", feedID)
 	suite.NoError(err)
 	suite.Equal("test_user", feed.UserID)
 	suite.Equal(feedID, feed.ID)
@@ -28,13 +25,11 @@ func (suite *dynamoSuite) TestCreateFeed() {
 }
 
 func (suite *dynamoSuite) TestUpdateFeed() {
-	ctx := context.Background()
-
 	feedID := feeds.NewFeedIDDynamo()
-	err := suite.feedRepo.Create(ctx, "test_user", feedID, "https://www.example.org/feed.json")
+	err := suite.feedRepo.Create(suite.Ctx, "test_user", feedID, "https://www.example.org/feed.json")
 	suite.NoError(err)
 
-	err = suite.feedRepo.UpdateDetails(ctx, UpdateFeedParamsDynamo{
+	err = suite.feedRepo.UpdateDetails(suite.Ctx, UpdateFeedParamsDynamo{
 		ID:          feedID,
 		UserID:      "test_user",
 		Title:       "Example Feed",
@@ -47,7 +42,7 @@ func (suite *dynamoSuite) TestUpdateFeed() {
 	})
 	suite.NoError(err)
 
-	feed, err := suite.feedRepo.Get(ctx, "test_user", feedID)
+	feed, err := suite.feedRepo.Get(suite.Ctx, "test_user", feedID)
 	suite.NoError(err)
 
 	suite.Equal("Example Feed", feed.Title)
@@ -58,7 +53,7 @@ func (suite *dynamoSuite) TestUpdateFeed() {
 		LastModified: "blah",
 	}, feed.CachingHeaders)
 
-	err = suite.feedRepo.UpdateDetails(ctx, UpdateFeedParamsDynamo{
+	err = suite.feedRepo.UpdateDetails(suite.Ctx, UpdateFeedParamsDynamo{
 		ID:               feedID,
 		UserID:           "test_user",
 		Title:            "",
@@ -68,7 +63,7 @@ func (suite *dynamoSuite) TestUpdateFeed() {
 	})
 	suite.NoError(err)
 
-	feed, err = suite.feedRepo.Get(ctx, "test_user", feedID)
+	feed, err = suite.feedRepo.Get(suite.Ctx, "test_user", feedID)
 	suite.NoError(err)
 
 	suite.Equal("", feed.Title)
@@ -78,41 +73,37 @@ func (suite *dynamoSuite) TestUpdateFeed() {
 }
 
 func (suite *dynamoSuite) TestUpdateFeedSettings() {
-	ctx := context.Background()
-
 	feedID := feeds.NewFeedIDDynamo()
-	err := suite.feedRepo.Create(ctx, "test_user", feedID, "https://www.example.org/feed.json")
+	err := suite.feedRepo.Create(suite.Ctx, "test_user", feedID, "https://www.example.org/feed.json")
 	suite.NoError(err)
 
-	err = suite.feedRepo.UpdateSettings(ctx, UpdateFeedSettingsParams{
+	err = suite.feedRepo.UpdateSettings(suite.Ctx, UpdateFeedSettingsParams{
 		ID:       feedID,
 		UserID:   "test_user",
 		Autopost: true,
 	})
 	suite.NoError(err)
 
-	feed, err := suite.feedRepo.Get(ctx, "test_user", feedID)
+	feed, err := suite.feedRepo.Get(suite.Ctx, "test_user", feedID)
 	suite.NoError(err)
 	suite.True(feed.Autopost)
 
-	err = suite.feedRepo.UpdateSettings(ctx, UpdateFeedSettingsParams{
+	err = suite.feedRepo.UpdateSettings(suite.Ctx, UpdateFeedSettingsParams{
 		ID:       feedID,
 		UserID:   "test_user",
 		Autopost: false,
 	})
 	suite.NoError(err)
 
-	feed, err = suite.feedRepo.Get(ctx, "test_user", feedID)
+	feed, err = suite.feedRepo.Get(suite.Ctx, "test_user", feedID)
 	suite.NoError(err)
 	suite.False(feed.Autopost)
 }
 
 func (suite *dynamoSuite) TestGetFeedWithRecentPosts() {
-	ctx := context.Background()
-
 	feedID := feeds.NewFeedIDDynamo()
 	suite.NoError(suite.feedRepo.Create(
-		ctx, "test_user", feedID, "https://www.example.org/feed.json"))
+		suite.Ctx, "test_user", feedID, "https://www.example.org/feed.json"))
 
 	var ps []WritePostParams
 	for i := 0; i < 20; i++ {
@@ -129,9 +120,9 @@ func (suite *dynamoSuite) TestGetFeedWithRecentPosts() {
 			ModifiedAt:  &t,
 		})
 	}
-	suite.NoError(suite.postRepo.Write(ctx, ps))
+	suite.NoError(suite.postRepo.Write(suite.Ctx, ps))
 
-	feed, posts, err := suite.feedRepo.GetWithRecentPosts(ctx, feedID)
+	feed, posts, err := suite.feedRepo.GetWithRecentPosts(suite.Ctx, feedID)
 	suite.NoError(err)
 	suite.NotNil(feed)
 	suite.Equal(10, len(posts))

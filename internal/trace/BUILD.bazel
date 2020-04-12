@@ -17,6 +17,7 @@ go_library(
         "@com_github_honeycombio_opentelemetry_exporter_go//honeycomb:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
         "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//exporters/trace/stdout:go_default_library",
         "@io_opentelemetry_go_otel//sdk/export/trace:go_default_library",
         "@io_opentelemetry_go_otel//sdk/resource:go_default_library",
         "@io_opentelemetry_go_otel//sdk/trace:go_default_library",
