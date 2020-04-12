@@ -1,11 +1,13 @@
-package feeds
+package shared
 
 import (
 	"time"
+
+	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 type FeedDynamo struct {
-	ID               FeedID
+	ID               feeds.FeedID
 	UserID           string
 	URL              string
 	Title            string
@@ -13,7 +15,7 @@ type FeedDynamo struct {
 	RefreshedAt      *time.Time
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
-	CachingHeaders   *CachingHeaders
+	CachingHeaders   *feeds.CachingHeaders
 	MicropubEndpoint string
 	Autopost         bool
 }

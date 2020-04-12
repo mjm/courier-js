@@ -1,4 +1,4 @@
-package feeds
+package shared
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 const (
@@ -32,13 +33,13 @@ func NewPostRepositoryDynamo(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.D
 	}
 }
 
-func (r *PostRepositoryDynamo) FindByItemIDs(ctx context.Context, feedID FeedID, itemIDs []PostID) ([]*PostDynamo, error) {
+func (r *PostRepositoryDynamo) FindByItemIDs(ctx context.Context, feedID feeds.FeedID, itemIDs []feeds.PostID) ([]*PostDynamo, error) {
 	var keys dynamodb.KeysAndAttributes
 	for _, itemID := range itemIDs {
 		keys.Keys = append(keys.Keys, r.primaryKey(feedID, itemID))
 	}
 
-	posts := make(map[PostID]*PostDynamo)
+	posts := make(map[feeds.PostID]*PostDynamo)
 	var err2 error
 	err := r.dynamo.BatchGetItemPagesWithContext(ctx, &dynamodb.BatchGetItemInput{
 		RequestItems: map[string]*dynamodb.KeysAndAttributes{
@@ -46,46 +47,12 @@ func (r *PostRepositoryDynamo) FindByItemIDs(ctx context.Context, feedID FeedID,
 		},
 	}, func(page *dynamodb.BatchGetItemOutput, lastPage bool) bool {
 		for _, item := range page.Responses[r.dynamoConfig.TableName] {
-			feedID := strings.SplitN(aws.StringValue(item[db.PK].S), "#", 2)[1]
-			itemID := strings.SplitN(aws.StringValue(item[db.SK].S), "#", 2)[1]
-
-			t, err := time.Parse(time.RFC3339, aws.StringValue(item[colCreatedAt].S))
+			post, err := postFromAttributes(item)
 			if err != nil {
 				err2 = err
 				return false
 			}
 
-			post := &PostDynamo{
-				ID:        PostID(itemID),
-				FeedID:    FeedID(feedID),
-				URL:       aws.StringValue(item[colURL].S),
-				CreatedAt: t,
-			}
-			if titleVal, ok := item[colTitle]; ok {
-				post.Title = aws.StringValue(titleVal.S)
-			}
-			if textContentVal, ok := item[colTextContent]; ok {
-				post.TextContent = aws.StringValue(textContentVal.S)
-			}
-			if htmlContentVal, ok := item[colHTMLContent]; ok {
-				post.HTMLContent = aws.StringValue(htmlContentVal.S)
-			}
-			if publishedAtVal, ok := item[colPublishedAt]; ok {
-				t, err := time.Parse(time.RFC3339, aws.StringValue(publishedAtVal.S))
-				if err != nil {
-					err2 = err
-					return false
-				}
-				post.PublishedAt = &t
-			}
-			if modifiedAtVal, ok := item[colModifiedAt]; ok {
-				t, err := time.Parse(time.RFC3339, aws.StringValue(modifiedAtVal.S))
-				if err != nil {
-					err2 = err
-					return false
-				}
-				post.ModifiedAt = &t
-			}
 			posts[post.ID] = post
 		}
 		return true
@@ -109,8 +76,8 @@ func (r *PostRepositoryDynamo) FindByItemIDs(ctx context.Context, feedID FeedID,
 }
 
 type WritePostParams struct {
-	FeedID      FeedID
-	ItemID      PostID
+	FeedID      feeds.FeedID
+	ItemID      feeds.PostID
 	TextContent string
 	HTMLContent string
 	Title       string
@@ -125,9 +92,18 @@ func (r *PostRepositoryDynamo) Write(ctx context.Context, ps []WritePostParams) 
 
 	for _, p := range ps {
 		pk, sk := r.primaryKeyValues(p.FeedID, p.ItemID)
+
+		var pubStr string
+		if p.PublishedAt != nil {
+			pubStr = p.PublishedAt.Format(time.RFC3339)
+		}
+		publishedKey := fmt.Sprintf("#POST#%s", pubStr)
+
 		item := map[string]*dynamodb.AttributeValue{
 			db.PK:        {S: &pk},
 			db.SK:        {S: &sk},
+			db.GSI1PK:    {S: &pk},
+			db.GSI1SK:    {S: &publishedKey},
 			colURL:       {S: aws.String(p.URL)},
 			colCreatedAt: {S: &now},
 			// TODO figure out how to handle updated at if we care
@@ -141,10 +117,8 @@ func (r *PostRepositoryDynamo) Write(ctx context.Context, ps []WritePostParams) 
 		if p.Title != "" {
 			item[colTitle] = &dynamodb.AttributeValue{S: aws.String(p.Title)}
 		}
-		if p.PublishedAt != nil {
-			item[colPublishedAt] = &dynamodb.AttributeValue{
-				S: aws.String(p.PublishedAt.Format(time.RFC3339)),
-			}
+		if pubStr != "" {
+			item[colPublishedAt] = &dynamodb.AttributeValue{S: &pubStr}
 		}
 		if p.ModifiedAt != nil {
 			item[colModifiedAt] = &dynamodb.AttributeValue{
@@ -170,16 +144,58 @@ func (r *PostRepositoryDynamo) Write(ctx context.Context, ps []WritePostParams) 
 	return nil
 }
 
-func (r *PostRepositoryDynamo) primaryKeyValues(feedID FeedID, postID PostID) (string, string) {
+func (r *PostRepositoryDynamo) primaryKeyValues(feedID feeds.FeedID, postID feeds.PostID) (string, string) {
 	pk := fmt.Sprintf("FEED#%s", feedID)
 	sk := fmt.Sprintf("POST#%s", postID)
 	return pk, sk
 }
 
-func (r *PostRepositoryDynamo) primaryKey(feedID FeedID, postID PostID) map[string]*dynamodb.AttributeValue {
+func (r *PostRepositoryDynamo) primaryKey(feedID feeds.FeedID, postID feeds.PostID) map[string]*dynamodb.AttributeValue {
 	pk, sk := r.primaryKeyValues(feedID, postID)
 	return map[string]*dynamodb.AttributeValue{
 		db.PK: {S: &pk},
 		db.SK: {S: &sk},
 	}
+}
+
+func postFromAttributes(attrs map[string]*dynamodb.AttributeValue) (*PostDynamo, error) {
+	feedID := strings.SplitN(aws.StringValue(attrs[db.PK].S), "#", 2)[1]
+	itemID := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 2)[1]
+
+	t, err := time.Parse(time.RFC3339, aws.StringValue(attrs[colCreatedAt].S))
+	if err != nil {
+		return nil, err
+	}
+
+	post := &PostDynamo{
+		ID:        feeds.PostID(itemID),
+		FeedID:    feeds.FeedID(feedID),
+		URL:       aws.StringValue(attrs[colURL].S),
+		CreatedAt: t,
+	}
+	if titleVal, ok := attrs[colTitle]; ok {
+		post.Title = aws.StringValue(titleVal.S)
+	}
+	if textContentVal, ok := attrs[colTextContent]; ok {
+		post.TextContent = aws.StringValue(textContentVal.S)
+	}
+	if htmlContentVal, ok := attrs[colHTMLContent]; ok {
+		post.HTMLContent = aws.StringValue(htmlContentVal.S)
+	}
+	if publishedAtVal, ok := attrs[colPublishedAt]; ok {
+		t, err := time.Parse(time.RFC3339, aws.StringValue(publishedAtVal.S))
+		if err != nil {
+			return nil, err
+		}
+		post.PublishedAt = &t
+	}
+	if modifiedAtVal, ok := attrs[colModifiedAt]; ok {
+		t, err := time.Parse(time.RFC3339, aws.StringValue(modifiedAtVal.S))
+		if err != nil {
+			return nil, err
+		}
+		post.ModifiedAt = &t
+	}
+
+	return post, nil
 }

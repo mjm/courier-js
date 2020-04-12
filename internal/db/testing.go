@@ -37,8 +37,37 @@ func CreateDynamoTable(dynamo dynamodbiface.DynamoDBAPI, name string) error {
 				AttributeName: aws.String(SK),
 				AttributeType: aws.String(dynamodb.ScalarAttributeTypeS),
 			},
+			{
+				AttributeName: aws.String(GSI1PK),
+				AttributeType: aws.String(dynamodb.ScalarAttributeTypeS),
+			},
+			{
+				AttributeName: aws.String(GSI1SK),
+				AttributeType: aws.String(dynamodb.ScalarAttributeTypeS),
+			},
 		},
-		GlobalSecondaryIndexes: nil,
+		GlobalSecondaryIndexes: []*dynamodb.GlobalSecondaryIndex{
+			{
+				IndexName: aws.String(GSI1),
+				KeySchema: []*dynamodb.KeySchemaElement{
+					{
+						AttributeName: aws.String(GSI1PK),
+						KeyType:       aws.String(dynamodb.KeyTypeHash),
+					},
+					{
+						AttributeName: aws.String(GSI1SK),
+						KeyType:       aws.String(dynamodb.KeyTypeRange),
+					},
+				},
+				ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
+					ReadCapacityUnits:  aws.Int64(5),
+					WriteCapacityUnits: aws.Int64(5),
+				},
+				Projection: &dynamodb.Projection{
+					ProjectionType: aws.String(dynamodb.ProjectionTypeAll),
+				},
+			},
+		},
 		ProvisionedThroughput: &dynamodb.ProvisionedThroughput{
 			ReadCapacityUnits:  aws.Int64(5),
 			WriteCapacityUnits: aws.Int64(5),

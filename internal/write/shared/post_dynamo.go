@@ -1,12 +1,14 @@
-package feeds
+package shared
 
 import (
 	"time"
+
+	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 type PostDynamo struct {
-	ID          PostID
-	FeedID      FeedID
+	ID          feeds.PostID
+	FeedID      feeds.FeedID
 	TextContent string
 	HTMLContent string
 	Title       string

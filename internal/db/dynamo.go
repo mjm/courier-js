@@ -1,8 +1,10 @@
 package db
 
 const (
-	PK     = "PK"
-	SK     = "SK"
+	PK = "PK"
+	SK = "SK"
+
+	GSI1   = "GSI1"
 	GSI1PK = "GSI1PK"
 	GSI1SK = "GSI1SK"
 )
