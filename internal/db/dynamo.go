@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"go.opentelemetry.io/otel/api/core"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 )
@@ -26,13 +27,23 @@ var (
 	dbTypeDynamo   = key.String("db.type", "dynamodb")
 	dbInstanceKey  = key.New("db.instance").String
 	dbStatementKey = key.New("db.statement").String
+	indexNameKey   = key.New("db.index").String
 
-	pageCountKey = key.New("db.page_count").Int
+	pageCountKey          = key.New("db.page_count").Int
+	requestedItemCountKey = key.New("db.request_item_count").Int
 
 	unitsConsumedKey  = key.New("db.consumed.total").String
 	readsConsumedKey  = key.New("db.consumed.reads").String
 	writesConsumedKey = key.New("db.consumed.writes").String
 )
+
+func keyAttr(k string, v *dynamodb.AttributeValue) core.KeyValue {
+	return key.String("db.key."+k, v.String())
+}
+
+func exprValAttr(k string, v *dynamodb.AttributeValue) core.KeyValue {
+	return key.String("db.value."+k, v.String())
+}
 
 type DynamoConfig struct {
 	TableName string `env:"DYNAMO_TABLE_NAME"`
@@ -54,11 +65,15 @@ func (d *DynamoDB) BatchGetItemWithContext(ctx context.Context, input *dynamodb.
 	defer span.End()
 
 	var tables []string
-	for table := range input.RequestItems {
+	var itemCount int
+	for table, items := range input.RequestItems {
 		tables = append(tables, table)
+		itemCount += len(items.Keys)
 	}
 
-	span.SetAttributes(dbInstanceKey(strings.Join(tables, ", ")))
+	span.SetAttributes(
+		dbInstanceKey(strings.Join(tables, ", ")),
+		requestedItemCountKey(itemCount))
 
 	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
 
@@ -91,11 +106,15 @@ func (d *DynamoDB) BatchGetItemPagesWithContext(ctx context.Context, input *dyna
 	defer span.End()
 
 	var tables []string
-	for table := range input.RequestItems {
+	var itemCount int
+	for table, items := range input.RequestItems {
 		tables = append(tables, table)
+		itemCount += len(items.Keys)
 	}
 
-	span.SetAttributes(dbInstanceKey(strings.Join(tables, ", ")))
+	span.SetAttributes(
+		dbInstanceKey(strings.Join(tables, ", ")),
+		requestedItemCountKey(itemCount))
 
 	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
 
@@ -133,11 +152,15 @@ func (d *DynamoDB) BatchWriteItemWithContext(ctx context.Context, input *dynamod
 	defer span.End()
 
 	var tables []string
-	for table := range input.RequestItems {
+	var itemCount int
+	for table, items := range input.RequestItems {
 		tables = append(tables, table)
+		itemCount += len(items)
 	}
 
-	span.SetAttributes(dbInstanceKey(strings.Join(tables, ", ")))
+	span.SetAttributes(
+		dbInstanceKey(strings.Join(tables, ", ")),
+		requestedItemCountKey(itemCount))
 
 	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
 
@@ -205,6 +228,10 @@ func (d *DynamoDB) GetItemWithContext(ctx context.Context, input *dynamodb.GetIt
 			dbInstanceKey(aws.StringValue(input.TableName))))
 	defer span.End()
 
+	for k, v := range input.Key {
+		span.SetAttributes(keyAttr(k, v))
+	}
+
 	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
 
 	out, err := d.real.GetItemWithContext(ctx, input, opts...)
@@ -225,6 +252,14 @@ func (d *DynamoDB) PutItemWithContext(ctx context.Context, input *dynamodb.PutIt
 			dbTypeDynamo,
 			dbInstanceKey(aws.StringValue(input.TableName))))
 	defer span.End()
+
+	// use the fact that we know the PK and SK names
+	if v, ok := input.Item[PK]; ok {
+		span.SetAttributes(keyAttr(PK, v))
+	}
+	if v, ok := input.Item[SK]; ok {
+		span.SetAttributes(keyAttr(SK, v))
+	}
 
 	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
 
@@ -247,6 +282,17 @@ func (d *DynamoDB) QueryWithContext(ctx context.Context, input *dynamodb.QueryIn
 			dbInstanceKey(aws.StringValue(input.TableName))))
 	defer span.End()
 
+	if input.IndexName != nil {
+		span.SetAttributes(indexNameKey(aws.StringValue(input.IndexName)))
+	}
+
+	span.SetAttributes(
+		dbStatementKey(aws.StringValue(input.KeyConditionExpression)))
+
+	for k, v := range input.ExpressionAttributeValues {
+		span.SetAttributes(exprValAttr(k[1:], v))
+	}
+
 	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
 
 	out, err := d.real.QueryWithContext(ctx, input, opts...)
@@ -267,6 +313,16 @@ func (d *DynamoDB) UpdateItemWithContext(ctx context.Context, input *dynamodb.Up
 			dbTypeDynamo,
 			dbInstanceKey(aws.StringValue(input.TableName))))
 	defer span.End()
+
+	for k, v := range input.Key {
+		span.SetAttributes(keyAttr(k, v))
+	}
+
+	span.SetAttributes(dbStatementKey(aws.StringValue(input.UpdateExpression)))
+
+	for k, v := range input.ExpressionAttributeValues {
+		span.SetAttributes(exprValAttr(k[1:], v))
+	}
 
 	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
 
