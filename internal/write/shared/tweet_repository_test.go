@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 )
 
 func (suite *dynamoSuite) TestCreateSingleTweet() {
@@ -18,7 +19,7 @@ func (suite *dynamoSuite) TestCreateSingleTweet() {
 				FeedID:      feedID,
 				PostID:      postID,
 				PublishedAt: t,
-				Tweets: []*Tweet{
+				Tweets: []*model.Tweet{
 					{
 						Body: "This is my tweet text.",
 						MediaURLs: []string{
@@ -36,7 +37,7 @@ func (suite *dynamoSuite) TestCreateSingleTweet() {
 	suite.Equal("test_user", tg.UserID)
 	suite.Equal(feedID, tg.FeedID)
 	suite.Equal(postID, tg.PostID)
-	suite.Equal([]*Tweet{
+	suite.Equal([]*model.Tweet{
 		{
 			Body: "This is my tweet text.",
 			MediaURLs: []string{
@@ -45,8 +46,8 @@ func (suite *dynamoSuite) TestCreateSingleTweet() {
 		},
 	}, tg.Tweets)
 	suite.Empty(tg.RetweetID)
-	suite.Equal(ActionTweet, tg.Action)
-	suite.Equal(Draft, tg.Status)
+	suite.Equal(model.ActionTweet, tg.Action)
+	suite.Equal(model.Draft, tg.Status)
 	suite.NotEmpty(tg.CreatedAt)
 }
 
@@ -75,8 +76,8 @@ func (suite *dynamoSuite) TestCreateSingleRetweet() {
 	suite.Equal(postID, tg.PostID)
 	suite.Empty(tg.Tweets)
 	suite.Equal("1234567890", tg.RetweetID)
-	suite.Equal(ActionRetweet, tg.Action)
-	suite.Equal(Draft, tg.Status)
+	suite.Equal(model.ActionRetweet, tg.Action)
+	suite.Equal(model.Draft, tg.Status)
 	suite.NotEmpty(tg.CreatedAt)
 }
 
@@ -98,7 +99,7 @@ func (suite *dynamoSuite) TestCancelTweet() {
 				FeedID:      feedID,
 				PostID:      postID,
 				PublishedAt: t,
-				Tweets: []*Tweet{
+				Tweets: []*model.Tweet{
 					{
 						Body: "This is my tweet text.",
 						MediaURLs: []string{
@@ -116,7 +117,7 @@ func (suite *dynamoSuite) TestCancelTweet() {
 	suite.Require().NotNil(tg)
 
 	suite.NotNil(tg.CanceledAt)
-	suite.Equal(Canceled, tg.Status)
+	suite.Equal(model.Canceled, tg.Status)
 
 	suite.Require().Equal(ErrCannotCancel, suite.tweetRepo.Cancel(suite.Ctx, "test_user", feedID, postID))
 }

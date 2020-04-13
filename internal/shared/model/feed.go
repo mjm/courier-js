@@ -1,4 +1,4 @@
-package shared
+package model
 
 import (
 	"strings"
@@ -9,6 +9,20 @@ import (
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/write/feeds"
+)
+
+const (
+	ColURL              = "URL"
+	ColTitle            = "Title"
+	ColHomePageURL      = "HomePageURL"
+	ColRefreshedAt      = "RefreshedAt"
+	ColCreatedAt        = "CreatedAt"
+	ColUpdatedAt        = "UpdatedAt"
+	ColMicropubEndpoint = "MicropubEndpoint"
+	ColCachingHeaders   = "CachingHeaders"
+	ColEtag             = "Etag"
+	ColLastModified     = "LastModified"
+	ColAutopost         = "Autopost"
 )
 
 type Feed struct {
@@ -25,26 +39,26 @@ type Feed struct {
 	Autopost         bool
 }
 
-func newFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) {
+func NewFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) {
 	userID := strings.SplitN(aws.StringValue(attrs[db.PK].S), "#", 2)[1]
 	feedID := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 2)[1]
 
 	feed := &Feed{
 		ID:       feeds.FeedID(feedID),
 		UserID:   userID,
-		URL:      aws.StringValue(attrs[colURL].S),
-		Autopost: aws.BoolValue(attrs[colAutopost].BOOL),
+		URL:      aws.StringValue(attrs[ColURL].S),
+		Autopost: aws.BoolValue(attrs[ColAutopost].BOOL),
 	}
 
-	if titleVal, ok := attrs[colTitle]; ok {
+	if titleVal, ok := attrs[ColTitle]; ok {
 		feed.Title = aws.StringValue(titleVal.S)
 	}
 
-	if homePageURLVal, ok := attrs[colHomePageURL]; ok {
+	if homePageURLVal, ok := attrs[ColHomePageURL]; ok {
 		feed.HomePageURL = aws.StringValue(homePageURLVal.S)
 	}
 
-	if refreshedAtVal, ok := attrs[colRefreshedAt]; ok {
+	if refreshedAtVal, ok := attrs[ColRefreshedAt]; ok {
 		t, err := time.Parse(time.RFC3339, aws.StringValue(refreshedAtVal.S))
 		if err != nil {
 			return nil, err
@@ -54,24 +68,24 @@ func newFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) 
 
 	var err error
 
-	feed.CreatedAt, err = time.Parse(time.RFC3339, aws.StringValue(attrs[colCreatedAt].S))
+	feed.CreatedAt, err = time.Parse(time.RFC3339, aws.StringValue(attrs[ColCreatedAt].S))
 	if err != nil {
 		return nil, err
 	}
 
-	feed.UpdatedAt, err = time.Parse(time.RFC3339, aws.StringValue(attrs[colUpdatedAt].S))
+	feed.UpdatedAt, err = time.Parse(time.RFC3339, aws.StringValue(attrs[ColUpdatedAt].S))
 	if err != nil {
 		return nil, err
 	}
 
-	if micropubEndpointVal, ok := attrs[colMicropubEndpoint]; ok {
+	if micropubEndpointVal, ok := attrs[ColMicropubEndpoint]; ok {
 		feed.MicropubEndpoint = aws.StringValue(micropubEndpointVal.S)
 	}
 
-	if cachingHeadersVal, ok := attrs[colCachingHeaders]; ok {
+	if cachingHeadersVal, ok := attrs[ColCachingHeaders]; ok {
 		feed.CachingHeaders = &feeds.CachingHeaders{
-			Etag:         aws.StringValue(cachingHeadersVal.M[colEtag].S),
-			LastModified: aws.StringValue(cachingHeadersVal.M[colLastModified].S),
+			Etag:         aws.StringValue(cachingHeadersVal.M[ColEtag].S),
+			LastModified: aws.StringValue(cachingHeadersVal.M[ColLastModified].S),
 		}
 	}
 

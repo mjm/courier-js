@@ -13,21 +13,8 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/write/feeds"
-)
-
-const (
-	colURL              = "URL"
-	colTitle            = "Title"
-	colHomePageURL      = "HomePageURL"
-	colRefreshedAt      = "RefreshedAt"
-	colCreatedAt        = "CreatedAt"
-	colUpdatedAt        = "UpdatedAt"
-	colMicropubEndpoint = "MicropubEndpoint"
-	colCachingHeaders   = "CachingHeaders"
-	colEtag             = "Etag"
-	colLastModified     = "LastModified"
-	colAutopost         = "Autopost"
 )
 
 var (
@@ -46,7 +33,7 @@ func NewFeedRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoC
 	}
 }
 
-func (r *FeedRepository) Get(ctx context.Context, userID string, feedID feeds.FeedID) (*Feed, error) {
+func (r *FeedRepository) Get(ctx context.Context, userID string, feedID feeds.FeedID) (*model.Feed, error) {
 	res, err := r.dynamo.GetItemWithContext(ctx, &dynamodb.GetItemInput{
 		TableName: &r.dynamoConfig.TableName,
 		Key:       r.primaryKey(userID, feedID),
@@ -59,10 +46,10 @@ func (r *FeedRepository) Get(ctx context.Context, userID string, feedID feeds.Fe
 		return nil, ErrNoFeed
 	}
 
-	return newFeedFromAttrs(res.Item)
+	return model.NewFeedFromAttrs(res.Item)
 }
 
-func (r *FeedRepository) GetWithRecentPosts(ctx context.Context, feedID feeds.FeedID) (*Feed, []*Post, error) {
+func (r *FeedRepository) GetWithRecentPosts(ctx context.Context, feedID feeds.FeedID) (*model.Feed, []*model.Post, error) {
 	pk := fmt.Sprintf("FEED#%s", feedID)
 
 	res, err := r.dynamo.QueryWithContext(ctx, &dynamodb.QueryInput{
@@ -88,14 +75,14 @@ func (r *FeedRepository) GetWithRecentPosts(ctx context.Context, feedID feeds.Fe
 		return nil, nil, ErrNoFeed
 	}
 
-	feed, err := newFeedFromAttrs(res.Items[0])
+	feed, err := model.NewFeedFromAttrs(res.Items[0])
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var posts []*Post
+	var posts []*model.Post
 	for _, item := range res.Items[1:] {
-		post, err := newPostFromAttrs(item)
+		post, err := model.NewPostFromAttrs(item)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -111,14 +98,14 @@ func (r *FeedRepository) Create(ctx context.Context, userID string, feedID feeds
 	_, err := r.dynamo.PutItemWithContext(ctx, &dynamodb.PutItemInput{
 		TableName: &r.dynamoConfig.TableName,
 		Item: map[string]*dynamodb.AttributeValue{
-			db.PK:       {S: &pk},
-			db.SK:       {S: &sk},
-			db.GSI1PK:   {S: &sk},
-			db.GSI1SK:   {S: &sk},
-			"URL":       {S: &url},
-			"Autopost":  {BOOL: aws.Bool(false)},
-			"CreatedAt": {S: &now},
-			"UpdatedAt": {S: &now},
+			db.PK:              {S: &pk},
+			db.SK:              {S: &sk},
+			db.GSI1PK:          {S: &sk},
+			db.GSI1SK:          {S: &sk},
+			model.ColURL:       {S: &url},
+			model.ColAutopost:  {BOOL: aws.Bool(false)},
+			model.ColCreatedAt: {S: &now},
+			model.ColUpdatedAt: {S: &now},
 		},
 		ConditionExpression: aws.String("attribute_not_exists(#pk)"),
 		ExpressionAttributeNames: map[string]*string{
@@ -164,8 +151,8 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 		toSet = append(toSet, "#ch = :ch")
 		vals[":ch"] = &dynamodb.AttributeValue{
 			M: map[string]*dynamodb.AttributeValue{
-				colEtag:         {S: aws.String(params.CachingHeaders.Etag)},
-				colLastModified: {S: aws.String(params.CachingHeaders.LastModified)},
+				model.ColEtag:         {S: aws.String(params.CachingHeaders.Etag)},
+				model.ColLastModified: {S: aws.String(params.CachingHeaders.LastModified)},
 			},
 		}
 	} else {
@@ -189,10 +176,10 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 		ConditionExpression: aws.String("attribute_exists(#pk)"),
 		ExpressionAttributeNames: map[string]*string{
 			"#pk":    aws.String(db.PK),
-			"#title": aws.String(colTitle),
-			"#home":  aws.String(colHomePageURL),
-			"#ch":    aws.String(colCachingHeaders),
-			"#mp":    aws.String(colMicropubEndpoint),
+			"#title": aws.String(model.ColTitle),
+			"#home":  aws.String(model.ColHomePageURL),
+			"#ch":    aws.String(model.ColCachingHeaders),
+			"#mp":    aws.String(model.ColMicropubEndpoint),
 		},
 		ExpressionAttributeValues: vals,
 	})
@@ -221,7 +208,7 @@ func (r *FeedRepository) UpdateSettings(ctx context.Context, params UpdateFeedSe
 		ConditionExpression: aws.String("attribute_exists(#pk)"),
 		ExpressionAttributeNames: map[string]*string{
 			"#pk":       aws.String(db.PK),
-			"#autopost": aws.String(colAutopost),
+			"#autopost": aws.String(model.ColAutopost),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":autopost": {BOOL: aws.Bool(params.Autopost)},

@@ -13,21 +13,12 @@ import (
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 )
 
 var (
 	ErrNoTweet      = status.Error(codes.NotFound, "no tweet found")
 	ErrCannotCancel = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
-)
-
-const (
-	colTweets        = "Tweets"
-	colRetweetID     = "RetweetID"
-	colPostedAt      = "PostedAt"
-	colCanceledAt    = "CanceledAt"
-	colBody          = "Body"
-	colMediaURLs     = "MediaURLs"
-	colPostedTweetID = "PostedTweetID"
 )
 
 type TweetRepository struct {
@@ -42,7 +33,7 @@ func NewTweetRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.Dynamo
 	}
 }
 
-func (r *TweetRepository) Get(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID) (*TweetGroup, error) {
+func (r *TweetRepository) Get(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID) (*model.TweetGroup, error) {
 	res, err := r.dynamo.GetItemWithContext(ctx, &dynamodb.GetItemInput{
 		TableName: &r.dynamoConfig.TableName,
 		Key:       r.primaryKey(userID, feedID, postID),
@@ -55,14 +46,14 @@ func (r *TweetRepository) Get(ctx context.Context, userID string, feedID feeds.F
 		return nil, ErrNoTweet
 	}
 
-	return newTweetGroupFromAttrs(res.Item)
+	return model.NewTweetGroupFromAttrs(res.Item)
 }
 
 type CreateTweetParams struct {
 	FeedID       feeds.FeedID
 	PostID       feeds.PostID
 	PublishedAt  time.Time
-	Tweets       []*Tweet
+	Tweets       []*model.Tweet
 	RetweetID    string
 	PostTaskName string
 }
@@ -82,7 +73,7 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 			db.PK: {S: &pk},
 			db.SK: {S: &sk},
 			// TODO GSI1
-			colCreatedAt: {S: &now},
+			model.ColCreatedAt: {S: &now},
 		}
 
 		if len(params.Tweets) > 0 {
@@ -90,25 +81,25 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 			for _, t := range params.Tweets {
 				tweetAttrs := map[string]*dynamodb.AttributeValue{}
 				if t.Body != "" {
-					tweetAttrs[colBody] = &dynamodb.AttributeValue{S: aws.String(t.Body)}
+					tweetAttrs[model.ColBody] = &dynamodb.AttributeValue{S: aws.String(t.Body)}
 				}
 				if len(t.MediaURLs) > 0 {
 					var urls []*dynamodb.AttributeValue
 					for _, u := range t.MediaURLs {
 						urls = append(urls, &dynamodb.AttributeValue{S: aws.String(u)})
 					}
-					tweetAttrs[colMediaURLs] = &dynamodb.AttributeValue{L: urls}
+					tweetAttrs[model.ColMediaURLs] = &dynamodb.AttributeValue{L: urls}
 				}
 				// if t.PostedTweetID != "" {
-				// 	tweetAttrs[colPostedTweetID] = &dynamodb.AttributeValue{S: aws.String(t.PostedTweetID)}
+				// 	tweetAttrs[model.ColPostedTweetID] = &dynamodb.AttributeValue{S: aws.String(t.PostedTweetID)}
 				// }
 				tweets = append(tweets, &dynamodb.AttributeValue{M: tweetAttrs})
 			}
-			item[colTweets] = &dynamodb.AttributeValue{L: tweets}
+			item[model.ColTweets] = &dynamodb.AttributeValue{L: tweets}
 		}
 
 		if params.RetweetID != "" {
-			item[colRetweetID] = &dynamodb.AttributeValue{S: aws.String(params.RetweetID)}
+			item[model.ColRetweetID] = &dynamodb.AttributeValue{S: aws.String(params.RetweetID)}
 		}
 
 		// TODO post task name and post after
@@ -142,8 +133,8 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, feedID feed
 		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
 			"#pk":          aws.String(db.PK),
-			"#canceled_at": aws.String(colCanceledAt),
-			"#posted_at":   aws.String(colPostedAt),
+			"#canceled_at": aws.String(model.ColCanceledAt),
+			"#posted_at":   aws.String(model.ColPostedAt),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":canceled_at": {S: aws.String(now)},

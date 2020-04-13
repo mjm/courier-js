@@ -3,12 +3,9 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
-        "feed.go",
         "feed_repository.go",
-        "post.go",
         "post_repository.go",
         "trace.go",
-        "tweet.go",
         "tweet_repository.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/write/shared",
@@ -16,6 +13,7 @@ go_library(
     deps = [
         "//internal/db:go_default_library",
         "//internal/shared/feeds:go_default_library",
+        "//internal/shared/model:go_default_library",
         "//internal/write/feeds:go_default_library",
         "@com_github_aws_aws_sdk_go//aws:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
@@ -38,6 +36,7 @@ go_test(
     deps = [
         "//internal/db:go_default_library",
         "//internal/shared/feeds:go_default_library",
+        "//internal/shared/model:go_default_library",
         "//internal/trace:go_default_library",
         "//internal/write/feeds:go_default_library",
         "@com_github_aws_aws_sdk_go//aws:go_default_library",

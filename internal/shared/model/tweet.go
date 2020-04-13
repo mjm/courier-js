@@ -1,4 +1,4 @@
-package shared
+package model
 
 import (
 	"strings"
@@ -9,6 +9,16 @@ import (
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/shared/feeds"
+)
+
+const (
+	ColTweets        = "Tweets"
+	ColRetweetID     = "RetweetID"
+	ColPostedAt      = "PostedAt"
+	ColCanceledAt    = "CanceledAt"
+	ColBody          = "Body"
+	ColMediaURLs     = "MediaURLs"
+	ColPostedTweetID = "PostedTweetID"
 )
 
 type TweetGroup struct {
@@ -55,7 +65,7 @@ const (
 	ActionRetweet TweetAction = "retweet"
 )
 
-func newTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGroup, error) {
+func NewTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGroup, error) {
 	userID := strings.SplitN(aws.StringValue(attrs[db.PK].S), "#", 2)[1]
 	sk := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 4)
 	feedID, postID := sk[1], sk[3]
@@ -66,13 +76,13 @@ func newTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 		PostID: feeds.PostID(postID),
 	}
 
-	t, err := time.Parse(time.RFC3339, aws.StringValue(attrs[colCreatedAt].S))
+	t, err := time.Parse(time.RFC3339, aws.StringValue(attrs[ColCreatedAt].S))
 	if err != nil {
 		return nil, err
 	}
 	tg.CreatedAt = t
 
-	if tweetsVal, ok := attrs[colTweets]; ok {
+	if tweetsVal, ok := attrs[ColTweets]; ok {
 		tg.Action = ActionTweet
 		for _, val := range tweetsVal.L {
 			tweet, err := newTweetFromAttrs(val.M)
@@ -82,19 +92,19 @@ func newTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 
 			tg.Tweets = append(tg.Tweets, tweet)
 		}
-	} else if retweetIDVal, ok := attrs[colRetweetID]; ok {
+	} else if retweetIDVal, ok := attrs[ColRetweetID]; ok {
 		tg.Action = ActionRetweet
 		tg.RetweetID = aws.StringValue(retweetIDVal.S)
 	}
 
-	if postedAtVal, ok := attrs[colPostedAt]; ok {
+	if postedAtVal, ok := attrs[ColPostedAt]; ok {
 		t, err := time.Parse(time.RFC3339, aws.StringValue(postedAtVal.S))
 		if err != nil {
 			return nil, err
 		}
 		tg.PostedAt = &t
 		tg.Status = Posted
-	} else if canceledAtVal, ok := attrs[colCanceledAt]; ok {
+	} else if canceledAtVal, ok := attrs[ColCanceledAt]; ok {
 		t, err := time.Parse(time.RFC3339, aws.StringValue(canceledAtVal.S))
 		if err != nil {
 			return nil, err
@@ -113,15 +123,15 @@ func newTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 func newTweetFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Tweet, error) {
 	t := new(Tweet)
 
-	if bodyVal, ok := attrs[colBody]; ok {
+	if bodyVal, ok := attrs[ColBody]; ok {
 		t.Body = aws.StringValue(bodyVal.S)
 	}
-	if mediaVal, ok := attrs[colMediaURLs]; ok {
+	if mediaVal, ok := attrs[ColMediaURLs]; ok {
 		for _, val := range mediaVal.L {
 			t.MediaURLs = append(t.MediaURLs, aws.StringValue(val.S))
 		}
 	}
-	if postedIDVal, ok := attrs[colPostedTweetID]; ok {
+	if postedIDVal, ok := attrs[ColPostedTweetID]; ok {
 		t.PostedTweetID = aws.StringValue(postedIDVal.S)
 	}
 
