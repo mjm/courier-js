@@ -121,6 +121,29 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 	return nil
 }
 
+func (r *TweetRepository) Cancel(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID) error {
+	now := time.Now().Format(time.RFC3339)
+
+	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
+		TableName:           &r.dynamoConfig.TableName,
+		Key:                 r.primaryKey(userID, feedID, postID),
+		UpdateExpression:    aws.String(`SET #canceled_at = :canceled_at`), // TODO remove post_after and task name
+		ConditionExpression: aws.String(`attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
+		ExpressionAttributeNames: map[string]*string{
+			"#canceled_at": aws.String(colCanceledAt),
+			"#posted_at":   aws.String(colPostedAt),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":canceled_at": {S: aws.String(now)},
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (r *TweetRepository) primaryKeyValues(userID string, feedID feeds.FeedID, postID feeds.PostID) (string, string) {
 	pk := "USER#" + userID
 	sk := fmt.Sprintf("FEED#%s#TWEETGROUP#%s", feedID, postID)

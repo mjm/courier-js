@@ -78,5 +78,37 @@ func (suite *dynamoSuite) TestCreateSingleRetweet() {
 	suite.Equal(ActionRetweet, tg.Action)
 	suite.Equal(Draft, tg.Status)
 	suite.NotEmpty(tg.CreatedAt)
+}
 
+func (suite *dynamoSuite) TestCancelTweet() {
+	feedID := feeds.NewFeedIDDynamo()
+	postID := feeds.PostID("https://www.example.org/post/abc")
+
+	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
+
+	suite.Require().NoError(
+		suite.tweetRepo.Create(suite.Ctx, "test_user", []CreateTweetParams{
+			{
+				FeedID:      feedID,
+				PostID:      postID,
+				PublishedAt: t,
+				Tweets: []*Tweet{
+					{
+						Body: "This is my tweet text.",
+						MediaURLs: []string{
+							"https://www.example.org/media/foo.jpg",
+						},
+					},
+				},
+			},
+		}))
+
+	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx, "test_user", feedID, postID))
+
+	tg, err := suite.tweetRepo.Get(suite.Ctx, "test_user", feedID, postID)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(tg)
+
+	suite.NotNil(tg.CanceledAt)
+	suite.Equal(Canceled, tg.Status)
 }
