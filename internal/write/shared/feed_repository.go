@@ -28,19 +28,19 @@ const (
 	colAutopost         = "Autopost"
 )
 
-type FeedRepositoryDynamo struct {
+type FeedRepository struct {
 	dynamo       dynamodbiface.DynamoDBAPI
 	dynamoConfig db.DynamoConfig
 }
 
-func NewFeedRepositoryDynamo(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *FeedRepositoryDynamo {
-	return &FeedRepositoryDynamo{
+func NewFeedRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *FeedRepository {
+	return &FeedRepository{
 		dynamo:       dynamo,
 		dynamoConfig: dynamoConfig,
 	}
 }
 
-func (r *FeedRepositoryDynamo) Get(ctx context.Context, userID string, feedID feeds.FeedID) (*FeedDynamo, error) {
+func (r *FeedRepository) Get(ctx context.Context, userID string, feedID feeds.FeedID) (*Feed, error) {
 	res, err := r.dynamo.GetItemWithContext(ctx, &dynamodb.GetItemInput{
 		TableName: &r.dynamoConfig.TableName,
 		Key:       r.primaryKey(userID, feedID),
@@ -49,10 +49,10 @@ func (r *FeedRepositoryDynamo) Get(ctx context.Context, userID string, feedID fe
 		return nil, err
 	}
 
-	return feedFromAttributes(res.Item)
+	return newFeedFromAttrs(res.Item)
 }
 
-func (r *FeedRepositoryDynamo) GetWithRecentPosts(ctx context.Context, feedID feeds.FeedID) (*FeedDynamo, []*PostDynamo, error) {
+func (r *FeedRepository) GetWithRecentPosts(ctx context.Context, feedID feeds.FeedID) (*Feed, []*Post, error) {
 	pk := fmt.Sprintf("FEED#%s", feedID)
 
 	res, err := r.dynamo.QueryWithContext(ctx, &dynamodb.QueryInput{
@@ -78,14 +78,14 @@ func (r *FeedRepositoryDynamo) GetWithRecentPosts(ctx context.Context, feedID fe
 		return nil, nil, feeds.ErrNoFeed
 	}
 
-	feed, err := feedFromAttributes(res.Items[0])
+	feed, err := newFeedFromAttrs(res.Items[0])
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var posts []*PostDynamo
+	var posts []*Post
 	for _, item := range res.Items[1:] {
-		post, err := postFromAttributes(item)
+		post, err := newPostFromAttrs(item)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -95,7 +95,7 @@ func (r *FeedRepositoryDynamo) GetWithRecentPosts(ctx context.Context, feedID fe
 	return feed, posts, nil
 }
 
-func (r *FeedRepositoryDynamo) Create(ctx context.Context, userID string, feedID feeds.FeedID, url string) error {
+func (r *FeedRepository) Create(ctx context.Context, userID string, feedID feeds.FeedID, url string) error {
 	pk, sk := r.primaryKeyValues(userID, feedID)
 	now := time.Now().Format(time.RFC3339)
 	_, err := r.dynamo.PutItemWithContext(ctx, &dynamodb.PutItemInput{
@@ -132,7 +132,7 @@ type UpdateFeedParamsDynamo struct {
 	MicropubEndpoint string
 }
 
-func (r *FeedRepositoryDynamo) UpdateDetails(ctx context.Context, params UpdateFeedParamsDynamo) error {
+func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedParamsDynamo) error {
 	var toSet []string
 	var toRemove []string
 	vals := map[string]*dynamodb.AttributeValue{}
@@ -200,7 +200,7 @@ type UpdateFeedSettingsParams struct {
 	Autopost bool
 }
 
-func (r *FeedRepositoryDynamo) UpdateSettings(ctx context.Context, params UpdateFeedSettingsParams) error {
+func (r *FeedRepository) UpdateSettings(ctx context.Context, params UpdateFeedSettingsParams) error {
 	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
 		Key:                 r.primaryKey(params.UserID, params.ID),
@@ -221,69 +221,16 @@ func (r *FeedRepositoryDynamo) UpdateSettings(ctx context.Context, params Update
 	return nil
 }
 
-func (r *FeedRepositoryDynamo) primaryKeyValues(userID string, feedID feeds.FeedID) (string, string) {
+func (r *FeedRepository) primaryKeyValues(userID string, feedID feeds.FeedID) (string, string) {
 	pk := fmt.Sprintf("USER#%s", userID)
 	sk := fmt.Sprintf("FEED#%s", feedID)
 	return pk, sk
 }
 
-func (r *FeedRepositoryDynamo) primaryKey(userID string, feedID feeds.FeedID) map[string]*dynamodb.AttributeValue {
+func (r *FeedRepository) primaryKey(userID string, feedID feeds.FeedID) map[string]*dynamodb.AttributeValue {
 	pk, sk := r.primaryKeyValues(userID, feedID)
 	return map[string]*dynamodb.AttributeValue{
 		db.PK: {S: &pk},
 		db.SK: {S: &sk},
 	}
-}
-
-func feedFromAttributes(attrs map[string]*dynamodb.AttributeValue) (*FeedDynamo, error) {
-	userID := strings.SplitN(aws.StringValue(attrs[db.PK].S), "#", 2)[1]
-	feedID := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 2)[1]
-
-	feed := &FeedDynamo{
-		ID:       feeds.FeedID(feedID),
-		UserID:   userID,
-		URL:      aws.StringValue(attrs[colURL].S),
-		Autopost: aws.BoolValue(attrs[colAutopost].BOOL),
-	}
-
-	if titleVal, ok := attrs[colTitle]; ok {
-		feed.Title = aws.StringValue(titleVal.S)
-	}
-
-	if homePageURLVal, ok := attrs[colHomePageURL]; ok {
-		feed.HomePageURL = aws.StringValue(homePageURLVal.S)
-	}
-
-	if refreshedAtVal, ok := attrs[colRefreshedAt]; ok {
-		t, err := time.Parse(time.RFC3339, aws.StringValue(refreshedAtVal.S))
-		if err != nil {
-			return nil, err
-		}
-		feed.RefreshedAt = &t
-	}
-
-	var err error
-
-	feed.CreatedAt, err = time.Parse(time.RFC3339, aws.StringValue(attrs[colCreatedAt].S))
-	if err != nil {
-		return nil, err
-	}
-
-	feed.UpdatedAt, err = time.Parse(time.RFC3339, aws.StringValue(attrs[colUpdatedAt].S))
-	if err != nil {
-		return nil, err
-	}
-
-	if micropubEndpointVal, ok := attrs[colMicropubEndpoint]; ok {
-		feed.MicropubEndpoint = aws.StringValue(micropubEndpointVal.S)
-	}
-
-	if cachingHeadersVal, ok := attrs[colCachingHeaders]; ok {
-		feed.CachingHeaders = &feeds.CachingHeaders{
-			Etag:         aws.StringValue(cachingHeadersVal.M[colEtag].S),
-			LastModified: aws.StringValue(cachingHeadersVal.M[colLastModified].S),
-		}
-	}
-
-	return feed, nil
 }

@@ -23,8 +23,8 @@ type dynamoSuite struct {
 	Ctx      context.Context
 	suiteCtx context.Context
 
-	feedRepo *FeedRepositoryDynamo
-	postRepo *PostRepositoryDynamo
+	feedRepo *FeedRepository
+	postRepo *PostRepository
 }
 
 func init() {
@@ -45,8 +45,8 @@ func (suite *dynamoSuite) SetupSuite() {
 	suite.Dynamo = db.WrapDynamo(dynamodb.New(sess))
 
 	cfg := db.DynamoConfig{TableName: "courier_test"}
-	suite.feedRepo = NewFeedRepositoryDynamo(suite.Dynamo, cfg)
-	suite.postRepo = NewPostRepositoryDynamo(suite.Dynamo, cfg)
+	suite.feedRepo = NewFeedRepository(suite.Dynamo, cfg)
+	suite.postRepo = NewPostRepository(suite.Dynamo, cfg)
 }
 
 func (suite *dynamoSuite) SetupTest() {

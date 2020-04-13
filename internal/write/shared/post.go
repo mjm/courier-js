@@ -6,7 +6,7 @@ import (
 	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
-type PostDynamo struct {
+type Post struct {
 	ID          feeds.PostID
 	FeedID      feeds.FeedID
 	TextContent string

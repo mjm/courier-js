@@ -3,10 +3,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
-        "feed_dynamo.go",
-        "feed_repository_dynamo.go",
-        "post_dynamo.go",
-        "post_repository_dynamo.go",
+        "feed.go",
+        "feed_repository.go",
+        "post.go",
+        "post_repository.go",
         "trace.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/write/shared",
@@ -24,9 +24,9 @@ go_library(
 go_test(
     name = "go_default_test",
     srcs = [
-        "dynamo_test.go",
-        "feed_repository_dynamo_test.go",
-        "post_repository_dynamo_test.go",
+        "feed_repository_test.go",
+        "post_repository_test.go",
+        "suite_test.go",
     ],
     embed = [":go_default_library"],
     deps = [

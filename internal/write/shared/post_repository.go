@@ -21,25 +21,25 @@ const (
 	colModifiedAt  = "ModifiedAt"
 )
 
-type PostRepositoryDynamo struct {
+type PostRepository struct {
 	dynamo       dynamodbiface.DynamoDBAPI
 	dynamoConfig db.DynamoConfig
 }
 
-func NewPostRepositoryDynamo(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *PostRepositoryDynamo {
-	return &PostRepositoryDynamo{
+func NewPostRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *PostRepository {
+	return &PostRepository{
 		dynamo:       dynamo,
 		dynamoConfig: dynamoConfig,
 	}
 }
 
-func (r *PostRepositoryDynamo) FindByItemIDs(ctx context.Context, feedID feeds.FeedID, itemIDs []feeds.PostID) ([]*PostDynamo, error) {
+func (r *PostRepository) FindByItemIDs(ctx context.Context, feedID feeds.FeedID, itemIDs []feeds.PostID) ([]*Post, error) {
 	var keys dynamodb.KeysAndAttributes
 	for _, itemID := range itemIDs {
 		keys.Keys = append(keys.Keys, r.primaryKey(feedID, itemID))
 	}
 
-	posts := make(map[feeds.PostID]*PostDynamo)
+	posts := make(map[feeds.PostID]*Post)
 	var err2 error
 	err := r.dynamo.BatchGetItemPagesWithContext(ctx, &dynamodb.BatchGetItemInput{
 		RequestItems: map[string]*dynamodb.KeysAndAttributes{
@@ -47,7 +47,7 @@ func (r *PostRepositoryDynamo) FindByItemIDs(ctx context.Context, feedID feeds.F
 		},
 	}, func(page *dynamodb.BatchGetItemOutput, lastPage bool) bool {
 		for _, item := range page.Responses[r.dynamoConfig.TableName] {
-			post, err := postFromAttributes(item)
+			post, err := newPostFromAttrs(item)
 			if err != nil {
 				err2 = err
 				return false
@@ -65,7 +65,7 @@ func (r *PostRepositoryDynamo) FindByItemIDs(ctx context.Context, feedID feeds.F
 		return nil, err2
 	}
 
-	var ps []*PostDynamo
+	var ps []*Post
 	for _, itemID := range itemIDs {
 		if p, ok := posts[itemID]; ok {
 			ps = append(ps, p)
@@ -86,7 +86,7 @@ type WritePostParams struct {
 	ModifiedAt  *time.Time
 }
 
-func (r *PostRepositoryDynamo) Write(ctx context.Context, ps []WritePostParams) error {
+func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error {
 	now := time.Now().Format(time.RFC3339)
 	var reqs []*dynamodb.WriteRequest
 
@@ -144,13 +144,13 @@ func (r *PostRepositoryDynamo) Write(ctx context.Context, ps []WritePostParams) 
 	return nil
 }
 
-func (r *PostRepositoryDynamo) primaryKeyValues(feedID feeds.FeedID, postID feeds.PostID) (string, string) {
+func (r *PostRepository) primaryKeyValues(feedID feeds.FeedID, postID feeds.PostID) (string, string) {
 	pk := fmt.Sprintf("FEED#%s", feedID)
 	sk := fmt.Sprintf("POST#%s", postID)
 	return pk, sk
 }
 
-func (r *PostRepositoryDynamo) primaryKey(feedID feeds.FeedID, postID feeds.PostID) map[string]*dynamodb.AttributeValue {
+func (r *PostRepository) primaryKey(feedID feeds.FeedID, postID feeds.PostID) map[string]*dynamodb.AttributeValue {
 	pk, sk := r.primaryKeyValues(feedID, postID)
 	return map[string]*dynamodb.AttributeValue{
 		db.PK: {S: &pk},
@@ -158,7 +158,7 @@ func (r *PostRepositoryDynamo) primaryKey(feedID feeds.FeedID, postID feeds.Post
 	}
 }
 
-func postFromAttributes(attrs map[string]*dynamodb.AttributeValue) (*PostDynamo, error) {
+func newPostFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Post, error) {
 	feedID := strings.SplitN(aws.StringValue(attrs[db.PK].S), "#", 2)[1]
 	itemID := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 2)[1]
 
@@ -167,7 +167,7 @@ func postFromAttributes(attrs map[string]*dynamodb.AttributeValue) (*PostDynamo,
 		return nil, err
 	}
 
-	post := &PostDynamo{
+	post := &Post{
 		ID:        feeds.PostID(itemID),
 		FeedID:    feeds.FeedID(feedID),
 		URL:       aws.StringValue(attrs[colURL].S),
