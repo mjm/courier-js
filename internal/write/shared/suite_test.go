@@ -23,8 +23,9 @@ type dynamoSuite struct {
 	Ctx      context.Context
 	suiteCtx context.Context
 
-	feedRepo *FeedRepository
-	postRepo *PostRepository
+	feedRepo  *FeedRepository
+	postRepo  *PostRepository
+	tweetRepo *TweetRepository
 }
 
 func init() {
@@ -47,6 +48,7 @@ func (suite *dynamoSuite) SetupSuite() {
 	cfg := db.DynamoConfig{TableName: "courier_test"}
 	suite.feedRepo = NewFeedRepository(suite.Dynamo, cfg)
 	suite.postRepo = NewPostRepository(suite.Dynamo, cfg)
+	suite.tweetRepo = NewTweetRepository(suite.Dynamo, cfg)
 }
 
 func (suite *dynamoSuite) SetupTest() {
