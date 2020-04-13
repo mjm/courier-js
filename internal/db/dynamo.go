@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -25,6 +26,12 @@ var (
 	dbTypeDynamo   = key.String("db.type", "dynamodb")
 	dbInstanceKey  = key.New("db.instance").String
 	dbStatementKey = key.New("db.statement").String
+
+	pageCountKey = key.New("db.page_count").Int
+
+	unitsConsumedKey  = key.New("db.consumed.total").String
+	readsConsumedKey  = key.New("db.consumed.reads").String
+	writesConsumedKey = key.New("db.consumed.writes").String
 )
 
 type DynamoConfig struct {
@@ -53,11 +60,26 @@ func (d *DynamoDB) BatchGetItemWithContext(ctx context.Context, input *dynamodb.
 
 	span.SetAttributes(dbInstanceKey(strings.Join(tables, ", ")))
 
+	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
+
 	out, err := d.real.BatchGetItemWithContext(ctx, input, opts...)
 	if err != nil {
 		span.RecordError(ctx, err)
 		return nil, err
 	}
+
+	var total, read, write float64
+	for _, capacity := range out.ConsumedCapacity {
+		total += aws.Float64Value(capacity.CapacityUnits)
+		read += aws.Float64Value(capacity.ReadCapacityUnits)
+		write += aws.Float64Value(capacity.WriteCapacityUnits)
+	}
+
+	recordConsumedCapacity(span, &dynamodb.ConsumedCapacity{
+		CapacityUnits:      &total,
+		ReadCapacityUnits:  &read,
+		WriteCapacityUnits: &write,
+	})
 
 	return out, nil
 }
@@ -75,11 +97,31 @@ func (d *DynamoDB) BatchGetItemPagesWithContext(ctx context.Context, input *dyna
 
 	span.SetAttributes(dbInstanceKey(strings.Join(tables, ", ")))
 
-	err := d.real.BatchGetItemPagesWithContext(ctx, input, fn, opts...)
+	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
+
+	var total, read, write float64
+	var pageCount int
+	err := d.real.BatchGetItemPagesWithContext(ctx, input, func(out *dynamodb.BatchGetItemOutput, lastPage bool) bool {
+		pageCount++
+		for _, capacity := range out.ConsumedCapacity {
+			total += aws.Float64Value(capacity.CapacityUnits)
+			read += aws.Float64Value(capacity.ReadCapacityUnits)
+			write += aws.Float64Value(capacity.WriteCapacityUnits)
+		}
+
+		return fn(out, lastPage)
+	}, opts...)
 	if err != nil {
 		span.RecordError(ctx, err)
 		return err
 	}
+
+	span.SetAttributes(pageCountKey(pageCount))
+	recordConsumedCapacity(span, &dynamodb.ConsumedCapacity{
+		CapacityUnits:      &total,
+		ReadCapacityUnits:  &read,
+		WriteCapacityUnits: &write,
+	})
 
 	return nil
 }
@@ -97,11 +139,26 @@ func (d *DynamoDB) BatchWriteItemWithContext(ctx context.Context, input *dynamod
 
 	span.SetAttributes(dbInstanceKey(strings.Join(tables, ", ")))
 
+	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
+
 	out, err := d.real.BatchWriteItemWithContext(ctx, input, opts...)
 	if err != nil {
 		span.RecordError(ctx, err)
 		return nil, err
 	}
+
+	var total, read, write float64
+	for _, capacity := range out.ConsumedCapacity {
+		total += aws.Float64Value(capacity.CapacityUnits)
+		read += aws.Float64Value(capacity.ReadCapacityUnits)
+		write += aws.Float64Value(capacity.WriteCapacityUnits)
+	}
+
+	recordConsumedCapacity(span, &dynamodb.ConsumedCapacity{
+		CapacityUnits:      &total,
+		ReadCapacityUnits:  &read,
+		WriteCapacityUnits: &write,
+	})
 
 	return out, nil
 }
@@ -148,11 +205,15 @@ func (d *DynamoDB) GetItemWithContext(ctx context.Context, input *dynamodb.GetIt
 			dbInstanceKey(aws.StringValue(input.TableName))))
 	defer span.End()
 
+	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
+
 	out, err := d.real.GetItemWithContext(ctx, input, opts...)
 	if err != nil {
 		span.RecordError(ctx, err)
 		return nil, err
 	}
+
+	recordConsumedCapacity(span, out.ConsumedCapacity)
 
 	return out, nil
 }
@@ -165,11 +226,15 @@ func (d *DynamoDB) PutItemWithContext(ctx context.Context, input *dynamodb.PutIt
 			dbInstanceKey(aws.StringValue(input.TableName))))
 	defer span.End()
 
+	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
+
 	out, err := d.real.PutItemWithContext(ctx, input, opts...)
 	if err != nil {
 		span.RecordError(ctx, err)
 		return nil, err
 	}
+
+	recordConsumedCapacity(span, out.ConsumedCapacity)
 
 	return out, nil
 }
@@ -182,11 +247,15 @@ func (d *DynamoDB) QueryWithContext(ctx context.Context, input *dynamodb.QueryIn
 			dbInstanceKey(aws.StringValue(input.TableName))))
 	defer span.End()
 
+	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
+
 	out, err := d.real.QueryWithContext(ctx, input, opts...)
 	if err != nil {
 		span.RecordError(ctx, err)
 		return nil, err
 	}
+
+	recordConsumedCapacity(span, out.ConsumedCapacity)
 
 	return out, nil
 }
@@ -199,11 +268,26 @@ func (d *DynamoDB) UpdateItemWithContext(ctx context.Context, input *dynamodb.Up
 			dbInstanceKey(aws.StringValue(input.TableName))))
 	defer span.End()
 
+	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
+
 	out, err := d.real.UpdateItemWithContext(ctx, input, opts...)
 	if err != nil {
 		span.RecordError(ctx, err)
 		return nil, err
 	}
 
+	recordConsumedCapacity(span, out.ConsumedCapacity)
+
 	return out, nil
+}
+
+func recordConsumedCapacity(span trace.Span, capacity *dynamodb.ConsumedCapacity) {
+	if capacity == nil {
+		return
+	}
+
+	span.SetAttributes(
+		unitsConsumedKey(fmt.Sprintf("%.1f", aws.Float64Value(capacity.CapacityUnits))),
+		readsConsumedKey(fmt.Sprintf("%.1f", aws.Float64Value(capacity.ReadCapacityUnits))),
+		writesConsumedKey(fmt.Sprintf("%.1f", aws.Float64Value(capacity.WriteCapacityUnits))))
 }

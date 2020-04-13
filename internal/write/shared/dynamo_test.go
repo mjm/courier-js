@@ -69,6 +69,6 @@ func (suite *dynamoSuite) TearDownSuite() {
 	trace.SpanFromContext(suite.suiteCtx).End()
 }
 
-func TestFeedsDynamoSuite(t *testing.T) {
+func TestSharedSuite(t *testing.T) {
 	suite.Run(t, new(dynamoSuite))
 }
