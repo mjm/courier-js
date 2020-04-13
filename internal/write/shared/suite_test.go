@@ -2,7 +2,6 @@ package shared
 
 import (
 	"context"
-	"log"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -29,7 +28,6 @@ type dynamoSuite struct {
 }
 
 func init() {
-	log.Println("Setting up tracing for tests")
 	mytrace.InitForTesting()
 }
 

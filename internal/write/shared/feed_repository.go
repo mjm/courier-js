@@ -9,6 +9,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/write/feeds"
@@ -26,6 +28,10 @@ const (
 	colEtag             = "Etag"
 	colLastModified     = "LastModified"
 	colAutopost         = "Autopost"
+)
+
+var (
+	ErrNoFeed = status.Error(codes.NotFound, "no feed found")
 )
 
 type FeedRepository struct {
@@ -47,6 +53,10 @@ func (r *FeedRepository) Get(ctx context.Context, userID string, feedID feeds.Fe
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	if res.Item == nil {
+		return nil, ErrNoFeed
 	}
 
 	return newFeedFromAttrs(res.Item)
@@ -75,7 +85,7 @@ func (r *FeedRepository) GetWithRecentPosts(ctx context.Context, feedID feeds.Fe
 	}
 
 	if len(res.Items) < 1 {
-		return nil, nil, feeds.ErrNoFeed
+		return nil, nil, ErrNoFeed
 	}
 
 	feed, err := newFeedFromAttrs(res.Items[0])
@@ -187,6 +197,9 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 		ExpressionAttributeValues: vals,
 	})
 	if err != nil {
+		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
+			return ErrNoFeed
+		}
 		return err
 	}
 
@@ -215,6 +228,9 @@ func (r *FeedRepository) UpdateSettings(ctx context.Context, params UpdateFeedSe
 		},
 	})
 	if err != nil {
+		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
+			return ErrNoFeed
+		}
 		return err
 	}
 

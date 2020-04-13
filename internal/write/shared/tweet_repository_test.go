@@ -80,6 +80,12 @@ func (suite *dynamoSuite) TestCreateSingleRetweet() {
 	suite.NotEmpty(tg.CreatedAt)
 }
 
+func (suite *dynamoSuite) TestGetTweetMissing() {
+	tg, err := suite.tweetRepo.Get(suite.Ctx, "test_user", "foo", "bar")
+	suite.Equal(ErrNoTweet, err)
+	suite.Nil(tg)
+}
+
 func (suite *dynamoSuite) TestCancelTweet() {
 	feedID := feeds.NewFeedIDDynamo()
 	postID := feeds.PostID("https://www.example.org/post/abc")
@@ -111,4 +117,11 @@ func (suite *dynamoSuite) TestCancelTweet() {
 
 	suite.NotNil(tg.CanceledAt)
 	suite.Equal(Canceled, tg.Status)
+
+	suite.Require().Equal(ErrCannotCancel, suite.tweetRepo.Cancel(suite.Ctx, "test_user", feedID, postID))
+}
+
+func (suite *dynamoSuite) TestCancelTweetMissing() {
+	err := suite.tweetRepo.Cancel(suite.Ctx, "test_user", "whatever", "not a thing")
+	suite.Equal(ErrCannotCancel, err)
 }

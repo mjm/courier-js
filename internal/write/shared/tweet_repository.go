@@ -8,9 +8,16 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/shared/feeds"
+)
+
+var (
+	ErrNoTweet      = status.Error(codes.NotFound, "no tweet found")
+	ErrCannotCancel = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
 )
 
 const (
@@ -42,6 +49,10 @@ func (r *TweetRepository) Get(ctx context.Context, userID string, feedID feeds.F
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	if res.Item == nil {
+		return nil, ErrNoTweet
 	}
 
 	return newTweetGroupFromAttrs(res.Item)
@@ -128,8 +139,9 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, feedID feed
 		TableName:           &r.dynamoConfig.TableName,
 		Key:                 r.primaryKey(userID, feedID, postID),
 		UpdateExpression:    aws.String(`SET #canceled_at = :canceled_at`), // TODO remove post_after and task name
-		ConditionExpression: aws.String(`attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
+		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
+			"#pk":          aws.String(db.PK),
 			"#canceled_at": aws.String(colCanceledAt),
 			"#posted_at":   aws.String(colPostedAt),
 		},
@@ -138,6 +150,9 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, feedID feed
 		},
 	})
 	if err != nil {
+		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
+			return ErrCannotCancel
+		}
 		return err
 	}
 

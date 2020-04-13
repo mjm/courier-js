@@ -8,6 +8,12 @@ import (
 	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
 )
 
+func (suite *dynamoSuite) TestGetFeedMissing() {
+	feed, err := suite.feedRepo.Get(suite.Ctx, "test_user", "garbage feed")
+	suite.Nil(feed)
+	suite.Equal(ErrNoFeed, err)
+}
+
 func (suite *dynamoSuite) TestCreateFeed() {
 	feedID := feeds.NewFeedIDDynamo()
 	err := suite.feedRepo.Create(suite.Ctx, "test_user", feedID, "https://www.example.org/feed.json")
@@ -72,6 +78,21 @@ func (suite *dynamoSuite) TestUpdateFeed() {
 	suite.Nil(feed.CachingHeaders)
 }
 
+func (suite *dynamoSuite) TestUpdateFeedDetailsMissing() {
+	err := suite.feedRepo.UpdateDetails(suite.Ctx, UpdateFeedParamsDynamo{
+		ID:          "random_feed_id",
+		UserID:      "test_user",
+		Title:       "Example Feed",
+		HomePageURL: "https://www.example.org/",
+		CachingHeaders: &feeds2.CachingHeaders{
+			Etag:         "etag1",
+			LastModified: "blah",
+		},
+		MicropubEndpoint: "https://api.example.org/micropub",
+	})
+	suite.Equal(ErrNoFeed, err)
+}
+
 func (suite *dynamoSuite) TestUpdateFeedSettings() {
 	feedID := feeds.NewFeedIDDynamo()
 	err := suite.feedRepo.Create(suite.Ctx, "test_user", feedID, "https://www.example.org/feed.json")
@@ -98,6 +119,15 @@ func (suite *dynamoSuite) TestUpdateFeedSettings() {
 	feed, err = suite.feedRepo.Get(suite.Ctx, "test_user", feedID)
 	suite.NoError(err)
 	suite.False(feed.Autopost)
+}
+
+func (suite *dynamoSuite) TestUpdateFeedSettingsMissing() {
+	err := suite.feedRepo.UpdateSettings(suite.Ctx, UpdateFeedSettingsParams{
+		ID:       "random_feed_id",
+		UserID:   "test_user",
+		Autopost: true,
+	})
+	suite.Equal(ErrNoFeed, err)
 }
 
 func (suite *dynamoSuite) TestGetFeedWithRecentPosts() {
@@ -134,4 +164,22 @@ func (suite *dynamoSuite) TestGetFeedWithRecentPosts() {
 	suite.Equal("Post #20", posts[0].Title)
 	suite.Equal(feedID, posts[0].FeedID)
 	suite.Equal("this is post #11", posts[9].TextContent)
+}
+
+func (suite *dynamoSuite) TestGetFeedWithRecentPostsMissing() {
+	feed, posts, err := suite.feedRepo.GetWithRecentPosts(suite.Ctx, "garbage feed")
+	suite.Nil(feed)
+	suite.Empty(posts)
+	suite.Equal(ErrNoFeed, err)
+}
+
+func (suite *dynamoSuite) TestGetFeedWithRecentPostsNoPosts() {
+	feedID := feeds.NewFeedIDDynamo()
+	suite.NoError(suite.feedRepo.Create(
+		suite.Ctx, "test_user", feedID, "https://www.example.org/feed.json"))
+
+	feed, posts, err := suite.feedRepo.GetWithRecentPosts(suite.Ctx, feedID)
+	suite.Require().NoError(err)
+	suite.NotNil(feed)
+	suite.Empty(posts)
 }

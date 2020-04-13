@@ -6,7 +6,6 @@ import (
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/exporters/otlp"
-	"go.opentelemetry.io/otel/exporters/trace/stdout"
 	exporttrace "go.opentelemetry.io/otel/sdk/export/trace"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -21,10 +20,10 @@ func InitForTesting() {
 		log.Fatal(err)
 	}
 
-	stdoutExporter, err := stdout.NewExporter(stdout.Options{})
-	if err != nil {
-		log.Fatal(err)
-	}
+	// stdoutExporter, err := stdout.NewExporter(stdout.Options{})
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	provider, err := sdktrace.NewProvider(
 		sdktrace.WithConfig(sdktrace.Config{
@@ -34,8 +33,8 @@ func InitForTesting() {
 				key.String("service.version", "git:"+ServiceVersion),
 				key.String("env", "test")),
 		}),
-		sdktrace.WithSyncer(testExporter),
-		sdktrace.WithSyncer(stdoutExporter))
+		// sdktrace.WithSyncer(stdoutExporter),
+		sdktrace.WithSyncer(testExporter))
 	if err != nil {
 		log.Fatal(err)
 	}
