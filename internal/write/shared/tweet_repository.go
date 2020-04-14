@@ -70,9 +70,10 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 		pk, sk := r.primaryKeyValues(userID, params.FeedID, params.PostID)
 
 		item := map[string]*dynamodb.AttributeValue{
-			db.PK: {S: &pk},
-			db.SK: {S: &sk},
-			// TODO GSI1
+			db.PK:              {S: &pk},
+			db.SK:              {S: &sk},
+			db.GSI1PK:          {S: &pk},
+			db.GSI1SK:          {S: aws.String("UPCOMING#" + params.PublishedAt.Format(time.RFC3339))},
 			model.ColCreatedAt: {S: &now},
 		}
 
@@ -90,9 +91,6 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 					}
 					tweetAttrs[model.ColMediaURLs] = &dynamodb.AttributeValue{L: urls}
 				}
-				// if t.PostedTweetID != "" {
-				// 	tweetAttrs[model.ColPostedTweetID] = &dynamodb.AttributeValue{S: aws.String(t.PostedTweetID)}
-				// }
 				tweets = append(tweets, &dynamodb.AttributeValue{M: tweetAttrs})
 			}
 			item[model.ColTweets] = &dynamodb.AttributeValue{L: tweets}
@@ -129,15 +127,17 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, feedID feed
 	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
 		Key:                 r.primaryKey(userID, feedID, postID),
-		UpdateExpression:    aws.String(`SET #canceled_at = :canceled_at`), // TODO remove post_after and task name
+		UpdateExpression:    aws.String(`SET #canceled_at = :canceled_at, #gsi1sk = :gsi1sk`), // TODO remove post_after and task name
 		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
 			"#pk":          aws.String(db.PK),
+			"#gsi1sk":      aws.String(db.GSI1SK),
 			"#canceled_at": aws.String(model.ColCanceledAt),
 			"#posted_at":   aws.String(model.ColPostedAt),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":canceled_at": {S: aws.String(now)},
+			":gsi1sk":      {S: aws.String("PAST#" + now)},
 		},
 	})
 	if err != nil {
