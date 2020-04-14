@@ -14,7 +14,7 @@ func (suite *dynamoSuite) TestCreateSinglePost() {
 
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
-	err := suite.postRepo.Write(suite.Ctx, []WritePostParams{
+	err := suite.postRepo.Write(suite.Ctx(), []WritePostParams{
 		{
 			FeedID:      feedID,
 			ItemID:      itemID,
@@ -28,7 +28,7 @@ func (suite *dynamoSuite) TestCreateSinglePost() {
 	})
 	suite.NoError(err)
 
-	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx, feedID, []feeds2.PostID{itemID})
+	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), feedID, []feeds2.PostID{itemID})
 	suite.NoError(err)
 	suite.Equal(1, len(posts))
 
@@ -61,10 +61,10 @@ func (suite *dynamoSuite) TestCreateManyPosts() {
 		})
 	}
 
-	suite.NoError(suite.postRepo.Write(suite.Ctx, ps))
+	suite.NoError(suite.postRepo.Write(suite.Ctx(), ps))
 
 	// cherry pick a few to fetch
-	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx, feedID, []feeds2.PostID{
+	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), feedID, []feeds2.PostID{
 		"https://www.example.org/post/1",
 		"https://www.example.org/post/7",
 		"https://www.example.org/post/20",
@@ -86,7 +86,7 @@ func (suite *dynamoSuite) TestUpdateSinglePost() {
 
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
-	err := suite.postRepo.Write(suite.Ctx, []WritePostParams{
+	err := suite.postRepo.Write(suite.Ctx(), []WritePostParams{
 		{
 			FeedID:      feedID,
 			ItemID:      itemID,
@@ -101,7 +101,7 @@ func (suite *dynamoSuite) TestUpdateSinglePost() {
 	suite.NoError(err)
 
 	t2 := t.Add(time.Hour)
-	err = suite.postRepo.Write(suite.Ctx, []WritePostParams{
+	err = suite.postRepo.Write(suite.Ctx(), []WritePostParams{
 		{
 			FeedID:      feedID,
 			ItemID:      itemID,
@@ -115,7 +115,7 @@ func (suite *dynamoSuite) TestUpdateSinglePost() {
 	})
 	suite.NoError(err)
 
-	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx, feedID, []feeds2.PostID{itemID})
+	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), feedID, []feeds2.PostID{itemID})
 	suite.NoError(err)
 	suite.Equal(1, len(posts))
 
@@ -148,7 +148,7 @@ func (suite *dynamoSuite) TestUpdateManyPosts() {
 		})
 	}
 
-	suite.NoError(suite.postRepo.Write(suite.Ctx, ps))
+	suite.NoError(suite.postRepo.Write(suite.Ctx(), ps))
 
 	for i := range ps {
 		ps[i].Title = fmt.Sprintf("Updated Post #%d", i+1)
@@ -158,10 +158,10 @@ func (suite *dynamoSuite) TestUpdateManyPosts() {
 		ps[i].ModifiedAt = &t
 	}
 
-	suite.NoError(suite.postRepo.Write(suite.Ctx, ps))
+	suite.NoError(suite.postRepo.Write(suite.Ctx(), ps))
 
 	// cherry pick a few to fetch
-	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx, feedID, []feeds2.PostID{
+	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), feedID, []feeds2.PostID{
 		"https://www.example.org/post/1",
 		"https://www.example.org/post/7",
 		"https://www.example.org/post/20",

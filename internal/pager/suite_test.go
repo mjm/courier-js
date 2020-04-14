@@ -1,4 +1,4 @@
-package shared
+package pager
 
 import (
 	"testing"
@@ -13,10 +13,6 @@ type dynamoSuite struct {
 	suite.Suite
 	trace.TracingSuite
 	db.DynamoSuite
-
-	feedRepo  *FeedRepository
-	postRepo  *PostRepository
-	tweetRepo *TweetRepository
 }
 
 func init() {
@@ -26,10 +22,6 @@ func init() {
 func (suite *dynamoSuite) SetupSuite() {
 	suite.TracingSuite.SetupSuite(suite)
 	suite.DynamoSuite.SetupSuite()
-
-	suite.feedRepo = NewFeedRepository(suite.Dynamo(), suite.DynamoConfig())
-	suite.postRepo = NewPostRepository(suite.Dynamo(), suite.DynamoConfig())
-	suite.tweetRepo = NewTweetRepository(suite.Dynamo(), suite.DynamoConfig())
 }
 
 func (suite *dynamoSuite) SetupTest() {
@@ -46,6 +38,6 @@ func (suite *dynamoSuite) TearDownSuite() {
 	suite.TracingSuite.TearDownSuite()
 }
 
-func TestSharedSuite(t *testing.T) {
+func TestPagerSuite(t *testing.T) {
 	suite.Run(t, new(dynamoSuite))
 }

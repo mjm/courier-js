@@ -46,3 +46,5 @@ func Init(cfg secret.GCPConfig, svcname string) error {
 	global.SetTraceProvider(tp)
 	return nil
 }
+
+var tr = global.Tracer("courier.blog/internal/trace")

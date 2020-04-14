@@ -31,6 +31,7 @@ var (
 
 	pageCountKey          = key.New("db.page_count").Int
 	requestedItemCountKey = key.New("db.request_item_count").Int
+	itemCountKey          = key.New("db.item_count").Int
 
 	unitsConsumedKey  = key.New("db.consumed.total").String
 	readsConsumedKey  = key.New("db.consumed.reads").String
@@ -300,6 +301,8 @@ func (d *DynamoDB) QueryWithContext(ctx context.Context, input *dynamodb.QueryIn
 		span.RecordError(ctx, err)
 		return nil, err
 	}
+
+	span.SetAttributes(itemCountKey(len(out.Items)))
 
 	recordConsumedCapacity(span, out.ConsumedCapacity)
 

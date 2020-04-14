@@ -14,7 +14,7 @@ func (suite *dynamoSuite) TestCreateSingleTweet() {
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
 	suite.Require().NoError(
-		suite.tweetRepo.Create(suite.Ctx, "test_user", []CreateTweetParams{
+		suite.tweetRepo.Create(suite.Ctx(), "test_user", []CreateTweetParams{
 			{
 				FeedID:      feedID,
 				PostID:      postID,
@@ -30,7 +30,7 @@ func (suite *dynamoSuite) TestCreateSingleTweet() {
 			},
 		}))
 
-	tg, err := suite.tweetRepo.Get(suite.Ctx, "test_user", feedID, postID)
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), "test_user", feedID, postID)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(tg)
 
@@ -58,7 +58,7 @@ func (suite *dynamoSuite) TestCreateSingleRetweet() {
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
 	suite.Require().NoError(
-		suite.tweetRepo.Create(suite.Ctx, "test_user", []CreateTweetParams{
+		suite.tweetRepo.Create(suite.Ctx(), "test_user", []CreateTweetParams{
 			{
 				FeedID:      feedID,
 				PostID:      postID,
@@ -67,7 +67,7 @@ func (suite *dynamoSuite) TestCreateSingleRetweet() {
 			},
 		}))
 
-	tg, err := suite.tweetRepo.Get(suite.Ctx, "test_user", feedID, postID)
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), "test_user", feedID, postID)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(tg)
 
@@ -82,7 +82,7 @@ func (suite *dynamoSuite) TestCreateSingleRetweet() {
 }
 
 func (suite *dynamoSuite) TestGetTweetMissing() {
-	tg, err := suite.tweetRepo.Get(suite.Ctx, "test_user", "foo", "bar")
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), "test_user", "foo", "bar")
 	suite.Equal(ErrNoTweet, err)
 	suite.Nil(tg)
 }
@@ -94,7 +94,7 @@ func (suite *dynamoSuite) TestCancelTweet() {
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
 	suite.Require().NoError(
-		suite.tweetRepo.Create(suite.Ctx, "test_user", []CreateTweetParams{
+		suite.tweetRepo.Create(suite.Ctx(), "test_user", []CreateTweetParams{
 			{
 				FeedID:      feedID,
 				PostID:      postID,
@@ -110,19 +110,19 @@ func (suite *dynamoSuite) TestCancelTweet() {
 			},
 		}))
 
-	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx, "test_user", feedID, postID))
+	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx(), "test_user", feedID, postID))
 
-	tg, err := suite.tweetRepo.Get(suite.Ctx, "test_user", feedID, postID)
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), "test_user", feedID, postID)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(tg)
 
 	suite.NotNil(tg.CanceledAt)
 	suite.Equal(model.Canceled, tg.Status)
 
-	suite.Require().Equal(ErrCannotCancel, suite.tweetRepo.Cancel(suite.Ctx, "test_user", feedID, postID))
+	suite.Require().Equal(ErrCannotCancel, suite.tweetRepo.Cancel(suite.Ctx(), "test_user", feedID, postID))
 }
 
 func (suite *dynamoSuite) TestCancelTweetMissing() {
-	err := suite.tweetRepo.Cancel(suite.Ctx, "test_user", "whatever", "not a thing")
+	err := suite.tweetRepo.Cancel(suite.Ctx(), "test_user", "whatever", "not a thing")
 	suite.Equal(ErrCannotCancel, err)
 }
