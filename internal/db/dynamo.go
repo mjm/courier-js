@@ -21,6 +21,10 @@ const (
 	GSI1   = "GSI1"
 	GSI1PK = "GSI1PK"
 	GSI1SK = "GSI1SK"
+
+	GSI2   = "GSI2"
+	GSI2PK = "GSI2PK"
+	GSI2SK = "GSI2SK"
 )
 
 var (

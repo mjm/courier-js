@@ -18,14 +18,18 @@ type tweetPagerDynamo struct {
 }
 
 func (p *tweetPagerDynamo) Query(cursor *pager.Cursor) *dynamodb.QueryInput {
+	pk := "USER#" + p.UserID
+
 	var startKey map[string]*dynamodb.AttributeValue
 	if cursor != nil {
-		comps := strings.SplitN(string(*cursor), "###", 2)
-		pk, sk := comps[0], comps[1]
+		comps := strings.SplitN(string(*cursor), "###", 3)
+		sk, gsisk := comps[0], comps[1]
 
 		startKey = map[string]*dynamodb.AttributeValue{
+			db.PK:     {S: aws.String(pk)},
+			db.SK:     {S: aws.String(sk)},
 			db.GSI1PK: {S: aws.String(pk)},
-			db.GSI1SK: {S: aws.String(sk)},
+			db.GSI1SK: {S: aws.String(gsisk)},
 		}
 	}
 
@@ -38,7 +42,7 @@ func (p *tweetPagerDynamo) Query(cursor *pager.Cursor) *dynamodb.QueryInput {
 			"#sk": aws.String(db.GSI1SK),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
-			":pk":     {S: aws.String("USER#" + p.UserID)},
+			":pk":     {S: aws.String(pk)},
 			":filter": {S: aws.String(string(p.Filter))},
 		},
 		ExclusiveStartKey: startKey,
@@ -54,7 +58,7 @@ func (p *tweetPagerDynamo) ScanEdge(item map[string]*dynamodb.AttributeValue) (p
 
 	return &TweetGroupEdge{
 		TweetGroup: *t,
-		cursor:     pager.Cursor(aws.StringValue(item[db.GSI1PK].S) + "###" + aws.StringValue(item[db.GSI1SK].S)),
+		cursor:     pager.Cursor(aws.StringValue(item[db.SK].S) + "###" + aws.StringValue(item[db.GSI1SK].S)),
 	}, nil
 }
 

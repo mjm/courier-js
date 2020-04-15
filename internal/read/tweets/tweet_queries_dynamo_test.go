@@ -27,6 +27,11 @@ func (suite *dynamoSuite) TestPagedTweetsUpcoming() {
 	suite.Equal(4, len(conn.Edges))
 	suite.Equal(feeds.PostID("0006"), conn.Edges[0].(*TweetGroupEdge).PostID)
 	suite.Equal(feeds.PostID("0001"), conn.Edges[3].(*TweetGroupEdge).PostID)
+
+	c := conn.Edges[1].Cursor()
+	conn, err = suite.tweetQueries.Paged(suite.Ctx(), "test_user", UpcomingFilter, pager.First(3, &c))
+	suite.Require().NoError(err)
+	suite.Require().NotNil(conn)
 }
 
 func (suite *dynamoSuite) TestPagedTweetsPast() {
@@ -110,6 +115,8 @@ func (suite *dynamoSuite) preloadTweets() {
 		}))
 
 	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx(), "test_user", feed1ID, "0003"))
+	// TODO speed up test by using a fake clock
+	time.Sleep(time.Second)
 	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx(), "test_user", feed2ID, "0004"))
 }
 

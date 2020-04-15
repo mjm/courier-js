@@ -102,6 +102,8 @@ func (r *FeedRepository) Create(ctx context.Context, userID string, feedID feeds
 			db.SK:              {S: &sk},
 			db.GSI1PK:          {S: &sk},
 			db.GSI1SK:          {S: &sk},
+			db.GSI2PK:          {S: &pk},
+			db.GSI2SK:          {S: aws.String("FEED#")},
 			model.ColURL:       {S: &url},
 			model.ColAutopost:  {BOOL: aws.Bool(false)},
 			model.ColCreatedAt: {S: &now},
@@ -144,6 +146,7 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 	}
 
 	setString("title", params.Title)
+	setString("gsi2sk", "FEED#"+params.Title)
 	setString("home", params.HomePageURL)
 	setString("mp", params.MicropubEndpoint)
 
@@ -175,11 +178,12 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 		UpdateExpression:    &expr,
 		ConditionExpression: aws.String("attribute_exists(#pk)"),
 		ExpressionAttributeNames: map[string]*string{
-			"#pk":    aws.String(db.PK),
-			"#title": aws.String(model.ColTitle),
-			"#home":  aws.String(model.ColHomePageURL),
-			"#ch":    aws.String(model.ColCachingHeaders),
-			"#mp":    aws.String(model.ColMicropubEndpoint),
+			"#pk":     aws.String(db.PK),
+			"#gsi2sk": aws.String(db.GSI2SK),
+			"#title":  aws.String(model.ColTitle),
+			"#home":   aws.String(model.ColHomePageURL),
+			"#ch":     aws.String(model.ColCachingHeaders),
+			"#mp":     aws.String(model.ColMicropubEndpoint),
 		},
 		ExpressionAttributeValues: vals,
 	})
