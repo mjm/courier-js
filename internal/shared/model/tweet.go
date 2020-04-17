@@ -12,6 +12,8 @@ import (
 )
 
 const (
+	TypeTweet = "Tweet"
+
 	ColTweets        = "Tweets"
 	ColRetweetID     = "RetweetID"
 	ColPostedAt      = "PostedAt"

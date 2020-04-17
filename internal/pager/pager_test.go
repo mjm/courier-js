@@ -11,6 +11,7 @@ import (
 )
 
 type testPager struct {
+	TableName string
 }
 
 func (p *testPager) Query(cursor *Cursor) *dynamodb.QueryInput {
@@ -26,7 +27,7 @@ func (p *testPager) Query(cursor *Cursor) *dynamodb.QueryInput {
 	}
 
 	return &dynamodb.QueryInput{
-		TableName:              aws.String("courier_test"),
+		TableName:              &p.TableName,
 		KeyConditionExpression: aws.String(`PK = :pk and SK < :sk`),
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":pk": {S: aws.String("LIST#123")},
@@ -56,7 +57,7 @@ func (e *testEdge) Cursor() Cursor {
 }
 
 func (suite *dynamoSuite) TestPagerEmptyTable() {
-	p := &testPager{}
+	p := &testPager{TableName: suite.DynamoConfig().TableName}
 	conn, err := PagedDynamo(suite.Ctx(), suite.Dynamo(), p, First(10, nil))
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)
@@ -70,7 +71,7 @@ func (suite *dynamoSuite) TestPagerEmptyTable() {
 func (suite *dynamoSuite) TestPagerFirstPage() {
 	suite.preloadTestRecords(3)
 
-	p := &testPager{}
+	p := &testPager{TableName: suite.DynamoConfig().TableName}
 	conn, err := PagedDynamo(suite.Ctx(), suite.Dynamo(), p, First(10, nil))
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)
@@ -88,7 +89,7 @@ func (suite *dynamoSuite) TestPagerFirstPage() {
 func (suite *dynamoSuite) TestPagerMultiplePages() {
 	suite.preloadTestRecords(8)
 
-	p := &testPager{}
+	p := &testPager{TableName: suite.DynamoConfig().TableName}
 	conn, err := PagedDynamo(suite.Ctx(), suite.Dynamo(), p, First(5, nil))
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)

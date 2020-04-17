@@ -68,12 +68,16 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 
 	for _, params := range ts {
 		pk, sk := r.primaryKeyValues(userID, params.FeedID, params.PostID)
+		published := params.PublishedAt.Format(time.RFC3339)
 
 		item := map[string]*dynamodb.AttributeValue{
 			db.PK:              {S: &pk},
 			db.SK:              {S: &sk},
 			db.GSI1PK:          {S: &pk},
-			db.GSI1SK:          {S: aws.String("UPCOMING#" + params.PublishedAt.Format(time.RFC3339))},
+			db.GSI1SK:          {S: aws.String("UPCOMING#" + published)},
+			db.GSI2PK:          {S: aws.String("FEED#" + string(params.FeedID))},
+			db.GSI2SK:          {S: aws.String(fmt.Sprintf("#POST#%s#%s##TWEET", published, params.PostID))},
+			db.Type:            {S: aws.String(model.TypeTweet)},
 			model.ColCreatedAt: {S: &now},
 		}
 

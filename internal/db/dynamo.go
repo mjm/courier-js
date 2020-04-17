@@ -25,6 +25,8 @@ const (
 	GSI2   = "GSI2"
 	GSI2PK = "GSI2PK"
 	GSI2SK = "GSI2SK"
+
+	Type = "Type"
 )
 
 var (

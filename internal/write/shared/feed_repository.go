@@ -49,10 +49,20 @@ func (r *FeedRepository) Get(ctx context.Context, userID string, feedID feeds.Fe
 	return model.NewFeedFromAttrs(res.Item)
 }
 
-func (r *FeedRepository) GetWithRecentPosts(ctx context.Context, feedID feeds.FeedID) (*model.Feed, []*model.Post, error) {
+type FeedWithItems struct {
+	model.Feed
+	Posts []*PostWithTweetGroup
+}
+
+type PostWithTweetGroup struct {
+	model.Post
+	TweetGroup *model.TweetGroup
+}
+
+func (r *FeedRepository) GetWithRecentItems(ctx context.Context, feedID feeds.FeedID, lastPublished *time.Time) (*FeedWithItems, error) {
 	pk := "FEED#" + string(feedID)
 
-	res, err := r.dynamo.QueryWithContext(ctx, &dynamodb.QueryInput{
+	input := &dynamodb.QueryInput{
 		TableName:              &r.dynamoConfig.TableName,
 		IndexName:              aws.String(db.GSI2),
 		KeyConditionExpression: aws.String(`#pk = :pk`),
@@ -62,32 +72,72 @@ func (r *FeedRepository) GetWithRecentPosts(ctx context.Context, feedID feeds.Fe
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":pk": {S: &pk},
 		},
-		Limit:            aws.Int64(11), // feed record + 10 posts
 		ScanIndexForward: aws.Bool(false),
-	})
+	}
+
+	if lastPublished == nil {
+		// 1 feed + 10 posts + 10 tweet groups = 21 items
+		input.SetLimit(21)
+	} else {
+		sk := fmt.Sprintf("#POST#%s#Z", lastPublished.Format(time.RFC3339))
+		input.SetKeyConditionExpression(`#pk = :pk and #sk >= :sk`)
+		input.ExpressionAttributeNames["#sk"] = aws.String(db.GSI2SK)
+		input.ExpressionAttributeValues[":sk"] = &dynamodb.AttributeValue{S: &sk}
+	}
+
+	res, err := r.dynamo.QueryWithContext(ctx, input)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	if len(res.Items) < 1 {
-		return nil, nil, ErrNoFeed
+		return nil, ErrNoFeed
 	}
 
 	feed, err := model.NewFeedFromAttrs(res.Items[0])
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	var posts []*model.Post
+	result := &FeedWithItems{
+		Feed: *feed,
+	}
+
 	for _, item := range res.Items[1:] {
-		post, err := model.NewPostFromAttrs(item)
-		if err != nil {
-			return nil, nil, err
+		switch aws.StringValue(item[db.Type].S) {
+		case model.TypePost:
+			if len(result.Posts) == 10 {
+				break
+			}
+
+			post, err := model.NewPostFromAttrs(item)
+			if err != nil {
+				return nil, err
+			}
+
+			result.Posts = append(result.Posts, &PostWithTweetGroup{
+				Post: *post,
+			})
+		case model.TypeTweet:
+			tg, err := model.NewTweetGroupFromAttrs(item)
+			if err != nil {
+				return nil, err
+			}
+
+			if len(result.Posts) == 0 {
+				continue
+			}
+
+			post := result.Posts[len(result.Posts)-1]
+			if post.ID != tg.PostID {
+				continue
+			}
+
+			post.TweetGroup = tg
 		}
-		posts = append(posts, post)
 	}
 
-	return feed, posts, nil
+	return result, nil
 }
 
 func (r *FeedRepository) Create(ctx context.Context, userID string, feedID feeds.FeedID, url string) error {
@@ -102,6 +152,7 @@ func (r *FeedRepository) Create(ctx context.Context, userID string, feedID feeds
 			db.GSI1SK:          {S: aws.String("FEED#")},
 			db.GSI2PK:          {S: &sk},
 			db.GSI2SK:          {S: &sk},
+			db.Type:            {S: aws.String(model.TypeFeed)},
 			model.ColURL:       {S: &url},
 			model.ColAutopost:  {BOOL: aws.Bool(false)},
 			model.ColCreatedAt: {S: &now},

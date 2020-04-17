@@ -12,6 +12,8 @@ import (
 )
 
 const (
+	TypePost = "Post"
+
 	ColTextContent = "TextContent"
 	ColHTMLContent = "HTMLContent"
 	ColPublishedAt = "PublishedAt"

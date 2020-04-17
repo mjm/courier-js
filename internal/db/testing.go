@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/jmoiron/sqlx"
+	"github.com/segmentio/ksuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -130,7 +131,7 @@ func (ds *DynamoSuite) SetupSuite() {
 			// WithLogLevel(aws.LogDebugWithHTTPBody).
 			WithCredentials(credentials.NewStaticCredentials("test_id", "test_secret", ""))))
 	ds.dynamo = WrapDynamo(dynamodb.New(sess))
-	ds.cfg = DynamoConfig{TableName: "courier_test"}
+	ds.cfg = DynamoConfig{TableName: "courier_test_" + ksuid.New().String()}
 }
 
 func (ds *DynamoSuite) SetupTest(ctx context.Context, assert *assert.Assertions) {

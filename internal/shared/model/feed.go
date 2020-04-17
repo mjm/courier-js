@@ -12,6 +12,8 @@ import (
 )
 
 const (
+	TypeFeed = "Feed"
+
 	ColURL              = "URL"
 	ColTitle            = "Title"
 	ColHomePageURL      = "HomePageURL"

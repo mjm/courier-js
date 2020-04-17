@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
 )
 
@@ -152,34 +153,147 @@ func (suite *dynamoSuite) TestGetFeedWithRecentPosts() {
 	}
 	suite.NoError(suite.postRepo.Write(suite.Ctx(), ps))
 
-	feed, posts, err := suite.feedRepo.GetWithRecentPosts(suite.Ctx(), feedID)
-	suite.NoError(err)
-	suite.NotNil(feed)
-	suite.Equal(10, len(posts))
+	feed, err := suite.feedRepo.GetWithRecentItems(suite.Ctx(), feedID, nil)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(feed)
+	suite.Require().Equal(10, len(feed.Posts))
 
 	suite.Equal("https://www.example.org/feed.json", feed.URL)
 	suite.Equal(feedID, feed.ID)
 	suite.Equal("test_user", feed.UserID)
 
+	posts := feed.Posts
 	suite.Equal("Post #20", posts[0].Title)
 	suite.Equal(feedID, posts[0].FeedID)
 	suite.Equal("this is post #11", posts[9].TextContent)
 }
 
-func (suite *dynamoSuite) TestGetFeedWithRecentPostsMissing() {
-	feed, posts, err := suite.feedRepo.GetWithRecentPosts(suite.Ctx(), "garbage feed")
-	suite.Nil(feed)
-	suite.Empty(posts)
-	suite.Equal(ErrNoFeed, err)
-}
-
-func (suite *dynamoSuite) TestGetFeedWithRecentPostsNoPosts() {
+func (suite *dynamoSuite) TestGetFeedWithRecentPostsAndTweets() {
 	feedID := feeds.NewFeedIDDynamo()
 	suite.NoError(suite.feedRepo.Create(
 		suite.Ctx(), "test_user", feedID, "https://www.example.org/feed.json"))
 
-	feed, posts, err := suite.feedRepo.GetWithRecentPosts(suite.Ctx(), feedID)
+	var postParams []WritePostParams
+	var tweetParams []CreateTweetParams
+	for i := 0; i < 20; i++ {
+		t := time.Date(2020, time.January, 2, 3, 4, i, 0, time.UTC)
+		u := fmt.Sprintf("https://www.example.org/post/%d", i+1)
+		postParams = append(postParams, WritePostParams{
+			FeedID:      feedID,
+			ItemID:      feeds2.PostID(u),
+			TextContent: fmt.Sprintf("this is post #%d", i+1),
+			HTMLContent: fmt.Sprintf("<p>this is post #%d</p>", i+1),
+			Title:       fmt.Sprintf("Post #%d", i+1),
+			URL:         u,
+			PublishedAt: &t,
+			ModifiedAt:  &t,
+		})
+		tweetParams = append(tweetParams, CreateTweetParams{
+			FeedID:      feedID,
+			PostID:      feeds2.PostID(u),
+			PublishedAt: t,
+			Tweets: []*model.Tweet{
+				{Body: fmt.Sprintf("this is post #%d", i+1)},
+			},
+		})
+	}
+	suite.Require().NoError(suite.postRepo.Write(suite.Ctx(), postParams))
+	suite.Require().NoError(suite.tweetRepo.Create(suite.Ctx(), "test_user", tweetParams))
+
+	feed, err := suite.feedRepo.GetWithRecentItems(suite.Ctx(), feedID, nil)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(feed)
+	suite.Require().Equal(10, len(feed.Posts))
+
+	suite.Equal("https://www.example.org/feed.json", feed.URL)
+	suite.Equal(feedID, feed.ID)
+	suite.Equal("test_user", feed.UserID)
+
+	posts := feed.Posts
+
+	suite.Equal("Post #20", posts[0].Title)
+	suite.Equal(feedID, posts[0].FeedID)
+	suite.NotNil(posts[0].TweetGroup)
+	suite.Equal("this is post #20", posts[0].TweetGroup.Tweets[0].Body)
+
+	suite.Equal("this is post #11", posts[9].TextContent)
+	suite.NotNil(posts[9].TweetGroup)
+	suite.Equal("this is post #11", posts[9].TweetGroup.Tweets[0].Body)
+}
+
+func (suite *dynamoSuite) TestGetFeedWithRecentPostsAndTweetsWithGaps() {
+	feedID := feeds.NewFeedIDDynamo()
+	suite.NoError(suite.feedRepo.Create(
+		suite.Ctx(), "test_user", feedID, "https://www.example.org/feed.json"))
+
+	var postParams []WritePostParams
+	var tweetParams []CreateTweetParams
+	for i := 0; i < 20; i++ {
+		t := time.Date(2020, time.January, 2, 3, 4, i, 0, time.UTC)
+		u := fmt.Sprintf("https://www.example.org/post/%d", i+1)
+		postParams = append(postParams, WritePostParams{
+			FeedID:      feedID,
+			ItemID:      feeds2.PostID(u),
+			TextContent: fmt.Sprintf("this is post #%d", i+1),
+			HTMLContent: fmt.Sprintf("<p>this is post #%d</p>", i+1),
+			Title:       fmt.Sprintf("Post #%d", i+1),
+			URL:         u,
+			PublishedAt: &t,
+			ModifiedAt:  &t,
+		})
+
+		if i < 15 {
+			tweetParams = append(tweetParams, CreateTweetParams{
+				FeedID:      feedID,
+				PostID:      feeds2.PostID(u),
+				PublishedAt: t,
+				Tweets: []*model.Tweet{
+					{Body: fmt.Sprintf("this is post #%d", i+1)},
+				},
+			})
+		}
+	}
+	suite.Require().NoError(suite.postRepo.Write(suite.Ctx(), postParams))
+	suite.Require().NoError(suite.tweetRepo.Create(suite.Ctx(), "test_user", tweetParams))
+
+	feed, err := suite.feedRepo.GetWithRecentItems(suite.Ctx(), feedID, nil)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(feed)
+	suite.Require().Equal(10, len(feed.Posts))
+
+	suite.Equal("https://www.example.org/feed.json", feed.URL)
+	suite.Equal(feedID, feed.ID)
+	suite.Equal("test_user", feed.UserID)
+
+	posts := feed.Posts
+
+	suite.Equal("Post #20", posts[0].Title)
+	suite.Equal(feedID, posts[0].FeedID)
+	suite.Nil(posts[0].TweetGroup)
+
+	// check the boundaries
+	suite.Nil(posts[4].TweetGroup)
+	suite.NotNil(posts[5].TweetGroup)
+
+	suite.Equal("this is post #11", posts[9].TextContent)
+	suite.NotNil(posts[9].TweetGroup)
+	suite.Equal("this is post #11", posts[9].TweetGroup.Tweets[0].Body)
+}
+
+func (suite *dynamoSuite) TestGetFeedWithRecentItemsMissing() {
+	feed, err := suite.feedRepo.GetWithRecentItems(suite.Ctx(), "garbage feed", nil)
+	suite.Nil(feed)
+	suite.Equal(ErrNoFeed, err)
+}
+
+func (suite *dynamoSuite) TestGetFeedWithRecentItemsNoPosts() {
+	feedID := feeds.NewFeedIDDynamo()
+	suite.NoError(suite.feedRepo.Create(
+		suite.Ctx(), "test_user", feedID, "https://www.example.org/feed.json"))
+
+	feed, err := suite.feedRepo.GetWithRecentItems(suite.Ctx(), feedID, nil)
 	suite.Require().NoError(err)
 	suite.NotNil(feed)
-	suite.Empty(posts)
+	suite.Equal("https://www.example.org/feed.json", feed.URL)
+	suite.Empty(feed.Posts)
 }

@@ -100,6 +100,7 @@ func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error 
 			db.GSI1SK:          {S: &gsi1sk},
 			db.GSI2PK:          {S: &pk},
 			db.GSI2SK:          {S: &gsi2sk},
+			db.Type:            {S: aws.String(model.TypePost)},
 			model.ColURL:       {S: aws.String(p.URL)},
 			model.ColCreatedAt: {S: &now},
 			// TODO figure out how to handle updated at if we care
