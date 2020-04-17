@@ -3,6 +3,7 @@ package shared
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -17,9 +18,9 @@ import (
 )
 
 var (
-	ErrNoTweet        = status.Error(codes.NotFound, "no tweet found")
-	ErrCannotCancel   = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
-	ErrCannotUncancel = status.Error(codes.FailedPrecondition, "tweet does not exist or is not currently canceled")
+	ErrNoTweet            = status.Error(codes.NotFound, "no tweet found")
+	ErrCannotCancelOrPost = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
+	ErrCannotUncancel     = status.Error(codes.FailedPrecondition, "tweet does not exist or is not currently canceled")
 )
 
 type TweetRepository struct {
@@ -149,7 +150,7 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, feedID feed
 	})
 	if err != nil {
 		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
-			return ErrCannotCancel
+			return ErrCannotCancelOrPost
 		}
 		return err
 	}
@@ -174,6 +175,46 @@ func (r *TweetRepository) Uncancel(ctx context.Context, userID string, feedID fe
 	if err != nil {
 		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
 			return ErrCannotUncancel
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (r *TweetRepository) Post(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID, postedTweetIDs []int64) error {
+	now := time.Now().Format(time.RFC3339)
+
+	expr := `SET #posted_at = :posted_at, #gsi1sk = :gsi1sk`
+	values := map[string]*dynamodb.AttributeValue{
+		":posted_at": {S: aws.String(now)},
+		":gsi1sk":    {S: aws.String("PAST#" + now)},
+	}
+
+	for i, tweetID := range postedTweetIDs {
+		key := fmt.Sprintf(":tweet%d_id", i)
+		expr += fmt.Sprintf(", #tweets[%d].#posted_tweet_id = %s", i, key)
+		values[key] = &dynamodb.AttributeValue{S: aws.String(strconv.FormatInt(tweetID, 10))}
+	}
+
+	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
+		TableName:           &r.dynamoConfig.TableName,
+		Key:                 r.primaryKey(userID, feedID, postID),
+		UpdateExpression:    &expr,
+		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk":              aws.String(db.PK),
+			"#gsi1sk":          aws.String(db.GSI1SK),
+			"#canceled_at":     aws.String(model.ColCanceledAt),
+			"#posted_at":       aws.String(model.ColPostedAt),
+			"#tweets":          aws.String(model.ColTweets),
+			"#posted_tweet_id": aws.String(model.ColPostedTweetID),
+		},
+		ExpressionAttributeValues: values,
+	})
+	if err != nil {
+		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
+			return ErrCannotCancelOrPost
 		}
 		return err
 	}

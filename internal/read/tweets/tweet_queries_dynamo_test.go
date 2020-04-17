@@ -24,9 +24,9 @@ func (suite *dynamoSuite) TestPagedTweetsUpcoming() {
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)
 
-	suite.Equal(4, len(conn.Edges))
+	suite.Equal(3, len(conn.Edges))
 	suite.Equal(feeds.PostID("0006"), conn.Edges[0].(*TweetGroupEdge).PostID)
-	suite.Equal(feeds.PostID("0001"), conn.Edges[3].(*TweetGroupEdge).PostID)
+	suite.Equal(feeds.PostID("0001"), conn.Edges[2].(*TweetGroupEdge).PostID)
 
 	c := conn.Edges[1].Cursor()
 	conn, err = suite.tweetQueries.Paged(suite.Ctx(), "test_user", UpcomingFilter, pager.First(3, &c))
@@ -41,9 +41,9 @@ func (suite *dynamoSuite) TestPagedTweetsPast() {
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)
 
-	suite.Equal(2, len(conn.Edges))
-	suite.Equal(feeds.PostID("0004"), conn.Edges[0].(*TweetGroupEdge).PostID)
-	suite.Equal(feeds.PostID("0003"), conn.Edges[1].(*TweetGroupEdge).PostID)
+	suite.Equal(3, len(conn.Edges))
+	suite.Equal(feeds.PostID("0005"), conn.Edges[0].(*TweetGroupEdge).PostID)
+	suite.Equal(feeds.PostID("0003"), conn.Edges[2].(*TweetGroupEdge).PostID)
 }
 
 func (suite *dynamoSuite) TestPagedTweetsUncanceled() {
@@ -55,15 +55,15 @@ func (suite *dynamoSuite) TestPagedTweetsUncanceled() {
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)
 
-	suite.Equal(1, len(conn.Edges))
-	suite.Equal(feeds.PostID("0003"), conn.Edges[0].(*TweetGroupEdge).PostID)
+	suite.Equal(2, len(conn.Edges))
+	suite.Equal(feeds.PostID("0003"), conn.Edges[1].(*TweetGroupEdge).PostID)
 
 	conn, err = suite.tweetQueries.Paged(suite.Ctx(), "test_user", UpcomingFilter, pager.First(5, nil))
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)
 
-	suite.Equal(5, len(conn.Edges))
-	suite.Equal(feeds.PostID("0004"), conn.Edges[2].(*TweetGroupEdge).PostID)
+	suite.Equal(4, len(conn.Edges))
+	suite.Equal(feeds.PostID("0004"), conn.Edges[1].(*TweetGroupEdge).PostID)
 }
 
 func (suite *dynamoSuite) preloadTweets() {
@@ -138,6 +138,8 @@ func (suite *dynamoSuite) preloadTweets() {
 	// TODO speed up test by using a fake clock
 	time.Sleep(time.Second)
 	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx(), "test_user", feed2ID, "0004"))
+	time.Sleep(time.Second)
+	suite.Require().NoError(suite.tweetRepo.Post(suite.Ctx(), "test_user", feed1ID, "0005", []int64{1234}))
 }
 
 func timeMust(s string) time.Time {
