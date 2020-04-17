@@ -15,6 +15,7 @@ executors:
         environment:
           POSTGRES_USER: circleci
           POSTGRES_DB: courier_test
+      - image: circleci/dynamodb:15
     environment:
       DATABASE_URL: postgresql://localhost/courier_test?sslmode=disable
       GOOGLE_PROJECT: << parameters.project >>
