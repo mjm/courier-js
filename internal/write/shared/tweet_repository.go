@@ -17,8 +17,9 @@ import (
 )
 
 var (
-	ErrNoTweet      = status.Error(codes.NotFound, "no tweet found")
-	ErrCannotCancel = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
+	ErrNoTweet        = status.Error(codes.NotFound, "no tweet found")
+	ErrCannotCancel   = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
+	ErrCannotUncancel = status.Error(codes.FailedPrecondition, "tweet does not exist or is not currently canceled")
 )
 
 type TweetRepository struct {
@@ -69,16 +70,18 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 	for _, params := range ts {
 		pk, sk := r.primaryKeyValues(userID, params.FeedID, params.PostID)
 		published := params.PublishedAt.Format(time.RFC3339)
+		upcoming := "UPCOMING#" + published
 
 		item := map[string]*dynamodb.AttributeValue{
 			db.PK:              {S: &pk},
 			db.SK:              {S: &sk},
 			db.GSI1PK:          {S: &pk},
-			db.GSI1SK:          {S: aws.String("UPCOMING#" + published)},
+			db.GSI1SK:          {S: &upcoming},
 			db.GSI2PK:          {S: aws.String("FEED#" + string(params.FeedID))},
 			db.GSI2SK:          {S: aws.String(fmt.Sprintf("#POST#%s#%s##TWEET", published, params.PostID))},
 			db.Type:            {S: aws.String(model.TypeTweet)},
 			model.ColCreatedAt: {S: &now},
+			"UpcomingKey":      {S: &upcoming},
 		}
 
 		if len(params.Tweets) > 0 {
@@ -147,6 +150,30 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, feedID feed
 	if err != nil {
 		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
 			return ErrCannotCancel
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (r *TweetRepository) Uncancel(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID) error {
+	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
+		TableName:           &r.dynamoConfig.TableName,
+		Key:                 r.primaryKey(userID, feedID, postID),
+		UpdateExpression:    aws.String(`REMOVE #canceled_at SET #gsi1sk = #upcoming`),
+		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk":          aws.String(db.PK),
+			"#gsi1sk":      aws.String(db.GSI1SK),
+			"#upcoming":    aws.String("UpcomingKey"),
+			"#canceled_at": aws.String(model.ColCanceledAt),
+			"#posted_at":   aws.String(model.ColPostedAt),
+		},
+	})
+	if err != nil {
+		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
+			return ErrCannotUncancel
 		}
 		return err
 	}

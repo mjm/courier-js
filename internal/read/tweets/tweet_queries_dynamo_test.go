@@ -46,9 +46,29 @@ func (suite *dynamoSuite) TestPagedTweetsPast() {
 	suite.Equal(feeds.PostID("0003"), conn.Edges[1].(*TweetGroupEdge).PostID)
 }
 
+func (suite *dynamoSuite) TestPagedTweetsUncanceled() {
+	suite.preloadTweets()
+
+	suite.Require().NoError(suite.tweetRepo.Uncancel(suite.Ctx(), "test_user", "feed2", "0004"))
+
+	conn, err := suite.tweetQueries.Paged(suite.Ctx(), "test_user", PastFilter, pager.First(5, nil))
+	suite.Require().NoError(err)
+	suite.Require().NotNil(conn)
+
+	suite.Equal(1, len(conn.Edges))
+	suite.Equal(feeds.PostID("0003"), conn.Edges[0].(*TweetGroupEdge).PostID)
+
+	conn, err = suite.tweetQueries.Paged(suite.Ctx(), "test_user", UpcomingFilter, pager.First(5, nil))
+	suite.Require().NoError(err)
+	suite.Require().NotNil(conn)
+
+	suite.Equal(5, len(conn.Edges))
+	suite.Equal(feeds.PostID("0004"), conn.Edges[2].(*TweetGroupEdge).PostID)
+}
+
 func (suite *dynamoSuite) preloadTweets() {
-	feed1ID := feeds.NewFeedIDDynamo()
-	feed2ID := feeds.NewFeedIDDynamo()
+	feed1ID := feeds.FeedID("feed1")
+	feed2ID := feeds.FeedID("feed2")
 
 	suite.Require().NoError(
 		suite.tweetRepo.Create(suite.Ctx(), "test_user", []shared.CreateTweetParams{
