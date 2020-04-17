@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/jonboulle/clockwork"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -26,12 +27,14 @@ var (
 type TweetRepository struct {
 	dynamo       dynamodbiface.DynamoDBAPI
 	dynamoConfig db.DynamoConfig
+	clock        clockwork.Clock
 }
 
-func NewTweetRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *TweetRepository {
+func NewTweetRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig, clock clockwork.Clock) *TweetRepository {
 	return &TweetRepository{
 		dynamo:       dynamo,
 		dynamoConfig: dynamoConfig,
+		clock:        clock,
 	}
 }
 
@@ -65,7 +68,7 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 		return nil
 	}
 
-	now := time.Now().Format(time.RFC3339)
+	now := r.clock.Now().Format(time.RFC3339)
 	var reqs []*dynamodb.WriteRequest
 
 	for _, params := range ts {
@@ -130,7 +133,7 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 }
 
 func (r *TweetRepository) Cancel(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID) error {
-	now := time.Now().Format(time.RFC3339)
+	now := r.clock.Now().Format(time.RFC3339)
 
 	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
@@ -183,7 +186,7 @@ func (r *TweetRepository) Uncancel(ctx context.Context, userID string, feedID fe
 }
 
 func (r *TweetRepository) Post(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID, postedTweetIDs []int64) error {
-	now := time.Now().Format(time.RFC3339)
+	now := r.clock.Now().Format(time.RFC3339)
 
 	expr := `SET #posted_at = :posted_at, #gsi1sk = :gsi1sk`
 	values := map[string]*dynamodb.AttributeValue{

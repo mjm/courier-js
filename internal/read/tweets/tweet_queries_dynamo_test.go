@@ -135,10 +135,9 @@ func (suite *dynamoSuite) preloadTweets() {
 		}))
 
 	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx(), "test_user", feed1ID, "0003"))
-	// TODO speed up test by using a fake clock
-	time.Sleep(time.Second)
+	suite.clock.Advance(time.Minute)
 	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx(), "test_user", feed2ID, "0004"))
-	time.Sleep(time.Second)
+	suite.clock.Advance(time.Minute)
 	suite.Require().NoError(suite.tweetRepo.Post(suite.Ctx(), "test_user", feed1ID, "0005", []int64{1234}))
 }
 

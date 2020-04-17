@@ -29,6 +29,7 @@ require (
 	github.com/honeycombio/opentelemetry-exporter-go v0.4.1-0.20200403221622-c399dc0c29d4
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jmoiron/sqlx v1.2.0
+	github.com/jonboulle/clockwork v0.1.0
 	github.com/khaiql/dbcleaner v2.3.0+incompatible
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect

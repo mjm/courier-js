@@ -3,6 +3,7 @@ package shared
 import (
 	"testing"
 
+	"github.com/jonboulle/clockwork"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mjm/courier-js/internal/db"
@@ -29,7 +30,7 @@ func (suite *dynamoSuite) SetupSuite() {
 
 	suite.feedRepo = NewFeedRepository(suite.Dynamo(), suite.DynamoConfig())
 	suite.postRepo = NewPostRepository(suite.Dynamo(), suite.DynamoConfig())
-	suite.tweetRepo = NewTweetRepository(suite.Dynamo(), suite.DynamoConfig())
+	suite.tweetRepo = NewTweetRepository(suite.Dynamo(), suite.DynamoConfig(), clockwork.NewFakeClock())
 }
 
 func (suite *dynamoSuite) SetupTest() {

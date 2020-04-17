@@ -3,6 +3,7 @@ package tweets
 import (
 	"testing"
 
+	"github.com/jonboulle/clockwork"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mjm/courier-js/internal/db"
@@ -15,6 +16,7 @@ type dynamoSuite struct {
 	trace.TracingSuite
 	db.DynamoSuite
 
+	clock        clockwork.FakeClock
 	tweetRepo    *shared.TweetRepository
 	tweetQueries *TweetQueriesDynamo
 }
@@ -27,7 +29,8 @@ func (suite *dynamoSuite) SetupSuite() {
 	suite.TracingSuite.SetupSuite(suite)
 	suite.DynamoSuite.SetupSuite()
 
-	suite.tweetRepo = shared.NewTweetRepository(suite.Dynamo(), suite.DynamoConfig())
+	suite.clock = clockwork.NewFakeClock()
+	suite.tweetRepo = shared.NewTweetRepository(suite.Dynamo(), suite.DynamoConfig(), suite.clock)
 	suite.tweetQueries = NewTweetQueriesDynamo(suite.Dynamo(), suite.DynamoConfig())
 }
 

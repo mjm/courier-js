@@ -1529,3 +1529,10 @@ go_repository(
     sum = "h1:YZyPbFK2hRdOu91m7Qi3W+doHHsTpRBE5fo327q06GE=",
     version = "v0.4.2",
 )
+
+go_repository(
+    name = "com_github_jonboulle_clockwork",
+    importpath = "github.com/jonboulle/clockwork",
+    sum = "h1:VKV+ZcuP6l3yW9doeqz6ziZGgcynBVQO+obU0+0hcPo=",
+    version = "v0.1.0",
+)
