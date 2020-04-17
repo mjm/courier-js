@@ -90,13 +90,16 @@ func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error 
 		if p.PublishedAt != nil {
 			pubStr = p.PublishedAt.Format(time.RFC3339)
 		}
-		publishedKey := fmt.Sprintf("#POST#%s", pubStr)
+		gsi1sk := fmt.Sprintf("POST#%s", pubStr)
+		gsi2sk := fmt.Sprintf("#POST#%s#%s#ITEM", pubStr, p.ItemID)
 
 		item := map[string]*dynamodb.AttributeValue{
 			db.PK:              {S: &pk},
 			db.SK:              {S: &sk},
 			db.GSI1PK:          {S: &pk},
-			db.GSI1SK:          {S: &publishedKey},
+			db.GSI1SK:          {S: &gsi1sk},
+			db.GSI2PK:          {S: &pk},
+			db.GSI2SK:          {S: &gsi2sk},
 			model.ColURL:       {S: aws.String(p.URL)},
 			model.ColCreatedAt: {S: &now},
 			// TODO figure out how to handle updated at if we care

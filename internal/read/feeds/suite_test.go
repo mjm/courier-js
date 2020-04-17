@@ -56,6 +56,10 @@ func TestFeedsSuite(t *testing.T) {
 	suite.Run(t, new(feedsSuite))
 }
 
+func init() {
+	trace.InitForTesting()
+}
+
 type dynamoSuite struct {
 	suite.Suite
 	trace.TracingSuite

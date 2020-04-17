@@ -50,19 +50,17 @@ func (r *FeedRepository) Get(ctx context.Context, userID string, feedID feeds.Fe
 }
 
 func (r *FeedRepository) GetWithRecentPosts(ctx context.Context, feedID feeds.FeedID) (*model.Feed, []*model.Post, error) {
-	pk := fmt.Sprintf("FEED#%s", feedID)
+	pk := "FEED#" + string(feedID)
 
 	res, err := r.dynamo.QueryWithContext(ctx, &dynamodb.QueryInput{
 		TableName:              &r.dynamoConfig.TableName,
-		IndexName:              aws.String(db.GSI1),
-		KeyConditionExpression: aws.String(`#pk = :pk and #sk <= :sk`),
+		IndexName:              aws.String(db.GSI2),
+		KeyConditionExpression: aws.String(`#pk = :pk`),
 		ExpressionAttributeNames: map[string]*string{
-			"#pk": aws.String(db.GSI1PK),
-			"#sk": aws.String(db.GSI1SK),
+			"#pk": aws.String(db.GSI2PK),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":pk": {S: &pk},
-			":sk": {S: &pk},
 		},
 		Limit:            aws.Int64(11), // feed record + 10 posts
 		ScanIndexForward: aws.Bool(false),
@@ -100,10 +98,10 @@ func (r *FeedRepository) Create(ctx context.Context, userID string, feedID feeds
 		Item: map[string]*dynamodb.AttributeValue{
 			db.PK:              {S: &pk},
 			db.SK:              {S: &sk},
-			db.GSI1PK:          {S: &sk},
-			db.GSI1SK:          {S: &sk},
-			db.GSI2PK:          {S: &pk},
-			db.GSI2SK:          {S: aws.String("FEED#")},
+			db.GSI1PK:          {S: &pk},
+			db.GSI1SK:          {S: aws.String("FEED#")},
+			db.GSI2PK:          {S: &sk},
+			db.GSI2SK:          {S: &sk},
 			model.ColURL:       {S: &url},
 			model.ColAutopost:  {BOOL: aws.Bool(false)},
 			model.ColCreatedAt: {S: &now},
@@ -146,7 +144,7 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 	}
 
 	setString("title", params.Title)
-	setString("gsi2sk", "FEED#"+params.Title)
+	setString("gsi1sk", "FEED#"+params.Title)
 	setString("home", params.HomePageURL)
 	setString("mp", params.MicropubEndpoint)
 
@@ -179,7 +177,7 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 		ConditionExpression: aws.String("attribute_exists(#pk)"),
 		ExpressionAttributeNames: map[string]*string{
 			"#pk":     aws.String(db.PK),
-			"#gsi2sk": aws.String(db.GSI2SK),
+			"#gsi1sk": aws.String(db.GSI1SK),
 			"#title":  aws.String(model.ColTitle),
 			"#home":   aws.String(model.ColHomePageURL),
 			"#ch":     aws.String(model.ColCachingHeaders),
