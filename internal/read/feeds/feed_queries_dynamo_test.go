@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mjm/courier-js/internal/pager"
-	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/write/shared"
 )
 
@@ -43,7 +43,7 @@ func (suite *dynamoSuite) TestPagedFeeds() {
 
 func (suite *dynamoSuite) preloadFeeds(n int) {
 	for i := 1; i <= n; i++ {
-		id := feeds.NewFeedIDDynamo()
+		id := model.NewFeedID()
 		u := fmt.Sprintf("https://www.example.org/feed%d.json", i)
 		suite.NoError(suite.feedRepo.Create(suite.Ctx(), "test_user", id, u))
 		suite.NoError(suite.feedRepo.UpdateDetails(suite.Ctx(), shared.UpdateFeedParamsDynamo{

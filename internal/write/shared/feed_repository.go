@@ -14,7 +14,6 @@ import (
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/shared/model"
-	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 var (
@@ -33,7 +32,7 @@ func NewFeedRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoC
 	}
 }
 
-func (r *FeedRepository) Get(ctx context.Context, userID string, feedID feeds.FeedID) (*model.Feed, error) {
+func (r *FeedRepository) Get(ctx context.Context, userID string, feedID model.FeedID) (*model.Feed, error) {
 	res, err := r.dynamo.GetItemWithContext(ctx, &dynamodb.GetItemInput{
 		TableName: &r.dynamoConfig.TableName,
 		Key:       r.primaryKey(userID, feedID),
@@ -59,7 +58,7 @@ type PostWithTweetGroup struct {
 	TweetGroup *model.TweetGroup
 }
 
-func (r *FeedRepository) GetWithRecentItems(ctx context.Context, feedID feeds.FeedID, lastPublished *time.Time) (*FeedWithItems, error) {
+func (r *FeedRepository) GetWithRecentItems(ctx context.Context, feedID model.FeedID, lastPublished *time.Time) (*FeedWithItems, error) {
 	pk := "FEED#" + string(feedID)
 
 	input := &dynamodb.QueryInput{
@@ -129,7 +128,7 @@ func (r *FeedRepository) GetWithRecentItems(ctx context.Context, feedID feeds.Fe
 			}
 
 			post := result.Posts[len(result.Posts)-1]
-			if post.ID != tg.PostID {
+			if post.ItemID() != tg.ItemID() {
 				continue
 			}
 
@@ -140,7 +139,7 @@ func (r *FeedRepository) GetWithRecentItems(ctx context.Context, feedID feeds.Fe
 	return result, nil
 }
 
-func (r *FeedRepository) Create(ctx context.Context, userID string, feedID feeds.FeedID, url string) error {
+func (r *FeedRepository) Create(ctx context.Context, userID string, feedID model.FeedID, url string) error {
 	pk, sk := r.primaryKeyValues(userID, feedID)
 	now := time.Now().Format(time.RFC3339)
 	_, err := r.dynamo.PutItemWithContext(ctx, &dynamodb.PutItemInput{
@@ -171,12 +170,12 @@ func (r *FeedRepository) Create(ctx context.Context, userID string, feedID feeds
 }
 
 type UpdateFeedParamsDynamo struct {
-	ID     feeds.FeedID
+	ID     model.FeedID
 	UserID string
 
 	Title            string
 	HomePageURL      string
-	CachingHeaders   *feeds.CachingHeaders
+	CachingHeaders   *model.CachingHeaders
 	MicropubEndpoint string
 }
 
@@ -247,7 +246,7 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 }
 
 type UpdateFeedSettingsParams struct {
-	ID     feeds.FeedID
+	ID     model.FeedID
 	UserID string
 
 	Autopost bool
@@ -277,13 +276,13 @@ func (r *FeedRepository) UpdateSettings(ctx context.Context, params UpdateFeedSe
 	return nil
 }
 
-func (r *FeedRepository) primaryKeyValues(userID string, feedID feeds.FeedID) (string, string) {
+func (r *FeedRepository) primaryKeyValues(userID string, feedID model.FeedID) (string, string) {
 	pk := fmt.Sprintf("USER#%s", userID)
 	sk := fmt.Sprintf("FEED#%s", feedID)
 	return pk, sk
 }
 
-func (r *FeedRepository) primaryKey(userID string, feedID feeds.FeedID) map[string]*dynamodb.AttributeValue {
+func (r *FeedRepository) primaryKey(userID string, feedID model.FeedID) map[string]*dynamodb.AttributeValue {
 	pk, sk := r.primaryKeyValues(userID, feedID)
 	return map[string]*dynamodb.AttributeValue{
 		db.PK: {S: &pk},

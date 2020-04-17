@@ -11,9 +11,8 @@ go_library(
     visibility = ["//:__subpackages__"],
     deps = [
         "//internal/db:go_default_library",
-        "//internal/shared/feeds:go_default_library",
-        "//internal/write/feeds:go_default_library",
         "@com_github_aws_aws_sdk_go//aws:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
+        "@com_github_segmentio_ksuid//:go_default_library",
     ],
 )

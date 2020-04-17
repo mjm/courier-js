@@ -4,20 +4,16 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/mjm/courier-js/internal/shared/feeds"
-	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 )
 
 func (suite *dynamoSuite) TestCreateSinglePost() {
-	feedID := feeds.NewFeedIDDynamo()
-	itemID := feeds2.PostID("https://www.example.org/post/abc")
-
+	id := model.PostIDFromParts(model.NewFeedID(), "https://www.example.org/post/abc")
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
 	err := suite.postRepo.Write(suite.Ctx(), []WritePostParams{
 		{
-			FeedID:      feedID,
-			ItemID:      itemID,
+			ID:          id,
 			TextContent: "this is text",
 			HTMLContent: "<p>this is html</p>",
 			Title:       "A New Post",
@@ -28,13 +24,12 @@ func (suite *dynamoSuite) TestCreateSinglePost() {
 	})
 	suite.NoError(err)
 
-	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), feedID, []feeds2.PostID{itemID})
+	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), id.FeedID, []string{id.ItemID})
 	suite.NoError(err)
 	suite.Equal(1, len(posts))
 
 	post := posts[0]
-	suite.Equal(itemID, post.ID)
-	suite.Equal(feedID, post.FeedID)
+	suite.Equal(id, post.ID)
 	suite.Equal("this is text", post.TextContent)
 	suite.Equal("<p>this is html</p>", post.HTMLContent)
 	suite.Equal("A New Post", post.Title)
@@ -44,14 +39,13 @@ func (suite *dynamoSuite) TestCreateSinglePost() {
 }
 
 func (suite *dynamoSuite) TestCreateManyPosts() {
-	feedID := feeds.NewFeedIDDynamo()
+	feedID := model.NewFeedID()
 	var ps []WritePostParams
 	for i := 0; i < 20; i++ {
 		t := time.Date(2020, time.January, 2, 3, 4, i, 0, time.UTC)
 		u := fmt.Sprintf("https://www.example.org/post/%d", i+1)
 		ps = append(ps, WritePostParams{
-			FeedID:      feedID,
-			ItemID:      feeds2.PostID(u),
+			ID:          model.PostIDFromParts(feedID, u),
 			TextContent: fmt.Sprintf("this is post #%d", i+1),
 			HTMLContent: fmt.Sprintf("<p>this is post #%d</p>", i+1),
 			Title:       fmt.Sprintf("Post #%d", i+1),
@@ -64,7 +58,7 @@ func (suite *dynamoSuite) TestCreateManyPosts() {
 	suite.NoError(suite.postRepo.Write(suite.Ctx(), ps))
 
 	// cherry pick a few to fetch
-	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), feedID, []feeds2.PostID{
+	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), feedID, []string{
 		"https://www.example.org/post/1",
 		"https://www.example.org/post/7",
 		"https://www.example.org/post/20",
@@ -81,15 +75,12 @@ func (suite *dynamoSuite) TestCreateManyPosts() {
 }
 
 func (suite *dynamoSuite) TestUpdateSinglePost() {
-	feedID := feeds.NewFeedIDDynamo()
-	itemID := feeds2.PostID("https://www.example.org/post/abc")
-
+	id := model.PostIDFromParts(model.NewFeedID(), "https://www.example.org/post/abc")
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
 	err := suite.postRepo.Write(suite.Ctx(), []WritePostParams{
 		{
-			FeedID:      feedID,
-			ItemID:      itemID,
+			ID:          id,
 			TextContent: "this is text",
 			HTMLContent: "<p>this is html</p>",
 			Title:       "A New Post",
@@ -103,8 +94,7 @@ func (suite *dynamoSuite) TestUpdateSinglePost() {
 	t2 := t.Add(time.Hour)
 	err = suite.postRepo.Write(suite.Ctx(), []WritePostParams{
 		{
-			FeedID:      feedID,
-			ItemID:      itemID,
+			ID:          id,
 			TextContent: "this is updated text",
 			HTMLContent: "<p>this is updated html</p>",
 			Title:       "An Updated Post",
@@ -115,13 +105,12 @@ func (suite *dynamoSuite) TestUpdateSinglePost() {
 	})
 	suite.NoError(err)
 
-	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), feedID, []feeds2.PostID{itemID})
+	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), id.FeedID, []string{id.ItemID})
 	suite.NoError(err)
 	suite.Equal(1, len(posts))
 
 	post := posts[0]
-	suite.Equal(itemID, post.ID)
-	suite.Equal(feedID, post.FeedID)
+	suite.Equal(id, post.ID)
 	suite.Equal("this is updated text", post.TextContent)
 	suite.Equal("<p>this is updated html</p>", post.HTMLContent)
 	suite.Equal("An Updated Post", post.Title)
@@ -131,14 +120,13 @@ func (suite *dynamoSuite) TestUpdateSinglePost() {
 }
 
 func (suite *dynamoSuite) TestUpdateManyPosts() {
-	feedID := feeds.NewFeedIDDynamo()
+	feedID := model.NewFeedID()
 	var ps []WritePostParams
 	for i := 0; i < 20; i++ {
 		t := time.Date(2020, time.January, 2, 3, 4, i, 0, time.UTC)
 		u := fmt.Sprintf("https://www.example.org/post/%d", i+1)
 		ps = append(ps, WritePostParams{
-			FeedID:      feedID,
-			ItemID:      feeds2.PostID(u),
+			ID:          model.PostIDFromParts(feedID, u),
 			TextContent: fmt.Sprintf("this is post #%d", i+1),
 			HTMLContent: fmt.Sprintf("<p>this is post #%d</p>", i+1),
 			Title:       fmt.Sprintf("Post #%d", i+1),
@@ -161,7 +149,7 @@ func (suite *dynamoSuite) TestUpdateManyPosts() {
 	suite.NoError(suite.postRepo.Write(suite.Ctx(), ps))
 
 	// cherry pick a few to fetch
-	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), feedID, []feeds2.PostID{
+	posts, err := suite.postRepo.FindByItemIDs(suite.Ctx(), feedID, []string{
 		"https://www.example.org/post/1",
 		"https://www.example.org/post/7",
 		"https://www.example.org/post/20",

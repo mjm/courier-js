@@ -14,7 +14,6 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/model"
 )
 
@@ -38,10 +37,10 @@ func NewTweetRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.Dynamo
 	}
 }
 
-func (r *TweetRepository) Get(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID) (*model.TweetGroup, error) {
+func (r *TweetRepository) Get(ctx context.Context, id model.TweetGroupID) (*model.TweetGroup, error) {
 	res, err := r.dynamo.GetItemWithContext(ctx, &dynamodb.GetItemInput{
 		TableName: &r.dynamoConfig.TableName,
-		Key:       r.primaryKey(userID, feedID, postID),
+		Key:       r.primaryKey(id),
 	})
 	if err != nil {
 		return nil, err
@@ -55,15 +54,14 @@ func (r *TweetRepository) Get(ctx context.Context, userID string, feedID feeds.F
 }
 
 type CreateTweetParams struct {
-	FeedID       feeds.FeedID
-	PostID       feeds.PostID
+	ID           model.TweetGroupID
 	PublishedAt  time.Time
 	Tweets       []*model.Tweet
 	RetweetID    string
 	PostTaskName string
 }
 
-func (r *TweetRepository) Create(ctx context.Context, userID string, ts []CreateTweetParams) error {
+func (r *TweetRepository) Create(ctx context.Context, ts []CreateTweetParams) error {
 	if len(ts) == 0 {
 		return nil
 	}
@@ -72,7 +70,7 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 	var reqs []*dynamodb.WriteRequest
 
 	for _, params := range ts {
-		pk, sk := r.primaryKeyValues(userID, params.FeedID, params.PostID)
+		pk, sk := r.primaryKeyValues(params.ID)
 		published := params.PublishedAt.Format(time.RFC3339)
 		upcoming := "UPCOMING#" + published
 
@@ -81,8 +79,8 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 			db.SK:              {S: &sk},
 			db.GSI1PK:          {S: &pk},
 			db.GSI1SK:          {S: &upcoming},
-			db.GSI2PK:          {S: aws.String("FEED#" + string(params.FeedID))},
-			db.GSI2SK:          {S: aws.String(fmt.Sprintf("#POST#%s#%s##TWEET", published, params.PostID))},
+			db.GSI2PK:          {S: aws.String("FEED#" + string(params.ID.FeedID))},
+			db.GSI2SK:          {S: aws.String(fmt.Sprintf("#POST#%s#%s##TWEET", published, params.ID.ItemID))},
 			db.Type:            {S: aws.String(model.TypeTweet)},
 			model.ColCreatedAt: {S: &now},
 			"UpcomingKey":      {S: &upcoming},
@@ -132,12 +130,12 @@ func (r *TweetRepository) Create(ctx context.Context, userID string, ts []Create
 	return nil
 }
 
-func (r *TweetRepository) Cancel(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID) error {
+func (r *TweetRepository) Cancel(ctx context.Context, id model.TweetGroupID) error {
 	now := r.clock.Now().Format(time.RFC3339)
 
 	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
-		Key:                 r.primaryKey(userID, feedID, postID),
+		Key:                 r.primaryKey(id),
 		UpdateExpression:    aws.String(`SET #canceled_at = :canceled_at, #gsi1sk = :gsi1sk`), // TODO remove post_after and task name
 		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
@@ -161,10 +159,10 @@ func (r *TweetRepository) Cancel(ctx context.Context, userID string, feedID feed
 	return nil
 }
 
-func (r *TweetRepository) Uncancel(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID) error {
+func (r *TweetRepository) Uncancel(ctx context.Context, id model.TweetGroupID) error {
 	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
-		Key:                 r.primaryKey(userID, feedID, postID),
+		Key:                 r.primaryKey(id),
 		UpdateExpression:    aws.String(`REMOVE #canceled_at SET #gsi1sk = #upcoming`),
 		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
@@ -185,7 +183,7 @@ func (r *TweetRepository) Uncancel(ctx context.Context, userID string, feedID fe
 	return nil
 }
 
-func (r *TweetRepository) Post(ctx context.Context, userID string, feedID feeds.FeedID, postID feeds.PostID, postedTweetIDs []int64) error {
+func (r *TweetRepository) Post(ctx context.Context, id model.TweetGroupID, postedTweetIDs []int64) error {
 	now := r.clock.Now().Format(time.RFC3339)
 
 	expr := `SET #posted_at = :posted_at, #gsi1sk = :gsi1sk`
@@ -202,7 +200,7 @@ func (r *TweetRepository) Post(ctx context.Context, userID string, feedID feeds.
 
 	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
-		Key:                 r.primaryKey(userID, feedID, postID),
+		Key:                 r.primaryKey(id),
 		UpdateExpression:    &expr,
 		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
@@ -225,14 +223,14 @@ func (r *TweetRepository) Post(ctx context.Context, userID string, feedID feeds.
 	return nil
 }
 
-func (r *TweetRepository) primaryKeyValues(userID string, feedID feeds.FeedID, postID feeds.PostID) (string, string) {
-	pk := "USER#" + userID
-	sk := fmt.Sprintf("FEED#%s#TWEETGROUP#%s", feedID, postID)
+func (r *TweetRepository) primaryKeyValues(id model.TweetGroupID) (string, string) {
+	pk := "USER#" + id.UserID
+	sk := fmt.Sprintf("FEED#%s#TWEETGROUP#%s", id.FeedID, id.ItemID)
 	return pk, sk
 }
 
-func (r *TweetRepository) primaryKey(userID string, feedID feeds.FeedID, postID feeds.PostID) map[string]*dynamodb.AttributeValue {
-	pk, sk := r.primaryKeyValues(userID, feedID, postID)
+func (r *TweetRepository) primaryKey(id model.TweetGroupID) map[string]*dynamodb.AttributeValue {
+	pk, sk := r.primaryKeyValues(id)
 	return map[string]*dynamodb.AttributeValue{
 		db.PK: {S: &pk},
 		db.SK: {S: &sk},

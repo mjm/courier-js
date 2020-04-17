@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/shared/feeds"
 )
 
 const (
@@ -23,10 +22,23 @@ const (
 	ColPostedTweetID = "PostedTweetID"
 )
 
+type TweetGroupID struct {
+	UserID string
+	PostID
+}
+
+func TweetGroupIDFromParts(userID string, feedID FeedID, itemID string) TweetGroupID {
+	return TweetGroupID{
+		UserID: userID,
+		PostID: PostID{
+			FeedID: feedID,
+			ItemID: itemID,
+		},
+	}
+}
+
 type TweetGroup struct {
-	UserID       string
-	FeedID       feeds.FeedID
-	PostID       feeds.PostID
+	ID           TweetGroupID
 	Action       TweetAction
 	Tweets       []*Tweet
 	RetweetID    string
@@ -73,9 +85,13 @@ func NewTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 	feedID, postID := sk[1], sk[3]
 
 	tg := &TweetGroup{
-		UserID: userID,
-		FeedID: feeds.FeedID(feedID),
-		PostID: feeds.PostID(postID),
+		ID: TweetGroupID{
+			UserID: userID,
+			PostID: PostID{
+				FeedID: FeedID(feedID),
+				ItemID: postID,
+			},
+		},
 	}
 
 	t, err := time.Parse(time.RFC3339, aws.StringValue(attrs[ColCreatedAt].S))
@@ -138,4 +154,20 @@ func newTweetFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Tweet, error
 	}
 
 	return t, nil
+}
+
+func (tg TweetGroup) UserID() string {
+	return tg.ID.UserID
+}
+
+func (tg TweetGroup) FeedID() FeedID {
+	return tg.ID.FeedID
+}
+
+func (tg TweetGroup) ItemID() string {
+	return tg.ID.ItemID
+}
+
+func (tg TweetGroup) PostID() PostID {
+	return tg.ID.PostID
 }

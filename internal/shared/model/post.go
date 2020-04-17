@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 const (
@@ -20,9 +19,20 @@ const (
 	ColModifiedAt  = "ModifiedAt"
 )
 
+type PostID struct {
+	FeedID FeedID
+	ItemID string
+}
+
+func PostIDFromParts(feedID FeedID, itemID string) PostID {
+	return PostID{
+		FeedID: feedID,
+		ItemID: itemID,
+	}
+}
+
 type Post struct {
-	ID          feeds.PostID
-	FeedID      feeds.FeedID
+	ID          PostID
 	TextContent string
 	HTMLContent string
 	Title       string
@@ -43,8 +53,10 @@ func NewPostFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Post, error) 
 	}
 
 	post := &Post{
-		ID:        feeds.PostID(itemID),
-		FeedID:    feeds.FeedID(feedID),
+		ID: PostID{
+			FeedID: FeedID(feedID),
+			ItemID: itemID,
+		},
 		URL:       aws.StringValue(attrs[ColURL].S),
 		CreatedAt: t,
 	}
@@ -73,4 +85,12 @@ func NewPostFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Post, error) 
 	}
 
 	return post, nil
+}
+
+func (p Post) FeedID() FeedID {
+	return p.ID.FeedID
+}
+
+func (p Post) ItemID() string {
+	return p.ID.ItemID
 }

@@ -12,9 +12,7 @@ go_library(
     visibility = ["//:__subpackages__"],
     deps = [
         "//internal/db:go_default_library",
-        "//internal/shared/feeds:go_default_library",
         "//internal/shared/model:go_default_library",
-        "//internal/write/feeds:go_default_library",
         "@com_github_aws_aws_sdk_go//aws:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb/dynamodbiface:go_default_library",
@@ -36,7 +34,6 @@ go_test(
     embed = [":go_default_library"],
     deps = [
         "//internal/db:go_default_library",
-        "//internal/shared/feeds:go_default_library",
         "//internal/shared/model:go_default_library",
         "//internal/trace:go_default_library",
         "//internal/write/feeds:go_default_library",

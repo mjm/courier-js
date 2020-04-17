@@ -3,21 +3,17 @@ package shared
 import (
 	"time"
 
-	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/model"
 )
 
 func (suite *dynamoSuite) TestCreateSingleTweet() {
-	feedID := feeds.NewFeedIDDynamo()
-	postID := feeds.PostID("https://www.example.org/post/abc")
-
+	id := model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "https://www.example.org/post/abc")
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
 	suite.Require().NoError(
-		suite.tweetRepo.Create(suite.Ctx(), "test_user", []CreateTweetParams{
+		suite.tweetRepo.Create(suite.Ctx(), []CreateTweetParams{
 			{
-				FeedID:      feedID,
-				PostID:      postID,
+				ID:          id,
 				PublishedAt: t,
 				Tweets: []*model.Tweet{
 					{
@@ -30,13 +26,13 @@ func (suite *dynamoSuite) TestCreateSingleTweet() {
 			},
 		}))
 
-	tg, err := suite.tweetRepo.Get(suite.Ctx(), "test_user", feedID, postID)
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), id)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(tg)
 
-	suite.Equal("test_user", tg.UserID)
-	suite.Equal(feedID, tg.FeedID)
-	suite.Equal(postID, tg.PostID)
+	suite.Equal("test_user", tg.UserID())
+	suite.Equal(id.FeedID, tg.FeedID())
+	suite.Equal(id.ItemID, tg.ItemID())
 	suite.Equal([]*model.Tweet{
 		{
 			Body: "This is my tweet text.",
@@ -52,28 +48,25 @@ func (suite *dynamoSuite) TestCreateSingleTweet() {
 }
 
 func (suite *dynamoSuite) TestCreateSingleRetweet() {
-	feedID := feeds.NewFeedIDDynamo()
-	postID := feeds.PostID("https://www.example.org/post/abc")
-
+	id := model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "https://www.example.org/post/abc")
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
 	suite.Require().NoError(
-		suite.tweetRepo.Create(suite.Ctx(), "test_user", []CreateTweetParams{
+		suite.tweetRepo.Create(suite.Ctx(), []CreateTweetParams{
 			{
-				FeedID:      feedID,
-				PostID:      postID,
+				ID:          id,
 				PublishedAt: t,
 				RetweetID:   "1234567890",
 			},
 		}))
 
-	tg, err := suite.tweetRepo.Get(suite.Ctx(), "test_user", feedID, postID)
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), id)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(tg)
 
-	suite.Equal("test_user", tg.UserID)
-	suite.Equal(feedID, tg.FeedID)
-	suite.Equal(postID, tg.PostID)
+	suite.Equal("test_user", tg.UserID())
+	suite.Equal(id.FeedID, tg.FeedID())
+	suite.Equal(id.ItemID, tg.ItemID())
 	suite.Empty(tg.Tweets)
 	suite.Equal("1234567890", tg.RetweetID)
 	suite.Equal(model.ActionRetweet, tg.Action)
@@ -82,22 +75,20 @@ func (suite *dynamoSuite) TestCreateSingleRetweet() {
 }
 
 func (suite *dynamoSuite) TestGetTweetMissing() {
-	tg, err := suite.tweetRepo.Get(suite.Ctx(), "test_user", "foo", "bar")
+	id := model.TweetGroupIDFromParts("test_user", "foo", "bar")
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), id)
 	suite.Equal(ErrNoTweet, err)
 	suite.Nil(tg)
 }
 
 func (suite *dynamoSuite) TestCancelTweet() {
-	feedID := feeds.NewFeedIDDynamo()
-	postID := feeds.PostID("https://www.example.org/post/abc")
-
+	id := model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "https://www.example.org/post/abc")
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
 	suite.Require().NoError(
-		suite.tweetRepo.Create(suite.Ctx(), "test_user", []CreateTweetParams{
+		suite.tweetRepo.Create(suite.Ctx(), []CreateTweetParams{
 			{
-				FeedID:      feedID,
-				PostID:      postID,
+				ID:          id,
 				PublishedAt: t,
 				Tweets: []*model.Tweet{
 					{
@@ -110,34 +101,32 @@ func (suite *dynamoSuite) TestCancelTweet() {
 			},
 		}))
 
-	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx(), "test_user", feedID, postID))
+	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx(), id))
 
-	tg, err := suite.tweetRepo.Get(suite.Ctx(), "test_user", feedID, postID)
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), id)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(tg)
 
 	suite.NotNil(tg.CanceledAt)
 	suite.Equal(model.Canceled, tg.Status)
 
-	suite.Require().Equal(ErrCannotCancelOrPost, suite.tweetRepo.Cancel(suite.Ctx(), "test_user", feedID, postID))
+	suite.Require().Equal(ErrCannotCancelOrPost, suite.tweetRepo.Cancel(suite.Ctx(), id))
 }
 
 func (suite *dynamoSuite) TestCancelTweetMissing() {
-	err := suite.tweetRepo.Cancel(suite.Ctx(), "test_user", "whatever", "not a thing")
+	id := model.TweetGroupIDFromParts("test_user", "whatever", "not a thing")
+	err := suite.tweetRepo.Cancel(suite.Ctx(), id)
 	suite.Equal(ErrCannotCancelOrPost, err)
 }
 
 func (suite *dynamoSuite) TestUncancelTweet() {
-	feedID := feeds.NewFeedIDDynamo()
-	postID := feeds.PostID("https://www.example.org/post/abc")
-
+	id := model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "https://www.example.org/post/abc")
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
 	suite.Require().NoError(
-		suite.tweetRepo.Create(suite.Ctx(), "test_user", []CreateTweetParams{
+		suite.tweetRepo.Create(suite.Ctx(), []CreateTweetParams{
 			{
-				FeedID:      feedID,
-				PostID:      postID,
+				ID:          id,
 				PublishedAt: t,
 				Tweets: []*model.Tweet{
 					{
@@ -150,10 +139,10 @@ func (suite *dynamoSuite) TestUncancelTweet() {
 			},
 		}))
 
-	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx(), "test_user", feedID, postID))
-	suite.Require().NoError(suite.tweetRepo.Uncancel(suite.Ctx(), "test_user", feedID, postID))
+	suite.Require().NoError(suite.tweetRepo.Cancel(suite.Ctx(), id))
+	suite.Require().NoError(suite.tweetRepo.Uncancel(suite.Ctx(), id))
 
-	tg, err := suite.tweetRepo.Get(suite.Ctx(), "test_user", feedID, postID)
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), id)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(tg)
 
@@ -162,21 +151,19 @@ func (suite *dynamoSuite) TestUncancelTweet() {
 }
 
 func (suite *dynamoSuite) TestUncancelTweetMissing() {
-	err := suite.tweetRepo.Uncancel(suite.Ctx(), "test_user", "whatever", "not a thing")
+	id := model.TweetGroupIDFromParts("test_user", "whatever", "not a thing")
+	err := suite.tweetRepo.Uncancel(suite.Ctx(), id)
 	suite.Equal(ErrCannotUncancel, err)
 }
 
 func (suite *dynamoSuite) TestPostTweet() {
-	feedID := feeds.NewFeedIDDynamo()
-	postID := feeds.PostID("https://www.example.org/post/abc")
-
+	id := model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "https://www.example.org/post/abc")
 	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
 
 	suite.Require().NoError(
-		suite.tweetRepo.Create(suite.Ctx(), "test_user", []CreateTweetParams{
+		suite.tweetRepo.Create(suite.Ctx(), []CreateTweetParams{
 			{
-				FeedID:      feedID,
-				PostID:      postID,
+				ID:          id,
 				PublishedAt: t,
 				Tweets: []*model.Tweet{
 					{
@@ -189,9 +176,9 @@ func (suite *dynamoSuite) TestPostTweet() {
 			},
 		}))
 
-	suite.Require().NoError(suite.tweetRepo.Post(suite.Ctx(), "test_user", feedID, postID, []int64{1234567890}))
+	suite.Require().NoError(suite.tweetRepo.Post(suite.Ctx(), id, []int64{1234567890}))
 
-	tg, err := suite.tweetRepo.Get(suite.Ctx(), "test_user", feedID, postID)
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), id)
 	suite.Require().NoError(err)
 	suite.Require().NotNil(tg)
 

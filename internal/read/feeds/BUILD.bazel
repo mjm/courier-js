@@ -51,6 +51,7 @@ go_test(
         "//internal/event:go_default_library",
         "//internal/pager:go_default_library",
         "//internal/shared/feeds:go_default_library",
+        "//internal/shared/model:go_default_library",
         "//internal/trace:go_default_library",
         "//internal/write/feeds:go_default_library",
         "//internal/write/shared:go_default_library",

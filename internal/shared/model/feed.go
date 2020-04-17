@@ -6,9 +6,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/segmentio/ksuid"
 
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 const (
@@ -27,8 +27,14 @@ const (
 	ColAutopost         = "Autopost"
 )
 
+type FeedID string
+
+func NewFeedID() FeedID {
+	return FeedID(ksuid.New().String())
+}
+
 type Feed struct {
-	ID               feeds.FeedID
+	ID               FeedID
 	UserID           string
 	URL              string
 	Title            string
@@ -36,7 +42,7 @@ type Feed struct {
 	RefreshedAt      *time.Time
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
-	CachingHeaders   *feeds.CachingHeaders
+	CachingHeaders   *CachingHeaders
 	MicropubEndpoint string
 	Autopost         bool
 }
@@ -46,7 +52,7 @@ func NewFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) 
 	feedID := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 2)[1]
 
 	feed := &Feed{
-		ID:       feeds.FeedID(feedID),
+		ID:       FeedID(feedID),
 		UserID:   userID,
 		URL:      aws.StringValue(attrs[ColURL].S),
 		Autopost: aws.BoolValue(attrs[ColAutopost].BOOL),
@@ -85,11 +91,16 @@ func NewFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) 
 	}
 
 	if cachingHeadersVal, ok := attrs[ColCachingHeaders]; ok {
-		feed.CachingHeaders = &feeds.CachingHeaders{
+		feed.CachingHeaders = &CachingHeaders{
 			Etag:         aws.StringValue(cachingHeadersVal.M[ColEtag].S),
 			LastModified: aws.StringValue(cachingHeadersVal.M[ColLastModified].S),
 		}
 	}
 
 	return feed, nil
+}
+
+type CachingHeaders struct {
+	Etag         string `json:"etag,omitempty"`
+	LastModified string `json:"lastModified,omitempty"`
 }

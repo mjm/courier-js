@@ -11,7 +11,6 @@ import (
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/shared/model"
-	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 type PostRepository struct {
@@ -26,13 +25,19 @@ func NewPostRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoC
 	}
 }
 
-func (r *PostRepository) FindByItemIDs(ctx context.Context, feedID feeds.FeedID, itemIDs []feeds.PostID) ([]*model.Post, error) {
+func (r *PostRepository) FindByItemIDs(ctx context.Context, feedID model.FeedID, itemIDs []string) ([]*model.Post, error) {
 	var keys dynamodb.KeysAndAttributes
+	var ids []model.PostID
 	for _, itemID := range itemIDs {
-		keys.Keys = append(keys.Keys, r.primaryKey(feedID, itemID))
+		postID := model.PostID{
+			FeedID: feedID,
+			ItemID: itemID,
+		}
+		keys.Keys = append(keys.Keys, r.primaryKey(postID))
+		ids = append(ids, postID)
 	}
 
-	posts := make(map[feeds.PostID]*model.Post)
+	posts := make(map[model.PostID]*model.Post)
 	var err2 error
 	err := r.dynamo.BatchGetItemPagesWithContext(ctx, &dynamodb.BatchGetItemInput{
 		RequestItems: map[string]*dynamodb.KeysAndAttributes{
@@ -59,8 +64,8 @@ func (r *PostRepository) FindByItemIDs(ctx context.Context, feedID feeds.FeedID,
 	}
 
 	var ps []*model.Post
-	for _, itemID := range itemIDs {
-		if p, ok := posts[itemID]; ok {
+	for _, id := range ids {
+		if p, ok := posts[id]; ok {
 			ps = append(ps, p)
 		}
 	}
@@ -69,8 +74,7 @@ func (r *PostRepository) FindByItemIDs(ctx context.Context, feedID feeds.FeedID,
 }
 
 type WritePostParams struct {
-	FeedID      feeds.FeedID
-	ItemID      feeds.PostID
+	ID          model.PostID
 	TextContent string
 	HTMLContent string
 	Title       string
@@ -84,14 +88,14 @@ func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error 
 	var reqs []*dynamodb.WriteRequest
 
 	for _, p := range ps {
-		pk, sk := r.primaryKeyValues(p.FeedID, p.ItemID)
+		pk, sk := r.primaryKeyValues(p.ID)
 
 		var pubStr string
 		if p.PublishedAt != nil {
 			pubStr = p.PublishedAt.Format(time.RFC3339)
 		}
 		gsi1sk := fmt.Sprintf("POST#%s", pubStr)
-		gsi2sk := fmt.Sprintf("#POST#%s#%s#ITEM", pubStr, p.ItemID)
+		gsi2sk := fmt.Sprintf("#POST#%s#%s#ITEM", pubStr, p.ID.ItemID)
 
 		item := map[string]*dynamodb.AttributeValue{
 			db.PK:              {S: &pk},
@@ -141,14 +145,14 @@ func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error 
 	return nil
 }
 
-func (r *PostRepository) primaryKeyValues(feedID feeds.FeedID, postID feeds.PostID) (string, string) {
-	pk := fmt.Sprintf("FEED#%s", feedID)
-	sk := fmt.Sprintf("POST#%s", postID)
+func (r *PostRepository) primaryKeyValues(id model.PostID) (string, string) {
+	pk := fmt.Sprintf("FEED#%s", id.FeedID)
+	sk := fmt.Sprintf("POST#%s", id.ItemID)
 	return pk, sk
 }
 
-func (r *PostRepository) primaryKey(feedID feeds.FeedID, postID feeds.PostID) map[string]*dynamodb.AttributeValue {
-	pk, sk := r.primaryKeyValues(feedID, postID)
+func (r *PostRepository) primaryKey(id model.PostID) map[string]*dynamodb.AttributeValue {
+	pk, sk := r.primaryKeyValues(id)
 	return map[string]*dynamodb.AttributeValue{
 		db.PK: {S: &pk},
 		db.SK: {S: &sk},
