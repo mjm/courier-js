@@ -29,18 +29,26 @@ resource "aws_dynamodb_table" "courier" {
     name = "GSI2SK"
     type = "S"
   }
+  attribute {
+    name = "LSI1SK"
+    type = "S"
+  }
+
+  local_secondary_index {
+    name            = "LSI1"
+    range_key       = "LSI1SK"
+    projection_type = "ALL"
+  }
 
   global_secondary_index {
-    name = "GSI1"
-
+    name            = "GSI1"
     hash_key        = "GSI1PK"
     range_key       = "GSI1SK"
     projection_type = "ALL"
   }
 
   global_secondary_index {
-    name = "GSI2"
-
+    name            = "GSI2"
     hash_key        = "GSI2PK"
     range_key       = "GSI2SK"
     projection_type = "ALL"

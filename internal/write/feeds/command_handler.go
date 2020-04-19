@@ -55,6 +55,7 @@ func NewCommandHandler(
 	bus.Register(h,
 		CreateCommand{},
 		SubscribeCommand{},
+		PingCommand{},
 		QueueRefreshCommand{},
 		RefreshCommand{},
 		UpdateOptionsCommand{},
@@ -73,6 +74,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 
 	case SubscribeCommand:
 		return nil, h.handleSubscribe(ctx, cmd)
+
+	case PingCommand:
+		return nil, h.handlePing(ctx, cmd)
 
 	case QueueRefreshCommand:
 		return nil, h.handleQueueRefresh(ctx, cmd)

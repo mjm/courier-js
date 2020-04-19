@@ -59,6 +59,28 @@ func CreateDynamoTable(ctx context.Context, dynamo dynamodbiface.DynamoDBAPI, na
 				AttributeName: aws.String(GSI2SK),
 				AttributeType: aws.String(dynamodb.ScalarAttributeTypeS),
 			},
+			{
+				AttributeName: aws.String(LSI1SK),
+				AttributeType: aws.String(dynamodb.ScalarAttributeTypeS),
+			},
+		},
+		LocalSecondaryIndexes: []*dynamodb.LocalSecondaryIndex{
+			{
+				IndexName: aws.String(LSI1),
+				KeySchema: []*dynamodb.KeySchemaElement{
+					{
+						AttributeName: aws.String(PK),
+						KeyType:       aws.String(dynamodb.KeyTypeHash),
+					},
+					{
+						AttributeName: aws.String(LSI1SK),
+						KeyType:       aws.String(dynamodb.KeyTypeRange),
+					},
+				},
+				Projection: &dynamodb.Projection{
+					ProjectionType: aws.String(dynamodb.ProjectionTypeAll),
+				},
+			},
 		},
 		GlobalSecondaryIndexes: []*dynamodb.GlobalSecondaryIndex{
 			{

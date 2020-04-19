@@ -10,17 +10,17 @@ import (
 	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
-	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 // Injectors from wire.go:
 
 func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
+	commandBus := write.NewCommandBus()
 	defaultEnv := &config.DefaultEnv{}
 	client, err := secret.NewSecretManager(gcpConfig)
 	if err != nil {
@@ -28,16 +28,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
 	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	dbConfig, err := db.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dbDB, err := db.New(dbConfig)
-	if err != nil {
-		return nil, err
-	}
-	feedQueries := feeds.NewFeedQueries(dbDB)
-	commandBus := write.NewCommandBus()
 	publisherConfig, err := event.NewPublisherConfig(loader)
 	if err != nil {
 		return nil, err
@@ -55,9 +45,17 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	feedRepository := feeds2.NewFeedRepository(dbDB)
-	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
-	postRepository := feeds2.NewPostRepository(dbDB)
+	dbConfig, err := db.NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	dbDB, err := db.New(dbConfig)
+	if err != nil {
+		return nil, err
+	}
+	feedRepository := feeds.NewFeedRepository(dbDB)
+	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
+	postRepository := feeds.NewPostRepository(dbDB)
 	dynamoConfig, err := db.NewDynamoConfig(loader)
 	if err != nil {
 		return nil, err
@@ -69,7 +67,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	clock := clockwork.NewRealClock()
 	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository, sharedFeedRepository, sharedPostRepository)
-	handler := NewHandler(feedQueries, commandBus, commandHandler)
+	commandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository, sharedFeedRepository, sharedPostRepository)
+	handler := NewHandler(commandBus, commandHandler)
 	return handler, nil
 }

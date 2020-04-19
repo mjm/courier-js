@@ -15,6 +15,7 @@ import (
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/shared/model"
+	"github.com/mjm/courier-js/pkg/scraper"
 )
 
 var (
@@ -49,6 +50,35 @@ func (r *FeedRepository) Get(ctx context.Context, userID string, feedID model.Fe
 	}
 
 	return model.NewFeedFromAttrs(res.Item)
+}
+
+func (r *FeedRepository) ByHomePageURL(ctx context.Context, u string) ([]*model.Feed, error) {
+	u = scraper.NormalizeURL(u)
+
+	res, err := r.dynamo.QueryWithContext(ctx, &dynamodb.QueryInput{
+		TableName:              &r.dynamoConfig.TableName,
+		IndexName:              aws.String(db.GSI1),
+		KeyConditionExpression: aws.String(`#pk = :pk`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk": aws.String(db.GSI1PK),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":pk": {S: aws.String("HOMEPAGE#" + u)},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var fs []*model.Feed
+	for _, item := range res.Items {
+		f, err := model.NewFeedFromAttrs(item)
+		if err != nil {
+			return nil, err
+		}
+		fs = append(fs, f)
+	}
+	return fs, nil
 }
 
 type FeedWithItems struct {
@@ -150,8 +180,6 @@ func (r *FeedRepository) Create(ctx context.Context, userID string, feedID model
 		Item: map[string]*dynamodb.AttributeValue{
 			db.PK:              {S: &pk},
 			db.SK:              {S: &sk},
-			db.GSI1PK:          {S: &pk},
-			db.GSI1SK:          {S: aws.String("FEED#")},
 			db.GSI2PK:          {S: &sk},
 			db.GSI2SK:          {S: &sk},
 			db.Type:            {S: aws.String(model.TypeFeed)},
@@ -197,8 +225,11 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 	}
 
 	setString("title", params.Title)
-	setString("gsi1sk", "FEED#"+params.Title)
+	setString("lsi1sk", "FEED#"+params.Title)
 	setString("home", params.HomePageURL)
+	homeURL := scraper.NormalizeURL(params.HomePageURL)
+	setString("gsi1pk", "HOMEPAGE#"+homeURL)
+	setString("gsi1sk", "FEED#"+string(params.ID))
 	setString("mp", params.MicropubEndpoint)
 
 	if params.CachingHeaders != nil {
@@ -232,6 +263,8 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 		ConditionExpression: aws.String("attribute_exists(#pk)"),
 		ExpressionAttributeNames: map[string]*string{
 			"#pk":     aws.String(db.PK),
+			"#lsi1sk": aws.String(db.LSI1SK),
+			"#gsi1pk": aws.String(db.GSI1PK),
 			"#gsi1sk": aws.String(db.GSI1SK),
 			"#title":  aws.String(model.ColTitle),
 			"#home":   aws.String(model.ColHomePageURL),

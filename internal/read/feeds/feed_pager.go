@@ -22,23 +22,22 @@ func (p *feedPager) Query(cursor *pager.Cursor) *dynamodb.QueryInput {
 	var startKey map[string]*dynamodb.AttributeValue
 	if cursor != nil {
 		comps := strings.SplitN(string(*cursor), "###", 2)
-		sk, gsisk := comps[0], comps[1]
+		sk, lsisk := comps[0], comps[1]
 
 		startKey = map[string]*dynamodb.AttributeValue{
 			db.PK:     {S: aws.String(pk)},
 			db.SK:     {S: aws.String(sk)},
-			db.GSI1PK: {S: aws.String(pk)},
-			db.GSI1SK: {S: aws.String(gsisk)},
+			db.LSI1SK: {S: aws.String(lsisk)},
 		}
 	}
 
 	return &dynamodb.QueryInput{
 		TableName:              &p.TableName,
-		IndexName:              aws.String(db.GSI1),
+		IndexName:              aws.String(db.LSI1),
 		KeyConditionExpression: aws.String(`#pk = :pk and begins_with(#sk, :sk)`),
 		ExpressionAttributeNames: map[string]*string{
-			"#pk": aws.String(db.GSI1PK),
-			"#sk": aws.String(db.GSI1SK),
+			"#pk": aws.String(db.PK),
+			"#sk": aws.String(db.LSI1SK),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":pk": {S: aws.String(pk)},
@@ -56,7 +55,7 @@ func (p *feedPager) ScanEdge(item map[string]*dynamodb.AttributeValue) (pager.Ed
 
 	return &FeedEdge{
 		Feed:   *f,
-		cursor: pager.Cursor(aws.StringValue(item[db.SK].S) + "###" + aws.StringValue(item[db.GSI1SK].S)),
+		cursor: pager.Cursor(aws.StringValue(item[db.SK].S) + "###" + aws.StringValue(item[db.LSI1SK].S)),
 	}, nil
 }
 

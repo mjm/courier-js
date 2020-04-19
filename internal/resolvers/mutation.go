@@ -7,6 +7,7 @@ import (
 	"github.com/mjm/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/auth"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
@@ -67,7 +68,7 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 
 	cmd := feeds.QueueRefreshCommand{
 		UserID: userID,
-		FeedID: id,
+		FeedID: model.FeedID(id),
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return

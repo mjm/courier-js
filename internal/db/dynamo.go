@@ -30,6 +30,9 @@ const (
 	GSI2PK = "GSI2PK"
 	GSI2SK = "GSI2SK"
 
+	LSI1   = "LSI1"
+	LSI1SK = "LSI1SK"
+
 	Type = "Type"
 )
 

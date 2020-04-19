@@ -8,6 +8,7 @@ go_library(
         "feed.go",
         "feed_repository.go",
         "import_posts_command.go",
+        "ping_command.go",
         "post.go",
         "post_repository.go",
         "qry_gen.go",

@@ -13,6 +13,62 @@ func (suite *dynamoSuite) TestGetFeedMissing() {
 	suite.Equal(ErrNoFeed, err)
 }
 
+func (suite *dynamoSuite) TestFeedsByHomePageURL() {
+	feedID := model.NewFeedID()
+	feedID2 := model.NewFeedID()
+	feedID3 := model.NewFeedID()
+
+	// create some feeds
+	suite.Require().NoError(
+		suite.feedRepo.Create(suite.Ctx(), "test_user", feedID, "https://www.example.org/feed.json"))
+	suite.Require().NoError(
+		suite.feedRepo.Create(suite.Ctx(), "test_user2", feedID2, "https://www.example.org/feed.json"))
+	suite.Require().NoError(
+		suite.feedRepo.Create(suite.Ctx(), "test_user", feedID3, "https://www.example2.org/feed.xml"))
+
+	// set some home page URLs
+	suite.Require().NoError(
+		suite.feedRepo.UpdateDetails(suite.Ctx(), UpdateFeedParams{
+			ID:          feedID,
+			UserID:      "test_user",
+			HomePageURL: "https://www.example.org",
+		}))
+	suite.Require().NoError(
+		suite.feedRepo.UpdateDetails(suite.Ctx(), UpdateFeedParams{
+			ID:          feedID2,
+			UserID:      "test_user2",
+			HomePageURL: "https://www.example.org/",
+		}))
+	suite.Require().NoError(
+		suite.feedRepo.UpdateDetails(suite.Ctx(), UpdateFeedParams{
+			ID:          feedID3,
+			UserID:      "test_user",
+			HomePageURL: "https://www.example2.org/",
+		}))
+
+	fs, err := suite.feedRepo.ByHomePageURL(suite.Ctx(), "https://www.example.org")
+	suite.Require().NoError(err)
+
+	suite.ElementsMatch([]*model.Feed{
+		{
+			ID:          feedID,
+			UserID:      "test_user",
+			URL:         "https://www.example.org/feed.json",
+			HomePageURL: "https://www.example.org",
+			CreatedAt:   suite.clock.Now(),
+			UpdatedAt:   suite.clock.Now(),
+		},
+		{
+			ID:          feedID2,
+			UserID:      "test_user2",
+			URL:         "https://www.example.org/feed.json",
+			HomePageURL: "https://www.example.org/",
+			CreatedAt:   suite.clock.Now(),
+			UpdatedAt:   suite.clock.Now(),
+		},
+	}, fs)
+}
+
 func (suite *dynamoSuite) TestCreateFeed() {
 	feedID := model.NewFeedID()
 	err := suite.feedRepo.Create(suite.Ctx(), "test_user", feedID, "https://www.example.org/feed.json")
