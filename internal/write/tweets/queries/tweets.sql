@@ -7,34 +7,6 @@ FROM
 WHERE fs.user_id = $1
   AND t.guid = $2;
 
--- qry: TweetsCancel
-UPDATE
-  tweets
-SET
-  status     = 'canceled',
-  post_after = NULL,
-  updated_at = CURRENT_TIMESTAMP
-FROM
-  feed_subscriptions
-WHERE tweets.feed_subscription_guid = feed_subscriptions.guid
-  AND feed_subscriptions.user_id = $1
-  AND tweets.guid = $2
-  AND status = 'draft';
-
--- qry: TweetsUncancel
-UPDATE
-  tweets
-SET
-  status     = 'draft',
-  post_after = NULL,
-  updated_at = CURRENT_TIMESTAMP
-FROM
-  feed_subscriptions
-WHERE tweets.feed_subscription_guid = feed_subscriptions.guid
-  AND feed_subscriptions.user_id = $1
-  AND tweets.guid = $2
-  AND status = 'canceled';
-
 -- qry: TweetsPost
 UPDATE tweets
 SET

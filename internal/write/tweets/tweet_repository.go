@@ -42,45 +42,6 @@ func (r *TweetRepository) Get(ctx context.Context, userID string, tweetID TweetI
 	return &tweet, nil
 }
 
-// Cancel marks a tweet as canceled as long as it is not already posted. It also clears
-// the post_after field to prevent the tweet from being autoposted if it is uncanceled
-// later.
-func (r *TweetRepository) Cancel(ctx context.Context, userID string, tweetID TweetID) error {
-	res, err := r.db.ExecContext(ctx, queries.TweetsCancel, userID, tweetID)
-	if err != nil {
-		return err
-	}
-
-	n, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-
-	if n == 0 {
-		return ErrNoTweet
-	}
-
-	return nil
-}
-
-func (r *TweetRepository) Uncancel(ctx context.Context, userID string, tweetID TweetID) error {
-	res, err := r.db.ExecContext(ctx, queries.TweetsUncancel, userID, tweetID)
-	if err != nil {
-		return err
-	}
-
-	n, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-
-	if n == 0 {
-		return ErrNoTweet
-	}
-
-	return nil
-}
-
 func (r *TweetRepository) Post(ctx context.Context, tweetID TweetID, postedTweetID int64) error {
 	res, err := r.db.ExecContext(ctx, queries.TweetsPost, tweetID, strconv.FormatInt(postedTweetID, 10))
 	if err != nil {

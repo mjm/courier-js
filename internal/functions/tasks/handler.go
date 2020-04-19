@@ -36,7 +36,7 @@ func NewHandler(commandBus *write.CommandBus, _ *writetweets.CommandHandler, _ *
 	}
 }
 
-func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+func (h *Handler) HandleHTTP(ctx context.Context, _ http.ResponseWriter, r *http.Request) error {
 	span := trace.SpanFromContext(ctx)
 
 	taskName := r.Header.Get("X-CloudTasks-TaskName")
@@ -71,11 +71,11 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 
 	switch task := msg.Message.(type) {
 	case *tweets.PostTweetTask:
+		id := model.TweetGroupIDFromParts(task.UserId, model.FeedID(task.FeedId), task.ItemId)
 		_, err = h.commandBus.Run(ctx, writetweets.PostCommand{
-			UserID:   task.UserId,
-			TweetID:  tweets.TweetID(task.TweetId),
-			Autopost: task.Autopost,
-			TaskName: taskName,
+			TweetGroupID: id,
+			Autopost:     task.Autopost,
+			TaskName:     taskName,
 		})
 	case *feeds.RefreshFeedTask:
 		_, err = h.commandBus.Run(ctx, writefeeds.RefreshCommand{

@@ -284,6 +284,37 @@ func (r *TweetRepository) Post(ctx context.Context, id model.TweetGroupID, poste
 	return nil
 }
 
+func (r *TweetRepository) PostRetweet(ctx context.Context, id model.TweetGroupID, postedTweetID int64) error {
+	now := model.FormatTime(r.clock.Now())
+
+	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
+		TableName:           &r.dynamoConfig.TableName,
+		Key:                 id.PrimaryKey(),
+		UpdateExpression:    aws.String(`SET #posted_at = :posted_at, #gsi1sk = :gsi1sk, #posted_retweet_id = :posted_retweet_id`),
+		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk":                aws.String(db.PK),
+			"#gsi1sk":            aws.String(db.GSI1SK),
+			"#canceled_at":       aws.String(model.ColCanceledAt),
+			"#posted_at":         aws.String(model.ColPostedAt),
+			"#posted_retweet_id": aws.String(model.ColPostedRetweetID),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":posted_at":         {S: aws.String(now)},
+			":gsi1sk":            {S: aws.String("PAST#" + now)},
+			":posted_retweet_id": {S: aws.String(strconv.FormatInt(postedTweetID, 10))},
+		},
+	})
+	if err != nil {
+		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
+			return ErrCannotCancelOrPost
+		}
+		return err
+	}
+
+	return nil
+}
+
 func (r *TweetRepository) primaryKeyValues(id model.TweetGroupID) (string, string) {
 	pk := "USER#" + id.UserID
 	sk := fmt.Sprintf("FEED#%s#TWEETGROUP#%s", id.FeedID, id.ItemID)

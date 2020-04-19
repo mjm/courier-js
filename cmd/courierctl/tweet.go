@@ -20,6 +20,7 @@ var tweetCommand = &cli.Command{
 		tweetListCommand,
 		tweetCancelCommand,
 		tweetUncancelCommand,
+		tweetPostCommand,
 	},
 }
 
@@ -64,7 +65,17 @@ var tweetListCommand = &cli.Command{
 			} else {
 				text = "RT " + tge.RetweetID
 			}
-			fmt.Printf("\n%s  %s\n%s\t%.80s\n", tge.FeedID(), tge.ItemID(), tge.Status, text)
+			fmt.Printf("\n%s  %s\n%-10s%.80s\n", tge.FeedID(), tge.ItemID(), tge.Status, text)
+			if tge.Status == model.Posted {
+				switch tge.Action {
+				case model.ActionTweet:
+					for i, tweet := range tge.Tweets {
+						fmt.Printf("%d. https://twitter.com/user/status/%s\n", i+1, tweet.PostedTweetID)
+					}
+				case model.ActionRetweet:
+					fmt.Printf("1. https://twitter.com/user/status/%s\n", tge.PostedRetweetID)
+				}
+			}
 		}
 
 		return nil
@@ -116,6 +127,34 @@ var tweetUncancelCommand = &cli.Command{
 
 		id := model.TweetGroupIDFromParts(userID, feedID, itemID)
 		cmd := tweets2.UncancelCommand{
+			TweetGroupID: id,
+		}
+		if _, err := commandBus.Run(ctx.Context, cmd); err != nil {
+			return err
+		}
+
+		fmt.Fprintf(os.Stderr, "Done.\n")
+		return nil
+	},
+}
+
+var tweetPostCommand = &cli.Command{
+	Name:      "post",
+	Usage:     "Post a draft tweet to Twitter",
+	ArgsUsage: "[feed id] [item id]",
+	Action: func(ctx *cli.Context) error {
+		userID := ctx.String("user")
+		feedID := model.FeedID(ctx.Args().Get(0))
+		itemID := ctx.Args().Get(1)
+
+		if userID == "" || feedID == "" || itemID == "" {
+			return cli.ShowSubcommandHelp(ctx)
+		}
+
+		fmt.Fprintf(os.Stderr, "Posting tweet %s %s as %s\n", feedID, itemID, userID)
+
+		id := model.TweetGroupIDFromParts(userID, feedID, itemID)
+		cmd := tweets2.PostCommand{
 			TweetGroupID: id,
 		}
 		if _, err := commandBus.Run(ctx.Context, cmd); err != nil {

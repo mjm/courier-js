@@ -14,13 +14,14 @@ import (
 const (
 	TypeTweet = "Tweet"
 
-	ColTweets        = "Tweets"
-	ColRetweetID     = "RetweetID"
-	ColPostedAt      = "PostedAt"
-	ColCanceledAt    = "CanceledAt"
-	ColBody          = "Body"
-	ColMediaURLs     = "MediaURLs"
-	ColPostedTweetID = "PostedTweetID"
+	ColTweets          = "Tweets"
+	ColRetweetID       = "RetweetID"
+	ColPostedAt        = "PostedAt"
+	ColCanceledAt      = "CanceledAt"
+	ColBody            = "Body"
+	ColMediaURLs       = "MediaURLs"
+	ColPostedTweetID   = "PostedTweetID"
+	ColPostedRetweetID = "PostedRetweetID"
 )
 
 type TweetGroupID struct {
@@ -53,17 +54,18 @@ func (id TweetGroupID) PrimaryKey() map[string]*dynamodb.AttributeValue {
 }
 
 type TweetGroup struct {
-	ID           TweetGroupID
-	Action       TweetAction
-	Tweets       []*Tweet
-	RetweetID    string
-	Status       TweetStatus
-	PostedAt     *time.Time
-	CanceledAt   *time.Time
-	PostAfter    *time.Time
-	PostTaskName string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID              TweetGroupID
+	Action          TweetAction
+	Tweets          []*Tweet
+	RetweetID       string
+	Status          TweetStatus
+	PostedAt        *time.Time
+	CanceledAt      *time.Time
+	PostedRetweetID string
+	PostAfter       *time.Time
+	PostTaskName    string
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 type Tweet struct {
@@ -146,6 +148,10 @@ func NewTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 		tg.Status = Canceled
 	} else {
 		tg.Status = Draft
+	}
+
+	if postedRetweetIDVal, ok := attrs[ColPostedRetweetID]; ok {
+		tg.PostedRetweetID = aws.StringValue(postedRetweetIDVal.S)
 	}
 
 	// TODO post after and task name
