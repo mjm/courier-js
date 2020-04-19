@@ -103,8 +103,9 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	if err != nil {
 		return nil, err
 	}
-	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig)
-	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig)
+	clock := clockwork.NewRealClock()
+	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
+	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
 	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository, sharedFeedRepository, sharedPostRepository)
 	tweetRepository := tweets2.NewTweetRepository(dbDB)
 	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
@@ -119,7 +120,6 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		return nil, err
 	}
 	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig, api)
-	clock := clockwork.NewRealClock()
 	sharedTweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
 	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository, userRepository, sharedFeedRepository, sharedTweetRepository)
 	customerRepository := billing3.NewCustomerRepository(api)

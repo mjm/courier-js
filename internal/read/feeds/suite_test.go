@@ -3,6 +3,7 @@ package feeds
 import (
 	"testing"
 
+	"github.com/jonboulle/clockwork"
 	"github.com/khaiql/dbcleaner"
 	"github.com/khaiql/dbcleaner/engine"
 	"github.com/stretchr/testify/suite"
@@ -65,6 +66,7 @@ type dynamoSuite struct {
 	trace.TracingSuite
 	db.DynamoSuite
 
+	clock       clockwork.FakeClock
 	feedRepo    *shared.FeedRepository
 	feedQueries *FeedQueriesDynamo
 }
@@ -73,7 +75,8 @@ func (suite *dynamoSuite) SetupSuite() {
 	suite.TracingSuite.SetupSuite(suite)
 	suite.DynamoSuite.SetupSuite()
 
-	suite.feedRepo = shared.NewFeedRepository(suite.Dynamo(), suite.DynamoConfig())
+	suite.clock = clockwork.NewFakeClock()
+	suite.feedRepo = shared.NewFeedRepository(suite.Dynamo(), suite.DynamoConfig(), suite.clock)
 	suite.feedQueries = NewFeedQueriesDynamo(suite.Dynamo(), suite.DynamoConfig())
 }
 

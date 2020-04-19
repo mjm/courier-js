@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "feed.go",
         "post.go",
+        "time.go",
         "tweet.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/shared/model",

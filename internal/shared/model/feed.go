@@ -67,7 +67,7 @@ func NewFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) 
 	}
 
 	if refreshedAtVal, ok := attrs[ColRefreshedAt]; ok {
-		t, err := time.Parse(time.RFC3339, aws.StringValue(refreshedAtVal.S))
+		t, err := ParseTime(aws.StringValue(refreshedAtVal.S))
 		if err != nil {
 			return nil, err
 		}
@@ -76,12 +76,12 @@ func NewFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) 
 
 	var err error
 
-	feed.CreatedAt, err = time.Parse(time.RFC3339, aws.StringValue(attrs[ColCreatedAt].S))
+	feed.CreatedAt, err = ParseTime(aws.StringValue(attrs[ColCreatedAt].S))
 	if err != nil {
 		return nil, err
 	}
 
-	feed.UpdatedAt, err = time.Parse(time.RFC3339, aws.StringValue(attrs[ColUpdatedAt].S))
+	feed.UpdatedAt, err = ParseTime(aws.StringValue(attrs[ColUpdatedAt].S))
 	if err != nil {
 		return nil, err
 	}

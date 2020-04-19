@@ -55,6 +55,7 @@ go_test(
         "//internal/trace:go_default_library",
         "//internal/write/feeds:go_default_library",
         "//internal/write/shared:go_default_library",
+        "@com_github_jonboulle_clockwork//:go_default_library",
         "@com_github_khaiql_dbcleaner//:go_default_library",
         "@com_github_khaiql_dbcleaner//engine:go_default_library",
         "@com_github_stretchr_testify//suite:go_default_library",

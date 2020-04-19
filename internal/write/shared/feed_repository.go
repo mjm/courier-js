@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/jonboulle/clockwork"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -23,12 +24,14 @@ var (
 type FeedRepository struct {
 	dynamo       dynamodbiface.DynamoDBAPI
 	dynamoConfig db.DynamoConfig
+	clock        clockwork.Clock
 }
 
-func NewFeedRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *FeedRepository {
+func NewFeedRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig, clock clockwork.Clock) *FeedRepository {
 	return &FeedRepository{
 		dynamo:       dynamo,
 		dynamoConfig: dynamoConfig,
+		clock:        clock,
 	}
 }
 
@@ -78,7 +81,7 @@ func (r *FeedRepository) GetWithRecentItems(ctx context.Context, feedID model.Fe
 		// 1 feed + 10 posts + 10 tweet groups = 21 items
 		input.SetLimit(21)
 	} else {
-		sk := fmt.Sprintf("#POST#%s#Z", lastPublished.Format(time.RFC3339))
+		sk := fmt.Sprintf("#POST#%s#Z", model.FormatTime(*lastPublished))
 		input.SetKeyConditionExpression(`#pk = :pk and #sk >= :sk`)
 		input.ExpressionAttributeNames["#sk"] = aws.String(db.GSI2SK)
 		input.ExpressionAttributeValues[":sk"] = &dynamodb.AttributeValue{S: &sk}
@@ -141,7 +144,7 @@ func (r *FeedRepository) GetWithRecentItems(ctx context.Context, feedID model.Fe
 
 func (r *FeedRepository) Create(ctx context.Context, userID string, feedID model.FeedID, url string) error {
 	pk, sk := r.primaryKeyValues(userID, feedID)
-	now := time.Now().Format(time.RFC3339)
+	now := model.FormatTime(r.clock.Now())
 	_, err := r.dynamo.PutItemWithContext(ctx, &dynamodb.PutItemInput{
 		TableName: &r.dynamoConfig.TableName,
 		Item: map[string]*dynamodb.AttributeValue{

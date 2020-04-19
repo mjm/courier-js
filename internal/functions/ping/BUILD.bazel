@@ -23,6 +23,7 @@ go_library(
         "//pkg/scraper:go_default_library",
         "@com_github_divan_gorilla_xmlrpc//xml:go_default_library",
         "@com_github_gorilla_rpc//:go_default_library",
+        "@com_github_jonboulle_clockwork//:go_default_library",
         "@io_opentelemetry_go_otel//api/key:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
     ],

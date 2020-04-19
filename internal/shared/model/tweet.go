@@ -94,7 +94,7 @@ func NewTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 		},
 	}
 
-	t, err := time.Parse(time.RFC3339, aws.StringValue(attrs[ColCreatedAt].S))
+	t, err := ParseTime(aws.StringValue(attrs[ColCreatedAt].S))
 	if err != nil {
 		return nil, err
 	}
@@ -116,14 +116,14 @@ func NewTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 	}
 
 	if postedAtVal, ok := attrs[ColPostedAt]; ok {
-		t, err := time.Parse(time.RFC3339, aws.StringValue(postedAtVal.S))
+		t, err := ParseTime(aws.StringValue(postedAtVal.S))
 		if err != nil {
 			return nil, err
 		}
 		tg.PostedAt = &t
 		tg.Status = Posted
 	} else if canceledAtVal, ok := attrs[ColCanceledAt]; ok {
-		t, err := time.Parse(time.RFC3339, aws.StringValue(canceledAtVal.S))
+		t, err := ParseTime(aws.StringValue(canceledAtVal.S))
 		if err != nil {
 			return nil, err
 		}

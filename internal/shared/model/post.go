@@ -47,7 +47,7 @@ func NewPostFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Post, error) 
 	feedID := strings.SplitN(aws.StringValue(attrs[db.PK].S), "#", 2)[1]
 	itemID := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 2)[1]
 
-	t, err := time.Parse(time.RFC3339, aws.StringValue(attrs[ColCreatedAt].S))
+	t, err := ParseTime(aws.StringValue(attrs[ColCreatedAt].S))
 	if err != nil {
 		return nil, err
 	}
@@ -70,14 +70,14 @@ func NewPostFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Post, error) 
 		post.HTMLContent = aws.StringValue(htmlContentVal.S)
 	}
 	if publishedAtVal, ok := attrs[ColPublishedAt]; ok {
-		t, err := time.Parse(time.RFC3339, aws.StringValue(publishedAtVal.S))
+		t, err := ParseTime(aws.StringValue(publishedAtVal.S))
 		if err != nil {
 			return nil, err
 		}
 		post.PublishedAt = &t
 	}
 	if modifiedAtVal, ok := attrs[ColModifiedAt]; ok {
-		t, err := time.Parse(time.RFC3339, aws.StringValue(modifiedAtVal.S))
+		t, err := ParseTime(aws.StringValue(modifiedAtVal.S))
 		if err != nil {
 			return nil, err
 		}

@@ -110,8 +110,8 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig)
 	clock := clockwork.NewRealClock()
+	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	sharedTweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
 	commandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository, feedRepository, sharedTweetRepository)
 	eventHandler := tweets2.NewEventHandler(commandBus, bus, feedSubscriptionRepository, postRepository, commandHandler)

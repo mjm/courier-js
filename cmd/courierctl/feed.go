@@ -93,7 +93,7 @@ var feedRefreshCommand = &cli.Command{
 		userID := ctx.String("user")
 
 		if id == "" || userID == "" {
-			cli.ShowSubcommandHelp(ctx)
+			return cli.ShowSubcommandHelp(ctx)
 		}
 
 		feedID := model.FeedID(id)

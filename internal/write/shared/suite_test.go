@@ -15,6 +15,7 @@ type dynamoSuite struct {
 	trace.TracingSuite
 	db.DynamoSuite
 
+	clock     clockwork.FakeClock
 	feedRepo  *FeedRepository
 	postRepo  *PostRepository
 	tweetRepo *TweetRepository
@@ -28,9 +29,10 @@ func (suite *dynamoSuite) SetupSuite() {
 	suite.TracingSuite.SetupSuite(suite)
 	suite.DynamoSuite.SetupSuite()
 
-	suite.feedRepo = NewFeedRepository(suite.Dynamo(), suite.DynamoConfig())
-	suite.postRepo = NewPostRepository(suite.Dynamo(), suite.DynamoConfig())
-	suite.tweetRepo = NewTweetRepository(suite.Dynamo(), suite.DynamoConfig(), clockwork.NewFakeClock())
+	suite.clock = clockwork.NewFakeClock()
+	suite.feedRepo = NewFeedRepository(suite.Dynamo(), suite.DynamoConfig(), suite.clock)
+	suite.postRepo = NewPostRepository(suite.Dynamo(), suite.DynamoConfig(), suite.clock)
+	suite.tweetRepo = NewTweetRepository(suite.Dynamo(), suite.DynamoConfig(), suite.clock)
 }
 
 func (suite *dynamoSuite) SetupTest() {

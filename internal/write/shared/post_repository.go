@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+	"github.com/jonboulle/clockwork"
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/shared/model"
@@ -16,12 +17,14 @@ import (
 type PostRepository struct {
 	dynamo       dynamodbiface.DynamoDBAPI
 	dynamoConfig db.DynamoConfig
+	clock        clockwork.Clock
 }
 
-func NewPostRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *PostRepository {
+func NewPostRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig, clock clockwork.Clock) *PostRepository {
 	return &PostRepository{
 		dynamo:       dynamo,
 		dynamoConfig: dynamoConfig,
+		clock:        clock,
 	}
 }
 
@@ -84,7 +87,7 @@ type WritePostParams struct {
 }
 
 func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error {
-	now := time.Now().Format(time.RFC3339)
+	now := model.FormatTime(r.clock.Now())
 	var reqs []*dynamodb.WriteRequest
 
 	for _, p := range ps {
@@ -92,7 +95,7 @@ func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error 
 
 		var pubStr string
 		if p.PublishedAt != nil {
-			pubStr = p.PublishedAt.Format(time.RFC3339)
+			pubStr = model.FormatTime(*p.PublishedAt)
 		}
 		gsi1sk := fmt.Sprintf("POST#%s", pubStr)
 		gsi2sk := fmt.Sprintf("#POST#%s#%s#ITEM", pubStr, p.ID.ItemID)
@@ -123,7 +126,7 @@ func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error 
 		}
 		if p.ModifiedAt != nil {
 			item[model.ColModifiedAt] = &dynamodb.AttributeValue{
-				S: aws.String(p.ModifiedAt.Format(time.RFC3339)),
+				S: aws.String(model.FormatTime(*p.ModifiedAt)),
 			}
 		}
 		reqs = append(reqs, &dynamodb.WriteRequest{

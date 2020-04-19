@@ -6,6 +6,7 @@
 package ping
 
 import (
+	"github.com/jonboulle/clockwork"
 	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
@@ -65,8 +66,9 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig)
-	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig)
+	clock := clockwork.NewRealClock()
+	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
+	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
 	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository, sharedFeedRepository, sharedPostRepository)
 	handler := NewHandler(feedQueries, commandBus, commandHandler)
 	return handler, nil
