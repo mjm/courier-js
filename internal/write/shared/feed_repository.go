@@ -169,7 +169,7 @@ func (r *FeedRepository) Create(ctx context.Context, userID string, feedID model
 	return nil
 }
 
-type UpdateFeedParamsDynamo struct {
+type UpdateFeedParams struct {
 	ID     model.FeedID
 	UserID string
 
@@ -179,7 +179,7 @@ type UpdateFeedParamsDynamo struct {
 	MicropubEndpoint string
 }
 
-func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedParamsDynamo) error {
+func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedParams) error {
 	var toSet []string
 	var toRemove []string
 	vals := map[string]*dynamodb.AttributeValue{}

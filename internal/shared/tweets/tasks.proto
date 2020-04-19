@@ -7,4 +7,6 @@ message PostTweetTask {
   string user_id = 1;
   string tweet_id = 2;
   bool autopost = 3;
+  string feed_id = 4;
+  string item_id = 5;
 }

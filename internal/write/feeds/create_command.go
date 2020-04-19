@@ -8,6 +8,7 @@ import (
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/pkg/locatefeed"
 )
@@ -56,7 +57,7 @@ func (h *CommandHandler) handleCreate(ctx context.Context, cmd CreateCommand) (F
 
 	_, err = h.bus.Run(ctx, RefreshCommand{
 		UserID: cmd.UserID,
-		FeedID: feedID,
+		FeedID: model.FeedID(feedID),
 	})
 
 	span.SetAttributes(keys.FeedID(feedID))

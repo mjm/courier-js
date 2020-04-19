@@ -27,7 +27,8 @@ message TweetPosted {
 message TweetsImported {
   string user_id = 1;
   string subscription_id = 2;
-  repeated string created_tweet_ids = 3;
-  repeated string updated_tweet_ids = 4;
+  repeated string created_item_ids = 3;
+  repeated string updated_item_ids = 4;
   bool autopost = 5;
+  string feed_id = 6;
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 // Injectors from wire.go:
@@ -56,7 +57,17 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	feedRepository := feeds2.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
 	postRepository := feeds2.NewPostRepository(dbDB)
-	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
+	if err != nil {
+		return nil, err
+	}
+	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig)
+	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig)
+	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository, sharedFeedRepository, sharedPostRepository)
 	handler := NewHandler(feedQueries, commandBus, commandHandler)
 	return handler, nil
 }

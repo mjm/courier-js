@@ -74,6 +74,81 @@ func (suite *dynamoSuite) TestCreateSingleRetweet() {
 	suite.NotEmpty(tg.CreatedAt)
 }
 
+func (suite *dynamoSuite) TestUpdateTweet() {
+	id := model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "https://www.example.org/post/abc")
+	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
+
+	suite.Require().NoError(
+		suite.tweetRepo.Create(suite.Ctx(), []CreateTweetParams{
+			{
+				ID:          id,
+				PublishedAt: t,
+				Tweets: []*model.Tweet{
+					{
+						Body: "This is my tweet text.",
+						MediaURLs: []string{
+							"https://www.example.org/media/foo.jpg",
+						},
+					},
+				},
+			},
+			{
+				ID:          model.TweetGroupIDFromParts(id.UserID, id.FeedID, "abc123"),
+				PublishedAt: t.Add(time.Hour),
+				Tweets: []*model.Tweet{
+					{
+						Body: "This is a different tweet",
+					},
+				},
+			},
+		}))
+
+	suite.Require().NoError(
+		suite.tweetRepo.Update(suite.Ctx(), UpdateTweetParams{
+			ID:        id,
+			RetweetID: "123456",
+		}))
+
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), id)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(tg)
+
+	suite.Equal(model.Draft, tg.Status)
+	suite.Equal(model.ActionRetweet, tg.Action)
+	suite.Equal("123456", tg.RetweetID)
+	suite.Empty(tg.Tweets)
+
+	suite.Require().NoError(
+		suite.tweetRepo.Update(suite.Ctx(), UpdateTweetParams{
+			ID: id,
+			Tweets: []*model.Tweet{
+				{
+					Body: "This is some new tweet content.",
+				},
+				{
+					Body:      "This is another tweet.",
+					MediaURLs: []string{"https://example.org/foo.jpg"},
+				},
+			},
+		}))
+
+	tg, err = suite.tweetRepo.Get(suite.Ctx(), id)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(tg)
+
+	suite.Equal(model.Draft, tg.Status)
+	suite.Equal([]*model.Tweet{
+		{
+			Body: "This is some new tweet content.",
+		},
+		{
+			Body:      "This is another tweet.",
+			MediaURLs: []string{"https://example.org/foo.jpg"},
+		},
+	}, tg.Tweets)
+	suite.Empty(tg.RetweetID)
+}
+
 func (suite *dynamoSuite) TestGetTweetMissing() {
 	id := model.TweetGroupIDFromParts("test_user", "foo", "bar")
 	tg, err := suite.tweetRepo.Get(suite.Ctx(), id)

@@ -46,7 +46,7 @@ func (suite *dynamoSuite) preloadFeeds(n int) {
 		id := model.NewFeedID()
 		u := fmt.Sprintf("https://www.example.org/feed%d.json", i)
 		suite.NoError(suite.feedRepo.Create(suite.Ctx(), "test_user", id, u))
-		suite.NoError(suite.feedRepo.UpdateDetails(suite.Ctx(), shared.UpdateFeedParamsDynamo{
+		suite.NoError(suite.feedRepo.UpdateDetails(suite.Ctx(), shared.UpdateFeedParams{
 			ID:          id,
 			UserID:      "test_user",
 			Title:       fmt.Sprintf("Feed #%d", i),

@@ -103,7 +103,7 @@ func NewTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 	if tweetsVal, ok := attrs[ColTweets]; ok {
 		tg.Action = ActionTweet
 		for _, val := range tweetsVal.L {
-			tweet, err := newTweetFromAttrs(val.M)
+			tweet, err := NewTweetFromAttrs(val.M)
 			if err != nil {
 				return nil, err
 			}
@@ -138,7 +138,7 @@ func NewTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 	return tg, nil
 }
 
-func newTweetFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Tweet, error) {
+func NewTweetFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Tweet, error) {
 	t := new(Tweet)
 
 	if bodyVal, ok := attrs[ColBody]; ok {

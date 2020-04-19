@@ -13,6 +13,7 @@ import (
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
@@ -25,6 +26,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		tasks.DefaultSet,
 		db.DefaultSet,
 		feeds2.NewFeedQueries,
+		shared.DefaultSet,
 		feeds.DefaultSet,
 	))
 }

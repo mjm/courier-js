@@ -2,17 +2,12 @@ package feeds
 
 import (
 	"github.com/google/uuid"
-	"github.com/segmentio/ksuid"
 )
 
 type FeedID string
 
 func NewFeedID() FeedID {
 	return FeedID(uuid.New().String())
-}
-
-func NewFeedIDDynamo() FeedID {
-	return FeedID(ksuid.New().String())
 }
 
 func (id FeedID) String() string {

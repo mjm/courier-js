@@ -50,10 +50,10 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 	ctx, span := tracer.Start(ctx, "Notifier.handleTweetsImported",
 		trace.WithAttributes(
 			keys.UserID(evt.UserId),
-			key.Int("tweet.count", len(evt.CreatedTweetIds))))
+			key.Int("tweet.count", len(evt.CreatedItemIds))))
 	defer span.End()
 
-	if len(evt.CreatedTweetIds) == 0 {
+	if len(evt.CreatedItemIds) == 0 {
 		return
 	}
 
@@ -66,8 +66,8 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 	alert := make(map[string]interface{})
 	aps["alert"] = alert
 
-	if len(evt.CreatedTweetIds) == 1 {
-		tweetID := tweets.TweetID(evt.CreatedTweetIds[0])
+	if len(evt.CreatedItemIds) == 1 {
+		tweetID := tweets.TweetID(evt.CreatedItemIds[0])
 		span.SetAttributes(keys.TweetID(tweetID))
 
 		tweet, err := n.tweets.PrivilegedGet(ctx, tweetID)
@@ -90,7 +90,7 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 		aps["thread-id"] = tweet.ID.String()
 		payload["tweetId"] = tweet.ID.String()
 	} else {
-		alert["title-loc-args"] = []string{strconv.Itoa(len(evt.CreatedTweetIds))}
+		alert["title-loc-args"] = []string{strconv.Itoa(len(evt.CreatedItemIds))}
 		if evt.Autopost {
 			alert["title-loc-key"] = "IMPORTED_TWEETS_AUTOPOST"
 		} else {

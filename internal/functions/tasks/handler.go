@@ -14,6 +14,7 @@ import (
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/internal/write"
@@ -79,7 +80,7 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 	case *feeds.RefreshFeedTask:
 		_, err = h.commandBus.Run(ctx, writefeeds.RefreshCommand{
 			UserID: task.UserId,
-			FeedID: feeds.FeedID(task.FeedId),
+			FeedID: model.FeedID(task.FeedId),
 		})
 	default:
 		err = fmt.Errorf("%w %T", ErrUnknownType, msg.Message)

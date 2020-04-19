@@ -48,7 +48,7 @@ func (suite *tweetsSuite) SetupSuite() {
 	// TODO user repo
 	NewCommandHandler(
 		suite.commandBus, suite.eventBus, nil, suite.tweetRepo, suite.subRepo, suite.postRepo, suite.externalTweetRepo,
-		suite.userRepo)
+		suite.userRepo, nil, nil)
 }
 
 func (suite *tweetsSuite) SetupTest() {

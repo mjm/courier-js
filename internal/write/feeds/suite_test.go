@@ -40,7 +40,8 @@ func (suite *feedsSuite) SetupSuite() {
 	suite.subRepo = NewSubscriptionRepository(suite.db)
 	suite.postRepo = NewPostRepository(suite.db)
 
-	NewCommandHandler(suite.commandBus, suite.eventBus, nil, suite.feedRepo, suite.subRepo, suite.postRepo)
+	NewCommandHandler(suite.commandBus, suite.eventBus, nil, suite.feedRepo, suite.subRepo, suite.postRepo,
+		nil, nil)
 }
 
 func (suite *feedsSuite) SetupTest() {

@@ -6,6 +6,7 @@
 package events
 
 import (
+	"github.com/jonboulle/clockwork"
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/config"
@@ -17,6 +18,7 @@ import (
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/shared"
 	tweets2 "github.com/mjm/courier-js/internal/write/tweets"
 	user2 "github.com/mjm/courier-js/internal/write/user"
 )
@@ -100,7 +102,18 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	api := billing.NewClient(billingConfig)
 	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig, api)
-	commandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
+	if err != nil {
+		return nil, err
+	}
+	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig)
+	clock := clockwork.NewRealClock()
+	sharedTweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	commandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository, feedRepository, sharedTweetRepository)
 	eventHandler := tweets2.NewEventHandler(commandBus, bus, feedSubscriptionRepository, postRepository, commandHandler)
 	userUserRepository := user2.NewUserRepository(management)
 	userCommandHandler := user2.NewCommandHandler(commandBus, publisher, userUserRepository)

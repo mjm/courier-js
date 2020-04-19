@@ -34,7 +34,7 @@ func (suite *dynamoSuite) TestUpdateFeed() {
 	err := suite.feedRepo.Create(suite.Ctx(), "test_user", feedID, "https://www.example.org/feed.json")
 	suite.NoError(err)
 
-	err = suite.feedRepo.UpdateDetails(suite.Ctx(), UpdateFeedParamsDynamo{
+	err = suite.feedRepo.UpdateDetails(suite.Ctx(), UpdateFeedParams{
 		ID:          feedID,
 		UserID:      "test_user",
 		Title:       "Example Feed",
@@ -58,7 +58,7 @@ func (suite *dynamoSuite) TestUpdateFeed() {
 		LastModified: "blah",
 	}, feed.CachingHeaders)
 
-	err = suite.feedRepo.UpdateDetails(suite.Ctx(), UpdateFeedParamsDynamo{
+	err = suite.feedRepo.UpdateDetails(suite.Ctx(), UpdateFeedParams{
 		ID:               feedID,
 		UserID:           "test_user",
 		Title:            "",
@@ -78,7 +78,7 @@ func (suite *dynamoSuite) TestUpdateFeed() {
 }
 
 func (suite *dynamoSuite) TestUpdateFeedDetailsMissing() {
-	err := suite.feedRepo.UpdateDetails(suite.Ctx(), UpdateFeedParamsDynamo{
+	err := suite.feedRepo.UpdateDetails(suite.Ctx(), UpdateFeedParams{
 		ID:          "random_feed_id",
 		UserID:      "test_user",
 		Title:       "Example Feed",

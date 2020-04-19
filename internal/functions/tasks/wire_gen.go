@@ -6,6 +6,7 @@
 package tasks
 
 import (
+	"github.com/jonboulle/clockwork"
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/config"
@@ -15,6 +16,7 @@ import (
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/internal/write/tweets"
 )
 
@@ -80,11 +82,23 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	api := billing.NewClient(billingConfig)
 	userRepository := tweets.NewUserRepository(management, keyManagementClient, gcpConfig, api)
-	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository)
-	feedRepository := feeds.NewFeedRepository(dbDB)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
+	if err != nil {
+		return nil, err
+	}
+	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig)
+	clock := clockwork.NewRealClock()
+	sharedTweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository, feedRepository, sharedTweetRepository)
+	feedsFeedRepository := feeds.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
 	feedsPostRepository := feeds.NewPostRepository(dbDB)
-	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, feedsPostRepository)
+	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig)
+	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedsFeedRepository, subscriptionRepository, feedsPostRepository, feedRepository, sharedPostRepository)
 	handler := NewHandler(commandBus, commandHandler, feedsCommandHandler)
 	return handler, nil
 }

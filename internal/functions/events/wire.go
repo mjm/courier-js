@@ -16,6 +16,7 @@ import (
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/shared"
 	tweets2 "github.com/mjm/courier-js/internal/write/tweets"
 	user2 "github.com/mjm/courier-js/internal/write/user"
 )
@@ -35,6 +36,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		auth.DefaultSet,
 		billing.DefaultSet,
 		tasks.DefaultSet,
+		shared.DefaultSet,
 		tweets.NewTweetQueries,
 		tweets2.EventHandlerSet,
 		user.NewEventRecorder,

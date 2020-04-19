@@ -21,6 +21,7 @@ var (
 	ErrNoTweet            = status.Error(codes.NotFound, "no tweet found")
 	ErrCannotCancelOrPost = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
 	ErrCannotUncancel     = status.Error(codes.FailedPrecondition, "tweet does not exist or is not currently canceled")
+	ErrCannotUpdate       = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
 )
 
 type TweetRepository struct {
@@ -124,6 +125,66 @@ func (r *TweetRepository) Create(ctx context.Context, ts []CreateTweetParams) er
 		},
 	})
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type UpdateTweetParams struct {
+	ID        model.TweetGroupID
+	Tweets    []*model.Tweet
+	RetweetID string
+}
+
+func (r *TweetRepository) Update(ctx context.Context, params UpdateTweetParams) error {
+	input := &dynamodb.UpdateItemInput{
+		TableName:           &r.dynamoConfig.TableName,
+		Key:                 r.primaryKey(params.ID),
+		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk":          aws.String(db.PK),
+			"#canceled_at": aws.String(model.ColCanceledAt),
+			"#posted_at":   aws.String(model.ColPostedAt),
+			"#tweets":      aws.String(model.ColTweets),
+			"#retweet_id":  aws.String(model.ColRetweetID),
+		},
+	}
+
+	if len(params.Tweets) > 0 {
+		input.SetUpdateExpression(`SET #tweets = :tweets REMOVE #retweet_id`)
+
+		var tweets []*dynamodb.AttributeValue
+		for _, t := range params.Tweets {
+			tweetAttrs := map[string]*dynamodb.AttributeValue{}
+			if t.Body != "" {
+				tweetAttrs[model.ColBody] = &dynamodb.AttributeValue{S: aws.String(t.Body)}
+			}
+			if len(t.MediaURLs) > 0 {
+				var urls []*dynamodb.AttributeValue
+				for _, u := range t.MediaURLs {
+					urls = append(urls, &dynamodb.AttributeValue{S: aws.String(u)})
+				}
+				tweetAttrs[model.ColMediaURLs] = &dynamodb.AttributeValue{L: urls}
+			}
+			tweets = append(tweets, &dynamodb.AttributeValue{M: tweetAttrs})
+		}
+
+		input.SetExpressionAttributeValues(map[string]*dynamodb.AttributeValue{
+			":tweets": {L: tweets},
+		})
+	} else {
+		input.SetUpdateExpression(`SET #retweet_id = :retweet_id REMOVE #tweets`)
+		input.SetExpressionAttributeValues(map[string]*dynamodb.AttributeValue{
+			":retweet_id": {S: aws.String(params.RetweetID)},
+		})
+	}
+
+	_, err := r.dynamo.UpdateItemWithContext(ctx, input)
+	if err != nil {
+		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
+			return ErrCannotUpdate
+		}
 		return err
 	}
 

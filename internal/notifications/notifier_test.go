@@ -53,9 +53,9 @@ func (suite *notificationsSuite) TestImportSingleTweet() {
 	ctx := context.Background()
 
 	suite.eventBus.Fire(ctx, tweets.TweetsImported{
-		UserId:          "test_user",
-		SubscriptionId:  "e9749df4-56d3-4716-a78f-2c00c38b9bdb",
-		CreatedTweetIds: []string{"df850b2a-a4c1-4e51-95ea-5e0ad456310f"},
+		UserId:         "test_user",
+		SubscriptionId: "e9749df4-56d3-4716-a78f-2c00c38b9bdb",
+		CreatedItemIds: []string{"df850b2a-a4c1-4e51-95ea-5e0ad456310f"},
 	})
 
 	suite.Equal(1, len(suite.notifications.notes))
@@ -77,10 +77,10 @@ func (suite *notificationsSuite) TestImportSingleTweetAutopost() {
 	ctx := context.Background()
 
 	suite.eventBus.Fire(ctx, tweets.TweetsImported{
-		UserId:          "test_user",
-		SubscriptionId:  "e9749df4-56d3-4716-a78f-2c00c38b9bdb",
-		CreatedTweetIds: []string{"df850b2a-a4c1-4e51-95ea-5e0ad456310f"},
-		Autopost:        true,
+		UserId:         "test_user",
+		SubscriptionId: "e9749df4-56d3-4716-a78f-2c00c38b9bdb",
+		CreatedItemIds: []string{"df850b2a-a4c1-4e51-95ea-5e0ad456310f"},
+		Autopost:       true,
 	})
 
 	suite.Equal(1, len(suite.notifications.notes))
@@ -104,7 +104,7 @@ func (suite *notificationsSuite) TestImportMultipleTweets() {
 	suite.eventBus.Fire(ctx, tweets.TweetsImported{
 		UserId:         "test_user3",
 		SubscriptionId: "4b033437-c2a8-4775-b303-2764f2d73c31",
-		CreatedTweetIds: []string{
+		CreatedItemIds: []string{
 			"398042cc-d2f6-4d91-bd81-a5a4f19f7746",
 			"be94e030-6062-439f-8c73-3b24c08e6b5f",
 			"5fea0b11-0264-4ebe-8cd6-1854ddf151ad",
@@ -132,7 +132,7 @@ func (suite *notificationsSuite) TestImportMultipleTweetsAutopost() {
 	suite.eventBus.Fire(ctx, tweets.TweetsImported{
 		UserId:         "test_user3",
 		SubscriptionId: "4b033437-c2a8-4775-b303-2764f2d73c31",
-		CreatedTweetIds: []string{
+		CreatedItemIds: []string{
 			"398042cc-d2f6-4d91-bd81-a5a4f19f7746",
 			"be94e030-6062-439f-8c73-3b24c08e6b5f",
 			"5fea0b11-0264-4ebe-8cd6-1854ddf151ad",

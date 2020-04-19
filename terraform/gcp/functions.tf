@@ -3,6 +3,8 @@ locals {
     GCP_TOPIC_ID          = google_pubsub_topic.events.name
     GCP_TASKS_QUEUE       = google_cloud_tasks_queue.tasks.id
     TASKS_SERVICE_ACCOUNT = google_service_account.task_creator.email
+    AWS_REGION            = "us-east-2"
+    DYNAMO_TABLE_NAME     = "courier-${var.env}"
   }
   function_env = merge(local.base_env, var.function_env)
 }

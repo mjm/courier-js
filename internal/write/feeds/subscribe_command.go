@@ -2,11 +2,15 @@ package feeds
 
 import (
 	"context"
+	"net/url"
 
+	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/trace/keys"
+	"github.com/mjm/courier-js/pkg/locatefeed"
 )
 
 // SubscribeCommand is a request to subscribe a user to a feed by URL.
@@ -19,32 +23,40 @@ type SubscribeCommand struct {
 	URL string
 }
 
-func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeCommand) (SubscriptionID, error) {
+func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeCommand) error {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedURL(cmd.URL))
 
-	v, err := h.bus.Run(ctx, CreateCommand{
+	u, err := url.Parse(cmd.URL)
+	if err != nil {
+		return err
+	}
+
+	u, err = locatefeed.Locate(ctx, u)
+	if err != nil {
+		return err
+	}
+
+	span.SetAttributes(key.String("feed.resolved_url", u.String()))
+
+	// TODO handle existing feed for the URL
+
+	feedID := model.NewFeedID()
+	span.SetAttributes(keys.FeedIDDynamo(feedID))
+
+	if err := h.feedRepoDynamo.Create(ctx, cmd.UserID, feedID, u.String()); err != nil {
+		return err
+	}
+
+	_, err = h.bus.Run(ctx, RefreshCommand{
 		UserID: cmd.UserID,
-		URL:    cmd.URL,
+		FeedID: feedID,
 	})
-	if err != nil {
-		return "", err
-	}
 
-	feedID := v.(FeedID)
-	span.SetAttributes(keys.FeedID(feedID))
-
-	subID, err := h.subRepo.Create(ctx, cmd.UserID, feedID)
-	if err != nil {
-		return "", err
-	}
-
-	span.SetAttributes(keys.FeedSubscriptionID(subID))
 	h.events.Fire(ctx, feeds.FeedSubscribed{
-		UserId:             cmd.UserID,
-		FeedId:             feedID.String(),
-		FeedSubscriptionId: subID.String(),
+		UserId: cmd.UserID,
+		FeedId: string(feedID),
 	})
 
-	return subID, nil
+	return nil
 }

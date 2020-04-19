@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"reflect"
 
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
 	"go.opentelemetry.io/otel/api/global"
@@ -17,7 +18,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var DefaultSet = wire.NewSet(New, NewConfig)
+var DefaultSet = wire.NewSet(New, NewConfig, NewDynamoDB, NewDynamoConfig,
+	wire.Bind(new(dynamodbiface.DynamoDBAPI), new(*DynamoDB)))
 
 // Config is configuration for the application's database.
 type Config struct {

@@ -19,6 +19,7 @@ go_library(
         "//internal/trace/keys:go_default_library",
         "//internal/write:go_default_library",
         "//internal/write/feeds:go_default_library",
+        "//internal/write/shared:go_default_library",
         "//pkg/scraper:go_default_library",
         "@com_github_divan_gorilla_xmlrpc//xml:go_default_library",
         "@com_github_gorilla_rpc//:go_default_library",

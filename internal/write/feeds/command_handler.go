@@ -10,6 +10,7 @@ import (
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 // DefaultSet is a provider set for creating a command handler and its dependencies.
@@ -21,12 +22,14 @@ var DefaultSet = wire.NewSet(
 
 // CommandHandler processes feed-related commands and updates the data store appropriately.
 type CommandHandler struct {
-	bus      *write.CommandBus
-	events   event.Sink
-	tasks    *tasks.Tasks
-	feedRepo *FeedRepository
-	subRepo  *SubscriptionRepository
-	postRepo *PostRepository
+	bus            *write.CommandBus
+	events         event.Sink
+	tasks          *tasks.Tasks
+	feedRepo       *FeedRepository
+	subRepo        *SubscriptionRepository
+	postRepo       *PostRepository
+	feedRepoDynamo *shared.FeedRepository
+	postRepoDynamo *shared.PostRepository
 }
 
 // NewCommandHandler creates a new command handler for feed commands.
@@ -36,14 +39,18 @@ func NewCommandHandler(
 	tasks *tasks.Tasks,
 	feedRepo *FeedRepository,
 	subRepo *SubscriptionRepository,
-	postRepo *PostRepository) *CommandHandler {
+	postRepo *PostRepository,
+	feedRepoDynamo *shared.FeedRepository,
+	postRepoDynamo *shared.PostRepository) *CommandHandler {
 	h := &CommandHandler{
-		bus:      bus,
-		events:   events,
-		tasks:    tasks,
-		feedRepo: feedRepo,
-		subRepo:  subRepo,
-		postRepo: postRepo,
+		bus:            bus,
+		events:         events,
+		tasks:          tasks,
+		feedRepo:       feedRepo,
+		subRepo:        subRepo,
+		postRepo:       postRepo,
+		feedRepoDynamo: feedRepoDynamo,
+		postRepoDynamo: postRepoDynamo,
 	}
 	bus.Register(h,
 		CreateCommand{},
@@ -65,15 +72,13 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 		return feedID, err
 
 	case SubscribeCommand:
-		subID, err := h.handleSubscribe(ctx, cmd)
-		return subID, err
+		return nil, h.handleSubscribe(ctx, cmd)
 
 	case QueueRefreshCommand:
 		return nil, h.handleQueueRefresh(ctx, cmd)
 
 	case RefreshCommand:
-		err := h.handleRefresh(ctx, cmd)
-		return nil, err
+		return nil, h.handleRefresh(ctx, cmd)
 
 	case UpdateOptionsCommand:
 		return nil, h.handleUpdateOptions(ctx, cmd)

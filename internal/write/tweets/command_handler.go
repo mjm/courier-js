@@ -10,6 +10,7 @@ import (
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 // DefaultSet is a provider set for creating a command handler and its dependencies.
@@ -34,6 +35,8 @@ type CommandHandler struct {
 	postRepo          *PostRepository
 	externalTweetRepo *ExternalTweetRepository
 	userRepo          *UserRepository
+	feedRepo          *shared.FeedRepository
+	tweetRepoDynamo   *shared.TweetRepository
 }
 
 // NewCommandHandler creates a new command handler for tweet commands.
@@ -46,6 +49,8 @@ func NewCommandHandler(
 	postRepo *PostRepository,
 	externalTweetRepo *ExternalTweetRepository,
 	userRepo *UserRepository,
+	feedRepo *shared.FeedRepository,
+	tweetRepoDynamo *shared.TweetRepository,
 ) *CommandHandler {
 	h := &CommandHandler{
 		bus:               bus,
@@ -56,6 +61,8 @@ func NewCommandHandler(
 		postRepo:          postRepo,
 		externalTweetRepo: externalTweetRepo,
 		userRepo:          userRepo,
+		feedRepo:          feedRepo,
+		tweetRepoDynamo:   tweetRepoDynamo,
 	}
 	bus.Register(h,
 		CancelCommand{},
@@ -65,7 +72,6 @@ func NewCommandHandler(
 		QueuePostCommand{},
 		SendTweetCommand{},
 		ImportTweetsCommand{},
-		ImportRecentPostsCommand{},
 		SyndicateCommand{},
 		SetupSyndicationCommand{},
 	)
@@ -96,9 +102,6 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 
 	case ImportTweetsCommand:
 		return nil, h.handleImportTweets(ctx, cmd)
-
-	case ImportRecentPostsCommand:
-		return nil, h.handleImportRecentPosts(ctx, cmd)
 
 	case SyndicateCommand:
 		return nil, h.handleSyndicate(ctx, cmd)

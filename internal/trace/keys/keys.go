@@ -5,6 +5,7 @@ import (
 	"go.opentelemetry.io/otel/api/key"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 )
 
@@ -31,8 +32,19 @@ func FeedID(id feeds.FeedID) core.KeyValue {
 	return key.String("feed.id", id.String())
 }
 
+func FeedIDDynamo(id model.FeedID) core.KeyValue {
+	return key.String("feed.id", string(id))
+}
+
 func PostID(id feeds.PostID) core.KeyValue {
 	return key.String("post.id", id.String())
+}
+
+func PostIDDynamo(id model.PostID) []core.KeyValue {
+	return []core.KeyValue{
+		FeedIDDynamo(id.FeedID),
+		key.String("post.id", id.ItemID),
+	}
 }
 
 func FeedSubscriptionID(id feeds.SubscriptionID) core.KeyValue {
@@ -41,4 +53,10 @@ func FeedSubscriptionID(id feeds.SubscriptionID) core.KeyValue {
 
 func TweetID(id tweets.TweetID) core.KeyValue {
 	return key.String("tweet.id", id.String())
+}
+
+func TweetGroupID(id model.TweetGroupID) []core.KeyValue {
+	kvs := PostIDDynamo(id.PostID)
+	kvs = append(kvs, UserID(id.UserID))
+	return kvs
 }

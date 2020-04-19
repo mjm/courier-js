@@ -6,6 +6,7 @@
 package graphql
 
 import (
+	"github.com/jonboulle/clockwork"
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/config"
@@ -21,6 +22,7 @@ import (
 	"github.com/mjm/courier-js/internal/write"
 	billing3 "github.com/mjm/courier-js/internal/write/billing"
 	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
 	tweets2 "github.com/mjm/courier-js/internal/write/tweets"
 	user2 "github.com/mjm/courier-js/internal/write/user"
 )
@@ -93,7 +95,17 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	feedRepository := feeds2.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
 	postRepository := feeds2.NewPostRepository(dbDB)
-	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
+	if err != nil {
+		return nil, err
+	}
+	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig)
+	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig)
+	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository, sharedFeedRepository, sharedPostRepository)
 	tweetRepository := tweets2.NewTweetRepository(dbDB)
 	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
 	tweetsPostRepository := tweets2.NewPostRepository(dbDB)
@@ -107,7 +119,9 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		return nil, err
 	}
 	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig, api)
-	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository, userRepository)
+	clock := clockwork.NewRealClock()
+	sharedTweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository, userRepository, sharedFeedRepository, sharedTweetRepository)
 	customerRepository := billing3.NewCustomerRepository(api)
 	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
 	billingCommandHandler := billing3.NewCommandHandler(commandBus, publisher, billingConfig, customerRepository, billingSubscriptionRepository)

@@ -14,6 +14,7 @@ import (
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/internal/write/tweets"
 )
 
@@ -26,6 +27,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		event.PublishingSet,
 		write.NewCommandBus,
 		db.DefaultSet,
+		shared.DefaultSet,
 		tweets.DefaultSet,
 		feeds.DefaultSet,
 		auth.DefaultSet,

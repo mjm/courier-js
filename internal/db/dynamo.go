@@ -3,15 +3,21 @@ package db
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/request"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"go.opentelemetry.io/otel/api/core"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
+
+	"github.com/mjm/courier-js/internal/config"
+	"github.com/mjm/courier-js/pkg/tracehttp"
 )
 
 const (
@@ -53,12 +59,30 @@ func exprValAttr(k string, v *dynamodb.AttributeValue) core.KeyValue {
 }
 
 type DynamoConfig struct {
-	TableName string `env:"DYNAMO_TABLE_NAME"`
+	TableName          string `env:"DYNAMO_TABLE_NAME"`
+	AWSAccessKeyID     string `secret:"aws-access-key-id"`
+	AWSSecretAccessKey string `secret:"aws-secret-access-key"`
+}
+
+func NewDynamoConfig(l *config.Loader) (cfg DynamoConfig, err error) {
+	err = l.Load(context.Background(), &cfg)
+	return
 }
 
 type DynamoDB struct {
 	dynamodbiface.DynamoDBAPI
 	real dynamodbiface.DynamoDBAPI
+}
+
+func NewDynamoDB(cfg DynamoConfig) (*DynamoDB, error) {
+	sess, err := session.NewSession(aws.NewConfig().
+		WithCredentials(credentials.NewStaticCredentials(cfg.AWSAccessKeyID, cfg.AWSSecretAccessKey, "")).
+		WithHTTPClient(&http.Client{Transport: tracehttp.DefaultTransport}))
+	if err != nil {
+		return nil, err
+	}
+
+	return WrapDynamo(dynamodb.New(sess)), nil
 }
 
 func WrapDynamo(real dynamodbiface.DynamoDBAPI) *DynamoDB {

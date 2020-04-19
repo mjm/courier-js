@@ -10,7 +10,9 @@ import (
 	"willnorris.com/go/microformats"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/trace/keys"
+	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/pkg/scraper"
 )
 
@@ -24,7 +26,7 @@ type RefreshCommand struct {
 	// instead of a user action.
 	UserID string
 	// FeedID is the ID of the feed that should be refreshed.
-	FeedID FeedID
+	FeedID model.FeedID
 	// Force causes scraping to ignore saved cache headers and always fetch and process
 	// the full contents of the feed.
 	Force bool
@@ -38,10 +40,10 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
 		keys.UserID(cmd.UserID),
-		keys.FeedID(cmd.FeedID),
+		keys.FeedIDDynamo(cmd.FeedID),
 		key.Bool("feed.force_refresh", cmd.Force))
 
-	f, err := h.feedRepo.Get(ctx, cmd.FeedID)
+	f, err := h.feedRepoDynamo.Get(ctx, cmd.UserID, cmd.FeedID)
 	if err != nil {
 		return err
 	}
@@ -71,6 +73,7 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 	span.SetAttributes(upToDateKey(false))
 
 	_, err = h.bus.Run(ctx, ImportPostsCommand{
+		UserID:  f.UserID,
 		FeedID:  f.ID,
 		Entries: scraped.Entries,
 	})
@@ -83,22 +86,23 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 		return err
 	}
 
-	p := UpdateFeedParams{
+	p := shared.UpdateFeedParams{
 		ID:          f.ID,
+		UserID:      f.UserID,
 		Title:       scraped.Title,
 		HomePageURL: scraped.HomePageURL,
-		CachingHeaders: &CachingHeaders{
+		CachingHeaders: &model.CachingHeaders{
 			Etag:         scraped.CachingHeaders.Etag,
 			LastModified: scraped.CachingHeaders.LastModified,
 		},
-		MPEndpoint: mpEndpoint,
+		MicropubEndpoint: mpEndpoint,
 	}
-	if err = h.feedRepo.Update(ctx, p); err != nil {
+	if err = h.feedRepoDynamo.UpdateDetails(ctx, p); err != nil {
 		return err
 	}
 
 	h.events.Fire(ctx, feeds.FeedRefreshed{
-		FeedId: f.ID.String(),
+		FeedId: string(f.ID),
 		UserId: cmd.UserID,
 	})
 

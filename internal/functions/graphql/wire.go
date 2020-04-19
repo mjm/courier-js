@@ -16,6 +16,7 @@ import (
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/internal/write/tweets"
 	"github.com/mjm/courier-js/internal/write/user"
 )
@@ -37,6 +38,7 @@ func InitializeHandler(
 			write.NewCommandBus,
 			tasks.DefaultSet,
 			event.PublishingSet,
+			shared.DefaultSet,
 			feeds.DefaultSet,
 			tweets.DefaultSet,
 			billing.DefaultSet,
