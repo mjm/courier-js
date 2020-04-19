@@ -19,6 +19,7 @@ var tweetCommand = &cli.Command{
 	Subcommands: []*cli.Command{
 		tweetListCommand,
 		tweetCancelCommand,
+		tweetUncancelCommand,
 	},
 }
 
@@ -87,6 +88,34 @@ var tweetCancelCommand = &cli.Command{
 
 		id := model.TweetGroupIDFromParts(userID, feedID, itemID)
 		cmd := tweets2.CancelCommand{
+			TweetGroupID: id,
+		}
+		if _, err := commandBus.Run(ctx.Context, cmd); err != nil {
+			return err
+		}
+
+		fmt.Fprintf(os.Stderr, "Done.\n")
+		return nil
+	},
+}
+
+var tweetUncancelCommand = &cli.Command{
+	Name:      "uncancel",
+	Usage:     "Turn a canceled tweet back into a draft",
+	ArgsUsage: "[feed id] [item id]",
+	Action: func(ctx *cli.Context) error {
+		userID := ctx.String("user")
+		feedID := model.FeedID(ctx.Args().Get(0))
+		itemID := ctx.Args().Get(1)
+
+		if userID == "" || feedID == "" || itemID == "" {
+			return cli.ShowSubcommandHelp(ctx)
+		}
+
+		fmt.Fprintf(os.Stderr, "Uncanceling tweet %s %s as %s\n", feedID, itemID, userID)
+
+		id := model.TweetGroupIDFromParts(userID, feedID, itemID)
+		cmd := tweets2.UncancelCommand{
 			TweetGroupID: id,
 		}
 		if _, err := commandBus.Run(ctx.Context, cmd); err != nil {
