@@ -62,7 +62,7 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 		return err
 	}
 
-	h.events.Fire(ctx, &feeds.PostsImported{
+	h.events.Fire(ctx, feeds.PostsImported{
 		FeedId:            string(cmd.FeedID),
 		OldestPublishedAt: oldestPublishedStr,
 		UserId:            cmd.UserID,

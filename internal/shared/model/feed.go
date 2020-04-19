@@ -91,9 +91,12 @@ func NewFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) 
 	}
 
 	if cachingHeadersVal, ok := attrs[ColCachingHeaders]; ok {
-		feed.CachingHeaders = &CachingHeaders{
-			Etag:         aws.StringValue(cachingHeadersVal.M[ColEtag].S),
-			LastModified: aws.StringValue(cachingHeadersVal.M[ColLastModified].S),
+		feed.CachingHeaders = &CachingHeaders{}
+		if val, ok := cachingHeadersVal.M[ColEtag]; ok {
+			feed.CachingHeaders.Etag = aws.StringValue(val.S)
+		}
+		if val, ok := cachingHeadersVal.M[ColLastModified]; ok {
+			feed.CachingHeaders.LastModified = aws.StringValue(val.S)
 		}
 	}
 

@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -17,7 +16,6 @@ import (
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/config"
-	"github.com/mjm/courier-js/pkg/tracehttp"
 )
 
 const (
@@ -76,8 +74,7 @@ type DynamoDB struct {
 
 func NewDynamoDB(cfg DynamoConfig) (*DynamoDB, error) {
 	sess, err := session.NewSession(aws.NewConfig().
-		WithCredentials(credentials.NewStaticCredentials(cfg.AWSAccessKeyID, cfg.AWSSecretAccessKey, "")).
-		WithHTTPClient(&http.Client{Transport: tracehttp.DefaultTransport}))
+		WithCredentials(credentials.NewStaticCredentials(cfg.AWSAccessKeyID, cfg.AWSSecretAccessKey, "")))
 	if err != nil {
 		return nil, err
 	}

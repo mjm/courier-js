@@ -12,7 +12,6 @@ go_library(
     visibility = ["//:__subpackages__"],
     deps = [
         "//internal/config:go_default_library",
-        "//pkg/tracehttp:go_default_library",
         "@com_github_aws_aws_sdk_go//aws:go_default_library",
         "@com_github_aws_aws_sdk_go//aws/credentials:go_default_library",
         "@com_github_aws_aws_sdk_go//aws/request:go_default_library",

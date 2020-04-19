@@ -1,8 +1,6 @@
 resource "aws_dynamodb_table" "courier" {
-  name           = "courier-${var.env}"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = var.env == "prod" ? 5 : 3
-  write_capacity = var.env == "prod" ? 5 : 3
+  name         = "courier-${var.env}"
+  billing_mode = "PAY_PER_REQUEST"
 
   hash_key  = "PK"
   range_key = "SK"
@@ -23,14 +21,28 @@ resource "aws_dynamodb_table" "courier" {
     name = "GSI1SK"
     type = "S"
   }
+  attribute {
+    name = "GSI2PK"
+    type = "S"
+  }
+  attribute {
+    name = "GSI2SK"
+    type = "S"
+  }
 
   global_secondary_index {
-    name           = "GSI1"
-    read_capacity  = var.env == "prod" ? 5 : 3
-    write_capacity = var.env == "prod" ? 5 : 3
+    name = "GSI1"
 
     hash_key        = "GSI1PK"
     range_key       = "GSI1SK"
+    projection_type = "ALL"
+  }
+
+  global_secondary_index {
+    name = "GSI2"
+
+    hash_key        = "GSI2PK"
+    range_key       = "GSI2SK"
     projection_type = "ALL"
   }
 

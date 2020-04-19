@@ -200,12 +200,14 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 
 	if params.CachingHeaders != nil {
 		toSet = append(toSet, "#ch = :ch")
-		vals[":ch"] = &dynamodb.AttributeValue{
-			M: map[string]*dynamodb.AttributeValue{
-				model.ColEtag:         {S: aws.String(params.CachingHeaders.Etag)},
-				model.ColLastModified: {S: aws.String(params.CachingHeaders.LastModified)},
-			},
+		ch := map[string]*dynamodb.AttributeValue{}
+		if params.CachingHeaders.Etag != "" {
+			ch[model.ColEtag] = &dynamodb.AttributeValue{S: aws.String(params.CachingHeaders.Etag)}
 		}
+		if params.CachingHeaders.LastModified != "" {
+			ch[model.ColLastModified] = &dynamodb.AttributeValue{S: aws.String(params.CachingHeaders.LastModified)}
+		}
+		vals[":ch"] = &dynamodb.AttributeValue{M: ch}
 	} else {
 		toRemove = append(toRemove, "#ch")
 	}

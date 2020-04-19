@@ -22,7 +22,8 @@ data "aws_iam_policy_document" "external_function" {
     ]
 
     resources = [
-      aws_dynamodb_table.courier.arn
+      aws_dynamodb_table.courier.arn,
+      "${aws_dynamodb_table.courier.arn}/index/*",
     ]
   }
 }
