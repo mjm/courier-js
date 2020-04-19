@@ -14,7 +14,7 @@ import (
 
 var feedCommand = &cli.Command{
 	Name:  "feed",
-	Usage: "work with a user's feeds",
+	Usage: "Commands for working with a user's feeds",
 	Subcommands: []*cli.Command{
 		feedListCommand,
 		feedSubscribeCommand,

@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "feed.go",
         "main.go",
+        "tweet.go",
         "wire_gen.go",
     ],
     importpath = "github.com/mjm/courier-js/cmd/courierctl",
@@ -17,6 +18,7 @@ go_library(
         "//internal/event:go_default_library",
         "//internal/pager:go_default_library",
         "//internal/read/feeds:go_default_library",
+        "//internal/read/tweets:go_default_library",
         "//internal/secret:go_default_library",
         "//internal/shared/model:go_default_library",
         "//internal/tasks:go_default_library",
