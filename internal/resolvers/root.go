@@ -18,6 +18,7 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/pager"
+	feeds2 "github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/billing"
@@ -94,7 +95,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	case TweetNode:
 		n, err = r.Tweet(ctx, args)
 	case PostNode:
-		var id feeds.PostID
+		var id feeds2.PostID
 		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 			return nil, err
 		}

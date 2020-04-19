@@ -17,8 +17,7 @@ import (
 var DefaultSet = wire.NewSet(
 	NewCommandHandler,
 	NewFeedRepository,
-	NewSubscriptionRepository,
-	NewPostRepository)
+	NewSubscriptionRepository)
 
 // CommandHandler processes feed-related commands and updates the data store appropriately.
 type CommandHandler struct {
@@ -27,7 +26,6 @@ type CommandHandler struct {
 	tasks          *tasks.Tasks
 	feedRepo       *FeedRepository
 	subRepo        *SubscriptionRepository
-	postRepo       *PostRepository
 	feedRepoDynamo *shared.FeedRepository
 	postRepoDynamo *shared.PostRepository
 }
@@ -39,7 +37,6 @@ func NewCommandHandler(
 	tasks *tasks.Tasks,
 	feedRepo *FeedRepository,
 	subRepo *SubscriptionRepository,
-	postRepo *PostRepository,
 	feedRepoDynamo *shared.FeedRepository,
 	postRepoDynamo *shared.PostRepository) *CommandHandler {
 	h := &CommandHandler{
@@ -48,7 +45,6 @@ func NewCommandHandler(
 		tasks:          tasks,
 		feedRepo:       feedRepo,
 		subRepo:        subRepo,
-		postRepo:       postRepo,
 		feedRepoDynamo: feedRepoDynamo,
 		postRepoDynamo: postRepoDynamo,
 	}

@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/write/feeds/queries"
 )
 
@@ -19,16 +18,6 @@ type SubscriptionRepository struct {
 // NewSubscriptionRepository creates a new subscription repository targeting a given database.
 func NewSubscriptionRepository(db db.DB) *SubscriptionRepository {
 	return &SubscriptionRepository{db: db}
-}
-
-// Create adds a new subscription to a feed for a user to the database.
-func (r *SubscriptionRepository) Create(ctx context.Context, userID string, feedID FeedID) (SubscriptionID, error) {
-	subID := feeds.NewSubscriptionID()
-	if err := r.db.QueryRowxContext(ctx, queries.SubscriptionsCreate, subID, userID, feedID).Scan(&subID); err != nil {
-		return subID, err
-	}
-
-	return subID, nil
 }
 
 type UpdateSubscriptionParams struct {

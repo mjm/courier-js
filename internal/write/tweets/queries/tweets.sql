@@ -7,16 +7,6 @@ FROM
 WHERE fs.user_id = $1
   AND t.guid = $2;
 
--- qry: TweetsByPostIDs
-SELECT *
-FROM
-  tweets
-WHERE feed_subscription_guid = $1
-  AND post_guid = ANY ($2)
-ORDER BY
-  post_guid,
-  position;
-
 -- qry: TweetsCancel
 UPDATE
   tweets
@@ -63,34 +53,6 @@ SET
   updated_at     = CURRENT_TIMESTAMP
 WHERE guid = $1
   AND status = 'draft';
-
--- qry: TweetsCreate
-INSERT
-  INTO
-  tweets
-  (guid,
-   feed_subscription_guid,
-   post_after,
-   post_guid,
-   action,
-   body,
-   media_urls,
-   retweet_id,
-   position,
-   post_task_name)
-SELECT
-  v.guid,
-  $1,
-  $2,
-  v.post_guid,
-  v.action,
-  v.body,
-  ARRAY(SELECT json_array_elements_text(v.media_urls)),
-  v.retweet_id,
-  v.position,
-  v.post_task_name
-FROM
-  __unnested__ v(guid, post_guid, action, body, media_urls, retweet_id, position, post_task_name);
 
 -- qry: TweetsUpdate
 UPDATE

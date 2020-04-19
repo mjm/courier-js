@@ -6,13 +6,10 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
-	"time"
 
 	"github.com/HnH/qry"
-	"github.com/lib/pq"
 
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets/queries"
 )
 
@@ -43,24 +40,6 @@ func (r *TweetRepository) Get(ctx context.Context, userID string, tweetID TweetI
 	}
 
 	return &tweet, nil
-}
-
-func (r *TweetRepository) ByPostIDs(ctx context.Context, subID feeds.SubscriptionID, postIDs []feeds.PostID) (map[feeds.PostID][]*Tweet, error) {
-	rows, err := r.db.QueryxContext(ctx, queries.TweetsByPostIDs, subID, pq.Array(postIDs))
-	if err != nil {
-		return nil, err
-	}
-
-	byPostID := make(map[feeds.PostID][]*Tweet)
-	for rows.Next() {
-		var t Tweet
-		if err := rows.StructScan(&t); err != nil {
-			return nil, err
-		}
-
-		byPostID[t.PostID] = append(byPostID[t.PostID], &t)
-	}
-	return byPostID, nil
 }
 
 // Cancel marks a tweet as canceled as long as it is not already posted. It also clears
@@ -133,52 +112,6 @@ func (r *TweetRepository) QueuePost(ctx context.Context, tweetID TweetID, taskNa
 
 	if n == 0 {
 		return ErrNoTweet
-	}
-
-	return nil
-}
-
-type CreateTweetParams struct {
-	ID           TweetID
-	PostID       feeds.PostID
-	Action       TweetAction
-	Body         string
-	MediaURLs    []string
-	RetweetID    string
-	Position     int
-	PostTaskName string
-}
-
-func (r *TweetRepository) Create(ctx context.Context, subID feeds.SubscriptionID, autopost bool, ts []CreateTweetParams) error {
-	if len(ts) == 0 {
-		return nil
-	}
-
-	var postAfter pq.NullTime
-	if autopost {
-		postAfter.Valid = true
-		postAfter.Time = time.Now().Add(5 * time.Minute)
-	}
-
-	emptyMediaURLs := []byte("[]")
-	u := db.NewUnnester("uuid", "uuid", "tweet_action", "text", "json", "text", "int4", "text")
-	for _, t := range ts {
-		mediaURLs := emptyMediaURLs
-		if len(t.MediaURLs) > 0 {
-			var err error
-			mediaURLs, err = json.Marshal(t.MediaURLs)
-			if err != nil {
-				return err
-			}
-		}
-		u.AppendRow(t.ID, t.PostID, t.Action, t.Body, mediaURLs, t.RetweetID, t.Position, t.PostTaskName)
-	}
-
-	args := append([]interface{}{subID, postAfter}, u.Values()...)
-	q := qry.Query(queries.TweetsCreate).Replace("__unnested__", u.UnnestFrom(3))
-	_, err := r.db.ExecContext(ctx, string(q), args...)
-	if err != nil {
-		return err
 	}
 
 	return nil

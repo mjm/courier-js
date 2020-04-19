@@ -96,9 +96,8 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository, feedRepository, sharedTweetRepository)
 	feedsFeedRepository := feeds.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
-	feedsPostRepository := feeds.NewPostRepository(dbDB)
 	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedsFeedRepository, subscriptionRepository, feedsPostRepository, feedRepository, sharedPostRepository)
+	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedsFeedRepository, subscriptionRepository, feedRepository, sharedPostRepository)
 	handler := NewHandler(commandBus, commandHandler, feedsCommandHandler)
 	return handler, nil
 }

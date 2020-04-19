@@ -16,15 +16,6 @@ func NewFeedSubscriptionRepository(db db.DB) *FeedSubscriptionRepository {
 	return &FeedSubscriptionRepository{db: db}
 }
 
-func (r *FeedSubscriptionRepository) ByFeedID(ctx context.Context, feedID feeds.FeedID) ([]*FeedSubscription, error) {
-	var subs []*FeedSubscription
-	if err := r.db.SelectContext(ctx, &subs, queries.FeedSubscriptionsByFeedID, feedID); err != nil {
-		return nil, err
-	}
-
-	return subs, nil
-}
-
 func (r *FeedSubscriptionRepository) Get(ctx context.Context, id feeds.SubscriptionID) (*FeedSubscription, error) {
 	var sub FeedSubscription
 	if err := r.db.QueryRowxContext(ctx, queries.FeedSubscriptionsGet, id).StructScan(&sub); err != nil {

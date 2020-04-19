@@ -10,7 +10,6 @@ go_library(
         "feed_subscription.go",
         "feed_subscription_repository.go",
         "import_tweets_command.go",
-        "post.go",
         "post_command.go",
         "post_repository.go",
         "qry_gen.go",
@@ -72,9 +71,7 @@ go_test(
     srcs = [
         "cancel_command_test.go",
         "dynamo_test.go",
-        "post_repository_test.go",
         "suite_test.go",
-        "tweet_repository_test.go",
         "uncancel_command_test.go",
         "update_command_test.go",
     ],
@@ -82,7 +79,6 @@ go_test(
     deps = [
         "//internal/db:go_default_library",
         "//internal/event:go_default_library",
-        "//internal/shared/feeds:go_default_library",
         "//internal/shared/tweets:go_default_library",
         "//internal/write:go_default_library",
         "//internal/write/feeds:go_default_library",

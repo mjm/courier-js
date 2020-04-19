@@ -25,7 +25,6 @@ type feedsSuite struct {
 
 	feedRepo *FeedRepository
 	subRepo  *SubscriptionRepository
-	postRepo *PostRepository
 }
 
 func (suite *feedsSuite) SetupSuite() {
@@ -38,9 +37,8 @@ func (suite *feedsSuite) SetupSuite() {
 	suite.eventBus.Notify(suite.eventCollector)
 	suite.feedRepo = NewFeedRepository(suite.db)
 	suite.subRepo = NewSubscriptionRepository(suite.db)
-	suite.postRepo = NewPostRepository(suite.db)
 
-	NewCommandHandler(suite.commandBus, suite.eventBus, nil, suite.feedRepo, suite.subRepo, suite.postRepo,
+	NewCommandHandler(suite.commandBus, suite.eventBus, nil, suite.feedRepo, suite.subRepo,
 		nil, nil)
 }
 
