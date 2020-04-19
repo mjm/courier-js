@@ -138,7 +138,9 @@ func (r *FeedRepository) GetWithRecentItems(ctx context.Context, feedID model.Fe
 	for _, item := range res.Items[1:] {
 		switch aws.StringValue(item[db.Type].S) {
 		case model.TypePost:
-			if len(result.Posts) == 10 {
+			// if we're only fetching the most recent 10 posts, we might overfetch, so we should stop
+			// once we have as many posts as we expect.
+			if lastPublished == nil && len(result.Posts) == 10 {
 				break
 			}
 

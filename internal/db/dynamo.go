@@ -334,6 +334,10 @@ func (d *DynamoDB) QueryWithContext(ctx context.Context, input *dynamodb.QueryIn
 
 	span.SetAttributes(itemCountKey(len(out.Items)))
 
+	for k, v := range out.LastEvaluatedKey {
+		span.SetAttributes(key.String("db.last_evaluated_key."+k, v.String()))
+	}
+
 	recordConsumedCapacity(span, out.ConsumedCapacity)
 
 	return out, nil
