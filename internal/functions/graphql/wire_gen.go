@@ -49,6 +49,15 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	subscriptionQueries := feeds.NewSubscriptionQueries(dbDB)
 	postQueries := feeds.NewPostQueries(dbDB)
 	tweetQueries := tweets.NewTweetQueries(dbDB)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
+	if err != nil {
+		return nil, err
+	}
+	tweetQueriesDynamo := tweets.NewTweetQueriesDynamo(dynamoDB, dynamoConfig)
 	eventQueries := user.NewEventQueries(dbDB)
 	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
@@ -70,6 +79,7 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		FeedSubscriptions: subscriptionQueries,
 		Posts:             postQueries,
 		Tweets:            tweetQueries,
+		TweetsDynamo:      tweetQueriesDynamo,
 		Events:            eventQueries,
 		Customers:         customerQueries,
 		Subscriptions:     billingSubscriptionQueries,
@@ -94,14 +104,6 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	publisher := event.NewPublisher(publisherConfig, pubsubClient)
 	feedRepository := feeds2.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
-	dynamoConfig, err := db.NewDynamoConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
-	if err != nil {
-		return nil, err
-	}
 	clock := clockwork.NewRealClock()
 	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)

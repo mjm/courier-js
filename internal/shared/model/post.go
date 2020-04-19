@@ -20,8 +20,8 @@ const (
 )
 
 type PostID struct {
-	FeedID FeedID
-	ItemID string
+	FeedID FeedID `json:"feedId"`
+	ItemID string `json:"itemId"`
 }
 
 func PostIDFromParts(feedID FeedID, itemID string) PostID {

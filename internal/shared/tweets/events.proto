@@ -6,22 +6,30 @@ option go_package = "tweets";
 message TweetCanceled {
   string user_id = 1;
   string tweet_id = 2;
+  string feed_id = 3;
+  string item_id = 4;
 }
 
 message TweetUncanceled {
   string user_id = 1;
   string tweet_id = 2;
+  string feed_id = 3;
+  string item_id = 4;
 }
 
 message TweetEdited {
   string user_id = 1;
   string tweet_id = 2;
+  string feed_id = 3;
+  string item_id = 4;
 }
 
 message TweetPosted {
   string user_id = 1;
   string tweet_id = 2;
   bool autoposted = 3;
+  string feed_id = 4;
+  string item_id = 5;
 }
 
 message TweetsImported {

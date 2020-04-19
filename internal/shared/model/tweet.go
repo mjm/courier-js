@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -23,8 +24,8 @@ const (
 )
 
 type TweetGroupID struct {
-	UserID string
-	PostID
+	UserID string `json:"userId"`
+	PostID `json:"postId"`
 }
 
 func TweetGroupIDFromParts(userID string, feedID FeedID, itemID string) TweetGroupID {
@@ -34,6 +35,20 @@ func TweetGroupIDFromParts(userID string, feedID FeedID, itemID string) TweetGro
 			FeedID: feedID,
 			ItemID: itemID,
 		},
+	}
+}
+
+func (id TweetGroupID) PrimaryKeyValues() (string, string) {
+	pk := "USER#" + id.UserID
+	sk := fmt.Sprintf("FEED#%s#TWEETGROUP#%s", id.FeedID, id.ItemID)
+	return pk, sk
+}
+
+func (id TweetGroupID) PrimaryKey() map[string]*dynamodb.AttributeValue {
+	pk, sk := id.PrimaryKeyValues()
+	return map[string]*dynamodb.AttributeValue{
+		db.PK: {S: &pk},
+		db.SK: {S: &sk},
 	}
 }
 

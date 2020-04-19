@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/google/uuid"
 	"github.com/graph-gophers/dataloader"
 	"github.com/jmoiron/sqlx"
@@ -63,4 +64,26 @@ func StringArray(keys dataloader.Keys) interface {
 		vals = append(vals, key.String())
 	}
 	return (*pq.StringArray)(&vals)
+}
+
+type ID interface {
+	PrimaryKey() map[string]*dynamodb.AttributeValue
+	PrimaryKeyValues() (string, string)
+}
+
+type idKey struct {
+	ID
+}
+
+func (key idKey) String() string {
+	pk, sk := key.PrimaryKeyValues()
+	return pk + "###" + sk
+}
+
+func (key idKey) Raw() interface{} {
+	return key.ID
+}
+
+func IDKey(id ID) dataloader.Key {
+	return idKey{ID: id}
 }
