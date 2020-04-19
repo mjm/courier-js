@@ -9,6 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"go.opentelemetry.io/otel/api/global"
 
+	feeds2 "github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
@@ -17,6 +18,7 @@ import (
 )
 
 var commandBus *write.CommandBus
+var feedQueries *feeds2.FeedQueriesDynamo
 
 var tr = global.Tracer("courierctl")
 
@@ -39,8 +41,10 @@ func main() {
 	}
 }
 
-func newApp(bus *write.CommandBus, _ *feeds.CommandHandler, _ *tweets.CommandHandler, _ *tweets.EventHandler) *cli.App {
+func newApp(bus *write.CommandBus, feedQ *feeds2.FeedQueriesDynamo, _ *feeds.CommandHandler, _ *tweets.CommandHandler, _ *tweets.EventHandler) *cli.App {
 	commandBus = bus
+	feedQueries = feedQ
+
 	return &cli.App{
 		EnableBashCompletion: true,
 		Flags: []cli.Flag{

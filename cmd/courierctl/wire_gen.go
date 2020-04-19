@@ -12,10 +12,11 @@ import (
 	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
-	"github.com/mjm/courier-js/internal/write/feeds"
+	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/internal/write/tweets"
 	"github.com/urfave/cli/v2"
@@ -25,7 +26,6 @@ import (
 
 func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	writeCommandBus := write.NewCommandBus()
-	bus := event.NewBus()
 	defaultEnv := &config.DefaultEnv{}
 	client, err := secret.NewSecretManager(gcpConfig)
 	if err != nil {
@@ -33,6 +33,16 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
 	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
+	if err != nil {
+		return nil, err
+	}
+	feedQueriesDynamo := feeds.NewFeedQueriesDynamo(dynamoDB, dynamoConfig)
+	bus := event.NewBus()
 	tasksConfig, err := tasks.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -49,20 +59,12 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	feedRepository := feeds.NewFeedRepository(dbDB)
-	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
-	postRepository := feeds.NewPostRepository(dbDB)
-	dynamoConfig, err := db.NewDynamoConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
-	if err != nil {
-		return nil, err
-	}
+	feedRepository := feeds2.NewFeedRepository(dbDB)
+	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
+	postRepository := feeds2.NewPostRepository(dbDB)
 	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig)
 	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig)
-	commandHandler := feeds.NewCommandHandler(writeCommandBus, bus, tasksTasks, feedRepository, subscriptionRepository, postRepository, sharedFeedRepository, sharedPostRepository)
+	commandHandler := feeds2.NewCommandHandler(writeCommandBus, bus, tasksTasks, feedRepository, subscriptionRepository, postRepository, sharedFeedRepository, sharedPostRepository)
 	tweetRepository := tweets.NewTweetRepository(dbDB)
 	feedSubscriptionRepository := tweets.NewFeedSubscriptionRepository(dbDB)
 	tweetsPostRepository := tweets.NewPostRepository(dbDB)
@@ -93,6 +95,6 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	sharedTweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
 	tweetsCommandHandler := tweets.NewCommandHandler(writeCommandBus, bus, tasksTasks, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository, userRepository, sharedFeedRepository, sharedTweetRepository)
 	eventHandler := tweets.NewEventHandler(writeCommandBus, bus, feedSubscriptionRepository, tweetsPostRepository, tweetsCommandHandler)
-	app := newApp(writeCommandBus, commandHandler, tweetsCommandHandler, eventHandler)
+	app := newApp(writeCommandBus, feedQueriesDynamo, commandHandler, tweetsCommandHandler, eventHandler)
 	return app, nil
 }

@@ -6,6 +6,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
+	"github.com/mjm/courier-js/internal/pager"
+	feeds2 "github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/write/feeds"
 )
@@ -14,8 +16,43 @@ var feedCommand = &cli.Command{
 	Name:  "feed",
 	Usage: "work with a user's feeds",
 	Subcommands: []*cli.Command{
+		feedListCommand,
 		feedSubscribeCommand,
 		feedRefreshCommand,
+	},
+}
+
+var feedListCommand = &cli.Command{
+	Name:    "list",
+	Aliases: []string{"ls", "l"},
+	Usage:   "list feeds",
+	Flags: []cli.Flag{
+		&cli.IntFlag{
+			Name:  "limit,n",
+			Usage: "number of feeds to list",
+			Value: 30,
+		},
+	},
+	Action: func(ctx *cli.Context) error {
+		userID := ctx.String("user")
+		limit := ctx.Int("limit")
+
+		if userID == "" {
+			return cli.ShowSubcommandHelp(ctx)
+		}
+
+		conn, err := feedQueries.Paged(ctx.Context, userID, pager.First(int32(limit), nil))
+		if err != nil {
+			return err
+		}
+
+		for _, e := range conn.Edges {
+			fe := e.(*feeds2.FeedEdge)
+
+			fmt.Printf("%s\t%s (%s)\n", fe.ID, fe.Title, fe.URL)
+		}
+
+		return nil
 	},
 }
 
