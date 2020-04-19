@@ -67,12 +67,12 @@ func (r *TweetRepository) Create(ctx context.Context, ts []CreateTweetParams) er
 		return nil
 	}
 
-	now := r.clock.Now().Format(time.RFC3339)
+	now := model.FormatTime(r.clock.Now())
 	var reqs []*dynamodb.WriteRequest
 
 	for _, params := range ts {
 		pk, sk := r.primaryKeyValues(params.ID)
-		published := params.PublishedAt.Format(time.RFC3339)
+		published := model.FormatTime(params.PublishedAt)
 		upcoming := "UPCOMING#" + published
 
 		item := map[string]*dynamodb.AttributeValue{
@@ -192,7 +192,7 @@ func (r *TweetRepository) Update(ctx context.Context, params UpdateTweetParams) 
 }
 
 func (r *TweetRepository) Cancel(ctx context.Context, id model.TweetGroupID) error {
-	now := r.clock.Now().Format(time.RFC3339)
+	now := model.FormatTime(r.clock.Now())
 
 	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
@@ -245,7 +245,7 @@ func (r *TweetRepository) Uncancel(ctx context.Context, id model.TweetGroupID) e
 }
 
 func (r *TweetRepository) Post(ctx context.Context, id model.TweetGroupID, postedTweetIDs []int64) error {
-	now := r.clock.Now().Format(time.RFC3339)
+	now := model.FormatTime(r.clock.Now())
 
 	expr := `SET #posted_at = :posted_at, #gsi1sk = :gsi1sk`
 	values := map[string]*dynamodb.AttributeValue{
