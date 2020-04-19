@@ -2,6 +2,7 @@ package tweets
 
 import (
 	"context"
+	"reflect"
 	"time"
 
 	"github.com/segmentio/ksuid"
@@ -169,6 +170,12 @@ func (h *CommandHandler) planTweet(ctx context.Context, userID string, post *sha
 			RetweetID:    retweetID,
 			PostTaskName: ksuid.New().String(),
 		}, nil, nil
+	}
+
+	// check if there are changes from the existing tweet contents, avoid an update call
+	// if there are no changes.
+	if post.TweetGroup.RetweetID == retweetID && reflect.DeepEqual(post.TweetGroup.Tweets, ts) {
+		return nil, nil, nil
 	}
 
 	return nil, &shared.UpdateTweetParams{
