@@ -7,9 +7,10 @@ go_library(
     visibility = ["//:__subpackages__"],
     deps = [
         "//internal/event:go_default_library",
-        "//internal/read/tweets:go_default_library",
+        "//internal/shared/model:go_default_library",
         "//internal/shared/tweets:go_default_library",
         "//internal/trace/keys:go_default_library",
+        "//internal/write/shared:go_default_library",
         "@com_github_pusher_push_notifications_go//:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
         "@io_opentelemetry_go_otel//api/key:go_default_library",

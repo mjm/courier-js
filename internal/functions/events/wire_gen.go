@@ -13,13 +13,12 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/notifications"
-	"github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/shared"
-	tweets2 "github.com/mjm/courier-js/internal/write/tweets"
+	"github.com/mjm/courier-js/internal/write/tweets"
 	user2 "github.com/mjm/courier-js/internal/write/user"
 )
 
@@ -56,8 +55,17 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	tweetQueries := tweets.NewTweetQueries(dbDB)
-	notifier := notifications.NewNotifier(bus, pushNotifications, tweetQueries)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
+	if err != nil {
+		return nil, err
+	}
+	clock := clockwork.NewRealClock()
+	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	notifier := notifications.NewNotifier(bus, pushNotifications, tweetRepository)
 	commandBus := write.NewCommandBus()
 	publisherConfig, err := event.NewPublisherConfig(loader)
 	if err != nil {
@@ -80,16 +88,16 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	twitterConfig, err := tweets2.NewTwitterConfig(loader)
+	twitterConfig, err := tweets.NewTwitterConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	externalTweetRepository := tweets2.NewExternalTweetRepository(authConfig, twitterConfig)
+	externalTweetRepository := tweets.NewExternalTweetRepository(authConfig, twitterConfig)
 	management, err := auth.NewManagementClient(authConfig)
 	if err != nil {
 		return nil, err
 	}
-	keyManagementClient, err := tweets2.NewKeyManagementClient(gcpConfig)
+	keyManagementClient, err := tweets.NewKeyManagementClient(gcpConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -98,20 +106,10 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	api := billing.NewClient(billingConfig)
-	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig, api)
-	dynamoConfig, err := db.NewDynamoConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
-	if err != nil {
-		return nil, err
-	}
-	clock := clockwork.NewRealClock()
+	userRepository := tweets.NewUserRepository(management, keyManagementClient, gcpConfig, api)
 	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
-	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
-	eventHandler := tweets2.NewEventHandler(commandBus, bus, commandHandler)
+	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
+	eventHandler := tweets.NewEventHandler(commandBus, bus, commandHandler)
 	userUserRepository := user2.NewUserRepository(management)
 	userCommandHandler := user2.NewCommandHandler(commandBus, publisher, userUserRepository)
 	userEventHandler := user2.NewEventHandler(commandBus, bus, userCommandHandler)

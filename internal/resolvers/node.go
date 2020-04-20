@@ -30,8 +30,8 @@ func (n *Node) ToSubscribedFeed() (*SubscribedFeed, bool) {
 	return sf, ok
 }
 
-func (n *Node) ToTweet() (*Tweet, bool) {
-	t, ok := n.nodeResolver.(*Tweet)
+func (n *Node) ToTweet() (*TweetDynamo, bool) {
+	t, ok := n.nodeResolver.(*TweetDynamo)
 	return t, ok
 }
 

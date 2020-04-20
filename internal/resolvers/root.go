@@ -18,8 +18,8 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/pager"
-	tweets2 "github.com/mjm/courier-js/internal/read/tweets"
 	feeds2 "github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/billing"
@@ -132,18 +132,28 @@ func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID })
 }
 
 // Tweet gets a tweet for the current user by ID.
-func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet, error) {
-	var id tweets2.TweetID
-	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
-		return nil, err
-	}
-
-	t, err := r.q.Tweets.Get(ctx, id)
+func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*TweetDynamo, error) {
+	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
 		return nil, err
 	}
 
-	return NewTweet(r.q, t), nil
+	var postID model.PostID
+	if err := relay.UnmarshalSpec(args.ID, &postID); err != nil {
+		return nil, err
+	}
+
+	id := model.TweetGroupID{
+		UserID: userID,
+		PostID: postID,
+	}
+
+	tg, err := r.q.TweetsDynamo.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewTweetDynamo(r.q, tg), nil
 }
 
 // AllSubscribedFeeds gets a paged list of feed subscriptions for the current user.

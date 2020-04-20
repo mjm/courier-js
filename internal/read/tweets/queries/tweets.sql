@@ -1,18 +1,3 @@
--- qry: TweetsLoad
-SELECT
-  tweets.*
-FROM
-  tweets
-  JOIN feed_subscriptions ON tweets.feed_subscription_guid = feed_subscriptions.guid
-WHERE feed_subscriptions.user_id = $1
-  AND tweets.guid = ANY ($2);
-
--- qry: TweetsPrivilegedGet
-SELECT *
-FROM
-  tweets
-WHERE tweets.guid = $1;
-
 -- qry: TweetsPagerEdges
 SELECT
   tweets.*,

@@ -55,6 +55,10 @@ func (id TweetGroupID) PrimaryKey() map[string]*dynamodb.AttributeValue {
 	}
 }
 
+func (id TweetGroupID) String() string {
+	return string(id.FeedID) + "###" + id.ItemID
+}
+
 type TweetGroup struct {
 	ID              TweetGroupID
 	URL             string

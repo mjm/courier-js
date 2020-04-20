@@ -8,7 +8,6 @@ import (
 	"github.com/mjm/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/read/feeds"
-	"github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/read/user"
 )
 
@@ -60,16 +59,18 @@ func (e *Event) SubscribedFeed(ctx context.Context) (*SubscribedFeed, error) {
 }
 
 func (e *Event) Tweet(ctx context.Context) (*Tweet, error) {
-	if e.event.Params.TweetID == "" {
-		return nil, nil
-	}
-
-	t, err := e.q.Tweets.Get(ctx, tweets.TweetID(e.event.Params.TweetID))
-	if err != nil {
-		return nil, err
-	}
-
-	return NewTweet(e.q, t), nil
+	return nil, nil
+	// TODO
+	// if e.event.Params.TweetID == "" {
+	// 	return nil, nil
+	// }
+	//
+	// t, err := e.q.Tweets.Get(ctx, tweets.TweetID(e.event.Params.TweetID))
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//
+	// return NewTweet(e.q, t), nil
 }
 
 func (e *Event) BoolValue() *bool {

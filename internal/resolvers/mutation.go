@@ -152,7 +152,7 @@ func (r *Root) DeleteFeed(ctx context.Context, args struct {
 func (r *Root) CancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
-	payload struct{ Tweet *Tweet },
+	payload struct{ Tweet *TweetDynamo },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -177,20 +177,19 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 		return
 	}
 
-	_, err = r.q.TweetsDynamo.Get(ctx, id)
+	t, err := r.q.TweetsDynamo.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	// TODO put back
-	// payload.Tweet = NewTweet(r.q, t)
+	payload.Tweet = NewTweetDynamo(r.q, t)
 	return
 }
 
 func (r *Root) UncancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
-	payload struct{ Tweet *Tweet },
+	payload struct{ Tweet *TweetDynamo },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -215,13 +214,12 @@ func (r *Root) UncancelTweet(ctx context.Context, args struct {
 		return
 	}
 
-	_, err = r.q.TweetsDynamo.Get(ctx, id)
+	t, err := r.q.TweetsDynamo.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	// TODO put this back
-	// payload.Tweet = NewTweet(r.q, t)
+	payload.Tweet = NewTweetDynamo(r.q, t)
 	return
 }
 
@@ -232,7 +230,7 @@ func (r *Root) EditTweet(ctx context.Context, args struct {
 		MediaURLs *[]string
 	}
 }) (
-	payload struct{ Tweet *Tweet },
+	payload struct{ Tweet *TweetDynamo },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -263,13 +261,12 @@ func (r *Root) EditTweet(ctx context.Context, args struct {
 	// 	return
 	// }
 
-	_, err = r.q.TweetsDynamo.Get(ctx, id)
+	t, err := r.q.TweetsDynamo.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	// TODO put this back
-	// payload.Tweet = NewTweet(r.q, t)
+	payload.Tweet = NewTweetDynamo(r.q, t)
 	return
 }
 
@@ -280,7 +277,7 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 		MediaURLs *[]string
 	}
 }) (
-	payload struct{ Tweet *Tweet },
+	payload struct{ Tweet *TweetDynamo },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -305,13 +302,12 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 		return
 	}
 
-	_, err = r.q.TweetsDynamo.Get(ctx, id)
+	t, err := r.q.TweetsDynamo.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	// TODO put this back
-	// payload.Tweet = NewTweet(r.q, t)
+	payload.Tweet = NewTweetDynamo(r.q, t)
 	return
 }
 
