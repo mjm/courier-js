@@ -31,6 +31,24 @@ func PostIDFromParts(feedID FeedID, itemID string) PostID {
 	}
 }
 
+func (id PostID) PrimaryKeyValues() (string, string) {
+	pk := "FEED#" + string(id.FeedID)
+	sk := "POST#" + id.ItemID
+	return pk, sk
+}
+
+func (id PostID) PrimaryKey() map[string]*dynamodb.AttributeValue {
+	pk, sk := id.PrimaryKeyValues()
+	return map[string]*dynamodb.AttributeValue{
+		db.PK: {S: &pk},
+		db.SK: {S: &sk},
+	}
+}
+
+func (id PostID) String() string {
+	return string(id.FeedID) + "###" + id.ItemID
+}
+
 type Post struct {
 	ID          PostID
 	TextContent string

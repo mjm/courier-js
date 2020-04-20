@@ -91,20 +91,21 @@ func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error 
 	var reqs []*dynamodb.WriteRequest
 
 	for _, p := range ps {
-		pk, sk := r.primaryKeyValues(p.ID)
+		pk, sk := p.ID.PrimaryKeyValues()
 
 		var pubStr string
 		if p.PublishedAt != nil {
 			pubStr = model.FormatTime(*p.PublishedAt)
 		}
-		gsi1sk := fmt.Sprintf("POST#%s", pubStr)
+		lsi1sk := fmt.Sprintf("POST#%s", pubStr)
 		gsi2sk := fmt.Sprintf("#POST#%s#%s#ITEM", pubStr, p.ID.ItemID)
 
 		item := map[string]*dynamodb.AttributeValue{
-			db.PK:              {S: &pk},
-			db.SK:              {S: &sk},
-			db.GSI1PK:          {S: &pk},
-			db.GSI1SK:          {S: &gsi1sk},
+			db.PK:     {S: &pk},
+			db.SK:     {S: &sk},
+			db.LSI1SK: {S: &lsi1sk},
+			// db.GSI1PK:          {S: &pk},
+			// db.GSI1SK:          {S: &gsi1sk},
 			db.GSI2PK:          {S: &pk},
 			db.GSI2SK:          {S: &gsi2sk},
 			db.Type:            {S: aws.String(model.TypePost)},

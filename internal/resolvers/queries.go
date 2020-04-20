@@ -14,6 +14,7 @@ type Queries struct {
 	FeedsDynamo       *feeds.FeedQueriesDynamo
 	FeedSubscriptions feeds.SubscriptionQueries
 	Posts             feeds.PostQueries
+	PostsDynamo       *feeds.PostQueriesDynamo
 	Tweets            tweets.TweetQueries
 	TweetsDynamo      *tweets.TweetQueriesDynamo
 	Events            user.EventQueries
@@ -27,6 +28,7 @@ var QueriesProvider = wire.NewSet(
 	feeds.NewFeedQueriesDynamo,
 	feeds.NewSubscriptionQueries,
 	feeds.NewPostQueries,
+	feeds.NewPostQueriesDynamo,
 	tweets.NewTweetQueries,
 	tweets.NewTweetQueriesDynamo,
 	user.NewEventQueries,

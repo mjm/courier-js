@@ -114,18 +114,10 @@ func (f *FeedDynamo) UpdatedAt() graphql.Time {
 }
 
 func (f *FeedDynamo) Posts(ctx context.Context, args pager.Options) (*PostConnection, error) {
-	return &PostConnection{
-		conn: &pager.Connection{},
-		q:    f.q,
-	}, nil
-	// TODO
-	// conn, err := f.q.Posts.Paged(ctx, f.feed.ID, args)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	//
-	// return &PostConnection{
-	// 	conn: conn,
-	// 	q:    f.q,
-	// }, nil
+	conn, err := f.q.PostsDynamo.Paged(ctx, f.f.ID, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &PostConnection{conn: conn, q: f.q}, nil
 }
