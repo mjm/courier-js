@@ -57,8 +57,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	tweetRepository := tweets.NewTweetRepository(dbDB)
-	feedSubscriptionRepository := tweets.NewFeedSubscriptionRepository(dbDB)
-	postRepository := tweets.NewPostRepository(dbDB)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -93,11 +91,11 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	clock := clockwork.NewRealClock()
 	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	sharedTweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository, feedRepository, sharedTweetRepository)
+	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, externalTweetRepository, userRepository, feedRepository, sharedTweetRepository)
 	feedsFeedRepository := feeds.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
-	sharedPostRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedsFeedRepository, subscriptionRepository, feedRepository, sharedPostRepository)
+	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
+	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedsFeedRepository, subscriptionRepository, feedRepository, postRepository)
 	handler := NewHandler(commandBus, commandHandler, feedsCommandHandler)
 	return handler, nil
 }

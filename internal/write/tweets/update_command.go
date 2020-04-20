@@ -7,8 +7,10 @@ import (
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace/keys"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 var (
@@ -16,54 +18,47 @@ var (
 )
 
 type UpdateCommand struct {
-	UserID    string
-	TweetID   TweetID
-	Body      string
-	MediaURLs []string
+	TweetGroupID model.TweetGroupID
+	Tweets       []*model.Tweet
 }
 
 func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) error {
 	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(keys.TweetGroupID(cmd.TweetGroupID)...)
 	span.SetAttributes(
-		keys.UserID(cmd.UserID),
-		keys.TweetID(cmd.TweetID),
-		key.Int("tweet.body_length", len(cmd.Body)),
-		key.Int("tweet.media_url_count", len(cmd.MediaURLs)))
+		key.Int("tweet.count", len(cmd.Tweets)))
 
 	// fetch the existing tweet so we can do some validation
-	t, err := h.tweetRepo.Get(ctx, cmd.UserID, cmd.TweetID)
+	tg, err := h.tweetRepoDynamo.Get(ctx, cmd.TweetGroupID)
 	if err != nil {
 		return err
 	}
 
 	span.SetAttributes(
-		keys.TweetStatus(string(t.Status)),
-		key.String("tweet.action", string(t.Action)))
+		keys.TweetStatus(string(tg.Status)),
+		key.String("tweet.action", string(tg.Action)))
 
-	if t.Status != Draft {
+	if tg.Status != model.Draft {
 		return ErrNotDraft
 	}
 
-	if t.Action != ActionTweet {
+	if tg.Action != model.ActionTweet {
 		return ErrRetweet
 	}
 
-	params := UpdateTweetParams{
-		ID:        cmd.TweetID,
-		Action:    t.Action,
-		Body:      cmd.Body,
-		MediaURLs: t.MediaURLs,
+	params := shared.UpdateTweetParams{
+		ID:     cmd.TweetGroupID,
+		URL:    tg.URL,
+		Tweets: cmd.Tweets,
 	}
-	if cmd.MediaURLs != nil {
-		params.MediaURLs = cmd.MediaURLs
-	}
-	if err := h.tweetRepo.Update(ctx, []UpdateTweetParams{params}); err != nil {
+	if err := h.tweetRepoDynamo.Update(ctx, params); err != nil {
 		return err
 	}
 
 	h.events.Fire(ctx, tweets.TweetEdited{
-		UserId:  cmd.UserID,
-		TweetId: cmd.TweetID.String(),
+		UserId: tg.UserID(),
+		FeedId: string(tg.FeedID()),
+		ItemId: tg.ItemID(),
 	})
 
 	return nil

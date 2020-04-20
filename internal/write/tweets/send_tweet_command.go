@@ -84,15 +84,13 @@ func (h *CommandHandler) handleSendTweet(ctx context.Context, cmd SendTweetComma
 		}
 	}
 
-	// TODO get syndication going again
-	// if _, err := h.bus.Run(ctx, SyndicateCommand{
-	// 	UserID:   cmd.Subscription.UserID,
-	// 	PostID:   cmd.TweetGroup.PostID,
-	// 	TweetURL: tweetURL,
-	// }); err != nil {
-	// 	return err
-	// }
-	//
+	if _, err := h.bus.Run(ctx, SyndicateCommand{
+		TweetGroup: tg,
+		TweetURLs:  postedURLs,
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }
 

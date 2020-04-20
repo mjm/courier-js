@@ -240,29 +240,36 @@ func (r *Root) EditTweet(ctx context.Context, args struct {
 		return
 	}
 
-	var id tweets.TweetID
-	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	var postID model.PostID
+	if err = relay.UnmarshalSpec(args.Input.ID, &postID); err != nil {
 		return
 	}
 
-	cmd := tweets.UpdateCommand{
-		UserID:  userID,
-		TweetID: id,
-		Body:    args.Input.Body,
-	}
-	if args.Input.MediaURLs != nil {
-		cmd.MediaURLs = *args.Input.MediaURLs
-	}
-	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
-		return
+	id := model.TweetGroupID{
+		UserID: userID,
+		PostID: postID,
 	}
 
-	t, err := r.q.Tweets.Get(ctx, id)
+	// TODO change GraphQL API to send all the tweets here
+
+	// cmd := tweets.UpdateCommand{
+	// 	TweetGroupID: id,
+	// 	Body:         args.Input.Body,
+	// }
+	// if args.Input.MediaURLs != nil {
+	// 	cmd.MediaURLs = *args.Input.MediaURLs
+	// }
+	// if _, err = r.commandBus.Run(ctx, cmd); err != nil {
+	// 	return
+	// }
+
+	_, err = r.q.TweetsDynamo.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	payload.Tweet = NewTweet(r.q, t)
+	// TODO put this back
+	// payload.Tweet = NewTweet(r.q, t)
 	return
 }
 

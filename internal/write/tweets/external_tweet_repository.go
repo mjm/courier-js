@@ -25,7 +25,6 @@ import (
 )
 
 var (
-	ErrInvalidAction     = errors.New("unknown tweet action")
 	ErrNoTwitterIdentity = errors.New("no twitter identity found")
 	ErrNoContentType     = errors.New("no content type")
 )

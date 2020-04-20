@@ -7,35 +7,41 @@ import (
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 
-	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/pkg/micropub"
 )
 
 type SyndicateCommand struct {
-	UserID   string
-	PostID   feeds.PostID
-	TweetURL string
+	TweetGroup *model.TweetGroup
+	TweetURLs  []string
 }
 
 func (h *CommandHandler) handleSyndicate(ctx context.Context, cmd SyndicateCommand) error {
 	span := trace.SpanFromContext(ctx)
+	span.SetAttributes(keys.TweetGroupID(cmd.TweetGroup.ID)...)
 	span.SetAttributes(
-		keys.UserID(cmd.UserID),
-		keys.PostID(cmd.PostID),
-		keys.TweetURL(cmd.TweetURL))
+		key.String("post.url", cmd.TweetGroup.URL),
+		key.Int("tweet.url_count", len(cmd.TweetURLs)))
 
-	info, err := h.postRepo.MicropubInfo(ctx, cmd.PostID)
+	if cmd.TweetGroup.URL == "" {
+		return nil
+	}
+
+	f, err := h.feedRepo.Get(ctx, cmd.TweetGroup.UserID(), cmd.TweetGroup.FeedID())
 	if err != nil {
 		return err
 	}
 
 	span.SetAttributes(
-		keys.FeedHomePageURL(info.HomePageURL),
-		key.String("post.url", info.URL),
-		key.String("feed.micropub_endpoint", info.MPEndpoint))
+		keys.FeedHomePageURL(f.HomePageURL),
+		key.String("feed.micropub_endpoint", f.MicropubEndpoint))
 
-	token, err := h.userRepo.MicropubToken(ctx, cmd.UserID, info.HomePageURL)
+	if f.MicropubEndpoint == "" {
+		return nil
+	}
+
+	token, err := h.userRepo.MicropubToken(ctx, f.UserID, f.HomePageURL)
 	if err != nil {
 		return err
 	}
@@ -46,16 +52,21 @@ func (h *CommandHandler) handleSyndicate(ctx context.Context, cmd SyndicateComma
 		return nil
 	}
 
-	u, err := url.Parse(info.MPEndpoint)
+	u, err := url.Parse(f.MicropubEndpoint)
 	if err != nil {
 		return err
 	}
 
+	var urls []interface{}
+	for _, u := range cmd.TweetURLs {
+		urls = append(urls, u)
+	}
+
 	client := micropub.NewClient(u, token)
 	if _, err := client.Update(ctx, micropub.Update{
-		URL: info.URL,
+		URL: cmd.TweetGroup.URL,
 		Add: map[string][]interface{}{
-			"syndication": {cmd.TweetURL},
+			"syndication": urls,
 		},
 	}); err != nil {
 		return err

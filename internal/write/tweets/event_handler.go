@@ -19,21 +19,15 @@ var EventHandlerSet = wire.NewSet(DefaultSet, NewEventHandler)
 
 type EventHandler struct {
 	commandBus *write.CommandBus
-	subRepo    *FeedSubscriptionRepository
-	postRepo   *PostRepository
 }
 
 func NewEventHandler(
 	commandBus *write.CommandBus,
 	events event.Source,
-	subRepo *FeedSubscriptionRepository,
-	postRepo *PostRepository,
 	_ *CommandHandler,
 ) *EventHandler {
 	h := &EventHandler{
 		commandBus: commandBus,
-		subRepo:    subRepo,
-		postRepo:   postRepo,
 	}
 	events.Notify(h)
 	return h

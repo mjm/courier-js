@@ -59,8 +59,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	tweetQueries := tweets.NewTweetQueries(dbDB)
 	notifier := notifications.NewNotifier(bus, pushNotifications, tweetQueries)
 	commandBus := write.NewCommandBus()
-	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
-	postRepository := tweets2.NewPostRepository(dbDB)
 	publisherConfig, err := event.NewPublisherConfig(loader)
 	if err != nil {
 		return nil, err
@@ -113,8 +111,8 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	clock := clockwork.NewRealClock()
 	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	sharedTweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository, feedRepository, sharedTweetRepository)
-	eventHandler := tweets2.NewEventHandler(commandBus, bus, feedSubscriptionRepository, postRepository, commandHandler)
+	commandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, externalTweetRepository, userRepository, feedRepository, sharedTweetRepository)
+	eventHandler := tweets2.NewEventHandler(commandBus, bus, commandHandler)
 	userUserRepository := user2.NewUserRepository(management)
 	userCommandHandler := user2.NewCommandHandler(commandBus, publisher, userUserRepository)
 	userEventHandler := user2.NewEventHandler(commandBus, bus, userCommandHandler)

@@ -25,8 +25,6 @@ type tweetsSuite struct {
 	eventCollector *event.Collector
 
 	feedRepo          *feeds.FeedRepository
-	subRepo           *FeedSubscriptionRepository
-	postRepo          *PostRepository
 	tweetRepo         *TweetRepository
 	externalTweetRepo *ExternalTweetRepository
 	userRepo          *UserRepository
@@ -41,13 +39,11 @@ func (suite *tweetsSuite) SetupSuite() {
 	suite.eventCollector = &event.Collector{}
 	suite.eventBus.Notify(suite.eventCollector)
 
-	suite.subRepo = NewFeedSubscriptionRepository(suite.db)
-	suite.postRepo = NewPostRepository(suite.db)
 	suite.tweetRepo = NewTweetRepository(suite.db)
 	// TODO external tweet repo
 	// TODO user repo
 	NewCommandHandler(
-		suite.commandBus, suite.eventBus, nil, suite.tweetRepo, suite.subRepo, suite.postRepo, suite.externalTweetRepo,
+		suite.commandBus, suite.eventBus, nil, suite.tweetRepo, suite.externalTweetRepo,
 		suite.userRepo, nil, nil)
 }
 

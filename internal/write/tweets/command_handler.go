@@ -17,8 +17,6 @@ import (
 var DefaultSet = wire.NewSet(
 	NewCommandHandler,
 	NewTweetRepository,
-	NewFeedSubscriptionRepository,
-	NewPostRepository,
 	NewExternalTweetRepository,
 	NewTwitterConfig,
 	NewUserRepository,
@@ -31,8 +29,6 @@ type CommandHandler struct {
 	events            event.Sink
 	tasks             *tasks.Tasks
 	tweetRepo         *TweetRepository
-	subRepo           *FeedSubscriptionRepository
-	postRepo          *PostRepository
 	externalTweetRepo *ExternalTweetRepository
 	userRepo          *UserRepository
 	feedRepo          *shared.FeedRepository
@@ -45,8 +41,6 @@ func NewCommandHandler(
 	events event.Sink,
 	tasks *tasks.Tasks,
 	tweetRepo *TweetRepository,
-	subRepo *FeedSubscriptionRepository,
-	postRepo *PostRepository,
 	externalTweetRepo *ExternalTweetRepository,
 	userRepo *UserRepository,
 	feedRepo *shared.FeedRepository,
@@ -57,8 +51,6 @@ func NewCommandHandler(
 		events:            events,
 		tasks:             tasks,
 		tweetRepo:         tweetRepo,
-		subRepo:           subRepo,
-		postRepo:          postRepo,
 		externalTweetRepo: externalTweetRepo,
 		userRepo:          userRepo,
 		feedRepo:          feedRepo,
