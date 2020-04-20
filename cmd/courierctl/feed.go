@@ -19,13 +19,14 @@ var feedCommand = &cli.Command{
 		feedListCommand,
 		feedSubscribeCommand,
 		feedRefreshCommand,
+		feedSetCommand,
 	},
 }
 
 var feedListCommand = &cli.Command{
 	Name:    "list",
 	Aliases: []string{"ls", "l"},
-	Usage:   "list feeds",
+	Usage:   "List a user's feeds",
 	Flags: []cli.Flag{
 		&cli.IntFlag{
 			Name:  "limit,n",
@@ -59,7 +60,7 @@ var feedListCommand = &cli.Command{
 var feedSubscribeCommand = &cli.Command{
 	Name:      "subscribe",
 	Aliases:   []string{"sub"},
-	Usage:     "subscribe to a new feed",
+	Usage:     "Subscribe to a new feed",
 	ArgsUsage: "[url]",
 	Action: func(ctx *cli.Context) error {
 		u := ctx.Args().Get(0)
@@ -86,7 +87,7 @@ var feedSubscribeCommand = &cli.Command{
 
 var feedRefreshCommand = &cli.Command{
 	Name:      "refresh",
-	Usage:     "check current feed contents",
+	Usage:     "Check current feed contents",
 	ArgsUsage: "[id]",
 	Action: func(ctx *cli.Context) error {
 		id := ctx.Args().Get(0)
@@ -102,6 +103,47 @@ var feedRefreshCommand = &cli.Command{
 		cmd := feeds.RefreshCommand{
 			UserID: userID,
 			FeedID: feedID,
+		}
+		if _, err := commandBus.Run(ctx.Context, cmd); err != nil {
+			return err
+		}
+
+		fmt.Fprintf(os.Stderr, "Done.\n")
+		return nil
+	},
+}
+
+var feedSetCommand = &cli.Command{
+	Name:      "set",
+	Usage:     "Set options about a feed",
+	ArgsUsage: "[id]",
+	Flags: []cli.Flag{
+		&cli.BoolFlag{
+			Name:  "autopost",
+			Usage: "post imported tweets automatically after a short delay",
+		},
+	},
+	Action: func(ctx *cli.Context) error {
+		id := ctx.Args().Get(0)
+		userID := ctx.String("user")
+
+		if id == "" || userID == "" {
+			return cli.ShowSubcommandHelp(ctx)
+		}
+
+		feedID := model.FeedID(id)
+
+		autopost := ctx.Bool("autopost")
+		if autopost {
+			fmt.Fprintf(os.Stderr, "Enabling autoposting for feed %s as %s\n", feedID, userID)
+		} else {
+			fmt.Fprintf(os.Stderr, "Disabling autoposting for feed %s as %s\n", feedID, userID)
+		}
+
+		cmd := feeds.UpdateOptionsCommand{
+			UserID:   userID,
+			FeedID:   feedID,
+			Autopost: autopost,
 		}
 		if _, err := commandBus.Run(ctx.Context, cmd); err != nil {
 			return err

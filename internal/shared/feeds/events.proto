@@ -24,11 +24,13 @@ message FeedOptionsChanged {
   string user_id = 1;
   string feed_subscription_id = 2;
   bool autopost = 3;
+  string feed_id = 4;
 }
 
 message FeedUnsubscribed {
   string user_id = 1;
   string feed_subscription_id = 2;
+  string feed_id = 3;
 }
 
 message PostsImported {

@@ -7,33 +7,36 @@ import (
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/trace/keys"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 type UpdateOptionsCommand struct {
-	UserID         string
-	SubscriptionID SubscriptionID
-	Autopost       bool
+	UserID   string
+	FeedID   model.FeedID
+	Autopost bool
 }
 
 func (h *CommandHandler) handleUpdateOptions(ctx context.Context, cmd UpdateOptionsCommand) error {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
 		keys.UserID(cmd.UserID),
-		keys.FeedSubscriptionID(cmd.SubscriptionID),
+		keys.FeedIDDynamo(cmd.FeedID),
 		key.Bool("feed.autopost", cmd.Autopost))
 
-	if err := h.subRepo.Update(ctx, cmd.UserID, UpdateSubscriptionParams{
-		ID:       cmd.SubscriptionID,
+	if err := h.feedRepoDynamo.UpdateSettings(ctx, shared.UpdateFeedSettingsParams{
+		ID:       cmd.FeedID,
+		UserID:   cmd.UserID,
 		Autopost: cmd.Autopost,
 	}); err != nil {
 		return err
 	}
 
 	h.events.Fire(ctx, feeds.FeedOptionsChanged{
-		FeedSubscriptionId: cmd.SubscriptionID.String(),
-		UserId:             cmd.UserID,
-		Autopost:           cmd.Autopost,
+		UserId:   cmd.UserID,
+		FeedId:   string(cmd.FeedID),
+		Autopost: cmd.Autopost,
 	})
 
 	return nil

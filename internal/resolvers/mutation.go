@@ -89,7 +89,7 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		Autopost *bool
 	}
 }) (
-	payload struct{ Feed *SubscribedFeed },
+	payload struct{ Feed *SubscribedFeedDynamo },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -97,26 +97,26 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		return
 	}
 
-	var id feeds.SubscriptionID
+	var id model.FeedID
 	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
 
 	cmd := feeds.UpdateOptionsCommand{
-		UserID:         userID,
-		SubscriptionID: id,
-		Autopost:       *args.Input.Autopost,
+		UserID:   userID,
+		FeedID:   id,
+		Autopost: *args.Input.Autopost,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 
-	sub, err := r.q.FeedSubscriptions.Get(ctx, id)
+	f, err := r.q.FeedsDynamo.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	payload.Feed = NewSubscribedFeed(r.q, sub)
+	payload.Feed = NewSubscribedFeedDynamo(r.q, f)
 	return
 }
 

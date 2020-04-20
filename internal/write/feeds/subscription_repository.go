@@ -2,13 +2,10 @@ package feeds
 
 import (
 	"context"
-	"errors"
 
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/write/feeds/queries"
 )
-
-var ErrNoSubscription = errors.New("no feed subscription found")
 
 // SubscriptionRepository fetches and stores information about feed subscriptions.
 type SubscriptionRepository struct {
@@ -18,28 +15,6 @@ type SubscriptionRepository struct {
 // NewSubscriptionRepository creates a new subscription repository targeting a given database.
 func NewSubscriptionRepository(db db.DB) *SubscriptionRepository {
 	return &SubscriptionRepository{db: db}
-}
-
-type UpdateSubscriptionParams struct {
-	ID       SubscriptionID
-	Autopost bool
-}
-
-func (r *SubscriptionRepository) Update(ctx context.Context, userID string, params UpdateSubscriptionParams) error {
-	res, err := r.db.ExecContext(ctx, queries.SubscriptionsUpdate, params.ID, userID, params.Autopost)
-	if err != nil {
-		return err
-	}
-	n, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-
-	if n == 0 {
-		return ErrNoSubscription
-	}
-
-	return nil
 }
 
 // Deactivate marks a subscription as discarded. It still exists, but it won't generally
