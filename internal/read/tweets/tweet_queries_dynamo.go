@@ -38,7 +38,7 @@ func (q *TweetQueriesDynamo) Get(ctx context.Context, id model.TweetGroupID) (*m
 }
 
 func (q *TweetQueriesDynamo) Paged(ctx context.Context, userID string, filter Filter, opts pager.Options) (*pager.Connection, error) {
-	p := &tweetPagerDynamo{
+	p := &tweetPager{
 		TableName: q.dynamoConfig.TableName,
 		UserID:    userID,
 		Filter:    filter,

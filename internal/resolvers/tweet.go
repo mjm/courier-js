@@ -143,6 +143,13 @@ func (t *TweetDynamo) PostAfter() *graphql.Time {
 	return nil
 }
 
+func (t *TweetDynamo) PostedAt() *graphql.Time {
+	if t.tg.PostedAt != nil {
+		return &graphql.Time{Time: *t.tg.PostedAt}
+	}
+	return nil
+}
+
 func (t *TweetDynamo) PostedTweetID() *string {
 	// TODO change schema to represent tweets as part of groups
 
@@ -150,8 +157,8 @@ func (t *TweetDynamo) PostedTweetID() *string {
 		return &t.tg.Tweets[0].PostedTweetID
 	}
 
-	if t.tg.RetweetID != "" {
-		return &t.tg.RetweetID
+	if t.tg.PostedRetweetID != "" {
+		return &t.tg.PostedRetweetID
 	}
 
 	return nil

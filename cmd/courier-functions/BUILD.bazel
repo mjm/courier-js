@@ -31,6 +31,7 @@ go_library(
 
 go_binary(
     name = "courier-functions",
+    data = ["//:schema.graphql"],
     embed = [":go_default_library"],
     tags = ["no-cache"],
     visibility = ["//visibility:public"],

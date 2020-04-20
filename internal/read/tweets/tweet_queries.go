@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/pkg/htmltweets"
 )
 
@@ -16,23 +14,13 @@ var (
 
 // TweetQueries is an interface for reading information about a user's tweets.
 type TweetQueries interface {
-	// Paged fetches a paged and possibly filtered subset of a user's tweets.
-	Paged(context.Context, string, Filter, pager.Options) (*pager.Connection, error)
 	GeneratePreviews(context.Context, PreviewPost) ([]*PreviewTweet, error)
 }
 
-type tweetQueries struct {
-	db db.DB
-}
+type tweetQueries struct{}
 
-func NewTweetQueries(db db.DB) TweetQueries {
-	return &tweetQueries{
-		db: db,
-	}
-}
-
-func (q *tweetQueries) Paged(ctx context.Context, userID string, filter Filter, opts pager.Options) (*pager.Connection, error) {
-	return pager.Paged(ctx, q.db, &tweetPager{Filter: filter, UserID: userID}, opts)
+func NewTweetQueries() TweetQueries {
+	return &tweetQueries{}
 }
 
 type PreviewPost struct {

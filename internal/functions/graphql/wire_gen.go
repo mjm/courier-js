@@ -48,7 +48,7 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	feedQueries := feeds.NewFeedQueries(dbDB)
 	subscriptionQueries := feeds.NewSubscriptionQueries(dbDB)
 	postQueries := feeds.NewPostQueries(dbDB)
-	tweetQueries := tweets.NewTweetQueries(dbDB)
+	tweetQueries := tweets.NewTweetQueries()
 	dynamoConfig, err := db.NewDynamoConfig(loader)
 	if err != nil {
 		return nil, err
