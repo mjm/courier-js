@@ -65,14 +65,14 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 
 	if len(toCreate) > 0 {
 		wg.Go(func() error {
-			return h.tweetRepoDynamo.Create(subCtx, toCreate)
+			return h.tweetRepo.Create(subCtx, toCreate)
 		})
 	}
 
 	for _, params := range toUpdate {
 		params := params
 		wg.Go(func() error {
-			return h.tweetRepoDynamo.Update(subCtx, params)
+			return h.tweetRepo.Update(subCtx, params)
 		})
 	}
 

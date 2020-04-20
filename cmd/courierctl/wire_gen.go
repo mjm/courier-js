@@ -67,7 +67,6 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
 	commandHandler := feeds2.NewCommandHandler(writeCommandBus, bus, tasksTasks, feedRepository, subscriptionRepository, sharedFeedRepository, postRepository)
-	tweetRepository := tweets2.NewTweetRepository(dbDB)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -91,8 +90,8 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	}
 	api := billing.NewClient(billingConfig)
 	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig, api)
-	sharedTweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
-	tweetsCommandHandler := tweets2.NewCommandHandler(writeCommandBus, bus, tasksTasks, tweetRepository, externalTweetRepository, userRepository, sharedFeedRepository, sharedTweetRepository)
+	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	tweetsCommandHandler := tweets2.NewCommandHandler(writeCommandBus, bus, tasksTasks, externalTweetRepository, userRepository, sharedFeedRepository, tweetRepository)
 	eventHandler := tweets2.NewEventHandler(writeCommandBus, bus, tweetsCommandHandler)
 	app := newApp(writeCommandBus, feedQueriesDynamo, tweetQueriesDynamo, commandHandler, tweetsCommandHandler, eventHandler)
 	return app, nil

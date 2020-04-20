@@ -19,7 +19,7 @@ func (h *CommandHandler) handleUncancel(ctx context.Context, cmd UncancelCommand
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(keys.TweetGroupID(cmd.TweetGroupID)...)
 
-	if err := h.tweetRepoDynamo.Uncancel(ctx, cmd.TweetGroupID); err != nil {
+	if err := h.tweetRepo.Uncancel(ctx, cmd.TweetGroupID); err != nil {
 		return err
 	}
 

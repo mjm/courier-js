@@ -24,16 +24,4 @@ go_test(
         "suite_test.go",
     ],
     embed = [":go_default_library"],
-    deps = [
-        "//internal/db:go_default_library",
-        "//internal/event:go_default_library",
-        "//internal/read/tweets:go_default_library",
-        "//internal/shared/tweets:go_default_library",
-        "//internal/write/tweets/queries:go_default_library",
-        "@com_github_google_uuid//:go_default_library",
-        "@com_github_khaiql_dbcleaner//:go_default_library",
-        "@com_github_khaiql_dbcleaner//engine:go_default_library",
-        "@com_github_pusher_push_notifications_go//:go_default_library",
-        "@com_github_stretchr_testify//suite:go_default_library",
-    ],
 )

@@ -261,3 +261,36 @@ func (suite *dynamoSuite) TestPostTweet() {
 	suite.Equal(model.Posted, tg.Status)
 	suite.Equal("1234567890", tg.Tweets[0].PostedTweetID)
 }
+
+func (suite *dynamoSuite) TestEnqueuePostTweet() {
+	id := model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "https://www.example.org/post/abc")
+	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
+
+	suite.Require().NoError(
+		suite.tweetRepo.Create(suite.Ctx(), []CreateTweetParams{
+			{
+				ID:          id,
+				URL:         "https://www.example.org/post/abc",
+				PublishedAt: t,
+				Tweets: []*model.Tweet{
+					{
+						Body: "This is my tweet text.",
+						MediaURLs: []string{
+							"https://www.example.org/media/foo.jpg",
+						},
+					},
+				},
+			},
+		}))
+
+	suite.Require().NoError(
+		suite.tweetRepo.EnqueuePost(suite.Ctx(), id, "my-new-task"))
+
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), id)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(tg)
+
+	suite.NotNil(tg.PostAfter)
+	suite.Equal(suite.clock.Now(), *tg.PostAfter)
+	suite.Equal("my-new-task", tg.PostTaskName)
+}

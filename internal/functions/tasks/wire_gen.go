@@ -48,15 +48,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	dbConfig, err := db.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dbDB, err := db.New(dbConfig)
-	if err != nil {
-		return nil, err
-	}
-	tweetRepository := tweets.NewTweetRepository(dbDB)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -90,8 +81,16 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	clock := clockwork.NewRealClock()
 	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
-	sharedTweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, externalTweetRepository, userRepository, feedRepository, sharedTweetRepository)
+	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
+	dbConfig, err := db.NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	dbDB, err := db.New(dbConfig)
+	if err != nil {
+		return nil, err
+	}
 	feedsFeedRepository := feeds.NewFeedRepository(dbDB)
 	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
 	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)

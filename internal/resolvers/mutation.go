@@ -288,25 +288,30 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 		return
 	}
 
-	var id tweets.TweetID
-	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	var postID model.PostID
+	if err = relay.UnmarshalSpec(args.Input.ID, &postID); err != nil {
 		return
 	}
 
-	cmd := tweets.QueuePostCommand{
-		UserID:  userID,
-		TweetID: id,
+	id := model.TweetGroupID{
+		UserID: userID,
+		PostID: postID,
+	}
+
+	cmd := tweets.EnqueuePostCommand{
+		TweetGroupID: id,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 
-	t, err := r.q.Tweets.Get(ctx, id)
+	_, err = r.q.TweetsDynamo.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	payload.Tweet = NewTweet(r.q, t)
+	// TODO put this back
+	// payload.Tweet = NewTweet(r.q, t)
 	return
 }
 

@@ -16,7 +16,6 @@ import (
 // DefaultSet is a provider set for creating a command handler and its dependencies.
 var DefaultSet = wire.NewSet(
 	NewCommandHandler,
-	NewTweetRepository,
 	NewExternalTweetRepository,
 	NewTwitterConfig,
 	NewUserRepository,
@@ -28,11 +27,10 @@ type CommandHandler struct {
 	bus               *write.CommandBus
 	events            event.Sink
 	tasks             *tasks.Tasks
-	tweetRepo         *TweetRepository
 	externalTweetRepo *ExternalTweetRepository
 	userRepo          *UserRepository
 	feedRepo          *shared.FeedRepository
-	tweetRepoDynamo   *shared.TweetRepository
+	tweetRepo         *shared.TweetRepository
 }
 
 // NewCommandHandler creates a new command handler for tweet commands.
@@ -40,28 +38,26 @@ func NewCommandHandler(
 	bus *write.CommandBus,
 	events event.Sink,
 	tasks *tasks.Tasks,
-	tweetRepo *TweetRepository,
 	externalTweetRepo *ExternalTweetRepository,
 	userRepo *UserRepository,
 	feedRepo *shared.FeedRepository,
-	tweetRepoDynamo *shared.TweetRepository,
+	tweetRepo *shared.TweetRepository,
 ) *CommandHandler {
 	h := &CommandHandler{
 		bus:               bus,
 		events:            events,
 		tasks:             tasks,
-		tweetRepo:         tweetRepo,
 		externalTweetRepo: externalTweetRepo,
 		userRepo:          userRepo,
 		feedRepo:          feedRepo,
-		tweetRepoDynamo:   tweetRepoDynamo,
+		tweetRepo:         tweetRepo,
 	}
 	bus.Register(h,
 		CancelCommand{},
 		UncancelCommand{},
 		UpdateCommand{},
 		PostCommand{},
-		QueuePostCommand{},
+		EnqueuePostCommand{},
 		SendTweetCommand{},
 		ImportTweetsCommand{},
 		SyndicateCommand{},
@@ -86,7 +82,7 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 	case PostCommand:
 		return nil, h.handlePost(ctx, cmd)
 
-	case QueuePostCommand:
+	case EnqueuePostCommand:
 		return nil, h.handleQueuePost(ctx, cmd)
 
 	case SendTweetCommand:

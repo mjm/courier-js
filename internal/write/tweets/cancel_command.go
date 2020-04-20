@@ -19,7 +19,7 @@ func (h *CommandHandler) handleCancel(ctx context.Context, cmd CancelCommand) er
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(keys.TweetGroupID(cmd.TweetGroupID)...)
 
-	if err := h.tweetRepoDynamo.Cancel(ctx, cmd.TweetGroupID); err != nil {
+	if err := h.tweetRepo.Cancel(ctx, cmd.TweetGroupID); err != nil {
 		return err
 	}
 

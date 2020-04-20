@@ -58,7 +58,7 @@ func (h *CommandHandler) handleSendTweet(ctx context.Context, cmd SendTweetComma
 			}
 		}
 
-		if err := h.tweetRepoDynamo.Post(ctx, tg.ID, postedIDs); err != nil {
+		if err := h.tweetRepo.Post(ctx, tg.ID, postedIDs); err != nil {
 			return err
 		}
 
@@ -79,7 +79,7 @@ func (h *CommandHandler) handleSendTweet(ctx context.Context, cmd SendTweetComma
 		span.SetAttributes(keys.TweetURL(tweetURL))
 		postedURLs = []string{tweetURL}
 
-		if err := h.tweetRepoDynamo.PostRetweet(ctx, tg.ID, postedTweet.ID); err != nil {
+		if err := h.tweetRepo.PostRetweet(ctx, tg.ID, postedTweet.ID); err != nil {
 			return err
 		}
 	}

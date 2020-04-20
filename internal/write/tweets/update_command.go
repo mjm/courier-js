@@ -29,7 +29,7 @@ func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) er
 		key.Int("tweet.count", len(cmd.Tweets)))
 
 	// fetch the existing tweet so we can do some validation
-	tg, err := h.tweetRepoDynamo.Get(ctx, cmd.TweetGroupID)
+	tg, err := h.tweetRepo.Get(ctx, cmd.TweetGroupID)
 	if err != nil {
 		return err
 	}
@@ -39,7 +39,7 @@ func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) er
 		key.String("tweet.action", string(tg.Action)))
 
 	if tg.Status != model.Draft {
-		return ErrNotDraft
+		return shared.ErrCannotUpdate
 	}
 
 	if tg.Action != model.ActionTweet {
@@ -51,7 +51,7 @@ func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) er
 		URL:    tg.URL,
 		Tweets: cmd.Tweets,
 	}
-	if err := h.tweetRepoDynamo.Update(ctx, params); err != nil {
+	if err := h.tweetRepo.Update(ctx, params); err != nil {
 		return err
 	}
 

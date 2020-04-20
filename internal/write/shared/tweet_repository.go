@@ -23,6 +23,7 @@ var (
 	ErrCannotCancelOrPost = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
 	ErrCannotUncancel     = status.Error(codes.FailedPrecondition, "tweet does not exist or is not currently canceled")
 	ErrCannotUpdate       = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
+	ErrCannotEnqueue      = status.Error(codes.FailedPrecondition, "tweet does not exist or is already canceled or posted")
 )
 
 type TweetRepository struct {
@@ -315,6 +316,36 @@ func (r *TweetRepository) PostRetweet(ctx context.Context, id model.TweetGroupID
 	if err != nil {
 		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
 			return ErrCannotCancelOrPost
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (r *TweetRepository) EnqueuePost(ctx context.Context, id model.TweetGroupID, taskName string) error {
+	postAfter := model.FormatTime(r.clock.Now())
+
+	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
+		TableName:           &r.dynamoConfig.TableName,
+		Key:                 id.PrimaryKey(),
+		UpdateExpression:    aws.String(`SET #post_after = :post_after, #post_task_name = :post_task_name`),
+		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk":             aws.String(db.PK),
+			"#canceled_at":    aws.String(model.ColCanceledAt),
+			"#posted_at":      aws.String(model.ColPostedAt),
+			"#post_after":     aws.String(model.ColPostAfter),
+			"#post_task_name": aws.String(model.ColPostTaskName),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":post_after":     {S: &postAfter},
+			":post_task_name": {S: &taskName},
+		},
+	})
+	if err != nil {
+		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
+			return ErrCannotEnqueue
 		}
 		return err
 	}

@@ -22,6 +22,8 @@ const (
 	ColMediaURLs       = "MediaURLs"
 	ColPostedTweetID   = "PostedTweetID"
 	ColPostedRetweetID = "PostedRetweetID"
+	ColPostAfter       = "PostAfter"
+	ColPostTaskName    = "PostTaskName"
 )
 
 type TweetGroupID struct {
@@ -159,7 +161,17 @@ func NewTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 		tg.PostedRetweetID = aws.StringValue(postedRetweetIDVal.S)
 	}
 
-	// TODO post after and task name
+	if postAfterVal, ok := attrs[ColPostAfter]; ok {
+		t, err := ParseTime(aws.StringValue(postAfterVal.S))
+		if err != nil {
+			return nil, err
+		}
+		tg.PostAfter = &t
+	}
+
+	if taskNameVal, ok := attrs[ColPostTaskName]; ok {
+		tg.PostTaskName = aws.StringValue(taskNameVal.S)
+	}
 
 	return tg, nil
 }

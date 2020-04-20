@@ -11,6 +11,7 @@ import (
 	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace/keys"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 var (
@@ -41,7 +42,7 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 		return nil
 	}
 
-	tg, err := h.tweetRepoDynamo.Get(ctx, cmd.TweetGroupID)
+	tg, err := h.tweetRepo.Get(ctx, cmd.TweetGroupID)
 	if err != nil {
 		return err
 	}
@@ -57,7 +58,7 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 
 	if tg.Status != model.Draft {
 		span.SetAttributes(skippedKey(true))
-		span.RecordError(ctx, ErrNotDraft, trace.WithErrorStatus(status.Code(ErrNotDraft)))
+		span.RecordError(ctx, shared.ErrCannotCancelOrPost, trace.WithErrorStatus(status.Code(shared.ErrCannotCancelOrPost)))
 		return nil
 	}
 
