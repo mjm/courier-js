@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/db/expr"
 	"github.com/mjm/courier-js/internal/shared/model"
 )
 
@@ -57,6 +58,7 @@ func (r *TweetRepository) Get(ctx context.Context, id model.TweetGroupID) (*mode
 type CreateTweetParams struct {
 	ID           model.TweetGroupID
 	PublishedAt  time.Time
+	URL          string
 	Tweets       []*model.Tweet
 	RetweetID    string
 	PostTaskName string
@@ -85,6 +87,10 @@ func (r *TweetRepository) Create(ctx context.Context, ts []CreateTweetParams) er
 			db.Type:            {S: aws.String(model.TypeTweet)},
 			model.ColCreatedAt: {S: &now},
 			"UpcomingKey":      {S: &upcoming},
+		}
+
+		if params.URL != "" {
+			item[model.ColURL] = &dynamodb.AttributeValue{S: aws.String(params.URL)}
 		}
 
 		if len(params.Tweets) > 0 {
@@ -133,6 +139,7 @@ func (r *TweetRepository) Create(ctx context.Context, ts []CreateTweetParams) er
 
 type UpdateTweetParams struct {
 	ID        model.TweetGroupID
+	URL       string
 	Tweets    []*model.Tweet
 	RetweetID string
 }
@@ -141,19 +148,20 @@ func (r *TweetRepository) Update(ctx context.Context, params UpdateTweetParams) 
 	input := &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
 		Key:                 r.primaryKey(params.ID),
-		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
+		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
-			"#pk":          aws.String(db.PK),
-			"#canceled_at": aws.String(model.ColCanceledAt),
-			"#posted_at":   aws.String(model.ColPostedAt),
-			"#tweets":      aws.String(model.ColTweets),
-			"#retweet_id":  aws.String(model.ColRetweetID),
+			"#pk":         aws.String(db.PK),
+			"#posted_at":  aws.String(model.ColPostedAt),
+			"#tweets":     aws.String(model.ColTweets),
+			"#retweet_id": aws.String(model.ColRetweetID),
+			"#url":        aws.String(model.ColURL),
 		},
 	}
 
-	if len(params.Tweets) > 0 {
-		input.SetUpdateExpression(`SET #tweets = :tweets REMOVE #retweet_id`)
+	var b expr.UpdateBuilder
+	b.SetString("url", params.URL)
 
+	if len(params.Tweets) > 0 {
 		var tweets []*dynamodb.AttributeValue
 		for _, t := range params.Tweets {
 			tweetAttrs := map[string]*dynamodb.AttributeValue{}
@@ -170,15 +178,14 @@ func (r *TweetRepository) Update(ctx context.Context, params UpdateTweetParams) 
 			tweets = append(tweets, &dynamodb.AttributeValue{M: tweetAttrs})
 		}
 
-		input.SetExpressionAttributeValues(map[string]*dynamodb.AttributeValue{
-			":tweets": {L: tweets},
-		})
+		b.Set("tweets", &dynamodb.AttributeValue{L: tweets})
+		b.Remove("retweet_id")
 	} else {
-		input.SetUpdateExpression(`SET #retweet_id = :retweet_id REMOVE #tweets`)
-		input.SetExpressionAttributeValues(map[string]*dynamodb.AttributeValue{
-			":retweet_id": {S: aws.String(params.RetweetID)},
-		})
+		b.Remove("tweets")
+		b.SetString("retweet_id", params.RetweetID)
 	}
+
+	b.Apply(input)
 
 	_, err := r.dynamo.UpdateItemWithContext(ctx, input)
 	if err != nil {

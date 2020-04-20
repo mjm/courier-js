@@ -13,6 +13,7 @@ go_library(
     visibility = ["//:__subpackages__"],
     deps = [
         "//internal/db:go_default_library",
+        "//internal/db/expr:go_default_library",
         "//internal/shared/model:go_default_library",
         "//pkg/scraper:go_default_library",
         "@com_github_aws_aws_sdk_go//aws:go_default_library",

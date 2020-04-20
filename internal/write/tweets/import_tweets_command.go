@@ -70,6 +70,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	}
 
 	for _, params := range toUpdate {
+		params := params
 		wg.Go(func() error {
 			return h.tweetRepoDynamo.Update(subCtx, params)
 		})
@@ -166,6 +167,7 @@ func (h *CommandHandler) planTweet(ctx context.Context, userID string, post *sha
 		return &shared.CreateTweetParams{
 			ID:           model.TweetGroupIDFromParts(userID, post.FeedID(), post.ItemID()),
 			PublishedAt:  pubAt,
+			URL:          post.URL,
 			Tweets:       ts,
 			RetweetID:    retweetID,
 			PostTaskName: ksuid.New().String(),
@@ -174,12 +176,13 @@ func (h *CommandHandler) planTweet(ctx context.Context, userID string, post *sha
 
 	// check if there are changes from the existing tweet contents, avoid an update call
 	// if there are no changes.
-	if post.TweetGroup.RetweetID == retweetID && reflect.DeepEqual(post.TweetGroup.Tweets, ts) {
+	if post.TweetGroup.URL == post.URL && post.TweetGroup.RetweetID == retweetID && reflect.DeepEqual(post.TweetGroup.Tweets, ts) {
 		return nil, nil, nil
 	}
 
 	return nil, &shared.UpdateTweetParams{
 		ID:        post.TweetGroup.ID,
+		URL:       post.URL,
 		Tweets:    ts,
 		RetweetID: retweetID,
 	}, nil

@@ -55,6 +55,7 @@ func (id TweetGroupID) PrimaryKey() map[string]*dynamodb.AttributeValue {
 
 type TweetGroup struct {
 	ID              TweetGroupID
+	URL             string
 	Action          TweetAction
 	Tweets          []*Tweet
 	RetweetID       string
@@ -116,6 +117,10 @@ func NewTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGr
 		return nil, err
 	}
 	tg.CreatedAt = t
+
+	if urlVal, ok := attrs[ColURL]; ok {
+		tg.URL = aws.StringValue(urlVal.S)
+	}
 
 	if tweetsVal, ok := attrs[ColTweets]; ok {
 		tg.Action = ActionTweet

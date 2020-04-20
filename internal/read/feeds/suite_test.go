@@ -29,7 +29,6 @@ type feedsSuite struct {
 	subRepo    *feeds.SubscriptionRepository
 
 	postQueries *postQueries
-	postRepo    *feeds.PostRepository
 }
 
 func (suite *feedsSuite) SetupSuite() {
@@ -42,7 +41,6 @@ func (suite *feedsSuite) SetupSuite() {
 	suite.subQueries = NewSubscriptionQueries(suite.db).(*subscriptionQueries)
 	suite.subRepo = feeds.NewSubscriptionRepository(suite.db)
 	suite.postQueries = NewPostQueries(suite.db).(*postQueries)
-	suite.postRepo = feeds.NewPostRepository(suite.db)
 }
 
 func (suite *feedsSuite) SetupTest() {

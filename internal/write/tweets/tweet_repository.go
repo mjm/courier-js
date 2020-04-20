@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"strconv"
 
 	"github.com/HnH/qry"
 
@@ -40,24 +39,6 @@ func (r *TweetRepository) Get(ctx context.Context, userID string, tweetID TweetI
 	}
 
 	return &tweet, nil
-}
-
-func (r *TweetRepository) Post(ctx context.Context, tweetID TweetID, postedTweetID int64) error {
-	res, err := r.db.ExecContext(ctx, queries.TweetsPost, tweetID, strconv.FormatInt(postedTweetID, 10))
-	if err != nil {
-		return err
-	}
-
-	n, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-
-	if n == 0 {
-		return ErrNoTweet
-	}
-
-	return nil
 }
 
 func (r *TweetRepository) QueuePost(ctx context.Context, tweetID TweetID, taskName string) error {
