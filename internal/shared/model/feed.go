@@ -33,6 +33,29 @@ func NewFeedID() FeedID {
 	return FeedID(ksuid.New().String())
 }
 
+type UserFeedID struct {
+	UserID string
+	FeedID FeedID
+}
+
+func (id UserFeedID) PrimaryKeyValues() (string, string) {
+	pk := "USER#" + id.UserID
+	sk := "FEED#" + string(id.FeedID)
+	return pk, sk
+}
+
+func (id UserFeedID) PrimaryKey() map[string]*dynamodb.AttributeValue {
+	pk, sk := id.PrimaryKeyValues()
+	return map[string]*dynamodb.AttributeValue{
+		db.PK: {S: &pk},
+		db.SK: {S: &sk},
+	}
+}
+
+func (id UserFeedID) String() string {
+	return id.UserID + "###" + string(id.FeedID)
+}
+
 type Feed struct {
 	ID               FeedID
 	UserID           string

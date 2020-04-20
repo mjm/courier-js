@@ -46,9 +46,6 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		return nil, err
 	}
 	feedQueries := feeds.NewFeedQueries(dbDB)
-	subscriptionQueries := feeds.NewSubscriptionQueries(dbDB)
-	postQueries := feeds.NewPostQueries(dbDB)
-	tweetQueries := tweets.NewTweetQueries()
 	dynamoConfig, err := db.NewDynamoConfig(loader)
 	if err != nil {
 		return nil, err
@@ -57,6 +54,10 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	if err != nil {
 		return nil, err
 	}
+	feedQueriesDynamo := feeds.NewFeedQueriesDynamo(dynamoDB, dynamoConfig)
+	subscriptionQueries := feeds.NewSubscriptionQueries(dbDB)
+	postQueries := feeds.NewPostQueries(dbDB)
+	tweetQueries := tweets.NewTweetQueries()
 	tweetQueriesDynamo := tweets.NewTweetQueriesDynamo(dynamoDB, dynamoConfig)
 	eventQueries := user.NewEventQueries(dbDB)
 	billingConfig, err := billing.NewConfig(loader)
@@ -76,6 +77,7 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	billingSubscriptionQueries := billing2.NewSubscriptionQueries(api, management)
 	queries := resolvers.Queries{
 		Feeds:             feedQueries,
+		FeedsDynamo:       feedQueriesDynamo,
 		FeedSubscriptions: subscriptionQueries,
 		Posts:             postQueries,
 		Tweets:            tweetQueries,

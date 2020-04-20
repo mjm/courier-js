@@ -46,16 +46,17 @@ func (e *Event) Feed(ctx context.Context) (*Feed, error) {
 }
 
 func (e *Event) SubscribedFeed(ctx context.Context) (*SubscribedFeed, error) {
-	if e.event.Params.FeedSubscriptionID == "" {
-		return nil, nil
-	}
-
-	sub, err := e.q.FeedSubscriptions.Get(ctx, feeds.SubscriptionID(e.event.Params.FeedSubscriptionID))
-	if err != nil {
-		return nil, err
-	}
-
-	return NewSubscribedFeed(e.q, sub), nil
+	return nil, nil
+	// if e.event.Params.FeedSubscriptionID == "" {
+	// 	return nil, nil
+	// }
+	//
+	// sub, err := e.q.FeedSubscriptions.Get(ctx, feeds.SubscriptionID(e.event.Params.FeedSubscriptionID))
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//
+	// return NewSubscribedFeed(e.q, sub), nil
 }
 
 func (e *Event) Tweet(ctx context.Context) (*Tweet, error) {

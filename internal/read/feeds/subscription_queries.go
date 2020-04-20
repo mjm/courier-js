@@ -10,7 +10,6 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/loader"
-	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/read/feeds/queries"
 )
 
@@ -25,8 +24,6 @@ type SubscriptionQueries interface {
 	Get(context.Context, SubscriptionID) (*Subscription, error)
 	// GetEdge fetches a pager edge for a feed subscription by ID.
 	GetEdge(context.Context, SubscriptionID) (*SubscriptionEdge, error)
-	// Paged fetches a paged subset of a user's feed subscriptions.
-	Paged(context.Context, string, pager.Options) (*pager.Connection, error)
 }
 
 type subscriptionQueries struct {
@@ -81,8 +78,4 @@ func (q *subscriptionQueries) GetEdge(ctx context.Context, id SubscriptionID) (*
 	}
 
 	return &row, nil
-}
-
-func (q *subscriptionQueries) Paged(ctx context.Context, userID string, opts pager.Options) (*pager.Connection, error) {
-	return pager.Paged(ctx, q.db, &subscriptionPager{UserID: userID}, opts)
 }

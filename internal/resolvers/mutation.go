@@ -46,7 +46,7 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	}
 
 	payload.Feed = NewSubscribedFeed(r.q, &edge.Subscription)
-	payload.FeedEdge = &SubscribedFeedEdge{q: r.q, edge: edge}
+	// payload.FeedEdge = &SubscribedFeedEdge{q: r.q, edge: edge}
 	return
 }
 

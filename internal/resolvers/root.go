@@ -117,18 +117,18 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 }
 
 // SubscribedFeed gets a feed subscription for the current user by ID.
-func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID }) (*SubscribedFeed, error) {
-	var id feeds.SubscriptionID
+func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID }) (*SubscribedFeedDynamo, error) {
+	var id model.FeedID
 	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 		return nil, err
 	}
 
-	sub, err := r.q.FeedSubscriptions.Get(ctx, id)
+	f, err := r.q.FeedsDynamo.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewSubscribedFeed(r.q, sub), nil
+	return NewSubscribedFeedDynamo(r.q, f), nil
 }
 
 // Tweet gets a tweet for the current user by ID.
@@ -163,7 +163,7 @@ func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*Sub
 		return nil, err
 	}
 
-	conn, err := r.q.FeedSubscriptions.Paged(ctx, userID, args)
+	conn, err := r.q.FeedsDynamo.Paged(ctx, userID, args)
 	if err != nil {
 		return nil, err
 	}

@@ -21,8 +21,6 @@ var (
 type FeedQueries interface {
 	// Get fetches a feed by ID.
 	Get(context.Context, FeedID) (*Feed, error)
-
-	ByHomePageURL(context.Context, string) ([]*Feed, error)
 }
 
 type feedQueries struct {
@@ -63,13 +61,4 @@ func (q *feedQueries) Get(ctx context.Context, id FeedID) (*Feed, error) {
 		return nil, ErrNoFeed
 	}
 	return v.(*Feed), nil
-}
-
-func (q *feedQueries) ByHomePageURL(ctx context.Context, url string) ([]*Feed, error) {
-	var feeds []*Feed
-	if err := q.db.SelectContext(ctx, &feeds, queries.FeedsByHomePageURL, url); err != nil {
-		return nil, err
-	}
-
-	return feeds, nil
 }

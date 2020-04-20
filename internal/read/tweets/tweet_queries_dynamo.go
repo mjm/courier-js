@@ -54,50 +54,17 @@ func newTweetLoaderDynamo(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.Dyna
 			return nil
 		}
 
-		var ks []map[string]*dynamodb.AttributeValue
-		var ids []model.TweetGroupID
-		for _, k := range keys {
-			id := k.Raw().(model.TweetGroupID)
-			ks = append(ks, id.PrimaryKey())
-			ids = append(ids, id)
-		}
-
-		res, err := dynamo.BatchGetItemWithContext(ctx, &dynamodb.BatchGetItemInput{
-			RequestItems: map[string]*dynamodb.KeysAndAttributes{
-				dynamoConfig.TableName: {Keys: ks},
-			},
-		})
-		if err != nil {
-			panic(err)
-		}
-
-		results := make(map[model.TweetGroupID]*dataloader.Result)
-		for _, item := range res.Responses[dynamoConfig.TableName] {
+		return loader.BatchLoad(ctx, dynamo, dynamoConfig, keys, func(item map[string]*dynamodb.AttributeValue) (interface{}, loader.ID, error) {
 			tg, err := model.NewTweetGroupFromAttrs(item)
 			if err != nil {
-				// TODO parse the ID and set an error here
-				continue
+				return nil, nil, err
 			}
 
 			if tg.UserID() != userID {
-				results[tg.ID] = &dataloader.Result{Error: ErrNoTweet}
-				continue
+				return nil, tg.ID, ErrNoTweet
 			}
 
-			results[tg.ID] = &dataloader.Result{Data: tg}
-		}
-
-		var rows []*dataloader.Result
-		for _, id := range ids {
-			if res, ok := results[id]; ok {
-				rows = append(rows, res)
-			} else {
-				rows = append(rows, &dataloader.Result{
-					Error: ErrNoTweet,
-				})
-			}
-		}
-
-		return rows
+			return tg, tg.ID, nil
+		})
 	})
 }
