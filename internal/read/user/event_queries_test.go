@@ -17,21 +17,45 @@ func (suite *dynamoSuite) TestPagedEventsEmpty() {
 }
 
 func (suite *dynamoSuite) TestPagedEvents() {
-	eventTypes := []model.EventType{
-		model.FeedSubscribe,
-		model.SubscriptionCreate,
-		model.SubscriptionRenew,
-		model.TweetCancel,
-		model.TweetPost,
-		model.TweetAutopost,
+	events := []*model.Event{
+		{
+			EventType: model.FeedSubscribe,
+			Feed: &model.EventFeedInfo{
+				ID: model.NewFeedID(),
+			},
+		},
+		{
+			EventType:      model.SubscriptionCreate,
+			SubscriptionID: "sub_1234",
+		},
+		{
+			EventType:      model.SubscriptionRenew,
+			SubscriptionID: "sub_1234",
+		},
+		{
+			EventType: model.TweetCancel,
+			TweetGroup: &model.EventTweetInfo{
+				ID: model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "asdf"),
+			},
+		},
+		{
+			EventType: model.TweetPost,
+			TweetGroup: &model.EventTweetInfo{
+				ID: model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "asdf"),
+			},
+		},
+		{
+			EventType: model.TweetAutopost,
+			TweetGroup: &model.EventTweetInfo{
+				ID: model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "asdf"),
+			},
+		},
 	}
 
-	for _, eventType := range eventTypes {
-		suite.Require().NoError(suite.eventRepo.Create(suite.Ctx(), &model.Event{
-			ID:        model.NewEventIDWithTime(suite.clock.Now()),
-			UserID:    "test_user",
-			EventType: eventType,
-		}))
+	for _, event := range events {
+		event.ID = model.NewEventIDWithTime(suite.clock.Now())
+		event.UserID = "test_user"
+		suite.Require().NoError(suite.eventRepo.Create(suite.Ctx(), event))
 
 		suite.clock.Advance(time.Minute)
 	}

@@ -39,7 +39,22 @@ func (r *EventRepository) Create(ctx context.Context, event *model.Event) error 
 		model.ColEventType: {S: aws.String(string(event.EventType))},
 	}
 
-	// TODO fancy parameters
+	if fi := event.Feed; fi != nil {
+		item[model.ColFeedID] = &dynamodb.AttributeValue{S: aws.String(string(fi.ID))}
+
+		if fi.Autopost != nil {
+			item[model.ColAutopost] = &dynamodb.AttributeValue{BOOL: fi.Autopost}
+		}
+	}
+
+	if ti := event.TweetGroup; ti != nil {
+		item[model.ColFeedID] = &dynamodb.AttributeValue{S: aws.String(string(ti.ID.FeedID))}
+		item[model.ColItemID] = &dynamodb.AttributeValue{S: aws.String(ti.ID.ItemID)}
+	}
+
+	if event.SubscriptionID != "" {
+		item[model.ColSubscriptionID] = &dynamodb.AttributeValue{S: aws.String(event.SubscriptionID)}
+	}
 
 	_, err := r.dynamo.PutItemWithContext(ctx, &dynamodb.PutItemInput{
 		TableName: &r.dynamoConfig.TableName,

@@ -14,7 +14,10 @@ import (
 const (
 	TypeEvent = "Event"
 
-	ColEventType = "EventType"
+	ColEventType      = "EventType"
+	ColFeedID         = "FeedID"
+	ColItemID         = "ItemID"
+	ColSubscriptionID = "SubscriptionID"
 )
 
 type EventID string
@@ -92,7 +95,6 @@ const (
 
 type EventFeedInfo struct {
 	ID       FeedID
-	Title    string
 	Autopost *bool
 }
 
@@ -115,6 +117,24 @@ func NewEventFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Event, error
 		return nil, err
 	}
 	e.CreatedAt = createdAt
+
+	if strings.HasPrefix(string(e.EventType), "feed_") {
+		e.Feed = &EventFeedInfo{ID: FeedID(aws.StringValue(attrs[ColFeedID].S))}
+
+		if autopostVal, ok := attrs[ColAutopost]; ok {
+			e.Feed.Autopost = autopostVal.BOOL
+		}
+	}
+
+	if strings.HasPrefix(string(e.EventType), "tweet_") {
+		feedID := FeedID(aws.StringValue(attrs[ColFeedID].S))
+		itemID := aws.StringValue(attrs[ColItemID].S)
+		e.TweetGroup = &EventTweetInfo{ID: TweetGroupIDFromParts(e.UserID, feedID, itemID)}
+	}
+
+	if strings.HasPrefix(string(e.EventType), "subscription_") {
+		e.SubscriptionID = aws.StringValue(attrs[ColSubscriptionID].S)
+	}
 
 	return e, nil
 }
