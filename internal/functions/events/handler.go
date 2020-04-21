@@ -19,9 +19,8 @@ import (
 
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/notifications"
-	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/write/tweets"
-	user2 "github.com/mjm/courier-js/internal/write/user"
+	"github.com/mjm/courier-js/internal/write/user"
 )
 
 type Handler struct {
@@ -34,7 +33,7 @@ func NewHandler(
 	_ *Pusher,
 	_ *notifications.Notifier,
 	_ *tweets.EventHandler,
-	_ *user2.EventHandler,
+	_ *user.EventHandler,
 ) *Handler {
 	return &Handler{bus: bus}
 }

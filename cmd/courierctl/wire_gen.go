@@ -20,6 +20,7 @@ import (
 	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/shared"
 	tweets2 "github.com/mjm/courier-js/internal/write/tweets"
+	"github.com/mjm/courier-js/internal/write/user"
 	"github.com/urfave/cli/v2"
 )
 
@@ -93,6 +94,8 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
 	tweetsCommandHandler := tweets2.NewCommandHandler(writeCommandBus, bus, tasksTasks, externalTweetRepository, userRepository, sharedFeedRepository, tweetRepository)
 	eventHandler := tweets2.NewEventHandler(writeCommandBus, bus, tweetsCommandHandler)
-	app := newApp(writeCommandBus, feedQueriesDynamo, tweetQueriesDynamo, commandHandler, tweetsCommandHandler, eventHandler)
+	eventRepository := shared.NewEventRepository(dynamoDB, dynamoConfig, clock)
+	eventRecorder := user.NewEventRecorder(eventRepository, clock, bus)
+	app := newApp(writeCommandBus, feedQueriesDynamo, tweetQueriesDynamo, commandHandler, tweetsCommandHandler, eventHandler, eventRecorder)
 	return app, nil
 }

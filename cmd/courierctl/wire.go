@@ -19,6 +19,7 @@ import (
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/internal/write/tweets"
+	"github.com/mjm/courier-js/internal/write/user"
 )
 
 func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
@@ -41,6 +42,7 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 			tweets.NewEventHandler,
 			feeds2.NewFeedQueriesDynamo,
 			tweets2.NewTweetQueriesDynamo,
+			user.NewEventRecorder,
 		),
 	)
 }

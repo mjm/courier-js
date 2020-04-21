@@ -16,6 +16,7 @@ import (
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
+	"github.com/mjm/courier-js/internal/write/user"
 )
 
 var commandBus *write.CommandBus
@@ -43,7 +44,14 @@ func main() {
 	}
 }
 
-func newApp(bus *write.CommandBus, feedQ *feeds2.FeedQueriesDynamo, tweetQ *tweets2.TweetQueriesDynamo, _ *feeds.CommandHandler, _ *tweets.CommandHandler, _ *tweets.EventHandler) *cli.App {
+func newApp(
+	bus *write.CommandBus,
+	feedQ *feeds2.FeedQueriesDynamo,
+	tweetQ *tweets2.TweetQueriesDynamo,
+	_ *feeds.CommandHandler,
+	_ *tweets.CommandHandler,
+	_ *tweets.EventHandler,
+	_ *user.EventRecorder) *cli.App {
 	commandBus = bus
 	feedQueries = feedQ
 	tweetQueries = tweetQ

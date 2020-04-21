@@ -16,7 +16,6 @@ go_library(
         "//internal/db:go_default_library",
         "//internal/event:go_default_library",
         "//internal/notifications:go_default_library",
-        "//internal/read/user:go_default_library",
         "//internal/resolvers:go_default_library",
         "//internal/secret:go_default_library",
         "//internal/tasks:go_default_library",

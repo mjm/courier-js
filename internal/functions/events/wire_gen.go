@@ -13,13 +13,12 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/notifications"
-	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/internal/write/tweets"
-	user2 "github.com/mjm/courier-js/internal/write/user"
+	"github.com/mjm/courier-js/internal/write/user"
 )
 
 // Injectors from wire.go:
@@ -33,15 +32,17 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
 	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	dbConfig, err := db.NewConfig(loader)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	dbDB, err := db.New(dbConfig)
+	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
 	if err != nil {
 		return nil, err
 	}
-	eventRecorder := user.NewEventRecorder(dbDB, bus)
+	clock := clockwork.NewRealClock()
+	eventRepository := shared.NewEventRepository(dynamoDB, dynamoConfig, clock)
+	eventRecorder := user.NewEventRecorder(eventRepository, clock, bus)
 	pusherConfig, err := event.NewPusherConfig(loader)
 	if err != nil {
 		return nil, err
@@ -55,15 +56,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	dynamoConfig, err := db.NewDynamoConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
-	if err != nil {
-		return nil, err
-	}
-	clock := clockwork.NewRealClock()
 	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
 	notifier := notifications.NewNotifier(bus, pushNotifications, tweetRepository)
 	commandBus := write.NewCommandBus()
@@ -110,9 +102,9 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
 	eventHandler := tweets.NewEventHandler(commandBus, bus, commandHandler)
-	userUserRepository := user2.NewUserRepository(management)
-	userCommandHandler := user2.NewCommandHandler(commandBus, publisher, userUserRepository)
-	userEventHandler := user2.NewEventHandler(commandBus, bus, userCommandHandler)
+	userUserRepository := user.NewUserRepository(management)
+	userCommandHandler := user.NewCommandHandler(commandBus, publisher, userUserRepository)
+	userEventHandler := user.NewEventHandler(commandBus, bus, userCommandHandler)
 	handler := NewHandler(bus, eventRecorder, pusher, notifier, eventHandler, userEventHandler)
 	return handler, nil
 }
