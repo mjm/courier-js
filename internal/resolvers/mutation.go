@@ -53,7 +53,7 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 func (r *Root) RefreshFeed(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
-	payload struct{ Feed *Feed },
+	payload struct{ Feed *FeedDynamo },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -61,25 +61,25 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 		return
 	}
 
-	var id feeds.FeedID
+	var id model.FeedID
 	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
 
 	cmd := feeds.QueueRefreshCommand{
 		UserID: userID,
-		FeedID: model.FeedID(id),
+		FeedID: id,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 
-	f, err := r.q.Feeds.Get(ctx, id)
+	f, err := r.q.FeedsDynamo.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	payload.Feed = NewFeed(r.q, f)
+	payload.Feed = NewFeedDynamo(r.q, f)
 	return
 }
 

@@ -20,13 +20,13 @@ type Node struct {
 	nodeResolver
 }
 
-func (n *Node) ToFeed() (*Feed, bool) {
-	f, ok := n.nodeResolver.(*Feed)
+func (n *Node) ToFeed() (*FeedDynamo, bool) {
+	f, ok := n.nodeResolver.(*FeedDynamo)
 	return f, ok
 }
 
-func (n *Node) ToSubscribedFeed() (*SubscribedFeed, bool) {
-	sf, ok := n.nodeResolver.(*SubscribedFeed)
+func (n *Node) ToSubscribedFeed() (*SubscribedFeedDynamo, bool) {
+	sf, ok := n.nodeResolver.(*SubscribedFeedDynamo)
 	return sf, ok
 }
 

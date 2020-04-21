@@ -25,10 +25,17 @@ func BatchLoad(
 
 	var ks []map[string]*dynamodb.AttributeValue
 	var ids []ID
+	seen := make(map[ID]struct{})
 	for _, k := range keys {
 		id := k.Raw().(ID)
-		ks = append(ks, id.PrimaryKey())
 		ids = append(ids, id)
+
+		// can't reuse an ID in the same request
+		if _, ok := seen[id]; ok {
+			continue
+		}
+		seen[id] = struct{}{}
+		ks = append(ks, id.PrimaryKey())
 	}
 
 	res, err := dynamo.BatchGetItemWithContext(ctx, &dynamodb.BatchGetItemInput{

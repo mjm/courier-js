@@ -80,16 +80,16 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	var err error
 	switch kind {
 	case FeedNode:
-		var id feeds.FeedID
+		var id model.FeedID
 		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 			return nil, err
 		}
 
-		f, err := r.q.Feeds.Get(ctx, id)
+		f, err := r.q.FeedsDynamo.Get(ctx, id)
 		if err != nil {
 			return nil, err
 		}
-		n = NewFeed(r.q, f)
+		n = NewFeedDynamo(r.q, f)
 
 	case SubscribedFeedNode:
 		n, err = r.SubscribedFeed(ctx, args)
