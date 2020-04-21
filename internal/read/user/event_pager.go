@@ -1,55 +1,62 @@
 package user
 
 import (
-	"time"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 
-	"github.com/jmoiron/sqlx"
-
+	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/pager"
-	"github.com/mjm/courier-js/internal/read/user/queries"
+	"github.com/mjm/courier-js/internal/shared/model"
 )
 
-// Cursor implements pager.Edge
-func (e *Event) Cursor() pager.Cursor {
-	return pager.Cursor(e.CreatedAt.UTC().Format(time.RFC3339))
-}
-
 type eventPager struct {
-	UserID string
+	TableName string
+	UserID    string
 }
 
-func (*eventPager) EdgesQuery() string {
-	return queries.EventsPagerEdges
-}
+func (p *eventPager) Query(cursor *pager.Cursor) *dynamodb.QueryInput {
+	pk := "USEREVENTS#" + p.UserID
 
-func (*eventPager) TotalQuery() string {
-	return queries.EventsPagerTotal
-}
+	var startKey map[string]*dynamodb.AttributeValue
+	if cursor != nil {
+		sk := string(*cursor)
+		startKey = map[string]*dynamodb.AttributeValue{
+			db.PK: {S: aws.String(pk)},
+			db.SK: {S: aws.String(sk)},
+		}
+	}
 
-func (p *eventPager) Params() map[string]interface{} {
-	return map[string]interface{}{
-		"user_id": p.UserID,
+	return &dynamodb.QueryInput{
+		TableName:              &p.TableName,
+		KeyConditionExpression: aws.String(`#pk = :pk`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk": aws.String(db.PK),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":pk": {S: aws.String(pk)},
+		},
+		ExclusiveStartKey: startKey,
+		ScanIndexForward:  aws.Bool(false),
 	}
 }
 
-func (*eventPager) OrderBy() (string, bool) {
-	return "created_at", false
-}
-
-func (*eventPager) FromCursor(cursor pager.Cursor) interface{} {
-	t, err := time.Parse(time.RFC3339, string(cursor))
+func (p *eventPager) ScanEdge(item map[string]*dynamodb.AttributeValue) (pager.Edge, error) {
+	e, err := model.NewEventFromAttrs(item)
 	if err != nil {
-		return nil
-	}
-	return &t
-}
-
-func (*eventPager) ScanEdge(rows *sqlx.Rows) (pager.Edge, error) {
-	var row Event
-
-	if err := rows.StructScan(&row); err != nil {
 		return nil, err
 	}
 
-	return &row, nil
+	return &EventEdge{
+		Event:  *e,
+		cursor: pager.Cursor(aws.StringValue(item[db.SK].S)),
+	}, nil
+}
+
+type EventEdge struct {
+	model.Event
+	cursor pager.Cursor
+}
+
+func (e *EventEdge) Cursor() pager.Cursor {
+	return e.cursor
 }

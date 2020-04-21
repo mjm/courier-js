@@ -53,7 +53,6 @@ go_test(
     deps = [
         "//internal/db:go_default_library",
         "//internal/event:go_default_library",
-        "//internal/shared/feeds:go_default_library",
         "//internal/write:go_default_library",
         "//internal/write/feeds/queries:go_default_library",
         "@com_github_khaiql_dbcleaner//:go_default_library",

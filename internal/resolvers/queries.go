@@ -17,7 +17,7 @@ type Queries struct {
 	PostsDynamo       *feeds.PostQueriesDynamo
 	Tweets            tweets.TweetQueries
 	TweetsDynamo      *tweets.TweetQueriesDynamo
-	Events            user.EventQueries
+	Events            *user.EventQueries
 	Customers         billing.CustomerQueries
 	Subscriptions     billing.SubscriptionQueries
 }

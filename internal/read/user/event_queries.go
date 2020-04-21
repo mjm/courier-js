@@ -3,25 +3,26 @@ package user
 import (
 	"context"
 
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
+
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/pager"
 )
 
-// EventQueries is an interface for reading information about user events.
-type EventQueries interface {
-	// Paged fetches a paged subset of a user's events.
-	Paged(context.Context, string, pager.Options) (*pager.Connection, error)
+type EventQueries struct {
+	dynamo       dynamodbiface.DynamoDBAPI
+	dynamoConfig db.DynamoConfig
 }
 
-type eventQueries struct {
-	db db.DB
+func NewEventQueries(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *EventQueries {
+	return &EventQueries{dynamo: dynamo, dynamoConfig: dynamoConfig}
 }
 
-// NewEventQueries returns queries targeting a given database.
-func NewEventQueries(db db.DB) EventQueries {
-	return &eventQueries{db: db}
-}
+func (q *EventQueries) Paged(ctx context.Context, userID string, opts pager.Options) (*pager.Connection, error) {
+	p := &eventPager{
+		TableName: q.dynamoConfig.TableName,
+		UserID:    userID,
+	}
 
-func (q *eventQueries) Paged(ctx context.Context, userID string, opts pager.Options) (*pager.Connection, error) {
-	return pager.Paged(ctx, q.db, &eventPager{UserID: userID}, opts)
+	return pager.PagedDynamo(ctx, q.dynamo, p, opts)
 }

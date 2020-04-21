@@ -6,6 +6,7 @@ import (
 )
 
 var DefaultSet = wire.NewSet(
+	NewEventRepository,
 	NewFeedRepository,
 	NewPostRepository,
 	NewTweetRepository,
