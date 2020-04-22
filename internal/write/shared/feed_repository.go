@@ -3,7 +3,6 @@ package shared
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -14,6 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/db/expr"
 	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/pkg/scraper"
 )
@@ -214,29 +214,36 @@ type UpdateFeedParams struct {
 }
 
 func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedParams) error {
-	var toSet []string
-	var toRemove []string
-	vals := map[string]*dynamodb.AttributeValue{}
-
-	setString := func(col string, val string) {
-		if val != "" {
-			toSet = append(toSet, fmt.Sprintf("#%s = :%s", col, col))
-			vals[":"+col] = &dynamodb.AttributeValue{S: aws.String(val)}
-		} else {
-			toRemove = append(toRemove, "#"+col)
-		}
+	input := &dynamodb.UpdateItemInput{
+		TableName:           &r.dynamoConfig.TableName,
+		Key:                 r.primaryKey(params.UserID, params.ID),
+		ConditionExpression: aws.String("attribute_exists(#pk)"),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk":           aws.String(db.PK),
+			"#lsi1sk":       aws.String(db.LSI1SK),
+			"#gsi1pk":       aws.String(db.GSI1PK),
+			"#gsi1sk":       aws.String(db.GSI1SK),
+			"#title":        aws.String(model.ColTitle),
+			"#home":         aws.String(model.ColHomePageURL),
+			"#ch":           aws.String(model.ColCachingHeaders),
+			"#mp":           aws.String(model.ColMicropubEndpoint),
+			"#refreshed_at": aws.String(model.ColRefreshedAt),
+		},
 	}
 
-	setString("title", params.Title)
-	setString("lsi1sk", "FEED#"+params.Title)
-	setString("home", params.HomePageURL)
+	var b expr.UpdateBuilder
+
+	b.SetString("title", params.Title)
+	b.SetString("lsi1sk", "FEED#"+params.Title)
 	homeURL := scraper.NormalizeURL(params.HomePageURL)
-	setString("gsi1pk", "HOMEPAGE#"+homeURL)
-	setString("gsi1sk", "FEED#"+string(params.ID))
-	setString("mp", params.MicropubEndpoint)
+	b.SetString("home", homeURL)
+	b.SetString("gsi1pk", "HOMEPAGE#"+homeURL)
+	b.SetString("gsi1sk", "FEED#"+string(params.ID))
+	b.SetString("mp", params.MicropubEndpoint)
+
+	b.SetString("refreshed_at", model.FormatTime(r.clock.Now()))
 
 	if params.CachingHeaders != nil {
-		toSet = append(toSet, "#ch = :ch")
 		ch := map[string]*dynamodb.AttributeValue{}
 		if params.CachingHeaders.Etag != "" {
 			ch[model.ColEtag] = &dynamodb.AttributeValue{S: aws.String(params.CachingHeaders.Etag)}
@@ -244,38 +251,15 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 		if params.CachingHeaders.LastModified != "" {
 			ch[model.ColLastModified] = &dynamodb.AttributeValue{S: aws.String(params.CachingHeaders.LastModified)}
 		}
-		vals[":ch"] = &dynamodb.AttributeValue{M: ch}
+
+		b.Set("ch", &dynamodb.AttributeValue{M: ch})
 	} else {
-		toRemove = append(toRemove, "#ch")
+		b.Remove("ch")
 	}
 
-	var expr string
-	if len(toSet) > 0 {
-		expr += "SET " + strings.Join(toSet, ", ") + " "
-	} else {
-		vals = nil
-	}
-	if len(toRemove) > 0 {
-		expr += "REMOVE " + strings.Join(toRemove, ", ") + " "
-	}
+	b.Apply(input)
 
-	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
-		TableName:           &r.dynamoConfig.TableName,
-		Key:                 r.primaryKey(params.UserID, params.ID),
-		UpdateExpression:    &expr,
-		ConditionExpression: aws.String("attribute_exists(#pk)"),
-		ExpressionAttributeNames: map[string]*string{
-			"#pk":     aws.String(db.PK),
-			"#lsi1sk": aws.String(db.LSI1SK),
-			"#gsi1pk": aws.String(db.GSI1PK),
-			"#gsi1sk": aws.String(db.GSI1SK),
-			"#title":  aws.String(model.ColTitle),
-			"#home":   aws.String(model.ColHomePageURL),
-			"#ch":     aws.String(model.ColCachingHeaders),
-			"#mp":     aws.String(model.ColMicropubEndpoint),
-		},
-		ExpressionAttributeValues: vals,
-	})
+	_, err := r.dynamo.UpdateItemWithContext(ctx, input)
 	if err != nil {
 		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
 			return ErrNoFeed

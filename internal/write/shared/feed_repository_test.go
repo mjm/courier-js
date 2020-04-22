@@ -50,14 +50,16 @@ func (suite *dynamoSuite) TestFeedsByHomePageURL() {
 	fs, err := suite.feedRepo.ByHomePageURL(suite.Ctx(), "https://www.example.org")
 	suite.Require().NoError(err)
 
+	now := suite.clock.Now()
 	suite.ElementsMatch([]*model.Feed{
 		{
 			ID:            feedID,
 			UserID:        "test_user",
 			URL:           "https://www.example.org/feed.json",
-			HomePageURL:   "https://www.example.org",
-			CreatedAt:     suite.clock.Now(),
-			UpdatedAt:     suite.clock.Now(),
+			HomePageURL:   "https://www.example.org/",
+			CreatedAt:     now,
+			UpdatedAt:     now,
+			RefreshedAt:   &now,
 			ByTitleCursor: pager.Cursor("FEED#" + feedID + "###FEED#"),
 		},
 		{
@@ -65,8 +67,9 @@ func (suite *dynamoSuite) TestFeedsByHomePageURL() {
 			UserID:        "test_user2",
 			URL:           "https://www.example.org/feed.json",
 			HomePageURL:   "https://www.example.org/",
-			CreatedAt:     suite.clock.Now(),
-			UpdatedAt:     suite.clock.Now(),
+			CreatedAt:     now,
+			UpdatedAt:     now,
+			RefreshedAt:   &now,
 			ByTitleCursor: pager.Cursor("FEED#" + feedID2 + "###FEED#"),
 		},
 	}, fs)
