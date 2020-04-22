@@ -34,7 +34,7 @@ export async function addFeed(
         type: "RANGE_ADD",
         connectionInfo: [
           {
-            key: "FeedList_allSubscribedFeeds",
+            key: "FeedList_allFeeds",
             rangeBehavior: "append",
           },
         ],

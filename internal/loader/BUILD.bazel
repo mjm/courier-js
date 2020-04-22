@@ -16,8 +16,6 @@ go_library(
         "@com_github_aws_aws_sdk_go//service/dynamodb/dynamodbiface:go_default_library",
         "@com_github_google_uuid//:go_default_library",
         "@com_github_graph_gophers_dataloader//:go_default_library",
-        "@com_github_jmoiron_sqlx//:go_default_library",
-        "@com_github_lib_pq//:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
         "@io_opentelemetry_go_otel//api/key:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",

@@ -54,6 +54,10 @@ func (f *FeedDynamo) UpdatedAt() graphql.Time {
 	return graphql.Time{Time: f.f.UpdatedAt}
 }
 
+func (f *FeedDynamo) Autopost() bool {
+	return f.f.Autopost
+}
+
 func (f *FeedDynamo) Posts(ctx context.Context, args pager.Options) (*PostConnection, error) {
 	conn, err := f.q.PostsDynamo.Paged(ctx, f.f.ID, args)
 	if err != nil {

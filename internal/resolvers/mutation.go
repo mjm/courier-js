@@ -20,8 +20,8 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	Input struct{ URL string }
 }) (
 	payload struct {
-		Feed     *SubscribedFeedDynamo
-		FeedEdge *SubscribedFeedEdge
+		Feed     *FeedDynamo
+		FeedEdge *FeedEdge
 	},
 	err error,
 ) {
@@ -45,8 +45,8 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 		return
 	}
 
-	payload.Feed = NewSubscribedFeedDynamo(r.q, f)
-	payload.FeedEdge = &SubscribedFeedEdge{q: r.q, edge: readfeeds.FeedEdge(*f)}
+	payload.Feed = NewFeedDynamo(r.q, f)
+	payload.FeedEdge = &FeedEdge{q: r.q, edge: readfeeds.FeedEdge(*f)}
 	return
 }
 

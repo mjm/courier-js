@@ -3,7 +3,7 @@
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type FeedList_feeds = {
-    readonly allSubscribedFeeds: {
+    readonly allFeeds: {
         readonly edges: ReadonlyArray<{
             readonly node: {
                 readonly id: string;
@@ -25,7 +25,7 @@ export type FeedList_feeds$key = {
 const node: ReaderFragment = {
   "kind": "Fragment",
   "name": "FeedList_feeds",
-  "type": "Query",
+  "type": "User",
   "metadata": {
     "connection": [
       {
@@ -33,7 +33,7 @@ const node: ReaderFragment = {
         "cursor": "cursor",
         "direction": "forward",
         "path": [
-          "allSubscribedFeeds"
+          "allFeeds"
         ]
       }
     ]
@@ -55,11 +55,11 @@ const node: ReaderFragment = {
   "selections": [
     {
       "kind": "LinkedField",
-      "alias": "allSubscribedFeeds",
-      "name": "__FeedList_allSubscribedFeeds_connection",
+      "alias": "allFeeds",
+      "name": "__FeedList_allFeeds_connection",
       "storageKey": null,
       "args": null,
-      "concreteType": "SubscribedFeedConnection",
+      "concreteType": "FeedConnection",
       "plural": false,
       "selections": [
         {
@@ -68,7 +68,7 @@ const node: ReaderFragment = {
           "name": "edges",
           "storageKey": null,
           "args": null,
-          "concreteType": "SubscribedFeedEdge",
+          "concreteType": "FeedEdge",
           "plural": true,
           "selections": [
             {
@@ -77,7 +77,7 @@ const node: ReaderFragment = {
               "name": "node",
               "storageKey": null,
               "args": null,
-              "concreteType": "SubscribedFeed",
+              "concreteType": "Feed",
               "plural": false,
               "selections": [
                 {
@@ -146,5 +146,5 @@ const node: ReaderFragment = {
     }
   ]
 };
-(node as any).hash = '2be6acd06f199042cf2b2cfe823a9bd7';
+(node as any).hash = 'cbd25a66c5b173389c9c710e55c0511b';
 export default node;

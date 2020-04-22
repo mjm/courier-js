@@ -17,11 +17,15 @@ const FeedsPage: NextPage<FeedsPageQueryResponse & {
   useFeedRefreshedEvent(environment)
   useFeedOptionsChangedEvent(environment)
 
+  if (!props.viewer) {
+    return null
+  }
+
   return (
     <main className="container mx-auto my-8">
       <Head title="Watched Feeds" />
 
-      <FeedList feeds={props} />
+      <FeedList feeds={props.viewer} />
     </main>
   )
 }
@@ -29,7 +33,9 @@ const FeedsPage: NextPage<FeedsPageQueryResponse & {
 export default withData(withSecurePage(FeedsPage), {
   query: graphql`
     query FeedsPageQuery {
-      ...FeedList_feeds
+      viewer {
+        ...FeedList_feeds
+      }
     }
   `,
 })

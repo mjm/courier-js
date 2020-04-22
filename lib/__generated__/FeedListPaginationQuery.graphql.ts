@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 2a5e8ced389890259f61babb0e670cdf */
+/* @relayHash 9a19134749e2a368ab3870312ede32b5 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -8,7 +8,9 @@ export type FeedListPaginationQueryVariables = {
     cursor?: unknown | null;
 };
 export type FeedListPaginationQueryResponse = {
-    readonly " $fragmentRefs": FragmentRefs<"FeedList_feeds">;
+    readonly viewer: {
+        readonly " $fragmentRefs": FragmentRefs<"FeedList_feeds">;
+    } | null;
 };
 export type FeedListPaginationQuery = {
     readonly response: FeedListPaginationQueryResponse;
@@ -22,24 +24,21 @@ query FeedListPaginationQuery(
   $count: Int!
   $cursor: Cursor
 ) {
-  ...FeedList_feeds_1G22uz
+  viewer {
+    ...FeedList_feeds_1G22uz
+  }
 }
 
-fragment FeedCard_feed on SubscribedFeed {
+fragment FeedCard_feed on Feed {
   id
-  feed {
-    id
-    url
-    title
-    homePageURL
-    micropubEndpoint
-    refreshedAt
-  }
+  title
+  homePageURL
+  refreshedAt
   autopost
 }
 
-fragment FeedList_feeds_1G22uz on Query {
-  allSubscribedFeeds(first: $count, after: $cursor) {
+fragment FeedList_feeds_1G22uz on User {
+  allFeeds(first: $count, after: $cursor) {
     edges {
       node {
         id
@@ -83,14 +82,7 @@ v1 = [
     "name": "first",
     "variableName": "count"
   }
-],
-v2 = {
-  "kind": "ScalarField",
-  "alias": null,
-  "name": "id",
-  "args": null,
-  "storageKey": null
-};
+];
 return {
   "kind": "Request",
   "fragment": {
@@ -101,18 +93,29 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "selections": [
       {
-        "kind": "FragmentSpread",
-        "name": "FeedList_feeds",
-        "args": [
+        "kind": "LinkedField",
+        "alias": null,
+        "name": "viewer",
+        "storageKey": null,
+        "args": null,
+        "concreteType": "User",
+        "plural": false,
+        "selections": [
           {
-            "kind": "Variable",
-            "name": "count",
-            "variableName": "count"
-          },
-          {
-            "kind": "Variable",
-            "name": "cursor",
-            "variableName": "cursor"
+            "kind": "FragmentSpread",
+            "name": "FeedList_feeds",
+            "args": [
+              {
+                "kind": "Variable",
+                "name": "count",
+                "variableName": "count"
+              },
+              {
+                "kind": "Variable",
+                "name": "cursor",
+                "variableName": "cursor"
+              }
+            ]
           }
         ]
       }
@@ -126,45 +129,43 @@ return {
       {
         "kind": "LinkedField",
         "alias": null,
-        "name": "allSubscribedFeeds",
+        "name": "viewer",
         "storageKey": null,
-        "args": (v1/*: any*/),
-        "concreteType": "SubscribedFeedConnection",
+        "args": null,
+        "concreteType": "User",
         "plural": false,
         "selections": [
           {
             "kind": "LinkedField",
             "alias": null,
-            "name": "edges",
+            "name": "allFeeds",
             "storageKey": null,
-            "args": null,
-            "concreteType": "SubscribedFeedEdge",
-            "plural": true,
+            "args": (v1/*: any*/),
+            "concreteType": "FeedConnection",
+            "plural": false,
             "selections": [
               {
                 "kind": "LinkedField",
                 "alias": null,
-                "name": "node",
+                "name": "edges",
                 "storageKey": null,
                 "args": null,
-                "concreteType": "SubscribedFeed",
-                "plural": false,
+                "concreteType": "FeedEdge",
+                "plural": true,
                 "selections": [
-                  (v2/*: any*/),
                   {
                     "kind": "LinkedField",
                     "alias": null,
-                    "name": "feed",
+                    "name": "node",
                     "storageKey": null,
                     "args": null,
                     "concreteType": "Feed",
                     "plural": false,
                     "selections": [
-                      (v2/*: any*/),
                       {
                         "kind": "ScalarField",
                         "alias": null,
-                        "name": "url",
+                        "name": "id",
                         "args": null,
                         "storageKey": null
                       },
@@ -185,14 +186,21 @@ return {
                       {
                         "kind": "ScalarField",
                         "alias": null,
-                        "name": "micropubEndpoint",
+                        "name": "refreshedAt",
                         "args": null,
                         "storageKey": null
                       },
                       {
                         "kind": "ScalarField",
                         "alias": null,
-                        "name": "refreshedAt",
+                        "name": "autopost",
+                        "args": null,
+                        "storageKey": null
+                      },
+                      {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "name": "__typename",
                         "args": null,
                         "storageKey": null
                       }
@@ -201,14 +209,7 @@ return {
                   {
                     "kind": "ScalarField",
                     "alias": null,
-                    "name": "autopost",
-                    "args": null,
-                    "storageKey": null
-                  },
-                  {
-                    "kind": "ScalarField",
-                    "alias": null,
-                    "name": "__typename",
+                    "name": "cursor",
                     "args": null,
                     "storageKey": null
                   }
@@ -217,54 +218,47 @@ return {
               {
                 "kind": "ScalarField",
                 "alias": null,
-                "name": "cursor",
-                "args": null,
-                "storageKey": null
-              }
-            ]
-          },
-          {
-            "kind": "ScalarField",
-            "alias": null,
-            "name": "totalCount",
-            "args": null,
-            "storageKey": null
-          },
-          {
-            "kind": "LinkedField",
-            "alias": null,
-            "name": "pageInfo",
-            "storageKey": null,
-            "args": null,
-            "concreteType": "PageInfo",
-            "plural": false,
-            "selections": [
-              {
-                "kind": "ScalarField",
-                "alias": null,
-                "name": "endCursor",
+                "name": "totalCount",
                 "args": null,
                 "storageKey": null
               },
               {
-                "kind": "ScalarField",
+                "kind": "LinkedField",
                 "alias": null,
-                "name": "hasNextPage",
+                "name": "pageInfo",
+                "storageKey": null,
                 "args": null,
-                "storageKey": null
+                "concreteType": "PageInfo",
+                "plural": false,
+                "selections": [
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "endCursor",
+                    "args": null,
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "hasNextPage",
+                    "args": null,
+                    "storageKey": null
+                  }
+                ]
               }
             ]
+          },
+          {
+            "kind": "LinkedHandle",
+            "alias": null,
+            "name": "allFeeds",
+            "args": (v1/*: any*/),
+            "handle": "connection",
+            "key": "FeedList_allFeeds",
+            "filters": null
           }
         ]
-      },
-      {
-        "kind": "LinkedHandle",
-        "alias": null,
-        "name": "allSubscribedFeeds",
-        "args": (v1/*: any*/),
-        "handle": "connection",
-        "key": "FeedList_allSubscribedFeeds",
-        "filters": null
       }
     ]
   },
@@ -272,10 +266,10 @@ return {
     "operationKind": "query",
     "name": "FeedListPaginationQuery",
     "id": null,
-    "text": "query FeedListPaginationQuery(\n  $count: Int!\n  $cursor: Cursor\n) {\n  ...FeedList_feeds_1G22uz\n}\n\nfragment FeedCard_feed on SubscribedFeed {\n  id\n  feed {\n    id\n    url\n    title\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n\nfragment FeedList_feeds_1G22uz on Query {\n  allSubscribedFeeds(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...FeedCard_feed\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n",
+    "text": "query FeedListPaginationQuery(\n  $count: Int!\n  $cursor: Cursor\n) {\n  viewer {\n    ...FeedList_feeds_1G22uz\n  }\n}\n\nfragment FeedCard_feed on Feed {\n  id\n  title\n  homePageURL\n  refreshedAt\n  autopost\n}\n\nfragment FeedList_feeds_1G22uz on User {\n  allFeeds(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...FeedCard_feed\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = '6f46cd920249ac37fe5a725c853b0c2e';
+(node as any).hash = '99d8bbf2fe3daa53b4e60c3eab9bfc97';
 export default node;

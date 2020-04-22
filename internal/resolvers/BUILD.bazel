@@ -9,6 +9,7 @@ go_library(
         "event.go",
         "event_connection.go",
         "feed.go",
+        "feed_connection.go",
         "microformats.go",
         "mutation.go",
         "node.go",

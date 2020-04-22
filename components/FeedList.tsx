@@ -9,6 +9,7 @@ import Link from "next/link"
 
 import { FeedList_feeds } from "@generated/FeedList_feeds.graphql"
 import FeedCard from "components/FeedCard"
+
 // need to use CSS Grid _and_ media queries, so a CSS module is the best thing here
 import styles from "components/FeedList.module.css"
 
@@ -16,11 +17,11 @@ const FeedList: React.FC<{
   feeds: FeedList_feeds
   relay: RelayPaginationProp
 }> = ({ feeds }) => {
-  if (!feeds.allSubscribedFeeds) {
+  if (!feeds.allFeeds) {
     return null
   }
 
-  const { edges, totalCount } = feeds.allSubscribedFeeds
+  const { edges, totalCount } = feeds.allFeeds
 
   return (
     <div>
@@ -66,13 +67,13 @@ export default createPaginationContainer(
   FeedList,
   {
     feeds: graphql`
-      fragment FeedList_feeds on Query
+      fragment FeedList_feeds on User
         @argumentDefinitions(
           count: { type: "Int", defaultValue: 20 }
           cursor: { type: "Cursor" }
         ) {
-        allSubscribedFeeds(first: $count, after: $cursor)
-          @connection(key: "FeedList_allSubscribedFeeds") {
+        allFeeds(first: $count, after: $cursor)
+          @connection(key: "FeedList_allFeeds") {
           edges {
             node {
               id
@@ -93,7 +94,9 @@ export default createPaginationContainer(
     },
     query: graphql`
       query FeedListPaginationQuery($count: Int!, $cursor: Cursor) {
-        ...FeedList_feeds @arguments(count: $count, cursor: $cursor)
+        viewer {
+          ...FeedList_feeds @arguments(count: $count, cursor: $cursor)
+        }
       }
     `,
   }

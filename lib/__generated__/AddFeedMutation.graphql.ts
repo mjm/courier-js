@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 68b29a2c9dd3bcafdfebc2e371549adc */
+/* @relayHash 76b5afb0f5cec183df75f29522de81c2 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -47,16 +47,11 @@ mutation AddFeedMutation(
   }
 }
 
-fragment FeedCard_feed on SubscribedFeed {
+fragment FeedCard_feed on Feed {
   id
-  feed {
-    id
-    url
-    title
-    homePageURL
-    micropubEndpoint
-    refreshedAt
-  }
+  title
+  homePageURL
+  refreshedAt
   autopost
 }
 */
@@ -90,7 +85,7 @@ v3 = {
   "name": "feed",
   "storageKey": null,
   "args": null,
-  "concreteType": "SubscribedFeed",
+  "concreteType": "Feed",
   "plural": false,
   "selections": [
     (v2/*: any*/)
@@ -128,7 +123,7 @@ return {
             "name": "feedEdge",
             "storageKey": null,
             "args": null,
-            "concreteType": "SubscribedFeedEdge",
+            "concreteType": "FeedEdge",
             "plural": false,
             "selections": [
               {
@@ -137,7 +132,7 @@ return {
                 "name": "node",
                 "storageKey": null,
                 "args": null,
-                "concreteType": "SubscribedFeed",
+                "concreteType": "Feed",
                 "plural": false,
                 "selections": [
                   {
@@ -175,7 +170,7 @@ return {
             "name": "feedEdge",
             "storageKey": null,
             "args": null,
-            "concreteType": "SubscribedFeedEdge",
+            "concreteType": "FeedEdge",
             "plural": false,
             "selections": [
               {
@@ -184,56 +179,30 @@ return {
                 "name": "node",
                 "storageKey": null,
                 "args": null,
-                "concreteType": "SubscribedFeed",
+                "concreteType": "Feed",
                 "plural": false,
                 "selections": [
                   (v2/*: any*/),
                   {
-                    "kind": "LinkedField",
+                    "kind": "ScalarField",
                     "alias": null,
-                    "name": "feed",
-                    "storageKey": null,
+                    "name": "title",
                     "args": null,
-                    "concreteType": "Feed",
-                    "plural": false,
-                    "selections": [
-                      (v2/*: any*/),
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "url",
-                        "args": null,
-                        "storageKey": null
-                      },
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "title",
-                        "args": null,
-                        "storageKey": null
-                      },
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "homePageURL",
-                        "args": null,
-                        "storageKey": null
-                      },
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "micropubEndpoint",
-                        "args": null,
-                        "storageKey": null
-                      },
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "refreshedAt",
-                        "args": null,
-                        "storageKey": null
-                      }
-                    ]
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "homePageURL",
+                    "args": null,
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "refreshedAt",
+                    "args": null,
+                    "storageKey": null
                   },
                   {
                     "kind": "ScalarField",
@@ -255,7 +224,7 @@ return {
     "operationKind": "mutation",
     "name": "AddFeedMutation",
     "id": null,
-    "text": "mutation AddFeedMutation(\n  $input: AddFeedInput!\n) {\n  addFeed(input: $input) {\n    feed {\n      id\n    }\n    feedEdge {\n      node {\n        ...FeedCard_feed\n        id\n      }\n      cursor\n    }\n  }\n}\n\nfragment FeedCard_feed on SubscribedFeed {\n  id\n  feed {\n    id\n    url\n    title\n    homePageURL\n    micropubEndpoint\n    refreshedAt\n  }\n  autopost\n}\n",
+    "text": "mutation AddFeedMutation(\n  $input: AddFeedInput!\n) {\n  addFeed(input: $input) {\n    feed {\n      id\n    }\n    feedEdge {\n      node {\n        ...FeedCard_feed\n        id\n      }\n      cursor\n    }\n  }\n}\n\nfragment FeedCard_feed on Feed {\n  id\n  title\n  homePageURL\n  refreshedAt\n  autopost\n}\n",
     "metadata": {}
   }
 };

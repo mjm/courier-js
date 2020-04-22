@@ -76,6 +76,11 @@ type User {
     before: Cursor
     after: Cursor
   ): TweetConnection!
+
+  allFeeds(
+    first: Int
+    after: Cursor
+  ): FeedConnection!
 }
 
 type Customer {
@@ -123,6 +128,7 @@ type Feed implements Node {
   refreshedAt: Time
   createdAt: Time!
   updatedAt: Time!
+  autopost: Boolean!
 
   posts(first: Int, last: Int, before: Cursor, after: Cursor): PostConnection!
 }
@@ -132,8 +138,8 @@ input AddFeedInput {
 }
 
 type AddFeedPayload {
-  feed: SubscribedFeed!
-  feedEdge: SubscribedFeedEdge!
+  feed: Feed!
+  feedEdge: FeedEdge!
 }
 
 input RefreshFeedInput {
