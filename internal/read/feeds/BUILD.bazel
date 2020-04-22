@@ -3,7 +3,6 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "go_default_library",
     srcs = [
-        "feed.go",
         "feed_pager.go",
         "feed_queries.go",
         "post_pager.go",
@@ -16,13 +15,11 @@ go_library(
         "//internal/db:go_default_library",
         "//internal/loader:go_default_library",
         "//internal/pager:go_default_library",
-        "//internal/shared/feeds:go_default_library",
         "//internal/shared/model:go_default_library",
         "@com_github_aws_aws_sdk_go//aws:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb/dynamodbiface:go_default_library",
         "@com_github_graph_gophers_dataloader//:go_default_library",
-        "@com_github_lib_pq//:go_default_library",
     ],
 )
 

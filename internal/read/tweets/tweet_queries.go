@@ -51,7 +51,7 @@ func (q *TweetQueries) Paged(ctx context.Context, userID string, filter Filter, 
 		Filter:    filter,
 	}
 
-	return pager.PagedDynamo(ctx, q.dynamo, p, opts)
+	return pager.Paged(ctx, q.dynamo, p, opts)
 }
 
 func newTweetLoader(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *dataloader.Loader {

@@ -42,7 +42,7 @@ func (q *PostQueries) Paged(ctx context.Context, feedID model.FeedID, opts pager
 		FeedID:    feedID,
 	}
 
-	return pager.PagedDynamo(ctx, q.dynamo, p, opts)
+	return pager.Paged(ctx, q.dynamo, p, opts)
 }
 
 func newPostLoader(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *dataloader.Loader {

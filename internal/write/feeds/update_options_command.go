@@ -22,7 +22,7 @@ func (h *CommandHandler) handleUpdateOptions(ctx context.Context, cmd UpdateOpti
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
 		keys.UserID(cmd.UserID),
-		keys.FeedIDDynamo(cmd.FeedID),
+		keys.FeedID(cmd.FeedID),
 		key.Bool("feed.autopost", cmd.Autopost))
 
 	if err := h.feedRepo.UpdateSettings(ctx, shared.UpdateFeedSettingsParams{

@@ -17,7 +17,7 @@ type QueueRefreshCommand struct {
 
 func (h *CommandHandler) handleQueueRefresh(ctx context.Context, cmd QueueRefreshCommand) error {
 	span := trace.SpanFromContext(ctx)
-	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedIDDynamo(cmd.FeedID))
+	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedID(cmd.FeedID))
 
 	task := &feeds.RefreshFeedTask{
 		UserId: cmd.UserID,

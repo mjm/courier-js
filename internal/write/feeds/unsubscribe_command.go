@@ -20,7 +20,7 @@ type UnsubscribeCommand struct {
 
 func (h *CommandHandler) handleUnsubscribe(ctx context.Context, cmd UnsubscribeCommand) error {
 	span := trace.SpanFromContext(ctx)
-	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedIDDynamo(cmd.FeedID))
+	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedID(cmd.FeedID))
 
 	if err := h.feedRepo.Deactivate(ctx, cmd.UserID, cmd.FeedID); err != nil {
 		return err

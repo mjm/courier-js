@@ -7,8 +7,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 )
 
-// DynamoPager defines how to query for a paged results set from DynamoDB.
-type DynamoPager interface {
+// Pager defines how to query for a paged results set from DynamoDB.
+type Pager interface {
 	// EdgesQuery returns the SQL query that will fetch a page of results. Filters, sorting, and
 	// limits will be appended to the string to form the final query.
 	Query(cursor *Cursor) *dynamodb.QueryInput
@@ -16,7 +16,7 @@ type DynamoPager interface {
 	ScanEdge(item map[string]*dynamodb.AttributeValue) (Edge, error)
 }
 
-func PagedDynamo(ctx context.Context, dynamo dynamodbiface.DynamoDBAPI, p DynamoPager, opts Options) (*Connection, error) {
+func Paged(ctx context.Context, dynamo dynamodbiface.DynamoDBAPI, p Pager, opts Options) (*Connection, error) {
 	if opts.isReversed() {
 		panic("reversing paged queries is not supported")
 	}

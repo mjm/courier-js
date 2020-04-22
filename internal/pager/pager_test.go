@@ -58,7 +58,7 @@ func (e *testEdge) Cursor() Cursor {
 
 func (suite *dynamoSuite) TestPagerEmptyTable() {
 	p := &testPager{TableName: suite.DynamoConfig().TableName}
-	conn, err := PagedDynamo(suite.Ctx(), suite.Dynamo(), p, First(10, nil))
+	conn, err := Paged(suite.Ctx(), suite.Dynamo(), p, First(10, nil))
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)
 
@@ -72,7 +72,7 @@ func (suite *dynamoSuite) TestPagerFirstPage() {
 	suite.preloadTestRecords(3)
 
 	p := &testPager{TableName: suite.DynamoConfig().TableName}
-	conn, err := PagedDynamo(suite.Ctx(), suite.Dynamo(), p, First(10, nil))
+	conn, err := Paged(suite.Ctx(), suite.Dynamo(), p, First(10, nil))
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)
 
@@ -90,7 +90,7 @@ func (suite *dynamoSuite) TestPagerMultiplePages() {
 	suite.preloadTestRecords(8)
 
 	p := &testPager{TableName: suite.DynamoConfig().TableName}
-	conn, err := PagedDynamo(suite.Ctx(), suite.Dynamo(), p, First(5, nil))
+	conn, err := Paged(suite.Ctx(), suite.Dynamo(), p, First(5, nil))
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)
 
@@ -98,7 +98,7 @@ func (suite *dynamoSuite) TestPagerMultiplePages() {
 	suite.True(conn.PageInfo.HasNextPage)
 	suite.Equal(Cursor("LIST#123###ITEM#0004"), *conn.PageInfo.EndCursor)
 
-	conn, err = PagedDynamo(suite.Ctx(), suite.Dynamo(), p, First(5, conn.PageInfo.EndCursor))
+	conn, err = Paged(suite.Ctx(), suite.Dynamo(), p, First(5, conn.PageInfo.EndCursor))
 	suite.Require().NoError(err)
 	suite.Require().NotNil(conn)
 

@@ -40,7 +40,7 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
 		keys.UserID(cmd.UserID),
-		keys.FeedIDDynamo(cmd.FeedID),
+		keys.FeedID(cmd.FeedID),
 		key.Bool("feed.force_refresh", cmd.Force))
 
 	f, err := h.feedRepo.Get(ctx, cmd.UserID, cmd.FeedID)

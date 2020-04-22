@@ -28,7 +28,7 @@ type ImportPostsCommand struct {
 
 func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsCommand) error {
 	span := trace.SpanFromContext(ctx)
-	span.SetAttributes(keys.FeedIDDynamo(cmd.FeedID), entryCountKey(len(cmd.Entries)))
+	span.SetAttributes(keys.FeedID(cmd.FeedID), entryCountKey(len(cmd.Entries)))
 
 	if len(cmd.Entries) == 0 {
 		return nil

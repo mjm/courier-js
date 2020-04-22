@@ -31,7 +31,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
 		keys.UserID(cmd.UserID),
-		keys.FeedIDDynamo(cmd.FeedID))
+		keys.FeedID(cmd.FeedID))
 
 	feed, err := h.feedRepo.GetWithRecentItems(ctx, cmd.FeedID, cmd.OldestPublished)
 	if err != nil {
@@ -115,7 +115,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 
 func (h *CommandHandler) planTweet(ctx context.Context, userID string, post *shared.PostWithTweetGroup) (*shared.CreateTweetParams, *shared.UpdateTweetParams, error) {
 	ctx, span := tracer.Start(ctx, "ImportTweetsCommand.planTweet",
-		trace.WithAttributes(keys.PostIDDynamo(post.ID)...),
+		trace.WithAttributes(keys.PostID(post.ID)...),
 		trace.WithAttributes(
 			keys.UserID(userID),
 			key.Bool("import.existing_tweet.present", post.TweetGroup != nil)))

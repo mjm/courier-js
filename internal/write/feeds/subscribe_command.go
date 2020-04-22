@@ -27,7 +27,7 @@ type SubscribeCommand struct {
 
 func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeCommand) error {
 	span := trace.SpanFromContext(ctx)
-	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedIDDynamo(cmd.FeedID), keys.FeedURL(cmd.URL))
+	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedID(cmd.FeedID), keys.FeedURL(cmd.URL))
 
 	u, err := url.Parse(cmd.URL)
 	if err != nil {

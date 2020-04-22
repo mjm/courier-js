@@ -24,5 +24,5 @@ func (q *EventQueries) Paged(ctx context.Context, userID string, opts pager.Opti
 		UserID:    userID,
 	}
 
-	return pager.PagedDynamo(ctx, q.dynamo, p, opts)
+	return pager.Paged(ctx, q.dynamo, p, opts)
 }
