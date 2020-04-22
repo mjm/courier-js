@@ -14,18 +14,15 @@ import (
 )
 
 // DefaultSet is a provider set for creating a command handler and its dependencies.
-var DefaultSet = wire.NewSet(
-	NewCommandHandler,
-	NewFeedRepository)
+var DefaultSet = wire.NewSet(NewCommandHandler)
 
 // CommandHandler processes feed-related commands and updates the data store appropriately.
 type CommandHandler struct {
-	bus            *write.CommandBus
-	events         event.Sink
-	tasks          *tasks.Tasks
-	feedRepo       *FeedRepository
-	feedRepoDynamo *shared.FeedRepository
-	postRepo       *shared.PostRepository
+	bus      *write.CommandBus
+	events   event.Sink
+	tasks    *tasks.Tasks
+	feedRepo *shared.FeedRepository
+	postRepo *shared.PostRepository
 }
 
 // NewCommandHandler creates a new command handler for feed commands.
@@ -33,19 +30,16 @@ func NewCommandHandler(
 	bus *write.CommandBus,
 	events event.Sink,
 	tasks *tasks.Tasks,
-	feedRepo *FeedRepository,
-	feedRepoDynamo *shared.FeedRepository,
+	feedRepo *shared.FeedRepository,
 	postRepo *shared.PostRepository) *CommandHandler {
 	h := &CommandHandler{
-		bus:            bus,
-		events:         events,
-		tasks:          tasks,
-		feedRepo:       feedRepo,
-		feedRepoDynamo: feedRepoDynamo,
-		postRepo:       postRepo,
+		bus:      bus,
+		events:   events,
+		tasks:    tasks,
+		feedRepo: feedRepo,
+		postRepo: postRepo,
 	}
 	bus.Register(h,
-		CreateCommand{},
 		SubscribeCommand{},
 		PingCommand{},
 		QueueRefreshCommand{},
@@ -59,10 +53,6 @@ func NewCommandHandler(
 // HandleCommand dispatches a command to the appropriate handler function and returns the result.
 func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (interface{}, error) {
 	switch cmd := cmd.(type) {
-
-	case CreateCommand:
-		feedID, err := h.handleCreate(ctx, cmd)
-		return feedID, err
 
 	case SubscribeCommand:
 		return nil, h.handleSubscribe(ctx, cmd)

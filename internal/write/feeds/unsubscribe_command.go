@@ -22,7 +22,7 @@ func (h *CommandHandler) handleUnsubscribe(ctx context.Context, cmd UnsubscribeC
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedIDDynamo(cmd.FeedID))
 
-	if err := h.feedRepoDynamo.Deactivate(ctx, cmd.UserID, cmd.FeedID); err != nil {
+	if err := h.feedRepo.Deactivate(ctx, cmd.UserID, cmd.FeedID); err != nil {
 		return err
 	}
 

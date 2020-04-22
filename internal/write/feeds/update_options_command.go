@@ -25,7 +25,7 @@ func (h *CommandHandler) handleUpdateOptions(ctx context.Context, cmd UpdateOpti
 		keys.FeedIDDynamo(cmd.FeedID),
 		key.Bool("feed.autopost", cmd.Autopost))
 
-	if err := h.feedRepoDynamo.UpdateSettings(ctx, shared.UpdateFeedSettingsParams{
+	if err := h.feedRepo.UpdateSettings(ctx, shared.UpdateFeedSettingsParams{
 		ID:       cmd.FeedID,
 		UserID:   cmd.UserID,
 		Autopost: cmd.Autopost,

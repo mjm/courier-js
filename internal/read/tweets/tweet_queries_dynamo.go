@@ -6,12 +6,19 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/graph-gophers/dataloader"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/shared/model"
+)
+
+var (
+	// ErrNoTweet is returned when a specific tweet cannot be found.
+	ErrNoTweet = status.Error(codes.NotFound, "no tweet found")
 )
 
 type TweetQueriesDynamo struct {

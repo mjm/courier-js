@@ -17,7 +17,7 @@ func (h *CommandHandler) handlePing(ctx context.Context, cmd PingCommand) error 
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(keys.FeedHomePageURL(cmd.HomePageURL))
 
-	fs, err := h.feedRepoDynamo.ByHomePageURL(ctx, cmd.HomePageURL)
+	fs, err := h.feedRepo.ByHomePageURL(ctx, cmd.HomePageURL)
 	if err != nil {
 		return err
 	}

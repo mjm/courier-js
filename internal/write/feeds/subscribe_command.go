@@ -43,7 +43,7 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 
 	// TODO handle existing feed for the URL by returning an error
 
-	if err := h.feedRepoDynamo.Create(ctx, cmd.UserID, cmd.FeedID, u.String()); err != nil {
+	if err := h.feedRepo.Create(ctx, cmd.UserID, cmd.FeedID, u.String()); err != nil {
 		return err
 	}
 	_, err = h.bus.Run(ctx, RefreshCommand{

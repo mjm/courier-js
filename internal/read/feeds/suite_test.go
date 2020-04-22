@@ -4,51 +4,12 @@ import (
 	"testing"
 
 	"github.com/jonboulle/clockwork"
-	"github.com/khaiql/dbcleaner"
-	"github.com/khaiql/dbcleaner/engine"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/trace"
-	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/shared"
 )
-
-var cleaner = dbcleaner.New()
-
-type feedsSuite struct {
-	suite.Suite
-	db       db.DB
-	eventBus *event.Bus
-
-	feedQueries *feedQueries
-	feedRepo    *feeds.FeedRepository
-
-	postQueries *postQueries
-}
-
-func (suite *feedsSuite) SetupSuite() {
-	suite.db = db.NewTestingDB()
-	cleaner.SetEngine(engine.NewPostgresEngine(db.TestingDSN))
-
-	suite.eventBus = event.NewBus()
-	suite.feedQueries = NewFeedQueries(suite.db).(*feedQueries)
-	suite.feedRepo = feeds.NewFeedRepository(suite.db)
-	suite.postQueries = NewPostQueries(suite.db).(*postQueries)
-}
-
-func (suite *feedsSuite) SetupTest() {
-	cleaner.Acquire("feeds", "feed_subscriptions")
-}
-
-func (suite *feedsSuite) TearDownTest() {
-	cleaner.Clean("feeds", "feed_subscriptions")
-}
-
-func TestFeedsSuite(t *testing.T) {
-	suite.Run(t, new(feedsSuite))
-}
 
 func init() {
 	trace.InitForTesting()

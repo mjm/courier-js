@@ -45,15 +45,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	dbConfig, err := db.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dbDB, err := db.New(dbConfig)
-	if err != nil {
-		return nil, err
-	}
-	feedRepository := feeds.NewFeedRepository(dbDB)
 	dynamoConfig, err := db.NewDynamoConfig(loader)
 	if err != nil {
 		return nil, err
@@ -63,9 +54,9 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	clock := clockwork.NewRealClock()
-	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
+	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, sharedFeedRepository, postRepository)
+	commandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, postRepository)
 	handler := NewHandler(commandBus, commandHandler)
 	return handler, nil
 }

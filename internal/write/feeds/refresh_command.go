@@ -43,7 +43,7 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 		keys.FeedIDDynamo(cmd.FeedID),
 		key.Bool("feed.force_refresh", cmd.Force))
 
-	f, err := h.feedRepoDynamo.Get(ctx, cmd.UserID, cmd.FeedID)
+	f, err := h.feedRepo.Get(ctx, cmd.UserID, cmd.FeedID)
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 		},
 		MicropubEndpoint: mpEndpoint,
 	}
-	if err = h.feedRepoDynamo.UpdateDetails(ctx, p); err != nil {
+	if err = h.feedRepo.UpdateDetails(ctx, p); err != nil {
 		return err
 	}
 
