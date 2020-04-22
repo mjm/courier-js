@@ -43,8 +43,8 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	feedQueriesDynamo := feeds.NewFeedQueriesDynamo(dynamoDB, dynamoConfig)
-	tweetQueriesDynamo := tweets.NewTweetQueriesDynamo(dynamoDB, dynamoConfig)
+	feedsFeedQueries := feeds.NewFeedQueries(dynamoDB, dynamoConfig)
+	tweetsTweetQueries := tweets.NewTweetQueries(dynamoDB, dynamoConfig)
 	bus := event.NewBus()
 	tasksConfig, err := tasks.NewConfig(loader)
 	if err != nil {
@@ -86,6 +86,6 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	eventHandler := tweets2.NewEventHandler(writeCommandBus, bus, tweetsCommandHandler)
 	eventRepository := shared.NewEventRepository(dynamoDB, dynamoConfig, clock)
 	eventRecorder := user.NewEventRecorder(eventRepository, clock, bus)
-	app := newApp(writeCommandBus, feedQueriesDynamo, tweetQueriesDynamo, commandHandler, tweetsCommandHandler, eventHandler, eventRecorder)
+	app := newApp(writeCommandBus, feedsFeedQueries, tweetsTweetQueries, commandHandler, tweetsCommandHandler, eventHandler, eventRecorder)
 	return app, nil
 }

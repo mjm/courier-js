@@ -21,21 +21,21 @@ var (
 	ErrNoTweet = status.Error(codes.NotFound, "no tweet found")
 )
 
-type TweetQueriesDynamo struct {
+type TweetQueries struct {
 	dynamo       dynamodbiface.DynamoDBAPI
 	dynamoConfig db.DynamoConfig
 	loader       *dataloader.Loader
 }
 
-func NewTweetQueriesDynamo(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *TweetQueriesDynamo {
-	return &TweetQueriesDynamo{
+func NewTweetQueries(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *TweetQueries {
+	return &TweetQueries{
 		dynamo:       dynamo,
 		dynamoConfig: dynamoConfig,
-		loader:       newTweetLoaderDynamo(dynamo, dynamoConfig),
+		loader:       newTweetLoader(dynamo, dynamoConfig),
 	}
 }
 
-func (q *TweetQueriesDynamo) Get(ctx context.Context, id model.TweetGroupID) (*model.TweetGroup, error) {
+func (q *TweetQueries) Get(ctx context.Context, id model.TweetGroupID) (*model.TweetGroup, error) {
 	tg, err := q.loader.Load(ctx, loader.IDKey(id))()
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (q *TweetQueriesDynamo) Get(ctx context.Context, id model.TweetGroupID) (*m
 	return tg.(*model.TweetGroup), nil
 }
 
-func (q *TweetQueriesDynamo) Paged(ctx context.Context, userID string, filter Filter, opts pager.Options) (*pager.Connection, error) {
+func (q *TweetQueries) Paged(ctx context.Context, userID string, filter Filter, opts pager.Options) (*pager.Connection, error) {
 	p := &tweetPager{
 		TableName: q.dynamoConfig.TableName,
 		UserID:    userID,
@@ -54,7 +54,7 @@ func (q *TweetQueriesDynamo) Paged(ctx context.Context, userID string, filter Fi
 	return pager.PagedDynamo(ctx, q.dynamo, p, opts)
 }
 
-func newTweetLoaderDynamo(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *dataloader.Loader {
+func newTweetLoader(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoConfig) *dataloader.Loader {
 	return loader.New("TweetLoader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 		userID, err := auth.GetUser(ctx).ID()
 		if err != nil {

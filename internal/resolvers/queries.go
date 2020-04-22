@@ -10,9 +10,9 @@ import (
 )
 
 type Queries struct {
-	FeedsDynamo   *feeds.FeedQueriesDynamo
-	PostsDynamo   *feeds.PostQueriesDynamo
-	TweetsDynamo  *tweets.TweetQueriesDynamo
+	FeedsDynamo   *feeds.FeedQueries
+	PostsDynamo   *feeds.PostQueries
+	TweetsDynamo  *tweets.TweetQueries
 	Events        *user.EventQueries
 	Customers     billing.CustomerQueries
 	Subscriptions billing.SubscriptionQueries
@@ -20,9 +20,9 @@ type Queries struct {
 
 var QueriesProvider = wire.NewSet(
 	wire.Struct(new(Queries), "*"),
-	feeds.NewFeedQueriesDynamo,
-	feeds.NewPostQueriesDynamo,
-	tweets.NewTweetQueriesDynamo,
+	feeds.NewFeedQueries,
+	feeds.NewPostQueries,
+	tweets.NewTweetQueries,
 	user.NewEventQueries,
 	billing.NewCustomerQueries,
 	billing.NewSubscriptionQueries,

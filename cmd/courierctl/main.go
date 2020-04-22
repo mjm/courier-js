@@ -20,8 +20,8 @@ import (
 )
 
 var commandBus *write.CommandBus
-var feedQueries *feeds2.FeedQueriesDynamo
-var tweetQueries *tweets2.TweetQueriesDynamo
+var feedQueries *feeds2.FeedQueries
+var tweetQueries *tweets2.TweetQueries
 
 var tr = global.Tracer("courierctl")
 
@@ -46,8 +46,8 @@ func main() {
 
 func newApp(
 	bus *write.CommandBus,
-	feedQ *feeds2.FeedQueriesDynamo,
-	tweetQ *tweets2.TweetQueriesDynamo,
+	feedQ *feeds2.FeedQueries,
+	tweetQ *tweets2.TweetQueries,
 	_ *feeds.CommandHandler,
 	_ *tweets.CommandHandler,
 	_ *tweets.EventHandler,

@@ -22,7 +22,7 @@ type dynamoSuite struct {
 
 	clock       clockwork.FakeClock
 	feedRepo    *shared.FeedRepository
-	feedQueries *FeedQueriesDynamo
+	feedQueries *FeedQueries
 }
 
 func (suite *dynamoSuite) SetupSuite() {
@@ -31,7 +31,7 @@ func (suite *dynamoSuite) SetupSuite() {
 
 	suite.clock = clockwork.NewFakeClock()
 	suite.feedRepo = shared.NewFeedRepository(suite.Dynamo(), suite.DynamoConfig(), suite.clock)
-	suite.feedQueries = NewFeedQueriesDynamo(suite.Dynamo(), suite.DynamoConfig())
+	suite.feedQueries = NewFeedQueries(suite.Dynamo(), suite.DynamoConfig())
 }
 
 func (suite *dynamoSuite) SetupTest() {

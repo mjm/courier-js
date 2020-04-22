@@ -4,7 +4,7 @@ go_library(
     name = "go_default_library",
     srcs = [
         "tweet_pager.go",
-        "tweet_queries_dynamo.go",
+        "tweet_queries.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/read/tweets",
     visibility = ["//:__subpackages__"],
@@ -27,7 +27,7 @@ go_test(
     name = "go_default_test",
     srcs = [
         "suite_test.go",
-        "tweet_queries_dynamo_test.go",
+        "tweet_queries_test.go",
     ],
     embed = [":go_default_library"],
     deps = [

@@ -18,7 +18,7 @@ type dynamoSuite struct {
 
 	clock        clockwork.FakeClock
 	tweetRepo    *shared.TweetRepository
-	tweetQueries *TweetQueriesDynamo
+	tweetQueries *TweetQueries
 }
 
 func init() {
@@ -31,7 +31,7 @@ func (suite *dynamoSuite) SetupSuite() {
 
 	suite.clock = clockwork.NewFakeClock()
 	suite.tweetRepo = shared.NewTweetRepository(suite.Dynamo(), suite.DynamoConfig(), suite.clock)
-	suite.tweetQueries = NewTweetQueriesDynamo(suite.Dynamo(), suite.DynamoConfig())
+	suite.tweetQueries = NewTweetQueries(suite.Dynamo(), suite.DynamoConfig())
 }
 
 func (suite *dynamoSuite) SetupTest() {

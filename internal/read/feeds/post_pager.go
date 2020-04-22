@@ -11,12 +11,12 @@ import (
 	"github.com/mjm/courier-js/internal/shared/model"
 )
 
-type postPagerDynamo struct {
+type postPager struct {
 	TableName string
 	FeedID    model.FeedID
 }
 
-func (p *postPagerDynamo) Query(cursor *pager.Cursor) *dynamodb.QueryInput {
+func (p *postPager) Query(cursor *pager.Cursor) *dynamodb.QueryInput {
 	pk := "FEED#" + string(p.FeedID)
 
 	var startKey map[string]*dynamodb.AttributeValue
@@ -48,7 +48,7 @@ func (p *postPagerDynamo) Query(cursor *pager.Cursor) *dynamodb.QueryInput {
 	}
 }
 
-func (p *postPagerDynamo) ScanEdge(item map[string]*dynamodb.AttributeValue) (pager.Edge, error) {
+func (p *postPager) ScanEdge(item map[string]*dynamodb.AttributeValue) (pager.Edge, error) {
 	post, err := model.NewPostFromAttrs(item)
 	if err != nil {
 		return nil, err

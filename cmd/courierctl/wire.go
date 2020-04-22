@@ -40,8 +40,8 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 			feeds.DefaultSet,
 			tweets.DefaultSet,
 			tweets.NewEventHandler,
-			feeds2.NewFeedQueriesDynamo,
-			tweets2.NewTweetQueriesDynamo,
+			feeds2.NewFeedQueries,
+			tweets2.NewTweetQueries,
 			user.NewEventRecorder,
 		),
 	)

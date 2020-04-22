@@ -5,9 +5,9 @@ go_library(
     srcs = [
         "feed.go",
         "feed_pager.go",
-        "feed_queries_dynamo.go",
-        "post_pager_dynamo.go",
-        "post_queries_dynamo.go",
+        "feed_queries.go",
+        "post_pager.go",
+        "post_queries.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/read/feeds",
     visibility = ["//:__subpackages__"],
@@ -29,7 +29,7 @@ go_library(
 go_test(
     name = "go_default_test",
     srcs = [
-        "feed_queries_dynamo_test.go",
+        "feed_queries_test.go",
         "suite_test.go",
     ],
     embed = [":go_default_library"],
