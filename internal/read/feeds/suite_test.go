@@ -25,9 +25,6 @@ type feedsSuite struct {
 	feedQueries *feedQueries
 	feedRepo    *feeds.FeedRepository
 
-	subQueries *subscriptionQueries
-	subRepo    *feeds.SubscriptionRepository
-
 	postQueries *postQueries
 }
 
@@ -38,8 +35,6 @@ func (suite *feedsSuite) SetupSuite() {
 	suite.eventBus = event.NewBus()
 	suite.feedQueries = NewFeedQueries(suite.db).(*feedQueries)
 	suite.feedRepo = feeds.NewFeedRepository(suite.db)
-	suite.subQueries = NewSubscriptionQueries(suite.db).(*subscriptionQueries)
-	suite.subRepo = feeds.NewSubscriptionRepository(suite.db)
 	suite.postQueries = NewPostQueries(suite.db).(*postQueries)
 }
 

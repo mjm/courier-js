@@ -2,67 +2,25 @@ package feeds
 
 import (
 	"context"
-	"errors"
-
-	"github.com/graph-gophers/dataloader"
-	"github.com/jmoiron/sqlx"
 
 	"github.com/mjm/courier-js/internal/db"
-	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/pager"
-	"github.com/mjm/courier-js/internal/read/feeds/queries"
-)
-
-var (
-	// ErrNoPost is returned when a specific post cannot be found.
-	ErrNoPost = errors.New("no post found")
 )
 
 // PostQueries is an interface for reading information about posts.
 type PostQueries interface {
 	// Get fetches a post by ID.
-	Get(context.Context, PostID) (*Post, error)
 	Paged(context.Context, FeedID, pager.Options) (*pager.Connection, error)
 }
 
 type postQueries struct {
-	db     db.DB
-	loader *dataloader.Loader
+	db db.DB
 }
 
 func NewPostQueries(db db.DB) PostQueries {
 	return &postQueries{
-		db:     db,
-		loader: newPostLoader(db),
+		db: db,
 	}
-}
-
-func newPostLoader(db db.DB) *dataloader.Loader {
-	return loader.New("PostLoader", func(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-		rows, err := db.QueryxContext(ctx, queries.PostsLoad, loader.StringArray(keys))
-		if err != nil {
-			panic(err)
-		}
-		return loader.Gather(keys, rows, func(rows *sqlx.Rows) (interface{}, string, error) {
-			var post Post
-			if err := rows.StructScan(&post); err != nil {
-				return nil, "", err
-			}
-
-			return &post, string(post.ID), nil
-		})
-	})
-}
-
-func (q *postQueries) Get(ctx context.Context, id PostID) (*Post, error) {
-	v, err := q.loader.Load(ctx, dataloader.StringKey(id))()
-	if err != nil {
-		return nil, err
-	}
-	if v == nil {
-		return nil, ErrNoPost
-	}
-	return v.(*Post), nil
 }
 
 func (q *postQueries) Paged(ctx context.Context, feedID FeedID, opts pager.Options) (*pager.Connection, error) {
