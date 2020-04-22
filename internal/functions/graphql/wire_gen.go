@@ -73,14 +73,6 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		Subscriptions: subscriptionQueries,
 	}
 	commandBus := write.NewCommandBus()
-	tasksConfig, err := tasks.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
-	if err != nil {
-		return nil, err
-	}
 	publisherConfig, err := event.NewPublisherConfig(loader)
 	if err != nil {
 		return nil, err
@@ -90,6 +82,14 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		return nil, err
 	}
 	publisher := event.NewPublisher(publisherConfig, pubsubClient)
+	tasksConfig, err := tasks.NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	if err != nil {
+		return nil, err
+	}
 	clock := clockwork.NewRealClock()
 	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
@@ -111,7 +111,7 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	billingCommandHandler := billing3.NewCommandHandler(commandBus, publisher, billingConfig, customerRepository, subscriptionRepository)
 	userUserRepository := user2.NewUserRepository(management)
 	userCommandHandler := user2.NewCommandHandler(commandBus, publisher, userUserRepository)
-	root := resolvers.New(queries, commandBus, tasksTasks, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
+	root := resolvers.New(queries, commandBus, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err

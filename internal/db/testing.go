@@ -8,18 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
-	"github.com/jmoiron/sqlx"
 	"github.com/segmentio/ksuid"
 	"github.com/stretchr/testify/assert"
 )
-
-// TestingDSN is a data source name that connects to the local testing database.
-const TestingDSN = "dbname=courier_test sslmode=disable"
-
-// NewTestingDB creates a new database connection pointed at the testing database.
-func NewTestingDB() DB {
-	return &tracingDB{DB: sqlx.MustOpen("postgres", TestingDSN)}
-}
 
 func CreateDynamoTable(ctx context.Context, dynamo dynamodbiface.DynamoDBAPI, name string) error {
 	_, err := dynamo.CreateTableWithContext(ctx, &dynamodb.CreateTableInput{

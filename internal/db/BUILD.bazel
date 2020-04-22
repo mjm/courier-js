@@ -3,10 +3,9 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "go_default_library",
     srcs = [
-        "db.go",
         "dynamo.go",
         "testing.go",
-        "unnest.go",
+        "trace.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/db",
     visibility = ["//:__subpackages__"],
@@ -19,8 +18,6 @@ go_library(
         "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb/dynamodbiface:go_default_library",
         "@com_github_google_wire//:go_default_library",
-        "@com_github_jmoiron_sqlx//:go_default_library",
-        "@com_github_lib_pq//:go_default_library",
         "@com_github_segmentio_ksuid//:go_default_library",
         "@com_github_stretchr_testify//assert:go_default_library",
         "@io_opentelemetry_go_otel//api/core:go_default_library",

@@ -2,7 +2,6 @@ package resolvers
 
 import (
 	"context"
-	"errors"
 	"net/url"
 
 	"github.com/google/wire"
@@ -16,10 +15,8 @@ import (
 	"willnorris.com/go/microformats"
 
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/shared/model"
-	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
@@ -31,24 +28,16 @@ import (
 
 var DefaultSet = wire.NewSet(New, QueriesProvider)
 
-var (
-	ErrUnknownKind = errors.New("unrecognized ID kind")
-)
-
 // Root is the root resolver for queries and mutations.
 type Root struct {
-	db db.DB
-
 	q          Queries
 	commandBus *write.CommandBus
-	tasks      *tasks.Tasks
 }
 
 // New creates a new root resolver.
 func New(
 	q Queries,
 	commandBus *write.CommandBus,
-	tasks *tasks.Tasks,
 	_ *feeds.CommandHandler,
 	_ *tweets.CommandHandler,
 	_ *billing.CommandHandler,
@@ -57,7 +46,6 @@ func New(
 	return &Root{
 		q:          q,
 		commandBus: commandBus,
-		tasks:      tasks,
 	}
 }
 

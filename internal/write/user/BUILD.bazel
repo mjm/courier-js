@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "go_default_library",
@@ -28,19 +28,5 @@ go_library(
         "@io_opentelemetry_go_otel//api/global:go_default_library",
         "@io_opentelemetry_go_otel//api/key:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
-    ],
-)
-
-go_test(
-    name = "go_default_test",
-    srcs = ["suite_test.go"],
-    embed = [":go_default_library"],
-    deps = [
-        "//internal/db:go_default_library",
-        "//internal/event:go_default_library",
-        "//internal/write:go_default_library",
-        "@com_github_khaiql_dbcleaner//:go_default_library",
-        "@com_github_khaiql_dbcleaner//engine:go_default_library",
-        "@com_github_stretchr_testify//suite:go_default_library",
     ],
 )

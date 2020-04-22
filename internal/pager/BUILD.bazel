@@ -10,11 +10,8 @@ go_library(
     importpath = "github.com/mjm/courier-js/internal/pager",
     visibility = ["//:__subpackages__"],
     deps = [
-        "//internal/db:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb/dynamodbiface:go_default_library",
-        "@com_github_jmoiron_sqlx//:go_default_library",
-        "@org_golang_x_sync//errgroup:go_default_library",
     ],
 )
 

@@ -30,14 +30,11 @@ go_test(
     embed = [":go_default_library"],
     deps = [
         "//internal/db:go_default_library",
-        "//internal/event:go_default_library",
         "//internal/pager:go_default_library",
         "//internal/shared/model:go_default_library",
         "//internal/trace:go_default_library",
         "//internal/write/shared:go_default_library",
         "@com_github_jonboulle_clockwork//:go_default_library",
-        "@com_github_khaiql_dbcleaner//:go_default_library",
-        "@com_github_khaiql_dbcleaner//engine:go_default_library",
         "@com_github_stretchr_testify//suite:go_default_library",
     ],
 )

@@ -11,12 +11,15 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
-	"go.opentelemetry.io/otel/api/core"
+	"github.com/google/wire"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/config"
 )
+
+var DefaultSet = wire.NewSet(NewDynamoDB, NewDynamoConfig,
+	wire.Bind(new(dynamodbiface.DynamoDBAPI), new(*DynamoDB)))
 
 const (
 	PK = "PK"
@@ -35,29 +38,6 @@ const (
 
 	Type = "Type"
 )
-
-var (
-	dbTypeDynamo   = key.String("db.type", "dynamodb")
-	dbInstanceKey  = key.New("db.instance").String
-	dbStatementKey = key.New("db.statement").String
-	indexNameKey   = key.New("db.index").String
-
-	pageCountKey          = key.New("db.page_count").Int
-	requestedItemCountKey = key.New("db.request_item_count").Int
-	itemCountKey          = key.New("db.item_count").Int
-
-	unitsConsumedKey  = key.New("db.consumed.total").String
-	readsConsumedKey  = key.New("db.consumed.reads").String
-	writesConsumedKey = key.New("db.consumed.writes").String
-)
-
-func keyAttr(k string, v *dynamodb.AttributeValue) core.KeyValue {
-	return key.String("db.key."+k, v.String())
-}
-
-func exprValAttr(k string, v *dynamodb.AttributeValue) core.KeyValue {
-	return key.String("db.value."+k, v.String())
-}
 
 type DynamoConfig struct {
 	TableName          string `env:"DYNAMO_TABLE_NAME"`
@@ -90,7 +70,7 @@ func WrapDynamo(real dynamodbiface.DynamoDBAPI) *DynamoDB {
 }
 
 func (d *DynamoDB) BatchGetItemWithContext(ctx context.Context, input *dynamodb.BatchGetItemInput, opts ...request.Option) (*dynamodb.BatchGetItemOutput, error) {
-	ctx, span := tracer.Start(ctx, "dynamodb.BatchGetItem",
+	ctx, span := tr.Start(ctx, "dynamodb.BatchGetItem",
 		trace.WithSpanKind(trace.SpanKindClient),
 		trace.WithAttributes(dbTypeDynamo))
 	defer span.End()
@@ -131,7 +111,7 @@ func (d *DynamoDB) BatchGetItemWithContext(ctx context.Context, input *dynamodb.
 }
 
 func (d *DynamoDB) BatchGetItemPagesWithContext(ctx context.Context, input *dynamodb.BatchGetItemInput, fn func(*dynamodb.BatchGetItemOutput, bool) bool, opts ...request.Option) error {
-	ctx, span := tracer.Start(ctx, "dynamodb.BatchGetItemPages",
+	ctx, span := tr.Start(ctx, "dynamodb.BatchGetItemPages",
 		trace.WithSpanKind(trace.SpanKindClient),
 		trace.WithAttributes(dbTypeDynamo))
 	defer span.End()
@@ -177,7 +157,7 @@ func (d *DynamoDB) BatchGetItemPagesWithContext(ctx context.Context, input *dyna
 }
 
 func (d *DynamoDB) BatchWriteItemWithContext(ctx context.Context, input *dynamodb.BatchWriteItemInput, opts ...request.Option) (*dynamodb.BatchWriteItemOutput, error) {
-	ctx, span := tracer.Start(ctx, "dynamodb.BatchWriteItem",
+	ctx, span := tr.Start(ctx, "dynamodb.BatchWriteItem",
 		trace.WithSpanKind(trace.SpanKindClient),
 		trace.WithAttributes(dbTypeDynamo))
 	defer span.End()
@@ -218,7 +198,7 @@ func (d *DynamoDB) BatchWriteItemWithContext(ctx context.Context, input *dynamod
 }
 
 func (d *DynamoDB) CreateTableWithContext(ctx context.Context, input *dynamodb.CreateTableInput, opts ...request.Option) (*dynamodb.CreateTableOutput, error) {
-	ctx, span := tracer.Start(ctx, "dynamodb.CreateTable",
+	ctx, span := tr.Start(ctx, "dynamodb.CreateTable",
 		trace.WithSpanKind(trace.SpanKindClient),
 		trace.WithAttributes(
 			dbTypeDynamo,
@@ -235,7 +215,7 @@ func (d *DynamoDB) CreateTableWithContext(ctx context.Context, input *dynamodb.C
 }
 
 func (d *DynamoDB) DeleteTableWithContext(ctx context.Context, input *dynamodb.DeleteTableInput, opts ...request.Option) (*dynamodb.DeleteTableOutput, error) {
-	ctx, span := tracer.Start(ctx, "dynamodb.DeleteTable",
+	ctx, span := tr.Start(ctx, "dynamodb.DeleteTable",
 		trace.WithSpanKind(trace.SpanKindClient),
 		trace.WithAttributes(
 			dbTypeDynamo,
@@ -252,7 +232,7 @@ func (d *DynamoDB) DeleteTableWithContext(ctx context.Context, input *dynamodb.D
 }
 
 func (d *DynamoDB) GetItemWithContext(ctx context.Context, input *dynamodb.GetItemInput, opts ...request.Option) (*dynamodb.GetItemOutput, error) {
-	ctx, span := tracer.Start(ctx, "dynamodb.GetItem",
+	ctx, span := tr.Start(ctx, "dynamodb.GetItem",
 		trace.WithSpanKind(trace.SpanKindClient),
 		trace.WithAttributes(
 			dbTypeDynamo,
@@ -277,7 +257,7 @@ func (d *DynamoDB) GetItemWithContext(ctx context.Context, input *dynamodb.GetIt
 }
 
 func (d *DynamoDB) PutItemWithContext(ctx context.Context, input *dynamodb.PutItemInput, opts ...request.Option) (*dynamodb.PutItemOutput, error) {
-	ctx, span := tracer.Start(ctx, "dynamodb.PutItem",
+	ctx, span := tr.Start(ctx, "dynamodb.PutItem",
 		trace.WithSpanKind(trace.SpanKindClient),
 		trace.WithAttributes(
 			dbTypeDynamo,
@@ -306,7 +286,7 @@ func (d *DynamoDB) PutItemWithContext(ctx context.Context, input *dynamodb.PutIt
 }
 
 func (d *DynamoDB) QueryWithContext(ctx context.Context, input *dynamodb.QueryInput, opts ...request.Option) (*dynamodb.QueryOutput, error) {
-	ctx, span := tracer.Start(ctx, "dynamodb.Query",
+	ctx, span := tr.Start(ctx, "dynamodb.Query",
 		trace.WithSpanKind(trace.SpanKindClient),
 		trace.WithAttributes(
 			dbTypeDynamo,
@@ -344,7 +324,7 @@ func (d *DynamoDB) QueryWithContext(ctx context.Context, input *dynamodb.QueryIn
 }
 
 func (d *DynamoDB) UpdateItemWithContext(ctx context.Context, input *dynamodb.UpdateItemInput, opts ...request.Option) (*dynamodb.UpdateItemOutput, error) {
-	ctx, span := tracer.Start(ctx, "dynamodb.UpdateItem",
+	ctx, span := tr.Start(ctx, "dynamodb.UpdateItem",
 		trace.WithSpanKind(trace.SpanKindClient),
 		trace.WithAttributes(
 			dbTypeDynamo,
