@@ -41,6 +41,32 @@ func (suite *dynamoSuite) TestPagedFeeds() {
 	suite.Equal("Feed #8", conn.Edges[2].(FeedEdge).Title)
 }
 
+func (suite *dynamoSuite) TestPagedFeedsExcludesDeactivated() {
+	suite.preloadFeeds(3)
+
+	id := model.NewFeedID()
+	u := "https://www.example.org/feed.json"
+	suite.NoError(suite.feedRepo.Create(suite.Ctx(), "test_user", id, u))
+	suite.NoError(suite.feedRepo.UpdateDetails(suite.Ctx(), shared.UpdateFeedParams{
+		ID:          id,
+		UserID:      "test_user",
+		Title:       "Feed to be deleted",
+		HomePageURL: "https://www.example.org/",
+	}))
+
+	conn, err := suite.feedQueries.Paged(suite.Ctx(), "test_user", pager.First(5, nil))
+	suite.Require().NoError(err)
+	suite.Require().NotNil(conn)
+	suite.Equal(4, len(conn.Edges))
+
+	suite.Require().NoError(suite.feedRepo.Deactivate(suite.Ctx(), "test_user", id))
+
+	conn, err = suite.feedQueries.Paged(suite.Ctx(), "test_user", pager.First(5, nil))
+	suite.Require().NoError(err)
+	suite.Require().NotNil(conn)
+	suite.Equal(3, len(conn.Edges))
+}
+
 func (suite *dynamoSuite) preloadFeeds(n int) {
 	for i := 1; i <= n; i++ {
 		id := model.NewFeedID()

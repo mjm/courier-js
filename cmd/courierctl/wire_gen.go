@@ -63,11 +63,10 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 		return nil, err
 	}
 	feedRepository := feeds2.NewFeedRepository(dbDB)
-	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
 	clock := clockwork.NewRealClock()
 	sharedFeedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := feeds2.NewCommandHandler(writeCommandBus, bus, tasksTasks, feedRepository, subscriptionRepository, sharedFeedRepository, postRepository)
+	commandHandler := feeds2.NewCommandHandler(writeCommandBus, bus, tasksTasks, feedRepository, sharedFeedRepository, postRepository)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err

@@ -16,8 +16,7 @@ import (
 // DefaultSet is a provider set for creating a command handler and its dependencies.
 var DefaultSet = wire.NewSet(
 	NewCommandHandler,
-	NewFeedRepository,
-	NewSubscriptionRepository)
+	NewFeedRepository)
 
 // CommandHandler processes feed-related commands and updates the data store appropriately.
 type CommandHandler struct {
@@ -25,9 +24,8 @@ type CommandHandler struct {
 	events         event.Sink
 	tasks          *tasks.Tasks
 	feedRepo       *FeedRepository
-	subRepo        *SubscriptionRepository
 	feedRepoDynamo *shared.FeedRepository
-	postRepoDynamo *shared.PostRepository
+	postRepo       *shared.PostRepository
 }
 
 // NewCommandHandler creates a new command handler for feed commands.
@@ -36,17 +34,15 @@ func NewCommandHandler(
 	events event.Sink,
 	tasks *tasks.Tasks,
 	feedRepo *FeedRepository,
-	subRepo *SubscriptionRepository,
 	feedRepoDynamo *shared.FeedRepository,
-	postRepoDynamo *shared.PostRepository) *CommandHandler {
+	postRepo *shared.PostRepository) *CommandHandler {
 	h := &CommandHandler{
 		bus:            bus,
 		events:         events,
 		tasks:          tasks,
 		feedRepo:       feedRepo,
-		subRepo:        subRepo,
 		feedRepoDynamo: feedRepoDynamo,
-		postRepoDynamo: postRepoDynamo,
+		postRepo:       postRepo,
 	}
 	bus.Register(h,
 		CreateCommand{},
@@ -84,12 +80,10 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 		return nil, h.handleUpdateOptions(ctx, cmd)
 
 	case UnsubscribeCommand:
-		err := h.handleUnsubscribe(ctx, cmd)
-		return nil, err
+		return nil, h.handleUnsubscribe(ctx, cmd)
 
 	case ImportPostsCommand:
-		err := h.handleImportPosts(ctx, cmd)
-		return nil, err
+		return nil, h.handleImportPosts(ctx, cmd)
 
 	}
 

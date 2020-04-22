@@ -131,14 +131,14 @@ func (r *Root) DeleteFeed(ctx context.Context, args struct {
 		return
 	}
 
-	var id feeds.SubscriptionID
+	var id model.FeedID
 	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
 
 	cmd := feeds.UnsubscribeCommand{
-		UserID:         userID,
-		SubscriptionID: id,
+		UserID: userID,
+		FeedID: id,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return

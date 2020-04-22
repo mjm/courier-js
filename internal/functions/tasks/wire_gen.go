@@ -92,9 +92,8 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	feedsFeedRepository := feeds.NewFeedRepository(dbDB)
-	subscriptionRepository := feeds.NewSubscriptionRepository(dbDB)
 	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedsFeedRepository, subscriptionRepository, feedRepository, postRepository)
+	feedsCommandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedsFeedRepository, feedRepository, postRepository)
 	handler := NewHandler(commandBus, commandHandler, feedsCommandHandler)
 	return handler, nil
 }

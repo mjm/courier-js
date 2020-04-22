@@ -58,7 +58,7 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 		span.SetAttributes(key.String("import.oldest_published", oldestPublishedStr))
 	}
 
-	if err := h.postRepoDynamo.Write(ctx, ps); err != nil {
+	if err := h.postRepo.Write(ctx, ps); err != nil {
 		return err
 	}
 

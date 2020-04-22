@@ -301,6 +301,38 @@ func (r *FeedRepository) UpdateSettings(ctx context.Context, params UpdateFeedSe
 	return nil
 }
 
+func (r *FeedRepository) Deactivate(ctx context.Context, userID string, feedID model.FeedID) error {
+	now := model.FormatTime(r.clock.Now())
+
+	id := model.UserFeedID{
+		UserID: userID,
+		FeedID: feedID,
+	}
+
+	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
+		TableName:           &r.dynamoConfig.TableName,
+		Key:                 id.PrimaryKey(),
+		UpdateExpression:    aws.String(`SET #deactivated_at = :deactivated_at REMOVE #lsi1sk`),
+		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#deactivated_at)`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk":             aws.String(db.PK),
+			"#lsi1sk":         aws.String(db.LSI1SK),
+			"#deactivated_at": aws.String(model.ColDeactivatedAt),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":deactivated_at": {S: aws.String(now)},
+		},
+	})
+	if err != nil {
+		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
+			return ErrNoFeed
+		}
+		return err
+	}
+
+	return nil
+}
+
 func (r *FeedRepository) primaryKeyValues(userID string, feedID model.FeedID) (string, string) {
 	pk := fmt.Sprintf("USER#%s", userID)
 	sk := fmt.Sprintf("FEED#%s", feedID)

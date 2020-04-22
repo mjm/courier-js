@@ -26,6 +26,7 @@ const (
 	ColEtag             = "Etag"
 	ColLastModified     = "LastModified"
 	ColAutopost         = "Autopost"
+	ColDeactivatedAt    = "DeactivatedAt"
 )
 
 type FeedID string
