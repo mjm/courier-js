@@ -17,6 +17,8 @@ import (
 type SubscribeCommand struct {
 	// UserID is the ID of the user subscribing to the feed.
 	UserID string
+	// FeedID is the generated ID that should be used for the new feed.
+	FeedID model.FeedID
 	// URL is the URL the user entered that they wish to subscribe to. This URL may be
 	// for a web page, not a feed, in which case we need to locate the actual feed for
 	// the site via link tags.
@@ -25,7 +27,7 @@ type SubscribeCommand struct {
 
 func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeCommand) error {
 	span := trace.SpanFromContext(ctx)
-	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedURL(cmd.URL))
+	span.SetAttributes(keys.UserID(cmd.UserID), keys.FeedIDDynamo(cmd.FeedID), keys.FeedURL(cmd.URL))
 
 	u, err := url.Parse(cmd.URL)
 	if err != nil {
@@ -39,23 +41,19 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 
 	span.SetAttributes(key.String("feed.resolved_url", u.String()))
 
-	// TODO handle existing feed for the URL
+	// TODO handle existing feed for the URL by returning an error
 
-	feedID := model.NewFeedID()
-	span.SetAttributes(keys.FeedIDDynamo(feedID))
-
-	if err := h.feedRepoDynamo.Create(ctx, cmd.UserID, feedID, u.String()); err != nil {
+	if err := h.feedRepoDynamo.Create(ctx, cmd.UserID, cmd.FeedID, u.String()); err != nil {
 		return err
 	}
-
 	_, err = h.bus.Run(ctx, RefreshCommand{
 		UserID: cmd.UserID,
-		FeedID: feedID,
+		FeedID: cmd.FeedID,
 	})
 
 	h.events.Fire(ctx, feeds.FeedSubscribed{
 		UserId: cmd.UserID,
-		FeedId: string(feedID),
+		FeedId: string(cmd.FeedID),
 	})
 
 	return nil

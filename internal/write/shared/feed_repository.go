@@ -182,6 +182,7 @@ func (r *FeedRepository) Create(ctx context.Context, userID string, feedID model
 		Item: map[string]*dynamodb.AttributeValue{
 			db.PK:              {S: &pk},
 			db.SK:              {S: &sk},
+			db.LSI1SK:          {S: aws.String("FEED#")},
 			db.GSI2PK:          {S: &sk},
 			db.GSI2SK:          {S: &sk},
 			db.Type:            {S: aws.String(model.TypeFeed)},

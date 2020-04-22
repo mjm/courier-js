@@ -39,6 +39,7 @@ go_test(
     embed = [":go_default_library"],
     deps = [
         "//internal/db:go_default_library",
+        "//internal/pager:go_default_library",
         "//internal/shared/model:go_default_library",
         "//internal/trace:go_default_library",
         "@com_github_jonboulle_clockwork//:go_default_library",

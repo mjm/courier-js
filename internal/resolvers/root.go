@@ -18,7 +18,6 @@ import (
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/pager"
-	feeds2 "github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
@@ -96,16 +95,16 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	case TweetNode:
 		n, err = r.Tweet(ctx, args)
 	case PostNode:
-		var id feeds2.PostID
+		var id model.PostID
 		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 			return nil, err
 		}
 
-		p, err := r.q.Posts.Get(ctx, id)
+		p, err := r.q.PostsDynamo.Get(ctx, id)
 		if err != nil {
 			return nil, err
 		}
-		n = NewPost(r.q, p)
+		n = NewPostDynamo(r.q, p)
 	default:
 		err = status.Errorf(codes.InvalidArgument, "unrecognized ID kind %q", kind)
 	}

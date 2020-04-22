@@ -35,8 +35,8 @@ func (n *Node) ToTweet() (*TweetDynamo, bool) {
 	return t, ok
 }
 
-func (n *Node) ToPost() (*Post, bool) {
-	p, ok := n.nodeResolver.(*Post)
+func (n *Node) ToPost() (*PostDynamo, bool) {
+	p, ok := n.nodeResolver.(*PostDynamo)
 	return p, ok
 }
 

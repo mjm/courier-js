@@ -72,15 +72,17 @@ var feedSubscribeCommand = &cli.Command{
 
 		fmt.Fprintf(os.Stderr, "Subscribing to feed at %s as %s\n", u, userID)
 
+		feedID := model.NewFeedID()
 		cmd := feeds.SubscribeCommand{
 			UserID: userID,
+			FeedID: feedID,
 			URL:    u,
 		}
 		if _, err := commandBus.Run(ctx.Context, cmd); err != nil {
 			return err
 		}
 
-		fmt.Fprintf(os.Stderr, "Done.\n")
+		fmt.Fprintf(os.Stderr, "Done. New feed ID: %s\n", feedID)
 		return nil
 	},
 }

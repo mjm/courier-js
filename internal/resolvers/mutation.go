@@ -7,6 +7,7 @@ import (
 	"github.com/mjm/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/auth"
+	readfeeds "github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
@@ -19,7 +20,7 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	Input struct{ URL string }
 }) (
 	payload struct {
-		Feed     *SubscribedFeed
+		Feed     *SubscribedFeedDynamo
 		FeedEdge *SubscribedFeedEdge
 	},
 	err error,
@@ -37,16 +38,15 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	if err != nil {
 		return
 	}
-	subID := v.(feeds.SubscriptionID)
+	id := v.(model.FeedID)
 
-	// load the edge so that Relay can update its store
-	edge, err := r.q.FeedSubscriptions.GetEdge(ctx, subID)
+	f, err := r.q.FeedsDynamo.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	payload.Feed = NewSubscribedFeed(r.q, &edge.Subscription)
-	// payload.FeedEdge = &SubscribedFeedEdge{q: r.q, edge: edge}
+	payload.Feed = NewSubscribedFeedDynamo(r.q, f)
+	payload.FeedEdge = &SubscribedFeedEdge{q: r.q, edge: readfeeds.FeedEdge(*f)}
 	return
 }
 

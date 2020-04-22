@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/mjm/courier-js/internal/pager"
 	"github.com/mjm/courier-js/internal/shared/model"
 )
 
@@ -51,20 +52,22 @@ func (suite *dynamoSuite) TestFeedsByHomePageURL() {
 
 	suite.ElementsMatch([]*model.Feed{
 		{
-			ID:          feedID,
-			UserID:      "test_user",
-			URL:         "https://www.example.org/feed.json",
-			HomePageURL: "https://www.example.org",
-			CreatedAt:   suite.clock.Now(),
-			UpdatedAt:   suite.clock.Now(),
+			ID:            feedID,
+			UserID:        "test_user",
+			URL:           "https://www.example.org/feed.json",
+			HomePageURL:   "https://www.example.org",
+			CreatedAt:     suite.clock.Now(),
+			UpdatedAt:     suite.clock.Now(),
+			ByTitleCursor: pager.Cursor("FEED#" + feedID + "###FEED#"),
 		},
 		{
-			ID:          feedID2,
-			UserID:      "test_user2",
-			URL:         "https://www.example.org/feed.json",
-			HomePageURL: "https://www.example.org/",
-			CreatedAt:   suite.clock.Now(),
-			UpdatedAt:   suite.clock.Now(),
+			ID:            feedID2,
+			UserID:        "test_user2",
+			URL:           "https://www.example.org/feed.json",
+			HomePageURL:   "https://www.example.org/",
+			CreatedAt:     suite.clock.Now(),
+			UpdatedAt:     suite.clock.Now(),
+			ByTitleCursor: pager.Cursor("FEED#" + feedID2 + "###FEED#"),
 		},
 	}, fs)
 }

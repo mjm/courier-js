@@ -53,17 +53,11 @@ func (p *feedPager) ScanEdge(item map[string]*dynamodb.AttributeValue) (pager.Ed
 		return nil, err
 	}
 
-	return &FeedEdge{
-		Feed:   *f,
-		cursor: pager.Cursor(aws.StringValue(item[db.SK].S) + "###" + aws.StringValue(item[db.LSI1SK].S)),
-	}, nil
+	return FeedEdge(*f), nil
 }
 
-type FeedEdge struct {
-	model.Feed
-	cursor pager.Cursor
-}
+type FeedEdge model.Feed
 
-func (e *FeedEdge) Cursor() pager.Cursor {
-	return e.cursor
+func (e FeedEdge) Cursor() pager.Cursor {
+	return e.ByTitleCursor
 }

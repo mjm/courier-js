@@ -28,8 +28,8 @@ func (suite *dynamoSuite) TestPagedFeeds() {
 
 	suite.Equal(5, len(conn.Edges))
 	suite.True(conn.PageInfo.HasNextPage)
-	suite.Equal("Feed #1", conn.Edges[0].(*FeedEdge).Title)
-	suite.Equal("Feed #5", conn.Edges[4].(*FeedEdge).Title)
+	suite.Equal("Feed #1", conn.Edges[0].(FeedEdge).Title)
+	suite.Equal("Feed #5", conn.Edges[4].(FeedEdge).Title)
 
 	conn, err = suite.feedQueries.Paged(suite.Ctx(), "test_user", pager.First(5, conn.PageInfo.EndCursor))
 	suite.Require().NoError(err)
@@ -37,8 +37,8 @@ func (suite *dynamoSuite) TestPagedFeeds() {
 
 	suite.Equal(3, len(conn.Edges))
 	suite.False(conn.PageInfo.HasNextPage)
-	suite.Equal("Feed #6", conn.Edges[0].(*FeedEdge).Title)
-	suite.Equal("Feed #8", conn.Edges[2].(*FeedEdge).Title)
+	suite.Equal("Feed #6", conn.Edges[0].(FeedEdge).Title)
+	suite.Equal("Feed #8", conn.Edges[2].(FeedEdge).Title)
 }
 
 func (suite *dynamoSuite) preloadFeeds(n int) {

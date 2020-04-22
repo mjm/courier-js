@@ -9,6 +9,7 @@ import (
 	"github.com/segmentio/ksuid"
 
 	"github.com/mjm/courier-js/internal/db"
+	"github.com/mjm/courier-js/internal/pager"
 )
 
 const (
@@ -68,6 +69,8 @@ type Feed struct {
 	CachingHeaders   *CachingHeaders
 	MicropubEndpoint string
 	Autopost         bool
+
+	ByTitleCursor pager.Cursor
 }
 
 func NewFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) {
@@ -79,6 +82,10 @@ func NewFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) 
 		UserID:   userID,
 		URL:      aws.StringValue(attrs[ColURL].S),
 		Autopost: aws.BoolValue(attrs[ColAutopost].BOOL),
+	}
+
+	if lsi1skVal, ok := attrs[db.LSI1SK]; ok {
+		feed.ByTitleCursor = pager.Cursor(aws.StringValue(attrs[db.SK].S) + "###" + aws.StringValue(lsi1skVal.S))
 	}
 
 	if titleVal, ok := attrs[ColTitle]; ok {
