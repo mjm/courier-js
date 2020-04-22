@@ -4,12 +4,9 @@ import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type FeedDetails_feed = {
     readonly id: string;
-    readonly feed: {
-        readonly title: string;
-        readonly url: string;
-        readonly " $fragmentRefs": FragmentRefs<"FeedRecentPostList_feed">;
-    };
-    readonly " $fragmentRefs": FragmentRefs<"FeedInfoCard_feed" | "FeedRemoveButton_feed">;
+    readonly title: string;
+    readonly url: string;
+    readonly " $fragmentRefs": FragmentRefs<"FeedRecentPostList_feed" | "FeedInfoCard_feed" | "FeedRemoveButton_feed">;
     readonly " $refType": "FeedDetails_feed";
 };
 export type FeedDetails_feed$data = FeedDetails_feed;
@@ -23,7 +20,7 @@ export type FeedDetails_feed$key = {
 const node: ReaderFragment = {
   "kind": "Fragment",
   "name": "FeedDetails_feed",
-  "type": "SubscribedFeed",
+  "type": "Feed",
   "metadata": null,
   "argumentDefinitions": [],
   "selections": [
@@ -35,34 +32,23 @@ const node: ReaderFragment = {
       "storageKey": null
     },
     {
-      "kind": "LinkedField",
+      "kind": "ScalarField",
       "alias": null,
-      "name": "feed",
-      "storageKey": null,
+      "name": "title",
       "args": null,
-      "concreteType": "Feed",
-      "plural": false,
-      "selections": [
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "title",
-          "args": null,
-          "storageKey": null
-        },
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "url",
-          "args": null,
-          "storageKey": null
-        },
-        {
-          "kind": "FragmentSpread",
-          "name": "FeedRecentPostList_feed",
-          "args": null
-        }
-      ]
+      "storageKey": null
+    },
+    {
+      "kind": "ScalarField",
+      "alias": null,
+      "name": "url",
+      "args": null,
+      "storageKey": null
+    },
+    {
+      "kind": "FragmentSpread",
+      "name": "FeedRecentPostList_feed",
+      "args": null
     },
     {
       "kind": "FragmentSpread",
@@ -76,5 +62,5 @@ const node: ReaderFragment = {
     }
   ]
 };
-(node as any).hash = 'dc7ada0647de530c97101edf5f14e320';
+(node as any).hash = '03d906736fdcf774215f6f91c6195e59';
 export default node;

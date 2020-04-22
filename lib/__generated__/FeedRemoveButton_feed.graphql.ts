@@ -4,9 +4,6 @@ import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type FeedRemoveButton_feed = {
     readonly id: string;
-    readonly feed: {
-        readonly title: string;
-    };
     readonly " $refType": "FeedRemoveButton_feed";
 };
 export type FeedRemoveButton_feed$data = FeedRemoveButton_feed;
@@ -20,7 +17,7 @@ export type FeedRemoveButton_feed$key = {
 const node: ReaderFragment = {
   "kind": "Fragment",
   "name": "FeedRemoveButton_feed",
-  "type": "SubscribedFeed",
+  "type": "Feed",
   "metadata": null,
   "argumentDefinitions": [],
   "selections": [
@@ -30,26 +27,8 @@ const node: ReaderFragment = {
       "name": "id",
       "args": null,
       "storageKey": null
-    },
-    {
-      "kind": "LinkedField",
-      "alias": null,
-      "name": "feed",
-      "storageKey": null,
-      "args": null,
-      "concreteType": "Feed",
-      "plural": false,
-      "selections": [
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "title",
-          "args": null,
-          "storageKey": null
-        }
-      ]
     }
   ]
 };
-(node as any).hash = '437de01bd89be67b0fc87f07495bae7f';
+(node as any).hash = 'd9c2540940c221f840dbd7e3ea514cd7';
 export default node;

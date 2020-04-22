@@ -16,6 +16,8 @@ type Query {
 
   subscribedFeed(id: ID!): SubscribedFeed
 
+  feed(id: ID!): Feed
+
   tweet(id: ID!): Tweet
 
   allEvents(

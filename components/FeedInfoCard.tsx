@@ -30,13 +30,9 @@ const FeedInfoCard: React.FC<Props> = ({
   return (
     <div className="rounded-lg shadow-md bg-neutral-1 p-4">
       <div className="flex flex-wrap -mx-4 -mb-4">
-        <LastCheckedSection feed={feed.feed} environment={environment} />
+        <LastCheckedSection feed={feed} environment={environment} />
         <AutopostSection feed={feed} environment={environment} />
-        <MicropubSection
-          feed={feed.feed}
-          user={user}
-          environment={environment}
-        />
+        <MicropubSection feed={feed} user={user} environment={environment} />
       </div>
     </div>
   )
@@ -44,15 +40,12 @@ const FeedInfoCard: React.FC<Props> = ({
 
 export default createFragmentContainer(FeedInfoCard, {
   feed: graphql`
-    fragment FeedInfoCard_feed on SubscribedFeed {
+    fragment FeedInfoCard_feed on Feed {
       id
-      feed {
-        id
-        url
-        homePageURL
-        micropubEndpoint
-        refreshedAt
-      }
+      url
+      homePageURL
+      micropubEndpoint
+      refreshedAt
       autopost
     }
   `,
@@ -84,7 +77,7 @@ const InfoSection: React.FC<{
 }
 
 const LastCheckedSection: React.FC<{
-  feed: FeedInfoCard_feed["feed"]
+  feed: FeedInfoCard_feed
   environment: Environment
 }> = ({ feed, environment }) => {
   const { setError, clearErrors } = useErrors()
@@ -158,7 +151,7 @@ const micropubQuery = graphql`
 `
 
 export const MicropubSection: React.FC<{
-  feed: FeedInfoCard_feed["feed"]
+  feed: FeedInfoCard_feed
   user: FeedInfoCard_user
   environment: Environment
 }> = ({ feed, user, environment }) => {
@@ -199,7 +192,7 @@ export const MicropubSection: React.FC<{
         isMicropubAuthenticated ? (
           <>Syndicating with Micropub</>
         ) : (
-          <>Not syncidating with Micropub</>
+          <>Not syndicating with Micropub</>
         )
       }
       buttonLabel={

@@ -47,11 +47,8 @@ const FeedRemoveButton: React.FC<{
 
 export default createFragmentContainer(FeedRemoveButton, {
   feed: graphql`
-    fragment FeedRemoveButton_feed on SubscribedFeed {
+    fragment FeedRemoveButton_feed on Feed {
       id
-      feed {
-        title
-      }
     }
   `,
 })

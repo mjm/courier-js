@@ -69,17 +69,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	var err error
 	switch kind {
 	case FeedNode:
-		var id model.FeedID
-		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
-			return nil, err
-		}
-
-		f, err := r.q.FeedsDynamo.Get(ctx, id)
-		if err != nil {
-			return nil, err
-		}
-		n = NewFeedDynamo(r.q, f)
-
+		n, err = r.Feed(ctx, args)
 	case SubscribedFeedNode:
 		n, err = r.SubscribedFeed(ctx, args)
 	case TweetNode:
@@ -103,6 +93,20 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 		return nil, err
 	}
 	return &Node{n}, nil
+}
+
+func (r *Root) Feed(ctx context.Context, args struct{ ID graphql.ID }) (*FeedDynamo, error) {
+	var id model.FeedID
+	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
+		return nil, err
+	}
+
+	f, err := r.q.FeedsDynamo.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewFeedDynamo(r.q, f), nil
 }
 
 // SubscribedFeed gets a feed subscription for the current user by ID.

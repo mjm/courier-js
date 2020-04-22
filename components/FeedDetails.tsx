@@ -17,13 +17,13 @@ interface Props {
 const FeedDetails: React.FC<Props> = ({ feed, user }) => {
   return (
     <div className="px-3">
-      <Head title={`${feed.feed.title} - Feed Details`} />
+      <Head title={`${feed.title} - Feed Details`} />
 
       <div className="w-full flex justify-between items-baseline mb-4">
-        <h2 className="text-xl font-bold text-neutral-9">{feed.feed.title}</h2>
+        <h2 className="text-xl font-bold text-neutral-9">{feed.title}</h2>
         <div className="text-sm text-neutral-8">
           Pulling from{" "}
-          <span className="font-bold text-neutral-10">{feed.feed.url}</span>
+          <span className="font-bold text-neutral-10">{feed.url}</span>
         </div>
       </div>
 
@@ -34,7 +34,7 @@ const FeedDetails: React.FC<Props> = ({ feed, user }) => {
         </div>
         <div className="w-full md:w-2/3 lg:w-3/4 px-3">
           <ErrorBox className="mb-4" />
-          <FeedRecentPostList feed={feed.feed} />
+          <FeedRecentPostList feed={feed} />
         </div>
       </div>
     </div>
@@ -43,13 +43,11 @@ const FeedDetails: React.FC<Props> = ({ feed, user }) => {
 
 export default createFragmentContainer(FeedDetails, {
   feed: graphql`
-    fragment FeedDetails_feed on SubscribedFeed {
+    fragment FeedDetails_feed on Feed {
       id
-      feed {
-        title
-        url
-        ...FeedRecentPostList_feed
-      }
+      title
+      url
+      ...FeedRecentPostList_feed
       ...FeedInfoCard_feed
       ...FeedRemoveButton_feed
     }
