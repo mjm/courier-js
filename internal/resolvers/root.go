@@ -25,6 +25,8 @@ import (
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
 	"github.com/mjm/courier-js/internal/write/user"
+	"github.com/mjm/courier-js/pkg/locatefeed"
+	"github.com/mjm/courier-js/pkg/scraper"
 )
 
 var DefaultSet = wire.NewSet(New, QueriesProvider)
@@ -208,25 +210,29 @@ func (r *Root) Microformats(ctx context.Context, args struct {
 func (r *Root) FeedPreview(ctx context.Context, args struct {
 	URL string
 }) (*FeedPreview, error) {
-	userID, err := auth.GetUser(ctx).ID()
+	_, err := auth.GetUser(ctx).ID()
 	if err != nil {
 		return nil, err
 	}
 
-	cmd := feeds.CreateCommand{
-		UserID: userID,
-		URL:    args.URL,
-	}
-	v, err := r.commandBus.Run(ctx, cmd)
-	if err != nil {
-		return nil, err
-	}
-	feedID := v.(feeds.FeedID)
-
-	feed, err := r.q.Feeds.Get(ctx, feedID)
+	u, err := url.Parse(args.URL)
 	if err != nil {
 		return nil, err
 	}
 
-	return &FeedPreview{q: r.q, feed: feed}, nil
+	u, err = locatefeed.Locate(ctx, u)
+	if err != nil {
+		return nil, err
+	}
+
+	sf, err := scraper.Scrape(ctx, u, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &FeedPreview{
+		q:   r.q,
+		url: u,
+		sf:  sf,
+	}, nil
 }
