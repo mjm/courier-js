@@ -5,11 +5,9 @@ go 1.13
 require (
 	cloud.google.com/go v0.53.0
 	cloud.google.com/go/pubsub v1.1.0
-	github.com/HnH/qry v1.1.0
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/PuerkitoBio/purell v1.1.1
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
-	github.com/alexflint/go-filemutex v1.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.30.7
 	github.com/aybabtme/iocontrol v0.0.0-20150809002002-ad15bcfc95a0 // indirect
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
@@ -28,13 +26,9 @@ require (
 	github.com/honeycombio/libhoney-go v1.12.4
 	github.com/honeycombio/opentelemetry-exporter-go v0.4.1-0.20200403221622-c399dc0c29d4
 	github.com/jarcoal/httpmock v1.0.4
-	github.com/jmoiron/sqlx v1.2.0
 	github.com/jonboulle/clockwork v0.1.0
-	github.com/khaiql/dbcleaner v2.3.0+incompatible
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
-	github.com/lib/pq v1.3.0
-	github.com/mattn/go-sqlite3 v1.10.0 // indirect
 	github.com/mjm/graphql-go v0.0.0-20200213070811-48021cabfccf
 	github.com/mmcdole/gofeed v1.0.0-beta2
 	github.com/mmcdole/goxpp v0.0.0-20181012175147-0068e33feabf // indirect
@@ -43,7 +37,6 @@ require (
 	github.com/rogpeppe/go-charset v0.0.0-20190617161244-0dc95cdf6f31 // indirect
 	github.com/segmentio/ksuid v1.0.2
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.5.1
 	github.com/stripe/stripe-go v68.13.0+incompatible
 	github.com/urfave/cli/v2 v2.2.0
