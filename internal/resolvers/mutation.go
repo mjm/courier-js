@@ -250,16 +250,20 @@ func (r *Root) EditTweet(ctx context.Context, args struct {
 
 	// TODO change GraphQL API to send all the tweets here
 
-	// cmd := tweets.UpdateCommand{
-	// 	TweetGroupID: id,
-	// 	Body:         args.Input.Body,
-	// }
-	// if args.Input.MediaURLs != nil {
-	// 	cmd.MediaURLs = *args.Input.MediaURLs
-	// }
-	// if _, err = r.commandBus.Run(ctx, cmd); err != nil {
-	// 	return
-	// }
+	cmd := tweets.UpdateCommand{
+		TweetGroupID: id,
+		Tweets: []*model.Tweet{
+			{
+				Body: args.Input.Body,
+			},
+		},
+	}
+	if args.Input.MediaURLs != nil {
+		cmd.Tweets[0].MediaURLs = *args.Input.MediaURLs
+	}
+	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
+		return
+	}
 
 	t, err := r.q.TweetsDynamo.Get(ctx, id)
 	if err != nil {
