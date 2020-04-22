@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 8d586dcacc4644a3c963235f818a9782 */
+/* @relayHash 322986402b4f0cf04942db3efea52d96 */
 
 import { ConcreteRequest } from "relay-runtime";
 export type SetFeedOptionsInput = {
@@ -68,7 +68,7 @@ v1 = [
         "name": "feed",
         "storageKey": null,
         "args": null,
-        "concreteType": "SubscribedFeed",
+        "concreteType": "Feed",
         "plural": false,
         "selections": [
           {

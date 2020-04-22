@@ -7,15 +7,6 @@ type Query {
 
   node(id: ID!): Node
 
-  allSubscribedFeeds(
-    first: Int
-    last: Int
-    before: Cursor
-    after: Cursor
-  ): SubscribedFeedConnection!
-
-  subscribedFeed(id: ID!): SubscribedFeed
-
   feed(id: ID!): Feed
 
   tweet(id: ID!): Tweet
@@ -158,7 +149,7 @@ input SetFeedOptionsInput {
 }
 
 type SetFeedOptionsPayload {
-  feed: SubscribedFeed!
+  feed: Feed!
 }
 
 input DeleteFeedInput {
@@ -195,27 +186,9 @@ type Post implements Node {
   updatedAt: Time!
 }
 
-type SubscribedFeed implements Node {
-  id: ID!
-  feed: Feed!
-  autopost: Boolean!
-}
-
-type SubscribedFeedConnection {
-  edges: [SubscribedFeedEdge!]!
-  nodes: [SubscribedFeed!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
-}
-
-type SubscribedFeedEdge {
-  cursor: Cursor!
-  node: SubscribedFeed!
-}
-
 type Tweet implements Node & TweetContent {
   id: ID!
-  feed: SubscribedFeed!
+  feed: Feed!
   post: Post!
   action: TweetAction!
   body: String!
@@ -336,7 +309,6 @@ type Event implements Node {
   createdAt: Time!
 
   feed: Feed
-  subscribedFeed: SubscribedFeed
   tweet: Tweet
   boolValue: Boolean
 }

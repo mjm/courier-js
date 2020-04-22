@@ -70,8 +70,6 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	switch kind {
 	case FeedNode:
 		n, err = r.Feed(ctx, args)
-	case SubscribedFeedNode:
-		n, err = r.SubscribedFeed(ctx, args)
 	case TweetNode:
 		n, err = r.Tweet(ctx, args)
 	case PostNode:
@@ -109,21 +107,6 @@ func (r *Root) Feed(ctx context.Context, args struct{ ID graphql.ID }) (*FeedDyn
 	return NewFeedDynamo(r.q, f), nil
 }
 
-// SubscribedFeed gets a feed subscription for the current user by ID.
-func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID }) (*SubscribedFeedDynamo, error) {
-	var id model.FeedID
-	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
-		return nil, err
-	}
-
-	f, err := r.q.FeedsDynamo.Get(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewSubscribedFeedDynamo(r.q, f), nil
-}
-
 // Tweet gets a tweet for the current user by ID.
 func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*TweetDynamo, error) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -147,21 +130,6 @@ func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*TweetD
 	}
 
 	return NewTweetDynamo(r.q, tg), nil
-}
-
-// AllSubscribedFeeds gets a paged list of feed subscriptions for the current user.
-func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*SubscribedFeedConnection, error) {
-	userID, err := auth.GetUser(ctx).ID()
-	if err != nil {
-		return nil, err
-	}
-
-	conn, err := r.q.FeedsDynamo.Paged(ctx, userID, args)
-	if err != nil {
-		return nil, err
-	}
-
-	return &SubscribedFeedConnection{q: r.q, conn: conn}, nil
 }
 
 // AllEvents gets a paged list of events for the current user.

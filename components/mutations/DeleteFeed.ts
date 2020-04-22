@@ -1,4 +1,4 @@
-import { Environment,graphql } from "react-relay"
+import { Environment, graphql } from "react-relay"
 import { ROOT_ID } from "relay-runtime"
 
 import { commitMutationAsync } from "./commitMutationAsync"
@@ -23,8 +23,8 @@ export async function deleteFeed(
       {
         type: "RANGE_DELETE",
         parentID: ROOT_ID,
-        connectionKeys: [{ key: "FeedList_allSubscribedFeeds" }],
-        pathToConnection: ["allSubscribedFeeds"],
+        connectionKeys: [{ key: "FeedList_allFeeds" }],
+        pathToConnection: ["viewer", "allFeeds"],
         deletedIDFieldName: "id",
       },
     ],

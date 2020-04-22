@@ -5,11 +5,10 @@ import (
 )
 
 const (
-	TweetNode          string = "twt"
-	PostNode           string = "post"
-	FeedNode           string = "feed"
-	SubscribedFeedNode string = "sub"
-	EventNode          string = "evt"
+	TweetNode string = "twt"
+	PostNode  string = "post"
+	FeedNode  string = "feed"
+	EventNode string = "evt"
 )
 
 type nodeResolver interface {
@@ -23,11 +22,6 @@ type Node struct {
 func (n *Node) ToFeed() (*FeedDynamo, bool) {
 	f, ok := n.nodeResolver.(*FeedDynamo)
 	return f, ok
-}
-
-func (n *Node) ToSubscribedFeed() (*SubscribedFeedDynamo, bool) {
-	sf, ok := n.nodeResolver.(*SubscribedFeedDynamo)
-	return sf, ok
 }
 
 func (n *Node) ToTweet() (*TweetDynamo, bool) {

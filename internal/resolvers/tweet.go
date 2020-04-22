@@ -23,13 +23,13 @@ func (t *TweetDynamo) ID() graphql.ID {
 	return relay.MarshalID(TweetNode, t.tg.PostID())
 }
 
-func (t *TweetDynamo) Feed(ctx context.Context) (*SubscribedFeedDynamo, error) {
+func (t *TweetDynamo) Feed(ctx context.Context) (*FeedDynamo, error) {
 	f, err := t.q.FeedsDynamo.Get(ctx, t.tg.FeedID())
 	if err != nil {
 		return nil, err
 	}
 
-	return NewSubscribedFeedDynamo(t.q, f), nil
+	return NewFeedDynamo(t.q, f), nil
 }
 
 func (t *TweetDynamo) Post(ctx context.Context) (*PostDynamo, error) {

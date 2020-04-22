@@ -44,19 +44,6 @@ func (e *Event) Feed(ctx context.Context) (*FeedDynamo, error) {
 	return NewFeedDynamo(e.q, f), nil
 }
 
-func (e *Event) SubscribedFeed(ctx context.Context) (*SubscribedFeedDynamo, error) {
-	if e.event.Feed == nil {
-		return nil, nil
-	}
-
-	f, err := e.q.FeedsDynamo.Get(ctx, e.event.Feed.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewSubscribedFeedDynamo(e.q, f), nil
-}
-
 func (e *Event) Tweet(ctx context.Context) (*TweetDynamo, error) {
 	if e.event.TweetGroup == nil {
 		return nil, nil

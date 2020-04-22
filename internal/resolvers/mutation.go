@@ -30,15 +30,16 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 		return
 	}
 
+	id := model.NewFeedID()
 	cmd := feeds.SubscribeCommand{
 		UserID: userID,
+		FeedID: id,
 		URL:    args.Input.URL,
 	}
-	v, err := r.commandBus.Run(ctx, cmd)
+	_, err = r.commandBus.Run(ctx, cmd)
 	if err != nil {
 		return
 	}
-	id := v.(model.FeedID)
 
 	f, err := r.q.FeedsDynamo.Get(ctx, id)
 	if err != nil {
@@ -89,7 +90,7 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		Autopost *bool
 	}
 }) (
-	payload struct{ Feed *SubscribedFeedDynamo },
+	payload struct{ Feed *FeedDynamo },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -116,7 +117,7 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		return
 	}
 
-	payload.Feed = NewSubscribedFeedDynamo(r.q, f)
+	payload.Feed = NewFeedDynamo(r.q, f)
 	return
 }
 

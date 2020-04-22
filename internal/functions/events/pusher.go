@@ -70,10 +70,9 @@ func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
 }
 
 var fieldsToNodeKind = map[string]string{
-	"FeedId":             resolvers.FeedNode,
-	"FeedSubscriptionId": resolvers.SubscribedFeedNode,
-	"PostId":             resolvers.PostNode,
-	"TweetId":            resolvers.TweetNode,
+	"FeedId":  resolvers.FeedNode,
+	"PostId":  resolvers.PostNode,
+	"TweetId": resolvers.TweetNode,
 }
 
 func convertIDsToGraphQL(evt interface{}) interface{} {

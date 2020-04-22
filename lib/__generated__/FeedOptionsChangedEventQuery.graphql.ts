@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash a52f4398e47ca7b9384e438f55ac7ba9 */
+/* @relayHash 6b20c53a39ac97d35d763acd3760ce28 */
 
 import { ConcreteRequest } from "relay-runtime";
 export type FeedOptionsChangedEventQueryVariables = {
@@ -25,7 +25,7 @@ query FeedOptionsChangedEventQuery(
   node(id: $id) {
     __typename
     id
-    ... on SubscribedFeed {
+    ... on Feed {
       autopost
     }
   }
@@ -57,7 +57,7 @@ v2 = {
 },
 v3 = {
   "kind": "InlineFragment",
-  "type": "SubscribedFeed",
+  "type": "Feed",
   "selections": [
     {
       "kind": "ScalarField",
@@ -123,10 +123,10 @@ return {
     "operationKind": "query",
     "name": "FeedOptionsChangedEventQuery",
     "id": null,
-    "text": "query FeedOptionsChangedEventQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on SubscribedFeed {\n      autopost\n    }\n  }\n}\n",
+    "text": "query FeedOptionsChangedEventQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Feed {\n      autopost\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = '487240c0b67229c1816139af92ec4c51';
+(node as any).hash = 'edbca2dcce3f54439791530bef658eff';
 export default node;

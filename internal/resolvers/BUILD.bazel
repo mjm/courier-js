@@ -19,8 +19,6 @@ go_library(
         "preview.go",
         "queries.go",
         "root.go",
-        "subscribed_feed.go",
-        "subscribed_feed_connection.go",
         "tweet.go",
         "tweet_connection.go",
         "user.go",

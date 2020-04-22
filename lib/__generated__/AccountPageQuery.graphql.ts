@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 25a2c62b23f42f543180a853649a3b8f */
+/* @relayHash ccd341c6a44bc5dea3c025aefdfc25e4 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -33,13 +33,6 @@ fragment EventTableRow_event on Event {
   feed {
     id
     title
-  }
-  subscribedFeed {
-    id
-    feed {
-      title
-      id
-    }
   }
   tweet {
     id
@@ -98,13 +91,6 @@ v1 = {
   "kind": "ScalarField",
   "alias": null,
   "name": "id",
-  "args": null,
-  "storageKey": null
-},
-v2 = {
-  "kind": "ScalarField",
-  "alias": null,
-  "name": "title",
   "args": null,
   "storageKey": null
 };
@@ -302,31 +288,12 @@ return {
                     "plural": false,
                     "selections": [
                       (v1/*: any*/),
-                      (v2/*: any*/)
-                    ]
-                  },
-                  {
-                    "kind": "LinkedField",
-                    "alias": null,
-                    "name": "subscribedFeed",
-                    "storageKey": null,
-                    "args": null,
-                    "concreteType": "SubscribedFeed",
-                    "plural": false,
-                    "selections": [
-                      (v1/*: any*/),
                       {
-                        "kind": "LinkedField",
+                        "kind": "ScalarField",
                         "alias": null,
-                        "name": "feed",
-                        "storageKey": null,
+                        "name": "title",
                         "args": null,
-                        "concreteType": "Feed",
-                        "plural": false,
-                        "selections": [
-                          (v2/*: any*/),
-                          (v1/*: any*/)
-                        ]
+                        "storageKey": null
                       }
                     ]
                   },
@@ -416,7 +383,7 @@ return {
     "operationKind": "query",
     "name": "AccountPageQuery",
     "id": null,
-    "text": "query AccountPageQuery {\n  viewer {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  subscribedFeed {\n    id\n    feed {\n      title\n      id\n    }\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 10) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n  picture\n}\n",
+    "text": "query AccountPageQuery {\n  viewer {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 10) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n  picture\n}\n",
     "metadata": {}
   }
 };
