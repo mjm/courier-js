@@ -30,12 +30,18 @@ const EditTweetForm: React.FC<{
     <Formik
       initialValues={initialValues}
       initialStatus={{ error: null }}
-      onSubmit={async ({ action, ...values }, actions) => {
-        const input = { id: tweet.id, ...values }
-        // input.mediaURLs = input.mediaURLs.filter(url => url !== "")
+      onSubmit={async ({ action, tweets }, actions) => {
+        const input = {
+          id: tweet.id,
+          tweets: tweets.map(({ mediaURLs, ...t }) => ({
+            mediaURLs: mediaURLs.filter(url => url !== ""),
+            ...t,
+          })),
+        }
+
         try {
           if (action === "save") {
-            editTweet(relay.environment, input as any)
+            editTweet(relay.environment, input)
           } else {
             await postTweet(relay.environment, input)
           }
