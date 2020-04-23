@@ -1,4 +1,5 @@
 import { Environment, fetchQuery, graphql } from "relay-runtime"
+
 import { createEventHook } from "components/EventsProvider"
 
 export interface FeedRefreshedEvent {

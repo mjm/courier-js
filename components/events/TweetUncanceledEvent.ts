@@ -4,7 +4,7 @@ import { createEventHook } from "components/EventsProvider"
 
 export interface TweetUncanceledEvent {
   user_id: string
-  tweet_id: string
+  item_id: string
 }
 
 const fetchTweetQuery = graphql`
@@ -22,7 +22,7 @@ export async function handleTweetUncanceled(
   environment: Environment,
   event: TweetUncanceledEvent
 ): Promise<void> {
-  await fetchQuery(environment, fetchTweetQuery, { id: event.tweet_id })
+  await fetchQuery(environment, fetchTweetQuery, { id: event.item_id })
 }
 
 export const useTweetUncanceledEvent = createEventHook(
