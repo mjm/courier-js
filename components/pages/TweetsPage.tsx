@@ -17,12 +17,14 @@ import SubscriptionProvider, {
 import TweetList from "components/TweetList"
 import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
+import { useTweetEditedEvent } from "@events/TweetEditedEvent"
 
 const TweetsPage: NextPage<TweetsPageQueryResponse & {
   environment: Environment
 }> = ({ upcoming, past, viewer, environment }) => {
   useTweetCanceledEvent(environment)
   useTweetUncanceledEvent(environment)
+  useTweetEditedEvent(environment)
   useTweetPostedEvent(environment)
 
   return (
