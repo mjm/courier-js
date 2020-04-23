@@ -87,6 +87,10 @@ type WritePostParams struct {
 }
 
 func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error {
+	if len(ps) == 0 {
+		return nil
+	}
+
 	now := model.FormatTime(r.clock.Now())
 	var reqs []*dynamodb.WriteRequest
 

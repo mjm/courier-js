@@ -105,7 +105,7 @@ function withData<
           if (
             inner &&
             inner.extensions &&
-            inner.extensions.code === "UNAUTHENTICATED"
+            inner.extensions.code === "PermissionDenied"
           ) {
             // redirect auth errors to the login page
             if (ctx.res) {
