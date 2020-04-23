@@ -46,7 +46,8 @@ export default createFragmentContainer(EventTableRow, {
 const EventDescription: React.FC<{
   event: EventTableRow_event
 }> = ({ event }) => {
-  const tweetBody = event.tweet?.body
+  const tweets = event.tweetGroup?.tweets
+  const tweetBody = tweets?.length ? tweets[0].body : "no body"
   const feed = event.feed as EventTableRow_event["feed"] & {}
 
   switch (event.eventType) {
