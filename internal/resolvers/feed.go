@@ -10,55 +10,55 @@ import (
 	"github.com/mjm/courier-js/internal/shared/model"
 )
 
-type FeedDynamo struct {
+type Feed struct {
 	q Queries
 	f *model.Feed
 }
 
-func NewFeedDynamo(q Queries, f *model.Feed) *FeedDynamo {
-	return &FeedDynamo{q: q, f: f}
+func NewFeed(q Queries, f *model.Feed) *Feed {
+	return &Feed{q: q, f: f}
 }
 
-func (f *FeedDynamo) ID() graphql.ID {
+func (f *Feed) ID() graphql.ID {
 	return relay.MarshalID(FeedNode, f.f.ID)
 }
 
-func (f *FeedDynamo) URL() string {
+func (f *Feed) URL() string {
 	return f.f.URL
 }
 
-func (f *FeedDynamo) Title() string {
+func (f *Feed) Title() string {
 	return f.f.Title
 }
 
-func (f *FeedDynamo) HomePageURL() string {
+func (f *Feed) HomePageURL() string {
 	return f.f.HomePageURL
 }
 
-func (f *FeedDynamo) MicropubEndpoint() string {
+func (f *Feed) MicropubEndpoint() string {
 	return f.f.MicropubEndpoint
 }
 
-func (f *FeedDynamo) RefreshedAt() *graphql.Time {
+func (f *Feed) RefreshedAt() *graphql.Time {
 	if f.f.RefreshedAt != nil {
 		return &graphql.Time{Time: *f.f.RefreshedAt}
 	}
 	return nil
 }
 
-func (f *FeedDynamo) CreatedAt() graphql.Time {
+func (f *Feed) CreatedAt() graphql.Time {
 	return graphql.Time{Time: f.f.CreatedAt}
 }
 
-func (f *FeedDynamo) UpdatedAt() graphql.Time {
+func (f *Feed) UpdatedAt() graphql.Time {
 	return graphql.Time{Time: f.f.UpdatedAt}
 }
 
-func (f *FeedDynamo) Autopost() bool {
+func (f *Feed) Autopost() bool {
 	return f.f.Autopost
 }
 
-func (f *FeedDynamo) Posts(ctx context.Context, args pager.Options) (*PostConnection, error) {
+func (f *Feed) Posts(ctx context.Context, args pager.Options) (*PostConnection, error) {
 	conn, err := f.q.Posts.Paged(ctx, f.f.ID, args)
 	if err != nil {
 		return nil, err

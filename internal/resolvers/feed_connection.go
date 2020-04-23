@@ -22,11 +22,11 @@ func (c *FeedConnection) Edges() []*FeedEdge {
 	return edges
 }
 
-func (c *FeedConnection) Nodes() []*FeedDynamo {
-	var nodes []*FeedDynamo
+func (c *FeedConnection) Nodes() []*Feed {
+	var nodes []*Feed
 	for _, edge := range c.conn.Edges {
 		node := model.Feed(edge.(feeds.FeedEdge))
-		nodes = append(nodes, NewFeedDynamo(c.q, &node))
+		nodes = append(nodes, NewFeed(c.q, &node))
 	}
 	return nodes
 }
@@ -44,9 +44,9 @@ type FeedEdge struct {
 	edge feeds.FeedEdge
 }
 
-func (e *FeedEdge) Node() *FeedDynamo {
+func (e *FeedEdge) Node() *Feed {
 	n := model.Feed(e.edge)
-	return NewFeedDynamo(e.q, &n)
+	return NewFeed(e.q, &n)
 }
 
 func (e *FeedEdge) Cursor() pager.Cursor {

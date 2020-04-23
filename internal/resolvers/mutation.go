@@ -20,7 +20,7 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	Input struct{ URL string }
 }) (
 	payload struct {
-		Feed     *FeedDynamo
+		Feed     *Feed
 		FeedEdge *FeedEdge
 	},
 	err error,
@@ -46,7 +46,7 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 		return
 	}
 
-	payload.Feed = NewFeedDynamo(r.q, f)
+	payload.Feed = NewFeed(r.q, f)
 	payload.FeedEdge = &FeedEdge{q: r.q, edge: readfeeds.FeedEdge(*f)}
 	return
 }
@@ -54,7 +54,7 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 func (r *Root) RefreshFeed(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
-	payload struct{ Feed *FeedDynamo },
+	payload struct{ Feed *Feed },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -80,7 +80,7 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 		return
 	}
 
-	payload.Feed = NewFeedDynamo(r.q, f)
+	payload.Feed = NewFeed(r.q, f)
 	return
 }
 
@@ -90,7 +90,7 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		Autopost *bool
 	}
 }) (
-	payload struct{ Feed *FeedDynamo },
+	payload struct{ Feed *Feed },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -117,7 +117,7 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		return
 	}
 
-	payload.Feed = NewFeedDynamo(r.q, f)
+	payload.Feed = NewFeed(r.q, f)
 	return
 }
 

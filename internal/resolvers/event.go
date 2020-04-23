@@ -31,7 +31,7 @@ func (e *Event) CreatedAt() graphql.Time {
 	return graphql.Time{Time: e.event.CreatedAt}
 }
 
-func (e *Event) Feed(ctx context.Context) (*FeedDynamo, error) {
+func (e *Event) Feed(ctx context.Context) (*Feed, error) {
 	if e.event.Feed == nil {
 		return nil, nil
 	}
@@ -41,7 +41,7 @@ func (e *Event) Feed(ctx context.Context) (*FeedDynamo, error) {
 		return nil, err
 	}
 
-	return NewFeedDynamo(e.q, f), nil
+	return NewFeed(e.q, f), nil
 }
 
 func (e *Event) TweetGroup(ctx context.Context) (*TweetGroup, error) {

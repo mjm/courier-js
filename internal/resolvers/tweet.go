@@ -23,22 +23,22 @@ func (t *TweetGroup) ID() graphql.ID {
 	return relay.MarshalID(TweetNode, t.tg.PostID())
 }
 
-func (t *TweetGroup) Feed(ctx context.Context) (*FeedDynamo, error) {
+func (t *TweetGroup) Feed(ctx context.Context) (*Feed, error) {
 	f, err := t.q.Feeds.Get(ctx, t.tg.FeedID())
 	if err != nil {
 		return nil, err
 	}
 
-	return NewFeedDynamo(t.q, f), nil
+	return NewFeed(t.q, f), nil
 }
 
-func (t *TweetGroup) Post(ctx context.Context) (*PostDynamo, error) {
+func (t *TweetGroup) Post(ctx context.Context) (*Post, error) {
 	p, err := t.q.Posts.Get(ctx, t.tg.PostID())
 	if err != nil {
 		return nil, err
 	}
 
-	return NewPostDynamo(t.q, p), nil
+	return NewPost(t.q, p), nil
 }
 
 func (t *TweetGroup) Action() string {

@@ -82,7 +82,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 		if err != nil {
 			return nil, err
 		}
-		n = NewPostDynamo(r.q, p)
+		n = NewPost(r.q, p)
 	default:
 		err = status.Errorf(codes.InvalidArgument, "unrecognized ID kind %q", kind)
 	}
@@ -93,7 +93,7 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	return &Node{n}, nil
 }
 
-func (r *Root) Feed(ctx context.Context, args struct{ ID graphql.ID }) (*FeedDynamo, error) {
+func (r *Root) Feed(ctx context.Context, args struct{ ID graphql.ID }) (*Feed, error) {
 	var id model.FeedID
 	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func (r *Root) Feed(ctx context.Context, args struct{ ID graphql.ID }) (*FeedDyn
 		return nil, err
 	}
 
-	return NewFeedDynamo(r.q, f), nil
+	return NewFeed(r.q, f), nil
 }
 
 func (r *Root) TweetGroup(ctx context.Context, args struct{ ID graphql.ID }) (*TweetGroup, error) {

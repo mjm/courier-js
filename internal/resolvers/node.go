@@ -19,8 +19,8 @@ type Node struct {
 	nodeResolver
 }
 
-func (n *Node) ToFeed() (*FeedDynamo, bool) {
-	f, ok := n.nodeResolver.(*FeedDynamo)
+func (n *Node) ToFeed() (*Feed, bool) {
+	f, ok := n.nodeResolver.(*Feed)
 	return f, ok
 }
 
@@ -29,8 +29,8 @@ func (n *Node) ToTweetGroup() (*TweetGroup, bool) {
 	return t, ok
 }
 
-func (n *Node) ToPost() (*PostDynamo, bool) {
-	p, ok := n.nodeResolver.(*PostDynamo)
+func (n *Node) ToPost() (*Post, bool) {
+	p, ok := n.nodeResolver.(*Post)
 	return p, ok
 }
 

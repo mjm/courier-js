@@ -21,11 +21,11 @@ func (c *PostConnection) Edges() []*PostEdge {
 	return edges
 }
 
-func (c *PostConnection) Nodes() []*PostDynamo {
-	var nodes []*PostDynamo
+func (c *PostConnection) Nodes() []*Post {
+	var nodes []*Post
 	for _, edge := range c.conn.Edges {
 		node := edge.(*feeds.PostEdge).Post
-		nodes = append(nodes, NewPostDynamo(c.q, &node))
+		nodes = append(nodes, NewPost(c.q, &node))
 	}
 	return nodes
 }
@@ -43,8 +43,8 @@ type PostEdge struct {
 	edge *feeds.PostEdge
 }
 
-func (e *PostEdge) Node() *PostDynamo {
-	return NewPostDynamo(e.q, &e.edge.Post)
+func (e *PostEdge) Node() *Post {
+	return NewPost(e.q, &e.edge.Post)
 }
 
 func (e *PostEdge) Cursor() pager.Cursor {
