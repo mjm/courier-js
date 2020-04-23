@@ -18,11 +18,11 @@ func (c *TweetConnection) Edges() []*TweetEdge {
 	return edges
 }
 
-func (c *TweetConnection) Nodes() []*TweetDynamo {
-	var nodes []*TweetDynamo
+func (c *TweetConnection) Nodes() []*TweetGroup {
+	var nodes []*TweetGroup
 	for _, edge := range c.conn.Edges {
 		t := &edge.(*tweets.TweetGroupEdge).TweetGroup
-		nodes = append(nodes, NewTweetDynamo(c.q, t))
+		nodes = append(nodes, NewTweetGroup(c.q, t))
 	}
 	return nodes
 }
@@ -40,8 +40,8 @@ type TweetEdge struct {
 	edge *tweets.TweetGroupEdge
 }
 
-func (e *TweetEdge) Node() *TweetDynamo {
-	return NewTweetDynamo(e.q, &e.edge.TweetGroup)
+func (e *TweetEdge) Node() *TweetGroup {
+	return NewTweetGroup(e.q, &e.edge.TweetGroup)
 }
 
 func (e *TweetEdge) Cursor() pager.Cursor {

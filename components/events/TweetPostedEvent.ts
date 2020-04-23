@@ -1,4 +1,5 @@
 import { Environment, fetchQuery, graphql } from "relay-runtime"
+
 import { createEventHook } from "components/EventsProvider"
 
 export interface TweetPostedEvent {
@@ -11,10 +12,14 @@ const fetchTweetQuery = graphql`
   query TweetPostedEventQuery($id: ID!) {
     node(id: $id) {
       id
-      ... on Tweet {
+      ... on TweetGroup {
+        tweets {
+          body
+          mediaURLs
+          postedTweetID
+        }
         status
         postedAt
-        postedTweetID
         postAfter
       }
     }

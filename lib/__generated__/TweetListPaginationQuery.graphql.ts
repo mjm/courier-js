@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash d590d67ef93a2d5201e496d360176245 */
+/* @relayHash cb85aa7eb597b0273668c281c7223e34 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -32,16 +32,18 @@ query TweetListPaginationQuery(
   }
 }
 
-fragment EditTweetForm_tweet on Tweet {
+fragment EditTweetForm_tweet on TweetGroup {
   id
-  body
-  mediaURLs
+  tweets {
+    body
+    mediaURLs
+  }
 }
 
 fragment TweetCard_tweet on TweetContent {
   ...EditTweetForm_tweet
-  ...ViewTweet_tweet
-  ... on Tweet {
+  ...ViewTweetGroup_tweet
+  ... on TweetGroup {
     status
   }
 }
@@ -64,18 +66,27 @@ fragment TweetList_tweets_3KQYpM on User {
   }
 }
 
-fragment ViewTweet_tweet on TweetContent {
-  body
-  mediaURLs
+fragment ViewTweetGroup_tweet on TweetContent {
+  tweets {
+    ...ViewTweet_tweet
+    body
+    mediaURLs
+    postedTweetID
+  }
   action
   retweetID
-  ... on Tweet {
+  ... on TweetGroup {
     id
     status
     postAfter
     postedAt
-    postedTweetID
+    postedRetweetID
   }
+}
+
+fragment ViewTweet_tweet on Tweet {
+  body
+  mediaURLs
 }
 */
 
@@ -177,7 +188,7 @@ return {
             "name": "allTweets",
             "storageKey": null,
             "args": (v2/*: any*/),
-            "concreteType": "TweetConnection",
+            "concreteType": "TweetGroupConnection",
             "plural": false,
             "selections": [
               {
@@ -186,7 +197,7 @@ return {
                 "name": "edges",
                 "storageKey": null,
                 "args": null,
-                "concreteType": "TweetEdge",
+                "concreteType": "TweetGroupEdge",
                 "plural": true,
                 "selections": [
                   {
@@ -195,7 +206,7 @@ return {
                     "name": "node",
                     "storageKey": null,
                     "args": null,
-                    "concreteType": "Tweet",
+                    "concreteType": "TweetGroup",
                     "plural": false,
                     "selections": [
                       {
@@ -206,18 +217,36 @@ return {
                         "storageKey": null
                       },
                       {
-                        "kind": "ScalarField",
+                        "kind": "LinkedField",
                         "alias": null,
-                        "name": "body",
+                        "name": "tweets",
+                        "storageKey": null,
                         "args": null,
-                        "storageKey": null
-                      },
-                      {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "mediaURLs",
-                        "args": null,
-                        "storageKey": null
+                        "concreteType": "Tweet",
+                        "plural": true,
+                        "selections": [
+                          {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "body",
+                            "args": null,
+                            "storageKey": null
+                          },
+                          {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "mediaURLs",
+                            "args": null,
+                            "storageKey": null
+                          },
+                          {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "postedTweetID",
+                            "args": null,
+                            "storageKey": null
+                          }
+                        ]
                       },
                       {
                         "kind": "ScalarField",
@@ -257,7 +286,7 @@ return {
                       {
                         "kind": "ScalarField",
                         "alias": null,
-                        "name": "postedTweetID",
+                        "name": "postedRetweetID",
                         "args": null,
                         "storageKey": null
                       },
@@ -332,7 +361,7 @@ return {
     "operationKind": "query",
     "name": "TweetListPaginationQuery",
     "id": null,
-    "text": "query TweetListPaginationQuery(\n  $filter: TweetFilter\n  $count: Int!\n  $cursor: Cursor\n) {\n  viewer {\n    ...TweetList_tweets_3KQYpM\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment TweetCard_tweet on TweetContent {\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n  ... on Tweet {\n    status\n  }\n}\n\nfragment TweetList_tweets_3KQYpM on User {\n  allTweets(filter: $filter, first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweet_tweet on TweetContent {\n  body\n  mediaURLs\n  action\n  retweetID\n  ... on Tweet {\n    id\n    status\n    postAfter\n    postedAt\n    postedTweetID\n  }\n}\n",
+    "text": "query TweetListPaginationQuery(\n  $filter: TweetFilter\n  $count: Int!\n  $cursor: Cursor\n) {\n  viewer {\n    ...TweetList_tweets_3KQYpM\n  }\n}\n\nfragment EditTweetForm_tweet on TweetGroup {\n  id\n  tweets {\n    body\n    mediaURLs\n  }\n}\n\nfragment TweetCard_tweet on TweetContent {\n  ...EditTweetForm_tweet\n  ...ViewTweetGroup_tweet\n  ... on TweetGroup {\n    status\n  }\n}\n\nfragment TweetList_tweets_3KQYpM on User {\n  allTweets(filter: $filter, first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweetGroup_tweet on TweetContent {\n  tweets {\n    ...ViewTweet_tweet\n    body\n    mediaURLs\n    postedTweetID\n  }\n  action\n  retweetID\n  ... on TweetGroup {\n    id\n    status\n    postAfter\n    postedAt\n    postedRetweetID\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  body\n  mediaURLs\n}\n",
     "metadata": {}
   }
 };

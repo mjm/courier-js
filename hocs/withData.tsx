@@ -114,8 +114,14 @@ function withData<
             } else {
               Router.push("/login")
             }
+            return {
+              ...(composedInitialProps as IP),
+              queryRecords,
+            }
           }
         }
+
+        throw err
       }
     }
 

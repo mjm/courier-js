@@ -24,8 +24,8 @@ func (n *Node) ToFeed() (*FeedDynamo, bool) {
 	return f, ok
 }
 
-func (n *Node) ToTweet() (*TweetDynamo, bool) {
-	t, ok := n.nodeResolver.(*TweetDynamo)
+func (n *Node) ToTweetGroup() (*TweetGroup, bool) {
+	t, ok := n.nodeResolver.(*TweetGroup)
 	return t, ok
 }
 

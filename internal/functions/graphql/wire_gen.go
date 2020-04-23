@@ -65,9 +65,9 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	}
 	subscriptionQueries := billing2.NewSubscriptionQueries(api, management)
 	queries := resolvers.Queries{
-		FeedsDynamo:   feedQueries,
-		PostsDynamo:   postQueries,
-		TweetsDynamo:  tweetQueries,
+		Feeds:         feedQueries,
+		Posts:         postQueries,
+		Tweets:        tweetQueries,
 		Events:        eventQueries,
 		Customers:     customerQueries,
 		Subscriptions: subscriptionQueries,

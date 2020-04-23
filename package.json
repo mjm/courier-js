@@ -95,6 +95,7 @@
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-simple-import-sort": "^5.0.0",
     "graphql": "^14.5.8",
+    "ignore-loader": "^0.1.2",
     "prettier": "^1.19.1",
     "raw-loader": "^3.0.0",
     "relay-compiler": "^7.1.0",

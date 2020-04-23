@@ -71,7 +71,7 @@ const node: ReaderFragment = {
           "variableName": "filter"
         }
       ],
-      "concreteType": "TweetConnection",
+      "concreteType": "TweetGroupConnection",
       "plural": false,
       "selections": [
         {
@@ -80,7 +80,7 @@ const node: ReaderFragment = {
           "name": "edges",
           "storageKey": null,
           "args": null,
-          "concreteType": "TweetEdge",
+          "concreteType": "TweetGroupEdge",
           "plural": true,
           "selections": [
             {
@@ -89,7 +89,7 @@ const node: ReaderFragment = {
               "name": "node",
               "storageKey": null,
               "args": null,
-              "concreteType": "Tweet",
+              "concreteType": "TweetGroup",
               "plural": false,
               "selections": [
                 {

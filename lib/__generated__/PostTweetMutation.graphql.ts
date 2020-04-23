@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 3abfe6e961fb6587b1c0399f0c0fed37 */
+/* @relayHash fe0f4df90b601d9be46abcb7e9a25a0c */
 
 import { ConcreteRequest } from "relay-runtime";
 export type TweetStatus = "CANCELED" | "DRAFT" | "POSTED" | "%future added value";
@@ -13,13 +13,15 @@ export type PostTweetMutationVariables = {
 };
 export type PostTweetMutationResponse = {
     readonly postTweet: {
-        readonly tweet: {
+        readonly tweetGroup: {
             readonly id: string;
-            readonly body: string;
-            readonly mediaURLs: ReadonlyArray<string>;
+            readonly tweets: ReadonlyArray<{
+                readonly body: string;
+                readonly mediaURLs: ReadonlyArray<string>;
+                readonly postedTweetID: string | null;
+            }>;
             readonly status: TweetStatus;
             readonly postedAt: any | null;
-            readonly postedTweetID: string | null;
             readonly postAfter: any | null;
         };
     };
@@ -36,13 +38,15 @@ mutation PostTweetMutation(
   $input: PostTweetInput!
 ) {
   postTweet(input: $input) {
-    tweet {
+    tweetGroup {
       id
-      body
-      mediaURLs
+      tweets {
+        body
+        mediaURLs
+        postedTweetID
+      }
       status
       postedAt
-      postedTweetID
       postAfter
     }
   }
@@ -77,10 +81,10 @@ v1 = [
       {
         "kind": "LinkedField",
         "alias": null,
-        "name": "tweet",
+        "name": "tweetGroup",
         "storageKey": null,
         "args": null,
-        "concreteType": "Tweet",
+        "concreteType": "TweetGroup",
         "plural": false,
         "selections": [
           {
@@ -91,18 +95,36 @@ v1 = [
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
+            "kind": "LinkedField",
             "alias": null,
-            "name": "body",
+            "name": "tweets",
+            "storageKey": null,
             "args": null,
-            "storageKey": null
-          },
-          {
-            "kind": "ScalarField",
-            "alias": null,
-            "name": "mediaURLs",
-            "args": null,
-            "storageKey": null
+            "concreteType": "Tweet",
+            "plural": true,
+            "selections": [
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "body",
+                "args": null,
+                "storageKey": null
+              },
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "mediaURLs",
+                "args": null,
+                "storageKey": null
+              },
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "postedTweetID",
+                "args": null,
+                "storageKey": null
+              }
+            ]
           },
           {
             "kind": "ScalarField",
@@ -115,13 +137,6 @@ v1 = [
             "kind": "ScalarField",
             "alias": null,
             "name": "postedAt",
-            "args": null,
-            "storageKey": null
-          },
-          {
-            "kind": "ScalarField",
-            "alias": null,
-            "name": "postedTweetID",
             "args": null,
             "storageKey": null
           },
@@ -157,10 +172,10 @@ return {
     "operationKind": "mutation",
     "name": "PostTweetMutation",
     "id": null,
-    "text": "mutation PostTweetMutation(\n  $input: PostTweetInput!\n) {\n  postTweet(input: $input) {\n    tweet {\n      id\n      body\n      mediaURLs\n      status\n      postedAt\n      postedTweetID\n      postAfter\n    }\n  }\n}\n",
+    "text": "mutation PostTweetMutation(\n  $input: PostTweetInput!\n) {\n  postTweet(input: $input) {\n    tweetGroup {\n      id\n      tweets {\n        body\n        mediaURLs\n        postedTweetID\n      }\n      status\n      postedAt\n      postAfter\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = 'a6ac4989dd2c5cbf008446fe998fb311';
+(node as any).hash = '56c9e238cc3a6ba6fa9e6bc4738e92a0';
 export default node;

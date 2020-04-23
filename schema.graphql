@@ -9,7 +9,7 @@ type Query {
 
   feed(id: ID!): Feed
 
-  tweet(id: ID!): Tweet
+  tweetGroup(id: ID!): TweetGroup
 
   allEvents(
     first: Int
@@ -68,7 +68,7 @@ type User {
     last: Int
     before: Cursor
     after: Cursor
-  ): TweetConnection!
+  ): TweetGroupConnection!
 
   allFeeds(
     first: Int
@@ -186,17 +186,22 @@ type Post implements Node {
   updatedAt: Time!
 }
 
-type Tweet implements Node & TweetContent {
+type TweetGroup implements Node & TweetContent {
   id: ID!
   feed: Feed!
   post: Post!
   action: TweetAction!
-  body: String!
-  mediaURLs: [String!]!
   retweetID: String!
+  tweets: [Tweet!]!
   status: TweetStatus!
   postAfter: Time
   postedAt: Time
+  postedRetweetID: String
+}
+
+type Tweet {
+  body: String!
+  mediaURLs: [String!]!
   postedTweetID: String
 }
 
@@ -216,16 +221,16 @@ enum TweetFilter {
   PAST
 }
 
-type TweetConnection {
-  edges: [TweetEdge!]!
-  nodes: [Tweet!]!
+type TweetGroupConnection {
+  edges: [TweetGroupEdge!]!
+  nodes: [TweetGroup!]!
   pageInfo: PageInfo!
   totalCount: Int!
 }
 
-type TweetEdge {
+type TweetGroupEdge {
   cursor: Cursor!
-  node: Tweet!
+  node: TweetGroup!
 }
 
 input CancelTweetInput {
@@ -233,7 +238,7 @@ input CancelTweetInput {
 }
 
 type CancelTweetPayload {
-  tweet: Tweet!
+  tweetGroup: TweetGroup!
 }
 
 input UncancelTweetInput {
@@ -241,7 +246,7 @@ input UncancelTweetInput {
 }
 
 type UncancelTweetPayload {
-  tweet: Tweet!
+  tweetGroup: TweetGroup!
 }
 
 input PostTweetInput {
@@ -251,17 +256,21 @@ input PostTweetInput {
 }
 
 type PostTweetPayload {
-  tweet: Tweet!
+  tweetGroup: TweetGroup!
 }
 
 input EditTweetInput {
   id: ID!
+  tweets: [TweetEdit!]!
+}
+
+input TweetEdit {
   body: String!
   mediaURLs: [String!]
 }
 
 type EditTweetPayload {
-  tweet: Tweet!
+  tweetGroup: TweetGroup!
 }
 
 input SubscribeInput {
@@ -309,7 +318,7 @@ type Event implements Node {
   createdAt: Time!
 
   feed: Feed
-  tweet: Tweet
+  tweetGroup: TweetGroup
   boolValue: Boolean
 }
 
@@ -345,14 +354,12 @@ type FeedPreview {
 
 type TweetPreview implements TweetContent {
   action: TweetAction!
-  body: String!
-  mediaURLs: [String!]!
   retweetID: String!
+  tweets: [Tweet!]!
 }
 
 interface TweetContent {
   action: TweetAction!
-  body: String!
-  mediaURLs: [String!]!
   retweetID: String!
+  tweets: [Tweet!]!
 }

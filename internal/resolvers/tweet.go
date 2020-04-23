@@ -10,21 +10,21 @@ import (
 	"github.com/mjm/courier-js/internal/shared/model"
 )
 
-type TweetDynamo struct {
+type TweetGroup struct {
 	q  Queries
 	tg *model.TweetGroup
 }
 
-func NewTweetDynamo(q Queries, tweet *model.TweetGroup) *TweetDynamo {
-	return &TweetDynamo{q: q, tg: tweet}
+func NewTweetGroup(q Queries, tweet *model.TweetGroup) *TweetGroup {
+	return &TweetGroup{q: q, tg: tweet}
 }
 
-func (t *TweetDynamo) ID() graphql.ID {
+func (t *TweetGroup) ID() graphql.ID {
 	return relay.MarshalID(TweetNode, t.tg.PostID())
 }
 
-func (t *TweetDynamo) Feed(ctx context.Context) (*FeedDynamo, error) {
-	f, err := t.q.FeedsDynamo.Get(ctx, t.tg.FeedID())
+func (t *TweetGroup) Feed(ctx context.Context) (*FeedDynamo, error) {
+	f, err := t.q.Feeds.Get(ctx, t.tg.FeedID())
 	if err != nil {
 		return nil, err
 	}
@@ -32,8 +32,8 @@ func (t *TweetDynamo) Feed(ctx context.Context) (*FeedDynamo, error) {
 	return NewFeedDynamo(t.q, f), nil
 }
 
-func (t *TweetDynamo) Post(ctx context.Context) (*PostDynamo, error) {
-	p, err := t.q.PostsDynamo.Get(ctx, t.tg.PostID())
+func (t *TweetGroup) Post(ctx context.Context) (*PostDynamo, error) {
+	p, err := t.q.Posts.Get(ctx, t.tg.PostID())
 	if err != nil {
 		return nil, err
 	}
@@ -41,60 +41,62 @@ func (t *TweetDynamo) Post(ctx context.Context) (*PostDynamo, error) {
 	return NewPostDynamo(t.q, p), nil
 }
 
-func (t *TweetDynamo) Action() string {
+func (t *TweetGroup) Action() string {
 	return strings.ToUpper(string(t.tg.Action))
 }
 
-func (t *TweetDynamo) Body() string {
-	// TODO change schema to represent tweets as part of groups
-
-	if len(t.tg.Tweets) > 0 {
-		return t.tg.Tweets[0].Body
-	}
-	return ""
-}
-
-func (t *TweetDynamo) MediaURLs() []string {
-	// TODO change schema to represent tweets as part of groups
-
-	if len(t.tg.Tweets) > 0 {
-		return t.tg.Tweets[0].MediaURLs
-	}
-	return nil
-}
-
-func (t *TweetDynamo) RetweetID() string {
+func (t *TweetGroup) RetweetID() string {
 	return t.tg.RetweetID
 }
 
-func (t *TweetDynamo) Status() string {
+func (t *TweetGroup) Tweets() []*Tweet {
+	var ts []*Tweet
+	for _, tweet := range t.tg.Tweets {
+		ts = append(ts, &Tweet{t: tweet})
+	}
+	return ts
+}
+
+func (t *TweetGroup) Status() string {
 	return strings.ToUpper(string(t.tg.Status))
 }
 
-func (t *TweetDynamo) PostAfter() *graphql.Time {
+func (t *TweetGroup) PostAfter() *graphql.Time {
 	if t.tg.PostAfter != nil {
 		return &graphql.Time{Time: *t.tg.PostAfter}
 	}
 	return nil
 }
 
-func (t *TweetDynamo) PostedAt() *graphql.Time {
+func (t *TweetGroup) PostedAt() *graphql.Time {
 	if t.tg.PostedAt != nil {
 		return &graphql.Time{Time: *t.tg.PostedAt}
 	}
 	return nil
 }
 
-func (t *TweetDynamo) PostedTweetID() *string {
-	// TODO change schema to represent tweets as part of groups
-
-	if len(t.tg.Tweets) > 0 && t.tg.Tweets[0].PostedTweetID != "" {
-		return &t.tg.Tweets[0].PostedTweetID
+func (t *TweetGroup) PostedRetweetID() *string {
+	if t.tg.PostedRetweetID == "" {
+		return nil
 	}
+	return &t.tg.PostedRetweetID
+}
 
-	if t.tg.PostedRetweetID != "" {
-		return &t.tg.PostedRetweetID
+type Tweet struct {
+	t *model.Tweet
+}
+
+func (t *Tweet) Body() string {
+	return t.t.Body
+}
+
+func (t *Tweet) MediaURLs() []string {
+	return t.t.MediaURLs
+}
+
+func (t *Tweet) PostedTweetID() *string {
+	if t.t.PostedTweetID == "" {
+		return nil
 	}
-
-	return nil
+	return &t.t.PostedTweetID
 }

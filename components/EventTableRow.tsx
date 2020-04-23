@@ -32,9 +32,11 @@ export default createFragmentContainer(EventTableRow, {
         id
         title
       }
-      tweet {
+      tweetGroup {
         id
-        body
+        tweets {
+          body
+        }
       }
       boolValue
     }

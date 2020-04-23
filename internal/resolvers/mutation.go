@@ -41,7 +41,7 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 		return
 	}
 
-	f, err := r.q.FeedsDynamo.Get(ctx, id)
+	f, err := r.q.Feeds.Get(ctx, id)
 	if err != nil {
 		return
 	}
@@ -75,7 +75,7 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 		return
 	}
 
-	f, err := r.q.FeedsDynamo.Get(ctx, id)
+	f, err := r.q.Feeds.Get(ctx, id)
 	if err != nil {
 		return
 	}
@@ -112,7 +112,7 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		return
 	}
 
-	f, err := r.q.FeedsDynamo.Get(ctx, id)
+	f, err := r.q.Feeds.Get(ctx, id)
 	if err != nil {
 		return
 	}
@@ -153,7 +153,7 @@ func (r *Root) DeleteFeed(ctx context.Context, args struct {
 func (r *Root) CancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
-	payload struct{ Tweet *TweetDynamo },
+	payload struct{ TweetGroup *TweetGroup },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -178,19 +178,19 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 		return
 	}
 
-	t, err := r.q.TweetsDynamo.Get(ctx, id)
+	t, err := r.q.Tweets.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	payload.Tweet = NewTweetDynamo(r.q, t)
+	payload.TweetGroup = NewTweetGroup(r.q, t)
 	return
 }
 
 func (r *Root) UncancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
-	payload struct{ Tweet *TweetDynamo },
+	payload struct{ TweetGroup *TweetGroup },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -215,23 +215,25 @@ func (r *Root) UncancelTweet(ctx context.Context, args struct {
 		return
 	}
 
-	t, err := r.q.TweetsDynamo.Get(ctx, id)
+	t, err := r.q.Tweets.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	payload.Tweet = NewTweetDynamo(r.q, t)
+	payload.TweetGroup = NewTweetGroup(r.q, t)
 	return
 }
 
 func (r *Root) EditTweet(ctx context.Context, args struct {
 	Input struct {
-		ID        graphql.ID
-		Body      string
-		MediaURLs *[]string
+		ID     graphql.ID
+		Tweets []struct {
+			Body      string
+			MediaURLs *[]string
+		}
 	}
 }) (
-	payload struct{ Tweet *TweetDynamo },
+	payload struct{ TweetGroup *TweetGroup },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -249,29 +251,29 @@ func (r *Root) EditTweet(ctx context.Context, args struct {
 		PostID: postID,
 	}
 
-	// TODO change GraphQL API to send all the tweets here
+	var ts []*model.Tweet
+	for _, inputTweet := range args.Input.Tweets {
+		t := &model.Tweet{Body: inputTweet.Body}
+		if inputTweet.MediaURLs != nil {
+			t.MediaURLs = *inputTweet.MediaURLs
+		}
+		ts = append(ts, t)
+	}
 
 	cmd := tweets.UpdateCommand{
 		TweetGroupID: id,
-		Tweets: []*model.Tweet{
-			{
-				Body: args.Input.Body,
-			},
-		},
-	}
-	if args.Input.MediaURLs != nil {
-		cmd.Tweets[0].MediaURLs = *args.Input.MediaURLs
+		Tweets:       ts,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 
-	t, err := r.q.TweetsDynamo.Get(ctx, id)
+	t, err := r.q.Tweets.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	payload.Tweet = NewTweetDynamo(r.q, t)
+	payload.TweetGroup = NewTweetGroup(r.q, t)
 	return
 }
 
@@ -282,7 +284,7 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 		MediaURLs *[]string
 	}
 }) (
-	payload struct{ Tweet *TweetDynamo },
+	payload struct{ TweetGroup *TweetGroup },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -307,12 +309,12 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 		return
 	}
 
-	t, err := r.q.TweetsDynamo.Get(ctx, id)
+	t, err := r.q.Tweets.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	payload.Tweet = NewTweetDynamo(r.q, t)
+	payload.TweetGroup = NewTweetGroup(r.q, t)
 	return
 }
 

@@ -8,7 +8,7 @@ import {
 import EditTweetForm from "components/EditTweetForm"
 import { ErrorBox } from "components/ErrorBox"
 import { ErrorContainer } from "components/ErrorContainer"
-import ViewTweet from "components/ViewTweet"
+import ViewTweetGroup from "components/ViewTweetGroup"
 
 const TweetCard: React.FC<{
   tweet: TweetCard_tweet
@@ -35,7 +35,7 @@ const TweetCard: React.FC<{
             onStopEditing={() => setEditing(false)}
           />
         ) : (
-          <ViewTweet tweet={tweet} onEdit={() => setEditing(true)} />
+          <ViewTweetGroup tweet={tweet} onEdit={() => setEditing(true)} />
         )}
       </article>
     </ErrorContainer>
@@ -46,9 +46,9 @@ export default createFragmentContainer(TweetCard, {
   tweet: graphql`
     fragment TweetCard_tweet on TweetContent {
       ...EditTweetForm_tweet
-      ...ViewTweet_tweet
+      ...ViewTweetGroup_tweet
 
-      ... on Tweet {
+      ... on TweetGroup {
         status
       }
     }

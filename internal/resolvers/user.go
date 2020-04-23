@@ -82,7 +82,7 @@ func (u *User) AllTweets(ctx context.Context, args struct {
 		filter = *args.Filter
 	}
 
-	conn, err := u.q.TweetsDynamo.Paged(ctx, userID, filter, args.Options)
+	conn, err := u.q.Tweets.Paged(ctx, userID, filter, args.Options)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (u *User) AllFeeds(ctx context.Context, args pager.Options) (*FeedConnectio
 		return nil, err
 	}
 
-	conn, err := u.q.FeedsDynamo.Paged(ctx, userID, args)
+	conn, err := u.q.Feeds.Paged(ctx, userID, args)
 	if err != nil {
 		return nil, err
 	}

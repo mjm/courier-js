@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash a060ae7952c2a7def17d2772d098419f */
+/* @relayHash 329e723442197088066ccb08a6974689 */
 
 import { ConcreteRequest } from "relay-runtime";
 export type TweetStatus = "CANCELED" | "DRAFT" | "POSTED" | "%future added value";
@@ -11,7 +11,7 @@ export type UncancelTweetMutationVariables = {
 };
 export type UncancelTweetMutationResponse = {
     readonly uncancelTweet: {
-        readonly tweet: {
+        readonly tweetGroup: {
             readonly id: string;
             readonly status: TweetStatus;
         };
@@ -29,7 +29,7 @@ mutation UncancelTweetMutation(
   $input: UncancelTweetInput!
 ) {
   uncancelTweet(input: $input) {
-    tweet {
+    tweetGroup {
       id
       status
     }
@@ -65,10 +65,10 @@ v1 = [
       {
         "kind": "LinkedField",
         "alias": null,
-        "name": "tweet",
+        "name": "tweetGroup",
         "storageKey": null,
         "args": null,
-        "concreteType": "Tweet",
+        "concreteType": "TweetGroup",
         "plural": false,
         "selections": [
           {
@@ -110,10 +110,10 @@ return {
     "operationKind": "mutation",
     "name": "UncancelTweetMutation",
     "id": null,
-    "text": "mutation UncancelTweetMutation(\n  $input: UncancelTweetInput!\n) {\n  uncancelTweet(input: $input) {\n    tweet {\n      id\n      status\n    }\n  }\n}\n",
+    "text": "mutation UncancelTweetMutation(\n  $input: UncancelTweetInput!\n) {\n  uncancelTweet(input: $input) {\n    tweetGroup {\n      id\n      status\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = '2813f96f4564ab200bc7b6342b9576ea';
+(node as any).hash = 'dcce51d9b3722f5d84c3e409fe317355';
 export default node;

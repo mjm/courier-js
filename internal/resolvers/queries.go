@@ -10,9 +10,9 @@ import (
 )
 
 type Queries struct {
-	FeedsDynamo   *feeds.FeedQueries
-	PostsDynamo   *feeds.PostQueries
-	TweetsDynamo  *tweets.TweetQueries
+	Feeds         *feeds.FeedQueries
+	Posts         *feeds.PostQueries
+	Tweets        *tweets.TweetQueries
 	Events        *user.EventQueries
 	Customers     billing.CustomerQueries
 	Subscriptions billing.SubscriptionQueries

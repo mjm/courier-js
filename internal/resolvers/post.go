@@ -23,7 +23,7 @@ func (p *PostDynamo) ID() graphql.ID {
 }
 
 func (p *PostDynamo) Feed(ctx context.Context) (*FeedDynamo, error) {
-	f, err := p.q.FeedsDynamo.Get(ctx, p.p.FeedID())
+	f, err := p.q.Feeds.Get(ctx, p.p.FeedID())
 	if err != nil {
 		return nil, err
 	}

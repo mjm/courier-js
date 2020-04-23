@@ -1,4 +1,5 @@
 import { Environment, fetchQuery, graphql } from "relay-runtime"
+
 import { createEventHook } from "components/EventsProvider"
 
 export interface TweetUncanceledEvent {
@@ -10,7 +11,7 @@ const fetchTweetQuery = graphql`
   query TweetUncanceledEventQuery($id: ID!) {
     node(id: $id) {
       id
-      ... on Tweet {
+      ... on TweetGroup {
         status
       }
     }

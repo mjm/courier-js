@@ -8,7 +8,7 @@ container_image(
         "//:schema.graphql",
     ],
     entrypoint = ["/courier-functions"],
-    tags = ["no-cache"],
+    tags = ["no-cache", "manual"],
 )
 
 container_push(
@@ -18,4 +18,5 @@ container_push(
     registry = "gcr.io",
     repository = "{PROJECT_ID}/courier-functions",
     tag = "git-{GIT_COMMIT_SHA}",
+    tags = ["manual"],
 )

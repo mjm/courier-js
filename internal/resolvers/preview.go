@@ -2,7 +2,6 @@ package resolvers
 
 import (
 	"net/url"
-	"strings"
 
 	"github.com/mjm/courier-js/pkg/htmltweets"
 	"github.com/mjm/courier-js/pkg/scraper"
@@ -26,8 +25,8 @@ func (fp *FeedPreview) HomePageURL() string {
 	return fp.sf.HomePageURL
 }
 
-func (fp *FeedPreview) Tweets() ([]*TweetPreview, error) {
-	var previews []*TweetPreview
+func (fp *FeedPreview) Tweets() ([]*TweetGroupPreview, error) {
+	var previews []*TweetGroupPreview
 
 	entries := fp.sf.Entries
 	if len(fp.sf.Entries) > 5 {
@@ -44,21 +43,31 @@ func (fp *FeedPreview) Tweets() ([]*TweetPreview, error) {
 			return nil, err
 		}
 
-		for i := len(translated) - 1; i >= 0; i-- {
-			t := translated[i]
-			previews = append(previews, &TweetPreview{tweet: t})
+		preview := &TweetGroupPreview{}
+		if translated[0].Action == htmltweets.ActionRetweet {
+			preview.Action = "RETWEET"
+			preview.RetweetID = translated[0].RetweetID
+		} else {
+			preview.Action = "TWEET"
+			for _, t := range translated {
+				preview.Tweets = append(preview.Tweets, &TweetPreview{tweet: t})
+			}
 		}
+
+		previews = append(previews, preview)
 	}
 
 	return previews, nil
 }
 
-type TweetPreview struct {
-	tweet htmltweets.Tweet
+type TweetGroupPreview struct {
+	Action    string
+	RetweetID string
+	Tweets    []*TweetPreview
 }
 
-func (tp *TweetPreview) Action() string {
-	return strings.ToUpper(string(tp.tweet.Action))
+type TweetPreview struct {
+	tweet htmltweets.Tweet
 }
 
 func (tp *TweetPreview) Body() string {
@@ -69,6 +78,6 @@ func (tp *TweetPreview) MediaURLs() []string {
 	return tp.tweet.MediaURLs
 }
 
-func (tp *TweetPreview) RetweetID() string {
-	return tp.tweet.RetweetID
+func (tp *TweetPreview) PostedTweetID() *string {
+	return nil
 }

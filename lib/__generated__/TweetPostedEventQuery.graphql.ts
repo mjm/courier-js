@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash ad4c4d32f346eb7e83e54cf75c4bdedb */
+/* @relayHash 5b89788093b94a67c0e8922266e0bbaf */
 
 import { ConcreteRequest } from "relay-runtime";
 export type TweetStatus = "CANCELED" | "DRAFT" | "POSTED" | "%future added value";
@@ -9,9 +9,13 @@ export type TweetPostedEventQueryVariables = {
 export type TweetPostedEventQueryResponse = {
     readonly node: {
         readonly id: string;
+        readonly tweets?: ReadonlyArray<{
+            readonly body: string;
+            readonly mediaURLs: ReadonlyArray<string>;
+            readonly postedTweetID: string | null;
+        }>;
         readonly status?: TweetStatus;
         readonly postedAt?: any | null;
-        readonly postedTweetID?: string | null;
         readonly postAfter?: any | null;
     } | null;
 };
@@ -29,10 +33,14 @@ query TweetPostedEventQuery(
   node(id: $id) {
     __typename
     id
-    ... on Tweet {
+    ... on TweetGroup {
+      tweets {
+        body
+        mediaURLs
+        postedTweetID
+      }
       status
       postedAt
-      postedTweetID
       postAfter
     }
   }
@@ -64,8 +72,40 @@ v2 = {
 },
 v3 = {
   "kind": "InlineFragment",
-  "type": "Tweet",
+  "type": "TweetGroup",
   "selections": [
+    {
+      "kind": "LinkedField",
+      "alias": null,
+      "name": "tweets",
+      "storageKey": null,
+      "args": null,
+      "concreteType": "Tweet",
+      "plural": true,
+      "selections": [
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "name": "body",
+          "args": null,
+          "storageKey": null
+        },
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "name": "mediaURLs",
+          "args": null,
+          "storageKey": null
+        },
+        {
+          "kind": "ScalarField",
+          "alias": null,
+          "name": "postedTweetID",
+          "args": null,
+          "storageKey": null
+        }
+      ]
+    },
     {
       "kind": "ScalarField",
       "alias": null,
@@ -77,13 +117,6 @@ v3 = {
       "kind": "ScalarField",
       "alias": null,
       "name": "postedAt",
-      "args": null,
-      "storageKey": null
-    },
-    {
-      "kind": "ScalarField",
-      "alias": null,
-      "name": "postedTweetID",
       "args": null,
       "storageKey": null
     },
@@ -151,10 +184,10 @@ return {
     "operationKind": "query",
     "name": "TweetPostedEventQuery",
     "id": null,
-    "text": "query TweetPostedEventQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Tweet {\n      status\n      postedAt\n      postedTweetID\n      postAfter\n    }\n  }\n}\n",
+    "text": "query TweetPostedEventQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on TweetGroup {\n      tweets {\n        body\n        mediaURLs\n        postedTweetID\n      }\n      status\n      postedAt\n      postAfter\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = 'b2ce407dd458a4e82505f9aa73792652';
+(node as any).hash = '09a7f614c03401dd93a198281bc220a5';
 export default node;

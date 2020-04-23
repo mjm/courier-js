@@ -71,14 +71,14 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	case FeedNode:
 		n, err = r.Feed(ctx, args)
 	case TweetNode:
-		n, err = r.Tweet(ctx, args)
+		n, err = r.TweetGroup(ctx, args)
 	case PostNode:
 		var id model.PostID
 		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 			return nil, err
 		}
 
-		p, err := r.q.PostsDynamo.Get(ctx, id)
+		p, err := r.q.Posts.Get(ctx, id)
 		if err != nil {
 			return nil, err
 		}
@@ -99,7 +99,7 @@ func (r *Root) Feed(ctx context.Context, args struct{ ID graphql.ID }) (*FeedDyn
 		return nil, err
 	}
 
-	f, err := r.q.FeedsDynamo.Get(ctx, id)
+	f, err := r.q.Feeds.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -107,8 +107,7 @@ func (r *Root) Feed(ctx context.Context, args struct{ ID graphql.ID }) (*FeedDyn
 	return NewFeedDynamo(r.q, f), nil
 }
 
-// Tweet gets a tweet for the current user by ID.
-func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*TweetDynamo, error) {
+func (r *Root) TweetGroup(ctx context.Context, args struct{ ID graphql.ID }) (*TweetGroup, error) {
 	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
 		return nil, err
@@ -124,12 +123,12 @@ func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*TweetD
 		PostID: postID,
 	}
 
-	tg, err := r.q.TweetsDynamo.Get(ctx, id)
+	tg, err := r.q.Tweets.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewTweetDynamo(r.q, tg), nil
+	return NewTweetGroup(r.q, tg), nil
 }
 
 // AllEvents gets a paged list of events for the current user.

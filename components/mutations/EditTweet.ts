@@ -1,14 +1,16 @@
-import { commitMutation,Environment, graphql } from "react-relay"
+import { commitMutation, Environment, graphql } from "react-relay"
 
 import { EditTweetMutationResponse } from "@generated/EditTweetMutation.graphql"
 
 const mutation = graphql`
   mutation EditTweetMutation($input: EditTweetInput!) {
     editTweet(input: $input) {
-      tweet {
+      tweetGroup {
         id
-        body
-        mediaURLs
+        tweets {
+          body
+          mediaURLs
+        }
       }
     }
   }
@@ -16,8 +18,10 @@ const mutation = graphql`
 
 interface EditTweetInput {
   id: string
-  body: string
-  mediaURLs: readonly string[]
+  tweets: {
+    body: string
+    mediaURLs: readonly string[]
+  }[]
 }
 
 function getOptimisticResponse(
@@ -25,7 +29,7 @@ function getOptimisticResponse(
 ): EditTweetMutationResponse {
   return {
     editTweet: {
-      tweet: {
+      tweetGroup: {
         ...input,
       },
     },

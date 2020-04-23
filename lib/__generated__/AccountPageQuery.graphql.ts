@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash ccd341c6a44bc5dea3c025aefdfc25e4 */
+/* @relayHash de8accaee03e40e699f8e3aa18ea0fb2 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -34,9 +34,11 @@ fragment EventTableRow_event on Event {
     id
     title
   }
-  tweet {
+  tweetGroup {
     id
-    body
+    tweets {
+      body
+    }
   }
   boolValue
 }
@@ -300,19 +302,30 @@ return {
                   {
                     "kind": "LinkedField",
                     "alias": null,
-                    "name": "tweet",
+                    "name": "tweetGroup",
                     "storageKey": null,
                     "args": null,
-                    "concreteType": "Tweet",
+                    "concreteType": "TweetGroup",
                     "plural": false,
                     "selections": [
                       (v1/*: any*/),
                       {
-                        "kind": "ScalarField",
+                        "kind": "LinkedField",
                         "alias": null,
-                        "name": "body",
+                        "name": "tweets",
+                        "storageKey": null,
                         "args": null,
-                        "storageKey": null
+                        "concreteType": "Tweet",
+                        "plural": true,
+                        "selections": [
+                          {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "body",
+                            "args": null,
+                            "storageKey": null
+                          }
+                        ]
                       }
                     ]
                   },
@@ -383,7 +396,7 @@ return {
     "operationKind": "query",
     "name": "AccountPageQuery",
     "id": null,
-    "text": "query AccountPageQuery {\n  viewer {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 10) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n  picture\n}\n",
+    "text": "query AccountPageQuery {\n  viewer {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweetGroup {\n    id\n    tweets {\n      body\n    }\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 10) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n  picture\n}\n",
     "metadata": {}
   }
 };

@@ -59,7 +59,7 @@ func (f *FeedDynamo) Autopost() bool {
 }
 
 func (f *FeedDynamo) Posts(ctx context.Context, args pager.Options) (*PostConnection, error) {
-	conn, err := f.q.PostsDynamo.Paged(ctx, f.f.ID, args)
+	conn, err := f.q.Posts.Paged(ctx, f.f.ID, args)
 	if err != nil {
 		return nil, err
 	}

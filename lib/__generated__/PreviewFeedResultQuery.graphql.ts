@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash c90b6dcb2d7ad438e406b80759984699 */
+/* @relayHash 2855d536ceae9be87ac5e855dd26d305 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -27,10 +27,12 @@ query PreviewFeedResultQuery(
   }
 }
 
-fragment EditTweetForm_tweet on Tweet {
+fragment EditTweetForm_tweet on TweetGroup {
   id
-  body
-  mediaURLs
+  tweets {
+    body
+    mediaURLs
+  }
 }
 
 fragment PreviewFeedContent_feed on FeedPreview {
@@ -43,24 +45,33 @@ fragment PreviewFeedContent_feed on FeedPreview {
 
 fragment TweetCard_tweet on TweetContent {
   ...EditTweetForm_tweet
-  ...ViewTweet_tweet
-  ... on Tweet {
+  ...ViewTweetGroup_tweet
+  ... on TweetGroup {
     status
   }
 }
 
-fragment ViewTweet_tweet on TweetContent {
-  body
-  mediaURLs
+fragment ViewTweetGroup_tweet on TweetContent {
+  tweets {
+    ...ViewTweet_tweet
+    body
+    mediaURLs
+    postedTweetID
+  }
   action
   retweetID
-  ... on Tweet {
+  ... on TweetGroup {
     id
     status
     postAfter
     postedAt
-    postedTweetID
+    postedRetweetID
   }
+}
+
+fragment ViewTweet_tweet on Tweet {
+  body
+  mediaURLs
 }
 */
 
@@ -145,18 +156,36 @@ return {
             "plural": true,
             "selections": [
               {
-                "kind": "ScalarField",
+                "kind": "LinkedField",
                 "alias": null,
-                "name": "body",
+                "name": "tweets",
+                "storageKey": null,
                 "args": null,
-                "storageKey": null
-              },
-              {
-                "kind": "ScalarField",
-                "alias": null,
-                "name": "mediaURLs",
-                "args": null,
-                "storageKey": null
+                "concreteType": "Tweet",
+                "plural": true,
+                "selections": [
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "body",
+                    "args": null,
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "mediaURLs",
+                    "args": null,
+                    "storageKey": null
+                  },
+                  {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "postedTweetID",
+                    "args": null,
+                    "storageKey": null
+                  }
+                ]
               },
               {
                 "kind": "ScalarField",
@@ -174,7 +203,7 @@ return {
               },
               {
                 "kind": "InlineFragment",
-                "type": "Tweet",
+                "type": "TweetGroup",
                 "selections": [
                   {
                     "kind": "ScalarField",
@@ -207,7 +236,7 @@ return {
                   {
                     "kind": "ScalarField",
                     "alias": null,
-                    "name": "postedTweetID",
+                    "name": "postedRetweetID",
                     "args": null,
                     "storageKey": null
                   }
@@ -223,7 +252,7 @@ return {
     "operationKind": "query",
     "name": "PreviewFeedResultQuery",
     "id": null,
-    "text": "query PreviewFeedResultQuery(\n  $url: String!\n) {\n  feedPreview(url: $url) {\n    ...PreviewFeedContent_feed\n  }\n}\n\nfragment EditTweetForm_tweet on Tweet {\n  id\n  body\n  mediaURLs\n}\n\nfragment PreviewFeedContent_feed on FeedPreview {\n  url\n  title\n  tweets {\n    ...TweetCard_tweet\n  }\n}\n\nfragment TweetCard_tweet on TweetContent {\n  ...EditTweetForm_tweet\n  ...ViewTweet_tweet\n  ... on Tweet {\n    status\n  }\n}\n\nfragment ViewTweet_tweet on TweetContent {\n  body\n  mediaURLs\n  action\n  retweetID\n  ... on Tweet {\n    id\n    status\n    postAfter\n    postedAt\n    postedTweetID\n  }\n}\n",
+    "text": "query PreviewFeedResultQuery(\n  $url: String!\n) {\n  feedPreview(url: $url) {\n    ...PreviewFeedContent_feed\n  }\n}\n\nfragment EditTweetForm_tweet on TweetGroup {\n  id\n  tweets {\n    body\n    mediaURLs\n  }\n}\n\nfragment PreviewFeedContent_feed on FeedPreview {\n  url\n  title\n  tweets {\n    ...TweetCard_tweet\n  }\n}\n\nfragment TweetCard_tweet on TweetContent {\n  ...EditTweetForm_tweet\n  ...ViewTweetGroup_tweet\n  ... on TweetGroup {\n    status\n  }\n}\n\nfragment ViewTweetGroup_tweet on TweetContent {\n  tweets {\n    ...ViewTweet_tweet\n    body\n    mediaURLs\n    postedTweetID\n  }\n  action\n  retweetID\n  ... on TweetGroup {\n    id\n    status\n    postAfter\n    postedAt\n    postedRetweetID\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  body\n  mediaURLs\n}\n",
     "metadata": {}
   }
 };

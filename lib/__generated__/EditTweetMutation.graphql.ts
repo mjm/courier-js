@@ -1,9 +1,12 @@
 /* tslint:disable */
-/* @relayHash 78c7efb53a704325e70a5cdebea4386b */
+/* @relayHash a58e605fca6f34b0dc945903bce074de */
 
 import { ConcreteRequest } from "relay-runtime";
 export type EditTweetInput = {
     readonly id: string;
+    readonly tweets: ReadonlyArray<TweetEdit>;
+};
+export type TweetEdit = {
     readonly body: string;
     readonly mediaURLs?: ReadonlyArray<string> | null;
 };
@@ -12,10 +15,12 @@ export type EditTweetMutationVariables = {
 };
 export type EditTweetMutationResponse = {
     readonly editTweet: {
-        readonly tweet: {
+        readonly tweetGroup: {
             readonly id: string;
-            readonly body: string;
-            readonly mediaURLs: ReadonlyArray<string>;
+            readonly tweets: ReadonlyArray<{
+                readonly body: string;
+                readonly mediaURLs: ReadonlyArray<string>;
+            }>;
         };
     };
 };
@@ -31,10 +36,12 @@ mutation EditTweetMutation(
   $input: EditTweetInput!
 ) {
   editTweet(input: $input) {
-    tweet {
+    tweetGroup {
       id
-      body
-      mediaURLs
+      tweets {
+        body
+        mediaURLs
+      }
     }
   }
 }
@@ -68,10 +75,10 @@ v1 = [
       {
         "kind": "LinkedField",
         "alias": null,
-        "name": "tweet",
+        "name": "tweetGroup",
         "storageKey": null,
         "args": null,
-        "concreteType": "Tweet",
+        "concreteType": "TweetGroup",
         "plural": false,
         "selections": [
           {
@@ -82,18 +89,29 @@ v1 = [
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
+            "kind": "LinkedField",
             "alias": null,
-            "name": "body",
+            "name": "tweets",
+            "storageKey": null,
             "args": null,
-            "storageKey": null
-          },
-          {
-            "kind": "ScalarField",
-            "alias": null,
-            "name": "mediaURLs",
-            "args": null,
-            "storageKey": null
+            "concreteType": "Tweet",
+            "plural": true,
+            "selections": [
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "body",
+                "args": null,
+                "storageKey": null
+              },
+              {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "mediaURLs",
+                "args": null,
+                "storageKey": null
+              }
+            ]
           }
         ]
       }
@@ -120,10 +138,10 @@ return {
     "operationKind": "mutation",
     "name": "EditTweetMutation",
     "id": null,
-    "text": "mutation EditTweetMutation(\n  $input: EditTweetInput!\n) {\n  editTweet(input: $input) {\n    tweet {\n      id\n      body\n      mediaURLs\n    }\n  }\n}\n",
+    "text": "mutation EditTweetMutation(\n  $input: EditTweetInput!\n) {\n  editTweet(input: $input) {\n    tweetGroup {\n      id\n      tweets {\n        body\n        mediaURLs\n      }\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = 'c5ece348183576f765f3ec9f452d977a';
+(node as any).hash = '5d598b2604af54ca63fcc03ab86e7995';
 export default node;

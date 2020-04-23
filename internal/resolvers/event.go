@@ -36,7 +36,7 @@ func (e *Event) Feed(ctx context.Context) (*FeedDynamo, error) {
 		return nil, nil
 	}
 
-	f, err := e.q.FeedsDynamo.Get(ctx, e.event.Feed.ID)
+	f, err := e.q.Feeds.Get(ctx, e.event.Feed.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -44,17 +44,17 @@ func (e *Event) Feed(ctx context.Context) (*FeedDynamo, error) {
 	return NewFeedDynamo(e.q, f), nil
 }
 
-func (e *Event) Tweet(ctx context.Context) (*TweetDynamo, error) {
+func (e *Event) TweetGroup(ctx context.Context) (*TweetGroup, error) {
 	if e.event.TweetGroup == nil {
 		return nil, nil
 	}
 
-	tg, err := e.q.TweetsDynamo.Get(ctx, e.event.TweetGroup.ID)
+	tg, err := e.q.Tweets.Get(ctx, e.event.TweetGroup.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewTweetDynamo(e.q, tg), nil
+	return NewTweetGroup(e.q, tg), nil
 }
 
 func (e *Event) BoolValue() *bool {

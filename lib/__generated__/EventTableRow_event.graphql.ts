@@ -11,9 +11,11 @@ export type EventTableRow_event = {
         readonly id: string;
         readonly title: string;
     } | null;
-    readonly tweet: {
+    readonly tweetGroup: {
         readonly id: string;
-        readonly body: string;
+        readonly tweets: ReadonlyArray<{
+            readonly body: string;
+        }>;
     } | null;
     readonly boolValue: boolean | null;
     readonly " $refType": "EventTableRow_event";
@@ -78,19 +80,30 @@ return {
     {
       "kind": "LinkedField",
       "alias": null,
-      "name": "tweet",
+      "name": "tweetGroup",
       "storageKey": null,
       "args": null,
-      "concreteType": "Tweet",
+      "concreteType": "TweetGroup",
       "plural": false,
       "selections": [
         (v0/*: any*/),
         {
-          "kind": "ScalarField",
+          "kind": "LinkedField",
           "alias": null,
-          "name": "body",
+          "name": "tweets",
+          "storageKey": null,
           "args": null,
-          "storageKey": null
+          "concreteType": "Tweet",
+          "plural": true,
+          "selections": [
+            {
+              "kind": "ScalarField",
+              "alias": null,
+              "name": "body",
+              "args": null,
+              "storageKey": null
+            }
+          ]
         }
       ]
     },
@@ -104,5 +117,5 @@ return {
   ]
 };
 })();
-(node as any).hash = 'b202f3e367f9f489416a7d6261b369b8';
+(node as any).hash = '651ad7daec887e52feaf98a8ae0c31dd';
 export default node;
