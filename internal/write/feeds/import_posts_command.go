@@ -66,6 +66,11 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 	oldestPublished = nil
 
 	for _, entry := range cmd.Entries {
+		// don't import post content if the post has a title, since we know it won't get used
+		if entry.Title != "" {
+			entry.HTMLContent = ""
+		}
+
 		// truncate HTML content to avoid coming close to the max size of an item in DynamoDB
 		if len(entry.HTMLContent) > maxPostLength {
 			entry.HTMLContent = entry.HTMLContent[:maxPostLength]
