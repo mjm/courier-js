@@ -62,6 +62,10 @@ type Post struct {
 }
 
 func NewPostFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Post, error) {
+	if err := typeAssert(TypePost, attrs); err != nil {
+		return nil, err
+	}
+
 	feedID := strings.SplitN(aws.StringValue(attrs[db.PK].S), "#", 2)[1]
 	itemID := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 2)[1]
 

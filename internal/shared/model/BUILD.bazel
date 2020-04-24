@@ -8,6 +8,7 @@ go_library(
         "post.go",
         "time.go",
         "tweet.go",
+        "type.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/shared/model",
     visibility = ["//:__subpackages__"],

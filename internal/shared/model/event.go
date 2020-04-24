@@ -103,6 +103,10 @@ type EventTweetInfo struct {
 }
 
 func NewEventFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Event, error) {
+	if err := typeAssert(TypeEvent, attrs); err != nil {
+		return nil, err
+	}
+
 	userID := strings.SplitN(aws.StringValue(attrs[db.PK].S), "#", 2)[1]
 	eventID := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 2)[1]
 

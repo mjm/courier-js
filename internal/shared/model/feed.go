@@ -75,6 +75,10 @@ type Feed struct {
 }
 
 func NewFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) {
+	if err := typeAssert(TypeFeed, attrs); err != nil {
+		return nil, err
+	}
+
 	userID := strings.SplitN(aws.StringValue(attrs[db.PK].S), "#", 2)[1]
 	feedID := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 2)[1]
 

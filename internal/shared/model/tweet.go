@@ -104,6 +104,10 @@ const (
 )
 
 func NewTweetGroupFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*TweetGroup, error) {
+	if err := typeAssert(TypeTweet, attrs); err != nil {
+		return nil, err
+	}
+
 	userID := strings.SplitN(aws.StringValue(attrs[db.PK].S), "#", 2)[1]
 	sk := strings.SplitN(aws.StringValue(attrs[db.SK].S), "#", 4)
 	feedID, postID := sk[1], sk[3]
