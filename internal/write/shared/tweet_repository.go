@@ -81,8 +81,7 @@ func (r *TweetRepository) Create(ctx context.Context, ts []CreateTweetParams) er
 		item := map[string]*dynamodb.AttributeValue{
 			db.PK:              {S: &pk},
 			db.SK:              {S: &sk},
-			db.GSI1PK:          {S: &pk},
-			db.GSI1SK:          {S: &upcoming},
+			db.LSI1SK:          {S: &upcoming},
 			db.GSI2PK:          {S: aws.String("FEED#" + string(params.ID.FeedID))},
 			db.GSI2SK:          {S: aws.String(fmt.Sprintf("#POST#%s#%s##TWEET", published, params.ID.ItemID))},
 			db.Type:            {S: aws.String(model.TypeTweet)},
@@ -212,17 +211,17 @@ func (r *TweetRepository) Cancel(ctx context.Context, id model.TweetGroupID) err
 	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
 		Key:                 r.primaryKey(id),
-		UpdateExpression:    aws.String(`SET #canceled_at = :canceled_at, #gsi1sk = :gsi1sk`), // TODO remove post_after and task name
+		UpdateExpression:    aws.String(`SET #canceled_at = :canceled_at, #lsi1sk = :lsi1sk`), // TODO remove post_after and task name
 		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
 			"#pk":          aws.String(db.PK),
-			"#gsi1sk":      aws.String(db.GSI1SK),
+			"#lsi1sk":      aws.String(db.LSI1SK),
 			"#canceled_at": aws.String(model.ColCanceledAt),
 			"#posted_at":   aws.String(model.ColPostedAt),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":canceled_at": {S: aws.String(now)},
-			":gsi1sk":      {S: aws.String("PAST#" + now)},
+			":lsi1sk":      {S: aws.String("PAST#" + now)},
 		},
 	})
 	if err != nil {
@@ -239,11 +238,11 @@ func (r *TweetRepository) Uncancel(ctx context.Context, id model.TweetGroupID) e
 	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
 		Key:                 r.primaryKey(id),
-		UpdateExpression:    aws.String(`REMOVE #canceled_at SET #gsi1sk = #upcoming`),
+		UpdateExpression:    aws.String(`REMOVE #canceled_at SET #lsi1sk = #upcoming`),
 		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
 			"#pk":          aws.String(db.PK),
-			"#gsi1sk":      aws.String(db.GSI1SK),
+			"#lsi1sk":      aws.String(db.LSI1SK),
 			"#upcoming":    aws.String("UpcomingKey"),
 			"#canceled_at": aws.String(model.ColCanceledAt),
 			"#posted_at":   aws.String(model.ColPostedAt),
@@ -262,10 +261,10 @@ func (r *TweetRepository) Uncancel(ctx context.Context, id model.TweetGroupID) e
 func (r *TweetRepository) Post(ctx context.Context, id model.TweetGroupID, postedTweetIDs []int64) error {
 	now := model.FormatTime(r.clock.Now())
 
-	expr := `SET #posted_at = :posted_at, #gsi1sk = :gsi1sk`
+	expr := `SET #posted_at = :posted_at, #lsi1sk = :lsi1sk`
 	values := map[string]*dynamodb.AttributeValue{
 		":posted_at": {S: aws.String(now)},
-		":gsi1sk":    {S: aws.String("PAST#" + now)},
+		":lsi1sk":    {S: aws.String("PAST#" + now)},
 	}
 
 	for i, tweetID := range postedTweetIDs {
@@ -281,7 +280,7 @@ func (r *TweetRepository) Post(ctx context.Context, id model.TweetGroupID, poste
 		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
 			"#pk":              aws.String(db.PK),
-			"#gsi1sk":          aws.String(db.GSI1SK),
+			"#lsi1sk":          aws.String(db.LSI1SK),
 			"#canceled_at":     aws.String(model.ColCanceledAt),
 			"#posted_at":       aws.String(model.ColPostedAt),
 			"#tweets":          aws.String(model.ColTweets),
@@ -305,18 +304,18 @@ func (r *TweetRepository) PostRetweet(ctx context.Context, id model.TweetGroupID
 	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
 		TableName:           &r.dynamoConfig.TableName,
 		Key:                 id.PrimaryKey(),
-		UpdateExpression:    aws.String(`SET #posted_at = :posted_at, #gsi1sk = :gsi1sk, #posted_retweet_id = :posted_retweet_id`),
+		UpdateExpression:    aws.String(`SET #posted_at = :posted_at, #lsi1sk = :lsi1sk, #posted_retweet_id = :posted_retweet_id`),
 		ConditionExpression: aws.String(`attribute_exists(#pk) and attribute_not_exists(#canceled_at) and attribute_not_exists(#posted_at)`),
 		ExpressionAttributeNames: map[string]*string{
 			"#pk":                aws.String(db.PK),
-			"#gsi1sk":            aws.String(db.GSI1SK),
+			"#lsi1sk":            aws.String(db.LSI1SK),
 			"#canceled_at":       aws.String(model.ColCanceledAt),
 			"#posted_at":         aws.String(model.ColPostedAt),
 			"#posted_retweet_id": aws.String(model.ColPostedRetweetID),
 		},
 		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
 			":posted_at":         {S: aws.String(now)},
-			":gsi1sk":            {S: aws.String("PAST#" + now)},
+			":lsi1sk":            {S: aws.String("PAST#" + now)},
 			":posted_retweet_id": {S: aws.String(strconv.FormatInt(postedTweetID, 10))},
 		},
 	})
