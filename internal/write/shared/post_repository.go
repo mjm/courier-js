@@ -28,6 +28,43 @@ func NewPostRepository(dynamo dynamodbiface.DynamoDBAPI, dynamoConfig db.DynamoC
 	}
 }
 
+func (r *PostRepository) Recent(ctx context.Context, feedID model.FeedID, lastPublished time.Time) ([]*model.Post, error) {
+	pk := "FEED#" + string(feedID)
+	sk := "POST#" + model.FormatTime(lastPublished)
+
+	input := &dynamodb.QueryInput{
+		TableName:              &r.dynamoConfig.TableName,
+		IndexName:              aws.String(db.LSI1),
+		KeyConditionExpression: aws.String(`#pk = :pk and #sk >= :sk`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk": aws.String(db.PK),
+			"#sk": aws.String(db.LSI1SK),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":pk": {S: &pk},
+			":sk": {S: &sk},
+		},
+		ScanIndexForward: aws.Bool(false),
+	}
+
+	res, err := r.dynamo.QueryWithContext(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+
+	var ps []*model.Post
+	for _, item := range res.Items {
+		p, err := model.NewPostFromAttrs(item)
+		if err != nil {
+			return nil, err
+		}
+
+		ps = append(ps, p)
+	}
+
+	return ps, nil
+}
+
 func (r *PostRepository) FindByItemIDs(ctx context.Context, feedID model.FeedID, itemIDs []string) ([]*model.Post, error) {
 	var keys dynamodb.KeysAndAttributes
 	var ids []model.PostID

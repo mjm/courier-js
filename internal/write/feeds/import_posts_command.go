@@ -47,18 +47,19 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 	if oldestPublished != nil {
 		oldestPublishedStr = oldestPublished.Format(time.RFC3339)
 		span.SetAttributes(key.String("import.oldest_published", oldestPublishedStr))
+	} else {
+		return nil
 	}
 
 	// TODO replace with a similar method that uses LSI1
-	f, err := h.feedRepo.GetWithRecentItems(ctx, cmd.FeedID, oldestPublished)
+	posts, err := h.postRepo.Recent(ctx, cmd.FeedID, *oldestPublished)
 	if err != nil {
 		return err
 	}
 
 	postsByItemID := make(map[string]*model.Post)
-	for _, post := range f.Posts {
-		p := post.Post
-		postsByItemID[post.ItemID()] = &p
+	for _, post := range posts {
+		postsByItemID[post.ItemID()] = post
 	}
 
 	var ps []shared.WritePostParams
