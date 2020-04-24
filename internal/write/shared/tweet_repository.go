@@ -126,13 +126,20 @@ func (r *TweetRepository) Create(ctx context.Context, ts []CreateTweetParams) er
 		})
 	}
 
-	_, err := r.dynamo.BatchWriteItemWithContext(ctx, &dynamodb.BatchWriteItemInput{
-		RequestItems: map[string][]*dynamodb.WriteRequest{
-			r.dynamoConfig.TableName: reqs,
-		},
-	})
-	if err != nil {
-		return err
+	for i := 0; i < len(reqs); i += dynamoBatchSize {
+		j := i + dynamoBatchSize
+		if j > len(reqs) {
+			j = len(reqs)
+		}
+
+		_, err := r.dynamo.BatchWriteItemWithContext(ctx, &dynamodb.BatchWriteItemInput{
+			RequestItems: map[string][]*dynamodb.WriteRequest{
+				r.dynamoConfig.TableName: reqs[i:j],
+			},
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

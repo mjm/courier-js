@@ -48,7 +48,7 @@ var feedListCommand = &cli.Command{
 		}
 
 		for _, e := range conn.Edges {
-			fe := e.(*feeds2.FeedEdge)
+			fe := e.(feeds2.FeedEdge)
 
 			fmt.Printf("%s\t%s (%s)\n", fe.ID, fe.Title, fe.URL)
 		}
@@ -91,6 +91,13 @@ var feedRefreshCommand = &cli.Command{
 	Name:      "refresh",
 	Usage:     "Check current feed contents",
 	ArgsUsage: "[id]",
+	Flags: []cli.Flag{
+		&cli.BoolFlag{
+			Name:    "force",
+			Aliases: []string{"f"},
+			Usage:   "ignore caching headers and refetch the feed contents",
+		},
+	},
 	Action: func(ctx *cli.Context) error {
 		id := ctx.Args().Get(0)
 		userID := ctx.String("user")
@@ -105,6 +112,7 @@ var feedRefreshCommand = &cli.Command{
 		cmd := feeds.RefreshCommand{
 			UserID: userID,
 			FeedID: feedID,
+			Force:  ctx.Bool("force"),
 		}
 		if _, err := commandBus.Run(ctx.Context, cmd); err != nil {
 			return err

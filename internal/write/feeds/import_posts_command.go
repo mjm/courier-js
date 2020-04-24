@@ -14,6 +14,8 @@ import (
 	"github.com/mjm/courier-js/pkg/scraper"
 )
 
+const maxPostLength = 15000
+
 var (
 	entryCountKey = key.New("import.entry_count").Int
 )
@@ -60,7 +62,14 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 	}
 
 	var ps []shared.WritePostParams
+	oldestPublished = nil
+
 	for _, entry := range cmd.Entries {
+		// truncate HTML content to avoid coming close to the max size of an item in DynamoDB
+		if len(entry.HTMLContent) > maxPostLength {
+			entry.HTMLContent = entry.HTMLContent[:maxPostLength]
+		}
+
 		post, ok := postsByItemID[entry.ID]
 		if ok && postMatchesEntry(post, entry) {
 			continue
@@ -68,13 +77,22 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 
 		ps = append(ps, shared.WritePostParams{
 			ID:          model.PostIDFromParts(cmd.FeedID, entry.ID),
-			TextContent: entry.TextContent,
 			HTMLContent: entry.HTMLContent,
 			Title:       entry.Title,
 			URL:         entry.URL,
 			PublishedAt: entry.PublishedAt,
 			ModifiedAt:  entry.ModifiedAt,
 		})
+
+		if entry.PublishedAt != nil && (oldestPublished == nil || entry.PublishedAt.Before(*oldestPublished)) {
+			oldestPublished = entry.PublishedAt
+		}
+	}
+
+	oldestPublishedStr = ""
+	if oldestPublished != nil {
+		oldestPublishedStr = oldestPublished.Format(time.RFC3339)
+		span.SetAttributes(key.String("import.changed.oldest_published", oldestPublishedStr))
 	}
 
 	if err := h.postRepo.Write(ctx, ps); err != nil {
@@ -93,7 +111,7 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 }
 
 func postMatchesEntry(post *model.Post, entry *scraper.Entry) bool {
-	return post.URL == entry.URL && post.Title == entry.Title && post.TextContent == entry.TextContent &&
+	return post.URL == entry.URL && post.Title == entry.Title &&
 		post.HTMLContent == entry.HTMLContent && equalTime(post.PublishedAt, entry.PublishedAt) &&
 		equalTime(post.ModifiedAt, entry.ModifiedAt)
 }

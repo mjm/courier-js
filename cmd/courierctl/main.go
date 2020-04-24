@@ -8,6 +8,7 @@ import (
 	"github.com/honeycombio/libhoney-go"
 	"github.com/urfave/cli/v2"
 	"go.opentelemetry.io/otel/api/global"
+	trace2 "go.opentelemetry.io/otel/api/trace"
 
 	feeds2 "github.com/mjm/courier-js/internal/read/feeds"
 	tweets2 "github.com/mjm/courier-js/internal/read/tweets"
@@ -38,7 +39,7 @@ func main() {
 	ctx, span := tr.Start(context.Background(), "courierctl")
 	defer span.End()
 
-	if err := app.RunContext(ctx, os.Args); err != nil {
+	if err := app.Run(os.Args); err != nil {
 		span.RecordError(ctx, err)
 		log.Fatal(err)
 	}
@@ -67,6 +68,16 @@ func newApp(
 		Commands: []*cli.Command{
 			feedCommand,
 			tweetCommand,
+		},
+		Before: func(c *cli.Context) error {
+			ctx, _ := tr.Start(c.Context, "courierctl")
+			c.Context = ctx
+			return nil
+		},
+		After: func(c *cli.Context) error {
+			trace2.SpanFromContext(c.Context).End()
+			libhoney.Flush()
+			return nil
 		},
 	}
 }

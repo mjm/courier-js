@@ -86,6 +86,8 @@ type WritePostParams struct {
 	ModifiedAt  *time.Time
 }
 
+const dynamoBatchSize = 25
+
 func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error {
 	if len(ps) == 0 {
 		return nil
@@ -141,13 +143,20 @@ func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error 
 		})
 	}
 
-	_, err := r.dynamo.BatchWriteItemWithContext(ctx, &dynamodb.BatchWriteItemInput{
-		RequestItems: map[string][]*dynamodb.WriteRequest{
-			r.dynamoConfig.TableName: reqs,
-		},
-	})
-	if err != nil {
-		return err
+	for i := 0; i < len(reqs); i += dynamoBatchSize {
+		j := i + dynamoBatchSize
+		if j > len(reqs) {
+			j = len(reqs)
+		}
+
+		_, err := r.dynamo.BatchWriteItemWithContext(ctx, &dynamodb.BatchWriteItemInput{
+			RequestItems: map[string][]*dynamodb.WriteRequest{
+				r.dynamoConfig.TableName: reqs[i:j],
+			},
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
