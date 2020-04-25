@@ -1,3 +1,4 @@
+import React from "react"
 import Moment from "react-moment"
 import {
   createFragmentContainer,
@@ -46,6 +47,7 @@ export default createFragmentContainer(FeedInfoCard, {
       homePageURL
       micropubEndpoint
       refreshedAt
+      refreshing
       autopost
     }
   `,
@@ -101,7 +103,7 @@ const LastCheckedSection: React.FC<{
           </span>
         </>
       }
-      buttonLabel="Check now"
+      buttonLabel={feed.refreshing ? "Checking…" : "Check now"}
       onClick={onClick}
     />
   )

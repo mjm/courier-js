@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 98507b0d8c05a74bd87ca07feaba489a */
+/* @relayHash ed01e3f8b1176b936c2e57bde099ecf9 */
 
 import { ConcreteRequest } from "relay-runtime";
 export type RefreshFeedInput = {
@@ -15,6 +15,7 @@ export type RefreshFeedMutationResponse = {
             readonly title: string;
             readonly homePageURL: string;
             readonly refreshedAt: any | null;
+            readonly refreshing: boolean;
         };
     };
 };
@@ -35,6 +36,7 @@ mutation RefreshFeedMutation(
       title
       homePageURL
       refreshedAt
+      refreshing
     }
   }
 }
@@ -101,6 +103,13 @@ v1 = [
             "name": "refreshedAt",
             "args": null,
             "storageKey": null
+          },
+          {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "refreshing",
+            "args": null,
+            "storageKey": null
           }
         ]
       }
@@ -127,10 +136,10 @@ return {
     "operationKind": "mutation",
     "name": "RefreshFeedMutation",
     "id": null,
-    "text": "mutation RefreshFeedMutation(\n  $input: RefreshFeedInput!\n) {\n  refreshFeed(input: $input) {\n    feed {\n      id\n      title\n      homePageURL\n      refreshedAt\n    }\n  }\n}\n",
+    "text": "mutation RefreshFeedMutation(\n  $input: RefreshFeedInput!\n) {\n  refreshFeed(input: $input) {\n    feed {\n      id\n      title\n      homePageURL\n      refreshedAt\n      refreshing\n    }\n  }\n}\n",
     "metadata": {}
   }
 };
 })();
-(node as any).hash = 'abad7debf3171166abdf308168d6235c';
+(node as any).hash = 'c87f78c7dcc8a3fb155695d062c215e9';
 export default node;

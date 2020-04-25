@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash febd2a3b0f43aea63d4d9968d0980866 */
+/* @relayHash bf0b1d70431daffe5305c20208c13995 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -53,6 +53,7 @@ fragment FeedInfoCard_feed on Feed {
   homePageURL
   micropubEndpoint
   refreshedAt
+  refreshing
   autopost
 }
 
@@ -312,6 +313,13 @@ return {
           {
             "kind": "ScalarField",
             "alias": null,
+            "name": "refreshing",
+            "args": null,
+            "storageKey": null
+          },
+          {
+            "kind": "ScalarField",
+            "alias": null,
             "name": "autopost",
             "args": null,
             "storageKey": null
@@ -342,7 +350,7 @@ return {
     "operationKind": "query",
     "name": "FeedDetailsPageQuery",
     "id": null,
-    "text": "query FeedDetailsPageQuery(\n  $id: ID!\n) {\n  feed(id: $id) {\n    ...FeedDetails_feed\n    id\n  }\n  viewer {\n    ...FeedDetails_user\n  }\n}\n\nfragment FeedDetails_feed on Feed {\n  id\n  title\n  url\n  ...FeedRecentPostList_feed\n  ...FeedInfoCard_feed\n  ...FeedRemoveButton_feed\n}\n\nfragment FeedDetails_user on User {\n  ...FeedInfoCard_user\n}\n\nfragment FeedInfoCard_feed on Feed {\n  id\n  url\n  homePageURL\n  micropubEndpoint\n  refreshedAt\n  autopost\n}\n\nfragment FeedInfoCard_user on User {\n  micropubSites\n}\n\nfragment FeedRecentPostList_feed on Feed {\n  id\n  posts(first: 10) {\n    edges {\n      node {\n        id\n        url\n        title\n        htmlContent\n        publishedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment FeedRemoveButton_feed on Feed {\n  id\n}\n",
+    "text": "query FeedDetailsPageQuery(\n  $id: ID!\n) {\n  feed(id: $id) {\n    ...FeedDetails_feed\n    id\n  }\n  viewer {\n    ...FeedDetails_user\n  }\n}\n\nfragment FeedDetails_feed on Feed {\n  id\n  title\n  url\n  ...FeedRecentPostList_feed\n  ...FeedInfoCard_feed\n  ...FeedRemoveButton_feed\n}\n\nfragment FeedDetails_user on User {\n  ...FeedInfoCard_user\n}\n\nfragment FeedInfoCard_feed on Feed {\n  id\n  url\n  homePageURL\n  micropubEndpoint\n  refreshedAt\n  refreshing\n  autopost\n}\n\nfragment FeedInfoCard_user on User {\n  micropubSites\n}\n\nfragment FeedRecentPostList_feed on Feed {\n  id\n  posts(first: 10) {\n    edges {\n      node {\n        id\n        url\n        title\n        htmlContent\n        publishedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment FeedRemoveButton_feed on Feed {\n  id\n}\n",
     "metadata": {}
   }
 };

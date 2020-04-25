@@ -46,6 +46,10 @@ func (f *Feed) RefreshedAt() *graphql.Time {
 	return nil
 }
 
+func (f *Feed) Refreshing() bool {
+	return f.f.RefreshTaskName != ""
+}
+
 func (f *Feed) CreatedAt() graphql.Time {
 	return graphql.Time{Time: f.f.CreatedAt}
 }

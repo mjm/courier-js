@@ -69,3 +69,7 @@
 .btn.btn-first:disabled {
   @apply bg-neutral-3 border-neutral-3 text-neutral-6;
 }
+
+.btn.btn-second:disabled {
+  @apply opacity-50;
+}

@@ -1,4 +1,4 @@
-import { Environment,graphql } from "react-relay"
+import { Environment, graphql } from "react-relay"
 
 import { commitMutationAsync } from "./commitMutationAsync"
 
@@ -10,6 +10,7 @@ const mutation = graphql`
         title
         homePageURL
         refreshedAt
+        refreshing
       }
     }
   }

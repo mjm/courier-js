@@ -119,6 +119,7 @@ type Feed implements Node {
   homePageURL: String!
   micropubEndpoint: String!
   refreshedAt: Time
+  refreshing: Boolean!
   createdAt: Time!
   updatedAt: Time!
   autopost: Boolean!

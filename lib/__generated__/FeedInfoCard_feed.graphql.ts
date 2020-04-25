@@ -8,6 +8,7 @@ export type FeedInfoCard_feed = {
     readonly homePageURL: string;
     readonly micropubEndpoint: string;
     readonly refreshedAt: any | null;
+    readonly refreshing: boolean;
     readonly autopost: boolean;
     readonly " $refType": "FeedInfoCard_feed";
 };
@@ -64,11 +65,18 @@ const node: ReaderFragment = {
     {
       "kind": "ScalarField",
       "alias": null,
+      "name": "refreshing",
+      "args": null,
+      "storageKey": null
+    },
+    {
+      "kind": "ScalarField",
+      "alias": null,
       "name": "autopost",
       "args": null,
       "storageKey": null
     }
   ]
 };
-(node as any).hash = 'e76fa70430d185d30936267a3c3e6a4d';
+(node as any).hash = '79672f97440b5e05563c18da25333642';
 export default node;

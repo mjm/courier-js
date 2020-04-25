@@ -95,6 +95,7 @@ module.exports = {
     textColor: ["responsive", "hover", "group-hover", "focus", "disabled"],
     backgroundColor: ["responsive", "hover", "focus", "disabled"],
     borderWidth: ["responsive", "first"],
+    opacity: ["responsive", "disabled"],
   },
   plugins: [],
 }

@@ -16,6 +16,7 @@ const fetchFeedQuery = graphql`
         homePageURL
         micropubEndpoint
         refreshedAt
+        refreshing
       }
     }
   }
