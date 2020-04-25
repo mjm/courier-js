@@ -58,15 +58,22 @@ const SubscribeForm: React.FC<Props> = ({ user, relay: { environment } }) => {
           return
         }
 
-        const { token, error } = await stripe.createToken(cardElement, {
-          name: input.name,
+        const { paymentMethod, error } = await stripe.createPaymentMethod({
+          type: "card",
+          card: cardElement,
+          billing_details: {
+            name: input.name,
+          },
         })
         if (error) {
           throw error
         }
+        if (!paymentMethod) {
+          return
+        }
 
         await subscribe(environment, {
-          tokenID: (token as stripe.Token).id,
+          paymentMethodID: paymentMethod.id,
           email: input.email,
         })
       } else {

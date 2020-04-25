@@ -14,9 +14,9 @@ import (
 )
 
 type SubscribeCommand struct {
-	UserID  string
-	TokenID string
-	Email   string
+	UserID          string
+	PaymentMethodID string
+	Email           string
 }
 
 var (
@@ -35,7 +35,7 @@ var (
 
 func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeCommand) error {
 	span := trace.SpanFromContext(ctx)
-	createNewCustomer := cmd.Email != "" && cmd.TokenID != ""
+	createNewCustomer := cmd.Email != "" && cmd.PaymentMethodID != ""
 
 	span.SetAttributes(newCustomerKey(createNewCustomer))
 
@@ -71,7 +71,7 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 
 	var cusID string
 	if createNewCustomer {
-		cusID, err = h.cusRepo.Create(ctx, cmd.Email, cmd.TokenID)
+		cusID, err = h.cusRepo.CreateWithPaymentMethod(ctx, cmd.Email, cmd.PaymentMethodID)
 		h.events.Fire(ctx, billing.CustomerCreated{
 			UserId:     cmd.UserID,
 			CustomerId: cusID,

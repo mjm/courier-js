@@ -57,6 +57,7 @@ func loadCustomer(ctx context.Context, sc *client.API, id string) (*stripe.Custo
 
 	params := &stripe.CustomerParams{}
 	params.AddExpand("default_source")
+	params.AddExpand("invoice_settings.default_payment_method")
 	customer, err := sc.Customers.Get(id, params)
 	if err != nil {
 		span.RecordError(ctx, err)

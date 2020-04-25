@@ -320,8 +320,8 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 
 func (r *Root) Subscribe(ctx context.Context, args struct {
 	Input struct {
-		TokenID *string
-		Email   *string
+		PaymentMethodID *string
+		Email           *string
 	}
 }) (
 	payload struct {
@@ -335,18 +335,18 @@ func (r *Root) Subscribe(ctx context.Context, args struct {
 		return
 	}
 
-	var email, tokenID string
-	if args.Input.TokenID != nil {
-		tokenID = *args.Input.TokenID
+	var email, paymentMethodID string
+	if args.Input.PaymentMethodID != nil {
+		paymentMethodID = *args.Input.PaymentMethodID
 	}
 	if args.Input.Email != nil {
 		email = *args.Input.Email
 	}
 
 	cmd := billing.SubscribeCommand{
-		UserID:  userID,
-		TokenID: tokenID,
-		Email:   email,
+		UserID:          userID,
+		PaymentMethodID: paymentMethodID,
+		Email:           email,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return

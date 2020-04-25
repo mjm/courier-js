@@ -1,10 +1,11 @@
 /* tslint:disable */
-/* @relayHash da99dd223717c31c32ca1e26fd3c06f9 */
+/* @relayHash 6e4521a182af261555842bd2c84c3424 */
 
 import { ConcreteRequest } from "relay-runtime";
 export type SubscriptionStatus = "ACTIVE" | "CANCELED" | "EXPIRED" | "INACTIVE" | "%future added value";
 export type SubscribeInput = {
     readonly tokenID?: string | null;
+    readonly paymentMethodID?: string | null;
     readonly email?: string | null;
 };
 export type SubscribeMutationVariables = {

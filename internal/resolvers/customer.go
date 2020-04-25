@@ -10,17 +10,28 @@ func (c *Customer) EmailAddress() *string {
 	return &c.customer.Email
 }
 
-func (c *Customer) CreditCard() *CreditCard {
-	source := c.customer.DefaultSource
-	if source == nil {
-		return nil
+func (c *Customer) CreditCard() CreditCard {
+	if source := c.customer.DefaultSource; source != nil {
+		if source.Type != stripe.PaymentSourceTypeCard {
+			return nil
+		}
+
+		return &sourceCreditCard{
+			card: source.Card,
+		}
 	}
 
-	if source.Type != stripe.PaymentSourceTypeCard {
-		return nil
+	if is := c.customer.InvoiceSettings; is != nil {
+		if pm := is.DefaultPaymentMethod; pm != nil {
+			if pm.Type != stripe.PaymentMethodTypeCard {
+				return nil
+			}
+
+			return &paymentMethodCreditCard{
+				card: pm.Card,
+			}
+		}
 	}
 
-	return &CreditCard{
-		card: source.Card,
-	}
+	return nil
 }

@@ -275,7 +275,7 @@ type EditTweetPayload {
 }
 
 input SubscribeInput {
-  tokenID: ID
+  paymentMethodID: ID
   email: String
 }
 

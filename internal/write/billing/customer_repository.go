@@ -16,15 +16,16 @@ func NewCustomerRepository(stripe *client.API) *CustomerRepository {
 	return &CustomerRepository{stripe: stripe}
 }
 
-func (r *CustomerRepository) Create(ctx context.Context, email string, tokenID string) (string, error) {
-	ctx, span := tracer.Start(ctx, "CustomerRepository.Create",
-		trace.WithAttributes(tokenIDKey(tokenID)))
+func (r *CustomerRepository) CreateWithPaymentMethod(ctx context.Context, email string, paymentMethodID string) (string, error) {
+	ctx, span := tracer.Start(ctx, "CustomerRepository.CreateWithPaymentMethod",
+		trace.WithAttributes(paymentMethodIDKey(paymentMethodID)))
 	defer span.End()
 
 	cus, err := r.stripe.Customers.New(&stripe.CustomerParams{
-		Email: &email,
-		Source: &stripe.SourceParams{
-			Token: &tokenID,
+		Email:         stripe.String(email),
+		PaymentMethod: stripe.String(paymentMethodID),
+		InvoiceSettings: &stripe.CustomerInvoiceSettingsParams{
+			DefaultPaymentMethod: stripe.String(paymentMethodID),
 		},
 	})
 	if err != nil {
