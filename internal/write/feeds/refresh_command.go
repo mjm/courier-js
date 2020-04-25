@@ -80,6 +80,25 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 
 	if scraped == nil {
 		span.SetAttributes(upToDateKey(true))
+
+		// this updates the refreshed at time and clears the refresh task
+		p := shared.UpdateFeedParams{
+			ID:               f.ID,
+			UserID:           f.UserID,
+			Title:            f.Title,
+			HomePageURL:      f.HomePageURL,
+			CachingHeaders:   f.CachingHeaders,
+			MicropubEndpoint: f.MicropubEndpoint,
+		}
+		if err := h.feedRepo.UpdateDetails(ctx, p); err != nil {
+			return err
+		}
+
+		h.events.Fire(ctx, feeds.FeedRefreshed{
+			FeedId: string(f.ID),
+			UserId: cmd.UserID,
+		})
+
 		return nil
 	}
 	span.SetAttributes(upToDateKey(false))
