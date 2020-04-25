@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 9a19134749e2a368ab3870312ede32b5 */
+/* @relayHash f5e6090beb8a9a15a0b062a1c0387e81 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -47,7 +47,6 @@ fragment FeedList_feeds_1G22uz on User {
       }
       cursor
     }
-    totalCount
     pageInfo {
       endCursor
       hasNextPage
@@ -216,13 +215,6 @@ return {
                 ]
               },
               {
-                "kind": "ScalarField",
-                "alias": null,
-                "name": "totalCount",
-                "args": null,
-                "storageKey": null
-              },
-              {
                 "kind": "LinkedField",
                 "alias": null,
                 "name": "pageInfo",
@@ -266,7 +258,7 @@ return {
     "operationKind": "query",
     "name": "FeedListPaginationQuery",
     "id": null,
-    "text": "query FeedListPaginationQuery(\n  $count: Int!\n  $cursor: Cursor\n) {\n  viewer {\n    ...FeedList_feeds_1G22uz\n  }\n}\n\nfragment FeedCard_feed on Feed {\n  id\n  title\n  homePageURL\n  refreshedAt\n  autopost\n}\n\nfragment FeedList_feeds_1G22uz on User {\n  allFeeds(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...FeedCard_feed\n        __typename\n      }\n      cursor\n    }\n    totalCount\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n",
+    "text": "query FeedListPaginationQuery(\n  $count: Int!\n  $cursor: Cursor\n) {\n  viewer {\n    ...FeedList_feeds_1G22uz\n  }\n}\n\nfragment FeedCard_feed on Feed {\n  id\n  title\n  homePageURL\n  refreshedAt\n  autopost\n}\n\nfragment FeedList_feeds_1G22uz on User {\n  allFeeds(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...FeedCard_feed\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n",
     "metadata": {}
   }
 };

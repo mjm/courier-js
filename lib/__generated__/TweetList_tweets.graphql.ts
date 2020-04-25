@@ -10,7 +10,6 @@ export type TweetList_tweets = {
                 readonly " $fragmentRefs": FragmentRefs<"TweetCard_tweet">;
             };
         }>;
-        readonly totalCount: number;
     };
     readonly " $refType": "TweetList_tweets";
 };
@@ -123,13 +122,6 @@ const node: ReaderFragment = {
           ]
         },
         {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "totalCount",
-          "args": null,
-          "storageKey": null
-        },
-        {
           "kind": "LinkedField",
           "alias": null,
           "name": "pageInfo",
@@ -158,5 +150,5 @@ const node: ReaderFragment = {
     }
   ]
 };
-(node as any).hash = 'f52d42aca0c08e9d484dee891cdf5414';
+(node as any).hash = '08068c59c9a3c983e8ebff778a151286';
 export default node;

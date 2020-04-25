@@ -9,7 +9,7 @@ import { TweetList_tweets } from "@generated/TweetList_tweets.graphql"
 import TweetCard from "components/TweetCard"
 
 const TweetList: React.FC<{
-  description: (count: number) => React.ReactNode
+  description: React.ReactNode
   emptyDescription: React.ReactNode
   tweets: TweetList_tweets
   relay: RelayPaginationProp
@@ -20,12 +20,12 @@ const TweetList: React.FC<{
   relay: { hasMore, loadMore },
 }) => {
   const [isLoading, setLoading] = React.useState(false)
-  const { edges, totalCount } = tweets.allTweets
+  const { edges } = tweets.allTweets
 
   return (
     <div className="w-full lg:px-4 lg:w-1/2 mb-8">
       <div className="pb-4 text-neutral-10">
-        {totalCount === 0 ? emptyDescription : description(totalCount)}
+        {edges.length > 0 ? description : emptyDescription}
       </div>
       {edges.map(edge => (
         <TweetCard key={edge.node.id} tweet={edge.node} />
@@ -68,7 +68,6 @@ export default createPaginationContainer(
               ...TweetCard_tweet
             }
           }
-          totalCount
         }
       }
     `,

@@ -36,13 +36,13 @@ const TweetsPage: NextPage<TweetsPageQueryResponse & {
           {upcoming && past ? (
             <div className="flex flex-row flex-wrap -mx-4">
               <TweetList
-                emptyDescription="You don't have anymore tweets to review."
-                description={upcomingDescription}
+                description="You have some new tweets to review."
+                emptyDescription="You don't have any tweets to review."
                 tweets={upcoming}
               />
               <TweetList
-                emptyDescription="You haven't posted any tweets from Courier yet."
-                description={pastDescription}
+                description="Here are your already reviewed tweets."
+                emptyDescription="You haven't posted or reviewed any tweets yet."
                 tweets={past}
               />
             </div>
@@ -70,36 +70,6 @@ export default withData(withSecurePage(TweetsPage), {
     }
   `,
 })
-
-const upcomingDescription = (count: number): React.ReactNode => {
-  return (
-    <>
-      There{" "}
-      {count === 1 ? (
-        <>
-          is <strong className="text-neutral-9">1 draft tweet</strong>
-        </>
-      ) : (
-        <>
-          are <strong className="text-neutral-9">{count} draft tweets</strong>
-        </>
-      )}{" "}
-      awaiting your review.
-    </>
-  )
-}
-
-const pastDescription = (count: number): React.ReactNode => {
-  return (
-    <>
-      You have{" "}
-      <strong className="text-neutral-9">
-        {count} past tweet{count === 1 ? "" : "s"}
-      </strong>{" "}
-      that you've already reviewed.
-    </>
-  )
-}
 
 const SubscribeBanner: React.FC = () => {
   const { isSubscribed } = useSubscription()

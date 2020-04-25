@@ -10,7 +10,6 @@ export type FeedList_feeds = {
                 readonly " $fragmentRefs": FragmentRefs<"FeedCard_feed">;
             };
         }>;
-        readonly totalCount: number;
     };
     readonly " $refType": "FeedList_feeds";
 };
@@ -111,13 +110,6 @@ const node: ReaderFragment = {
           ]
         },
         {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "totalCount",
-          "args": null,
-          "storageKey": null
-        },
-        {
           "kind": "LinkedField",
           "alias": null,
           "name": "pageInfo",
@@ -146,5 +138,5 @@ const node: ReaderFragment = {
     }
   ]
 };
-(node as any).hash = 'cbd25a66c5b173389c9c710e55c0511b';
+(node as any).hash = '8c364526a6f0cf61cbde6bf9cf303249';
 export default node;

@@ -21,26 +21,15 @@ const FeedList: React.FC<{
     return null
   }
 
-  const { edges, totalCount } = feeds.allFeeds
+  const { edges } = feeds.allFeeds
 
   return (
     <div>
-      <div className="pb-4 text-neutral-10">
-        {totalCount === 0 ? (
-          "You aren't watching any feeds yet."
-        ) : totalCount === 1 ? (
-          <>
-            You are currently watching{" "}
-            <strong className="text-neutral-9">1 feed</strong> for new posts.
-          </>
-        ) : (
-          <>
-            You are currently watching{" "}
-            <strong className="text-neutral-10">{totalCount} feeds</strong> for
-            new posts.
-          </>
-        )}
-      </div>
+      {edges.length === 0 && (
+        <div className="pb-4 text-neutral-10">
+          You aren't watching any feeds yet.
+        </div>
+      )}
       <div className="-m-2">
         <div className={`w-full mb-4 ${styles.feedGrid}`}>
           {edges.map(({ node }) => (
@@ -80,7 +69,6 @@ export default createPaginationContainer(
               ...FeedCard_feed
             }
           }
-          totalCount
         }
       }
     `,
