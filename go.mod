@@ -24,7 +24,7 @@ require (
 	github.com/gorilla/rpc v1.2.0
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/honeycombio/libhoney-go v1.12.4
-	github.com/honeycombio/opentelemetry-exporter-go v0.4.1-0.20200403221622-c399dc0c29d4
+	github.com/honeycombio/opentelemetry-exporter-go v0.4.1-0.20200422142351-236713675ae4
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jonboulle/clockwork v0.1.0
 	github.com/kr/pretty v0.2.0 // indirect

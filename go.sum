@@ -160,6 +160,8 @@ github.com/honeycombio/libhoney-go v1.12.4 h1:rWAoxhpvu2briq85wZc04osHgKtueCLAk/
 github.com/honeycombio/libhoney-go v1.12.4/go.mod h1:tp2qtK0xMZyG/ZfykkebQESKFS78xpyPr2wEswZ1j6U=
 github.com/honeycombio/opentelemetry-exporter-go v0.4.1-0.20200403221622-c399dc0c29d4 h1:beFjMEK29Z7XxOfzK8OMIhjpB+NFUqX5S/Y0ldjQduA=
 github.com/honeycombio/opentelemetry-exporter-go v0.4.1-0.20200403221622-c399dc0c29d4/go.mod h1:ogjqFDdcF/tfNaX9UqpphkDLOx8iVvDstSXABk9pbkc=
+github.com/honeycombio/opentelemetry-exporter-go v0.4.1-0.20200422142351-236713675ae4 h1:VJ7Ig/2+vb7+lxFXpwcT8Fvt+nkaNNh5KVqTLohlgmk=
+github.com/honeycombio/opentelemetry-exporter-go v0.4.1-0.20200422142351-236713675ae4/go.mod h1:ogjqFDdcF/tfNaX9UqpphkDLOx8iVvDstSXABk9pbkc=
 github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6/go.mod h1:aSSvb/t6k1mPoxDqO4vJh6VOCGPwU4O0C2/Eqndh1Sc=
 github.com/jarcoal/httpmock v1.0.4 h1:jp+dy/+nonJE4g4xbVtl9QdrUNbn6/3hDT5R4nDIZnA=
 github.com/jarcoal/httpmock v1.0.4/go.mod h1:ATjnClrvW/3tijVmpL/va5Z3aAyGvqU3gCT8nX0Txik=
