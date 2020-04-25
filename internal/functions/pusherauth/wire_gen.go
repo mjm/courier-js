@@ -47,3 +47,33 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	handler := NewHandler(authenticator, pusherClient, pushNotifications)
 	return handler, nil
 }
+
+func InitializeLambda() (*Handler, error) {
+	defaultEnv := &config.DefaultEnv{}
+	awsSecretKeeper := secret.NewAWSSecretKeeper()
+	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
+	authConfig, err := auth.NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	management, err := auth.NewManagementClient(authConfig)
+	if err != nil {
+		return nil, err
+	}
+	jwksClient := auth.NewJWKSClient(authConfig)
+	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
+	pusherConfig, err := event.NewPusherConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	client, err := event.NewPusherClient(pusherConfig)
+	if err != nil {
+		return nil, err
+	}
+	pushNotifications, err := event.NewBeamsClient(pusherConfig)
+	if err != nil {
+		return nil, err
+	}
+	handler := NewHandler(authenticator, client, pushNotifications)
+	return handler, nil
+}

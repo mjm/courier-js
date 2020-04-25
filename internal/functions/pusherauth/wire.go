@@ -20,3 +20,13 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		event.PusherSet,
 	))
 }
+
+func InitializeLambda() (*Handler, error) {
+	panic(wire.Build(
+		NewHandler,
+		config.DefaultSet,
+		secret.AWSSet,
+		auth.DefaultSet,
+		event.PusherSet,
+	))
+}

@@ -8,7 +8,9 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/PuerkitoBio/purell v1.1.1
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
+	github.com/aws/aws-lambda-go v1.16.0
 	github.com/aws/aws-sdk-go v1.30.7
+	github.com/awslabs/aws-lambda-go-api-proxy v0.6.0
 	github.com/aybabtme/iocontrol v0.0.0-20150809002002-ad15bcfc95a0 // indirect
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
