@@ -43,6 +43,7 @@ go_test(
         "//internal/shared/model:go_default_library",
         "//internal/trace:go_default_library",
         "@com_github_jonboulle_clockwork//:go_default_library",
+        "@com_github_segmentio_ksuid//:go_default_library",
         "@com_github_stretchr_testify//suite:go_default_library",
     ],
 )

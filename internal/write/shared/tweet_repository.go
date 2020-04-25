@@ -62,6 +62,7 @@ type CreateTweetParams struct {
 	URL          string
 	Tweets       []*model.Tweet
 	RetweetID    string
+	Autopost     bool
 	PostTaskName string
 }
 
@@ -116,7 +117,11 @@ func (r *TweetRepository) Create(ctx context.Context, ts []CreateTweetParams) er
 			item[model.ColRetweetID] = &dynamodb.AttributeValue{S: aws.String(params.RetweetID)}
 		}
 
-		// TODO post task name and post after
+		if params.Autopost {
+			postAfter := model.FormatTime(r.clock.Now().Add(5 * time.Minute))
+			item[model.ColPostAfter] = &dynamodb.AttributeValue{S: aws.String(postAfter)}
+			item[model.ColPostTaskName] = &dynamodb.AttributeValue{S: aws.String(params.PostTaskName)}
+		}
 
 		reqs = append(reqs, &dynamodb.WriteRequest{
 			PutRequest: &dynamodb.PutRequest{

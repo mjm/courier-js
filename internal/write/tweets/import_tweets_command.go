@@ -44,7 +44,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	var toUpdate []shared.UpdateTweetParams
 
 	for _, post := range feed.Posts {
-		createTweet, updateTweet, err := h.planTweet(ctx, cmd.UserID, post)
+		createTweet, updateTweet, err := h.planTweet(ctx, cmd.UserID, feed.Autopost, post)
 		if err != nil {
 			return err
 		}
@@ -113,11 +113,12 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	return nil
 }
 
-func (h *CommandHandler) planTweet(ctx context.Context, userID string, post *shared.PostWithTweetGroup) (*shared.CreateTweetParams, *shared.UpdateTweetParams, error) {
+func (h *CommandHandler) planTweet(ctx context.Context, userID string, autopost bool, post *shared.PostWithTweetGroup) (*shared.CreateTweetParams, *shared.UpdateTweetParams, error) {
 	ctx, span := tracer.Start(ctx, "ImportTweetsCommand.planTweet",
 		trace.WithAttributes(keys.PostID(post.ID)...),
 		trace.WithAttributes(
 			keys.UserID(userID),
+			key.Bool("feed.autopost", autopost),
 			key.Bool("import.existing_tweet.present", post.TweetGroup != nil)))
 	defer span.End()
 
@@ -170,6 +171,7 @@ func (h *CommandHandler) planTweet(ctx context.Context, userID string, post *sha
 			URL:          post.URL,
 			Tweets:       ts,
 			RetweetID:    retweetID,
+			Autopost:     autopost,
 			PostTaskName: ksuid.New().String(),
 		}, nil, nil
 	}

@@ -3,6 +3,8 @@ package shared
 import (
 	"time"
 
+	"github.com/segmentio/ksuid"
+
 	"github.com/mjm/courier-js/internal/shared/model"
 )
 
@@ -54,9 +56,10 @@ func (suite *dynamoSuite) TestCreateSingleRetweet() {
 	suite.Require().NoError(
 		suite.tweetRepo.Create(suite.Ctx(), []CreateTweetParams{
 			{
-				ID:          id,
-				PublishedAt: t,
-				RetweetID:   "1234567890",
+				ID:           id,
+				PublishedAt:  t,
+				RetweetID:    "1234567890",
+				PostTaskName: ksuid.New().String(),
 			},
 		}))
 
@@ -72,6 +75,55 @@ func (suite *dynamoSuite) TestCreateSingleRetweet() {
 	suite.Equal(model.ActionRetweet, tg.Action)
 	suite.Equal(model.Draft, tg.Status)
 	suite.NotEmpty(tg.CreatedAt)
+	suite.Nil(tg.PostAfter)
+	suite.Empty(tg.PostTaskName)
+}
+
+func (suite *dynamoSuite) TestCreateTweetAutopost() {
+	id := model.TweetGroupIDFromParts("test_user", model.NewFeedID(), "https://www.example.org/post/abc")
+	t := time.Date(2020, time.January, 2, 3, 4, 5, 0, time.UTC)
+
+	taskName := ksuid.New().String()
+
+	suite.Require().NoError(
+		suite.tweetRepo.Create(suite.Ctx(), []CreateTweetParams{
+			{
+				ID:          id,
+				PublishedAt: t,
+				Tweets: []*model.Tweet{
+					{
+						Body: "This is my tweet text.",
+						MediaURLs: []string{
+							"https://www.example.org/media/foo.jpg",
+						},
+					},
+				},
+				Autopost:     true,
+				PostTaskName: taskName,
+			},
+		}))
+
+	tg, err := suite.tweetRepo.Get(suite.Ctx(), id)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(tg)
+
+	suite.Equal("test_user", tg.UserID())
+	suite.Equal(id.FeedID, tg.FeedID())
+	suite.Equal(id.ItemID, tg.ItemID())
+	suite.Equal([]*model.Tweet{
+		{
+			Body: "This is my tweet text.",
+			MediaURLs: []string{
+				"https://www.example.org/media/foo.jpg",
+			},
+		},
+	}, tg.Tweets)
+	suite.Empty(tg.RetweetID)
+	suite.Equal(model.ActionTweet, tg.Action)
+	suite.Equal(model.Draft, tg.Status)
+	suite.NotEmpty(tg.CreatedAt)
+	suite.Equal(suite.clock.Now().Add(5*time.Minute), *tg.PostAfter)
+	suite.Equal(taskName, tg.PostTaskName)
 }
 
 func (suite *dynamoSuite) TestUpdateTweet() {
