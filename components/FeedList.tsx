@@ -10,9 +10,6 @@ import Link from "next/link"
 import { FeedList_feeds } from "@generated/FeedList_feeds.graphql"
 import FeedCard from "components/FeedCard"
 
-// need to use CSS Grid _and_ media queries, so a CSS module is the best thing here
-import styles from "components/FeedList.module.css"
-
 const FeedList: React.FC<{
   feeds: FeedList_feeds
   relay: RelayPaginationProp
@@ -31,7 +28,10 @@ const FeedList: React.FC<{
         </div>
       )}
       <div className="-m-2">
-        <div className={`w-full mb-4 ${styles.feedGrid}`}>
+        <div
+          className={`w-full mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`}
+          style={{ gridAutoRows: "1fr" }}
+        >
           {edges.map(({ node }) => (
             <div key={node.id} className="p-2">
               <FeedCard feed={node} />

@@ -20,6 +20,9 @@ const TweetList: React.FC<{
   relay: { hasMore, loadMore },
 }) => {
   const [isLoading, setLoading] = React.useState(false)
+  if (!tweets.allTweets) {
+    return null
+  }
   const { edges } = tweets.allTweets
 
   return (
