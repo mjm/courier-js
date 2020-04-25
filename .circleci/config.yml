@@ -11,13 +11,8 @@ executors:
         type: string
     docker:
       - image: mmoriarity/circleci-bazel
-      - image: circleci/postgres:12-alpine-ram
-        environment:
-          POSTGRES_USER: circleci
-          POSTGRES_DB: courier_test
       - image: circleci/dynamodb:15
     environment:
-      DATABASE_URL: postgresql://localhost/courier_test?sslmode=disable
       GOOGLE_PROJECT: << parameters.project >>
   terraform:
     parameters:
@@ -52,27 +47,6 @@ jobs:
 
             # Use production credentials for build cache, regardless
             echo $PROD_GCLOUD_SERVICE_KEY > /tmp/gcp-credentials.json
-      - run:
-          name: Install golang-migrate
-          command: |
-            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.8.0/migrate.linux-amd64.tar.gz | tar xvz
-            sudo mv migrate.linux-amd64 /usr/local/bin/migrate
-      - run:
-          name: Waiting for Postgres to be ready
-          command: |
-            for i in `seq 1 10`;
-            do
-              nc -z localhost 5432 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Postgres && exit 1
-      - run:
-          name: Enable pgcrypto extension
-          command: psql -c 'create extension pgcrypto;' $DATABASE_URL
-      - run:
-          name: Migrate test database
-          command: /usr/local/bin/migrate -database "$DATABASE_URL" -path migrations/ up
       - run:
           name: Run unit tests
           command: bazel test --config=ci //...
@@ -122,23 +96,6 @@ jobs:
           name: Update Auth0 configuration
           command: npm run auth:import:<< parameters.env >>
 
-  migrate_database:
-    parameters:
-      database_url:
-        type: env_var_name
-    docker:
-      - image: cimg/base:2020.01
-    steps:
-      - checkout
-      - run:
-          name: Install golang-migrate
-          command: |
-            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.8.0/migrate.linux-amd64.tar.gz | tar xvz
-            sudo mv migrate.linux-amd64 /usr/local/bin/migrate
-      - run:
-          name: Migrate database
-          command: /usr/local/bin/migrate -database "$<< parameters.database_url >>" -path migrations/ up
-
   deploy_backend:
     parameters:
       workspace:
@@ -187,11 +144,6 @@ workflows:
           name: build_and_test_backend_staging
           project: courier-staging-267902
           credentials: GCLOUD_SERVICE_KEY
-      - migrate_database:
-          name: migrate_database_staging
-          database_url: STAGING_DATABASE_URL
-          requires:
-            - build_and_test_backend_staging
       - update_auth0:
           name: update_auth0_staging
           env: staging
@@ -202,14 +154,12 @@ workflows:
           now_config_file: now.json
           requires:
             - build_and_test_backend_staging
-            - migrate_database_staging
             - update_auth0_staging
       - deploy_backend:
           name: deploy_backend_staging
           workspace: staging-us-central1
           requires:
             - build_and_test_backend_staging
-            - migrate_database_staging
             - update_auth0_staging
       - mark_deploy:
           name: mark_deploy_staging
@@ -227,11 +177,6 @@ workflows:
           filters:
             branches:
               only: master
-      - migrate_database:
-          name: migrate_database_prod
-          database_url: PROD_DATABASE_URL
-          requires:
-            - build_and_test_backend_prod
       - update_auth0:
           name: update_auth0_prod
           env: prod
@@ -242,14 +187,12 @@ workflows:
           now_config_file: now.prod.json
           requires:
             - build_and_test_backend_prod
-            - migrate_database_prod
             - update_auth0_prod
       - deploy_backend:
           name: deploy_backend_prod
           workspace: production-us-central1
           requires:
             - build_and_test_backend_prod
-            - migrate_database_prod
             - update_auth0_prod
       - mark_deploy:
           name: mark_deploy_prod
