@@ -1,9 +1,5 @@
+import React from "react"
 import { createFragmentContainer, graphql, RelayProp } from "react-relay"
-import {
-  CardElement,
-  injectStripe,
-  ReactStripeElements,
-} from "react-stripe-elements"
 
 import { useRouter } from "next/router"
 
@@ -27,122 +23,133 @@ import { iconForBrand } from "components/CreditCardIcon"
 import { ErrorBox } from "components/ErrorBox"
 import { FieldError } from "components/FieldError"
 import { theme } from "tailwind.config"
+import {
+  CardElement,
+  CardElementProps,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js"
 
 interface Props {
   user: SubscribeForm_user
   relay: RelayProp
 }
 
-const SubscribeForm = injectStripe<Props>(
-  ({ user, stripe, relay: { environment } }) => {
-    const router = useRouter()
-    const { renewSession } = useAuth0()
+const SubscribeForm: React.FC<Props> = ({ user, relay: { environment } }) => {
+  const router = useRouter()
+  const { renewSession } = useAuth0()
+  const stripe = useStripe()
+  const elements = useElements()
 
-    const savedCard = user.customer?.creditCard
+  const savedCard = user.customer?.creditCard
 
-    async function onSubmit(
-      input: SubscribeData,
-      actions: FormikHelpers<SubscribeData>
-    ): Promise<void> {
-      if (!stripe) {
-        return
-      }
-
-      try {
-        if (input.method === "new-card") {
-          const { token, error } = await stripe.createToken({
-            name: input.name,
-          })
-          if (error) {
-            throw error
-          }
-
-          await subscribe(environment, {
-            tokenID: (token as stripe.Token).id,
-            email: input.email,
-          })
-        } else {
-          // reuse the existing customer
-          await subscribe(environment)
-        }
-
-        // ensure we have an up-to-date token, since that's where the
-        // user info on the account page comes from
-        await renewSession()
-
-        router.push("/account")
-      } catch (error) {
-        actions.setStatus({ error })
-      } finally {
-        actions.setSubmitting(false)
-      }
+  async function onSubmit(
+    input: SubscribeData,
+    actions: FormikHelpers<SubscribeData>
+  ): Promise<void> {
+    if (!stripe || !elements) {
+      return
     }
 
-    return (
-      <Formik
-        initialValues={{
-          ...initialSubscribeData,
-          method: savedCard ? "use-saved-card" : "new-card",
-        }}
-        validateOnMount
-        initialStatus={{ error: null }}
-        validationSchema={subscribeSchema}
-        onSubmit={onSubmit}
-      >
-        {({ values, isSubmitting, isValid, setStatus, status: { error } }) => (
-          <Form className="px-6 pb-6">
-            {savedCard && (
+    try {
+      if (input.method === "new-card") {
+        const cardElement = elements.getElement(CardElement)
+        if (!cardElement) {
+          return
+        }
+
+        const { token, error } = await stripe.createToken(cardElement, {
+          name: input.name,
+        })
+        if (error) {
+          throw error
+        }
+
+        await subscribe(environment, {
+          tokenID: (token as stripe.Token).id,
+          email: input.email,
+        })
+      } else {
+        // reuse the existing customer
+        await subscribe(environment)
+      }
+
+      // ensure we have an up-to-date token, since that's where the
+      // user info on the account page comes from
+      await renewSession()
+
+      await router.push("/account")
+    } catch (error) {
+      actions.setStatus({ error })
+    } finally {
+      actions.setSubmitting(false)
+    }
+  }
+
+  return (
+    <Formik
+      initialValues={{
+        ...initialSubscribeData,
+        method: savedCard ? "use-saved-card" : "new-card",
+      }}
+      validateOnMount
+      initialStatus={{ error: null }}
+      validationSchema={subscribeSchema}
+      onSubmit={onSubmit}
+    >
+      {({ values, isSubmitting, isValid, setStatus, status: { error } }) => (
+        <Form className="px-6 pb-6">
+          {savedCard && (
+            <>
+              <div className="flex flex-row -mx-2 mb-4">
+                <CardChoice
+                  icon={iconForBrand(savedCard.brand)}
+                  iconLabel={savedCard.lastFour}
+                  method="use-saved-card"
+                >
+                  Use saved card
+                </CardChoice>
+                <CardChoice icon={faCreditCard} method="new-card">
+                  Enter new card
+                </CardChoice>
+              </div>
+              <ErrorMessage name="method" component={FieldError} />
+            </>
+          )}
+          <div className="flex flex-col">
+            {values.method === "use-saved-card" ? null : (
               <>
-                <div className="flex flex-row -mx-2 mb-4">
-                  <CardChoice
-                    icon={iconForBrand(savedCard.brand)}
-                    iconLabel={savedCard.lastFour}
-                    method="use-saved-card"
-                  >
-                    Use saved card
-                  </CardChoice>
-                  <CardChoice icon={faCreditCard} method="new-card">
-                    Enter new card
-                  </CardChoice>
-                </div>
-                <ErrorMessage name="method" component={FieldError} />
+                <Field
+                  as={TextField}
+                  type="text"
+                  name="name"
+                  placeholder="Name on card"
+                />
+                <ErrorMessage name="name" component={FieldError} />
+                <Field
+                  as={TextField}
+                  type="email"
+                  name="email"
+                  placeholder="Email address"
+                />
+                <ErrorMessage name="email" component={FieldError} />
+                <CardInput onChange={() => setStatus({ error: null })} />
               </>
             )}
-            <div className="flex flex-col">
-              {values.method === "use-saved-card" ? null : (
-                <>
-                  <Field
-                    as={TextField}
-                    type="text"
-                    name="name"
-                    placeholder="Name on card"
-                  />
-                  <ErrorMessage name="name" component={FieldError} />
-                  <Field
-                    as={TextField}
-                    type="email"
-                    name="email"
-                    placeholder="Email address"
-                  />
-                  <ErrorMessage name="email" component={FieldError} />
-                  <CardInput onChange={() => setStatus({ error: null })} />
-                </>
-              )}
-              <ErrorBox error={error} />
-              <button
-                className="btn btn-first btn-first-primary self-center text-xl font-medium mt-2 py-2 px-6"
-                disabled={!isValid || isSubmitting}
-              >
-                <FontAwesomeIcon icon={faCreditCard} className="mr-2" />
-                Subscribe
-              </button>
-            </div>
-          </Form>
-        )}
-      </Formik>
-    )
-  }
-)
+            <ErrorBox error={error} />
+            <button
+              className="btn btn-first btn-first-primary self-center text-xl font-medium mt-2 py-2 px-6"
+              disabled={!isValid || isSubmitting}
+            >
+              <FontAwesomeIcon icon={faCreditCard} className="mr-2" />
+              Subscribe
+            </button>
+          </div>
+        </Form>
+      )}
+    </Formik>
+  )
+}
 
 export default createFragmentContainer(SubscribeForm, {
   user: graphql`
@@ -238,17 +245,19 @@ const initialSubscribeData: SubscribeData = {
   method: "new-card",
 }
 
-const CardInput: React.FC<ReactStripeElements.ElementProps> = props => (
+const CardInput: React.FC<CardElementProps> = props => (
   <div className="bg-neutral-1 rounded p-3">
     <CardElement
       id="card"
-      style={{
-        base: {
-          fontFamily: "Inter, Helvetica, sans-serif",
-          fontSize: "16px",
-          color: theme.extend.colors.neutral[10],
-          "::placeholder": {
-            color: theme.extend.colors.neutral[4],
+      options={{
+        style: {
+          base: {
+            fontFamily: "Inter, Helvetica, sans-serif",
+            fontSize: "16px",
+            color: theme.extend.colors.neutral[10],
+            "::placeholder": {
+              color: theme.extend.colors.neutral[4],
+            },
           },
         },
       }}

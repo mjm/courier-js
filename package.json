@@ -25,6 +25,8 @@
     "@mdx-js/loader": "^1.5.3",
     "@next/mdx": "^9.1.7",
     "@reach/alert-dialog": "^0.2.8",
+    "@stripe/react-stripe-js": "^1.1.2",
+    "@stripe/stripe-js": "^1.4.0",
     "@types/auth0-js": "^9.10.2",
     "@types/cookie": "^0.3.3",
     "@types/http-proxy": "^1.17.3",

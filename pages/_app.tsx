@@ -5,6 +5,8 @@ import { useRouter } from "next/router"
 
 import { config } from "@fortawesome/fontawesome-svg-core"
 import NProgress from "nprogress"
+import { Elements } from "@stripe/react-stripe-js"
+import { loadStripe } from "@stripe/stripe-js"
 
 import { Auth0Provider, useAuth0 } from "components/Auth0Provider"
 import MDXContainer from "components/MDXContainer"
@@ -16,9 +18,18 @@ import "@fortawesome/fontawesome-svg-core/styles.css"
 
 config.autoAddCss = false
 
+const stripePromise = process.browser
+  ? loadStripe(process.env.STRIPE_KEY || "")
+  : null
+
 const App: React.FC<AppProps> = props => (
   <Auth0Provider>
-    <AppInner {...props} />
+    <Elements
+      stripe={stripePromise}
+      options={{ fonts: [{ cssSrc: "https://rsms.me/inter/inter.css" }] }}
+    >
+      <AppInner {...props} />
+    </Elements>
   </Auth0Provider>
 )
 
