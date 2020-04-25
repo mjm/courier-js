@@ -30,10 +30,13 @@ type RefreshCommand struct {
 	// Force causes scraping to ignore saved cache headers and always fetch and process
 	// the full contents of the feed.
 	Force bool
+
+	TaskName string
 }
 
 var (
 	upToDateKey = key.New("feed.up_to_date").Bool
+	skippedKey  = key.New("task.skipped").Bool
 )
 
 func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) error {
@@ -41,12 +44,21 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 	span.SetAttributes(
 		keys.UserID(cmd.UserID),
 		keys.FeedID(cmd.FeedID),
+		keys.TaskName(cmd.TaskName),
 		key.Bool("feed.force_refresh", cmd.Force))
 
 	f, err := h.feedRepo.Get(ctx, cmd.UserID, cmd.FeedID)
 	if err != nil {
 		return err
 	}
+
+	span.SetAttributes(key.String("feed.expected_task_name", f.RefreshTaskName))
+
+	if cmd.TaskName != "" && f.RefreshTaskName != cmd.TaskName {
+		span.SetAttributes(skippedKey(true))
+		return nil
+	}
+	span.SetAttributes(skippedKey(false))
 
 	var headers *scraper.CachingHeaders
 	if !cmd.Force && f.CachingHeaders != nil {

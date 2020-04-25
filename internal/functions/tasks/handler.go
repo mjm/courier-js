@@ -79,8 +79,9 @@ func (h *Handler) HandleHTTP(ctx context.Context, _ http.ResponseWriter, r *http
 		})
 	case *feeds.RefreshFeedTask:
 		_, err = h.commandBus.Run(ctx, writefeeds.RefreshCommand{
-			UserID: task.UserId,
-			FeedID: model.FeedID(task.FeedId),
+			UserID:   task.UserId,
+			FeedID:   model.FeedID(task.FeedId),
+			TaskName: taskName,
 		})
 	default:
 		err = fmt.Errorf("%w %T", ErrUnknownType, msg.Message)

@@ -27,6 +27,7 @@ const (
 	ColLastModified     = "LastModified"
 	ColAutopost         = "Autopost"
 	ColDeactivatedAt    = "DeactivatedAt"
+	ColRefreshTaskName  = "RefreshTaskName"
 )
 
 type FeedID string
@@ -65,6 +66,7 @@ type Feed struct {
 	Title            string
 	HomePageURL      string
 	RefreshedAt      *time.Time
+	RefreshTaskName  string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	CachingHeaders   *CachingHeaders
@@ -133,6 +135,10 @@ func NewFeedFromAttrs(attrs map[string]*dynamodb.AttributeValue) (*Feed, error) 
 		if val, ok := cachingHeadersVal.M[ColLastModified]; ok {
 			feed.CachingHeaders.LastModified = aws.StringValue(val.S)
 		}
+	}
+
+	if taskNameVal, ok := attrs[ColRefreshTaskName]; ok {
+		feed.RefreshTaskName = aws.StringValue(taskNameVal.S)
 	}
 
 	return feed, nil

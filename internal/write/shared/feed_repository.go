@@ -203,6 +203,34 @@ func (r *FeedRepository) Create(ctx context.Context, userID string, feedID model
 	return nil
 }
 
+func (r *FeedRepository) EnqueueRefresh(ctx context.Context, userID string, feedID model.FeedID, taskName string) error {
+	id := model.UserFeedID{
+		UserID: userID,
+		FeedID: feedID,
+	}
+
+	_, err := r.dynamo.UpdateItemWithContext(ctx, &dynamodb.UpdateItemInput{
+		TableName:           &r.dynamoConfig.TableName,
+		Key:                 id.PrimaryKey(),
+		UpdateExpression:    aws.String(`SET #refresh_task_name = :refresh_task_name`),
+		ConditionExpression: aws.String(`attribute_exists(#pk)`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk":                aws.String(db.PK),
+			"#refresh_task_name": aws.String(model.ColRefreshTaskName),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":refresh_task_name": {S: aws.String(taskName)},
+		},
+	})
+	if err != nil {
+		if _, ok := err.(*dynamodb.ConditionalCheckFailedException); ok {
+			return ErrNoFeed
+		}
+		return err
+	}
+	return nil
+}
+
 type UpdateFeedParams struct {
 	ID     model.FeedID
 	UserID string
@@ -219,15 +247,16 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 		Key:                 r.primaryKey(params.UserID, params.ID),
 		ConditionExpression: aws.String("attribute_exists(#pk)"),
 		ExpressionAttributeNames: map[string]*string{
-			"#pk":           aws.String(db.PK),
-			"#lsi1sk":       aws.String(db.LSI1SK),
-			"#gsi1pk":       aws.String(db.GSI1PK),
-			"#gsi1sk":       aws.String(db.GSI1SK),
-			"#title":        aws.String(model.ColTitle),
-			"#home":         aws.String(model.ColHomePageURL),
-			"#ch":           aws.String(model.ColCachingHeaders),
-			"#mp":           aws.String(model.ColMicropubEndpoint),
-			"#refreshed_at": aws.String(model.ColRefreshedAt),
+			"#pk":                aws.String(db.PK),
+			"#lsi1sk":            aws.String(db.LSI1SK),
+			"#gsi1pk":            aws.String(db.GSI1PK),
+			"#gsi1sk":            aws.String(db.GSI1SK),
+			"#title":             aws.String(model.ColTitle),
+			"#home":              aws.String(model.ColHomePageURL),
+			"#ch":                aws.String(model.ColCachingHeaders),
+			"#mp":                aws.String(model.ColMicropubEndpoint),
+			"#refreshed_at":      aws.String(model.ColRefreshedAt),
+			"#refresh_task_name": aws.String(model.ColRefreshTaskName),
 		},
 	}
 
@@ -242,6 +271,7 @@ func (r *FeedRepository) UpdateDetails(ctx context.Context, params UpdateFeedPar
 	b.SetString("mp", params.MicropubEndpoint)
 
 	b.SetString("refreshed_at", model.FormatTime(r.clock.Now()))
+	b.Remove("refresh_task_name")
 
 	if params.CachingHeaders != nil {
 		ch := map[string]*dynamodb.AttributeValue{}
