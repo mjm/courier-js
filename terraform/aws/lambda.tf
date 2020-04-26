@@ -18,6 +18,7 @@ module "graphql_function" {
   policies = [
     aws_iam_policy.courier_table.arn,
     aws_iam_policy.config_params.arn,
+    aws_iam_policy.enqueue_events.arn,
   ]
 }
 
@@ -45,6 +46,7 @@ module "events_function" {
     aws_iam_policy.courier_table.arn,
     aws_iam_policy.config_params.arn,
     aws_iam_policy.events_queue.arn,
+    aws_iam_policy.enqueue_events.arn,
   ]
 }
 
@@ -58,6 +60,7 @@ module "ping_function" {
   policies = [
     aws_iam_policy.courier_table.arn,
     aws_iam_policy.config_params.arn,
+    aws_iam_policy.enqueue_events.arn,
   ]
 }
 

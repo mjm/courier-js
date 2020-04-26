@@ -34,3 +34,19 @@ resource "aws_ssm_parameter" "events-queue-url" {
   type  = "String"
   value = aws_sqs_queue.events.id
 }
+
+data "aws_iam_policy_document" "enqueue_events" {
+  statement {
+    actions = [
+      "sqs:SendMessage*"
+    ]
+    resources = [
+      aws_sqs_queue.events.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "enqueue_events" {
+  name   = "courier-${var.env}-enqueue-events"
+  policy = data.aws_iam_policy_document.enqueue_events.json
+}
