@@ -21,14 +21,6 @@ module "pusherauth_function" {
   ]
 }
 
-resource "aws_lambda_permission" "pusherauth_apigw" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = module.pusherauth_function.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.courier.execution_arn}/*/*/*"
-}
-
 module "events_function" {
   source = "../modules/lambda_function"
 
@@ -72,12 +64,4 @@ data "aws_iam_policy_document" "events_queue" {
 resource "aws_iam_policy" "events_queue" {
   name   = "courier-${var.env}-events-queue"
   policy = data.aws_iam_policy_document.events_queue.json
-}
-
-resource "aws_lambda_permission" "ping_apigw" {
-  statement_id  = "AllowAPIGatewayInvoke"
-  action        = "lambda:InvokeFunction"
-  function_name = module.ping_function.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.courier.execution_arn}/*/*/*"
 }

@@ -84,3 +84,9 @@ resource "aws_iam_policy" "courier_table" {
   name   = "courier-${var.env}-dynamo-table"
   policy = data.aws_iam_policy_document.courier_table.json
 }
+
+resource "aws_ssm_parameter" "dynamo_table_name" {
+  name  = "/courier/${var.env}/db/table-name"
+  type  = "String"
+  value = aws_dynamodb_table.courier.name
+}
