@@ -89,8 +89,14 @@ func (p *SQSPublisher) Fire(ctx context.Context, evt interface{}) {
 		QueueUrl:    &p.cfg.QueueURL,
 		MessageBody: aws.String(dataStr),
 		MessageAttributes: map[string]*sqs.MessageAttributeValue{
-			"TraceID": {StringValue: aws.String(sc.TraceIDString())},
-			"SpanID":  {StringValue: aws.String(sc.SpanIDString())},
+			"TraceID": {
+				DataType:    aws.String("String"),
+				StringValue: aws.String(sc.TraceIDString()),
+			},
+			"SpanID": {
+				DataType:    aws.String("String"),
+				StringValue: aws.String(sc.SpanIDString()),
+			},
 		},
 	})
 	if err != nil {
