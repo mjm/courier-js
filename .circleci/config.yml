@@ -214,6 +214,7 @@ workflows:
           name: build_and_test_backend_prod
           project: courier-prod-269822
           credentials: PROD_GCLOUD_SERVICE_KEY
+          bucket: courier-production-handlers
           requires:
             # run the staging one first so we can rely on its build cache
             - build_and_test_backend_staging
