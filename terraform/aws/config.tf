@@ -11,5 +11,5 @@ data "aws_iam_policy_document" "config_params" {
 
 resource "aws_iam_policy" "config_params" {
   name   = "courier-${var.env}-config-params"
-  policy = data.aws_iam_policy_document.config_params
+  policy = data.aws_iam_policy_document.config_params.json
 }

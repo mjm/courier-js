@@ -50,6 +50,12 @@ resource "aws_lambda_function" "pusherauth" {
   s3_bucket = aws_s3_bucket.lambda_handlers.bucket
   s3_key    = "${var.function_revision}/pusherauth.zip"
 
+  environment {
+    variables = {
+      PARAM_PATH_PREFIX = "/courier/${var.env}"
+    }
+  }
+
   tags = {
     Project     = "courier"
     Environment = var.env
