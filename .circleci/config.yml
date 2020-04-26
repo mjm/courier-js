@@ -191,12 +191,12 @@ workflows:
           requires:
             - build_and_test_backend_staging
             - update_auth0_staging
-      - deploy_backend:
-          name: deploy_backend_staging
-          workspace: staging-us-central1
-          requires:
-            - build_and_test_backend_staging
-            - update_auth0_staging
+#      - deploy_backend:
+#          name: deploy_backend_staging
+#          workspace: staging-us-central1
+#          requires:
+#            - build_and_test_backend_staging
+#            - update_auth0_staging
       - deploy_backend_aws:
           name: deploy_backend_aws_staging
           workspace: staging-us-east-2
@@ -207,8 +207,8 @@ workflows:
           name: mark_deploy_staging
           dataset: courier-staging
           requires:
-            - deploy_backend_staging
-            - deploy_backned_aws_staging
+#            - deploy_backend_staging
+            - deploy_backend_aws_staging
 
       - build_and_test_backend:
           name: build_and_test_backend_prod
