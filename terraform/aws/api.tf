@@ -55,3 +55,9 @@ resource "aws_api_gateway_deployment" "courier" {
 output "base_url" {
   value = aws_api_gateway_deployment.courier.invoke_url
 }
+
+resource "aws_ssm_parameter" "graphql_url" {
+  name  = "/courier/${var.env}/api/graphql-url"
+  type  = "String"
+  value = "${aws_api_gateway_deployment.courier.invoke_url}/graphql"
+}

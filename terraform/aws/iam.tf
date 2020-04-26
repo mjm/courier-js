@@ -53,7 +53,7 @@ data "aws_iam_policy_document" "ci_s3_upload" {
 }
 
 resource "aws_iam_user_policy" "ci_s3_upload" {
-  user   = aws_iam_user.external_function.name
+  user   = aws_iam_user.ci.name
   policy = data.aws_iam_policy_document.ci_s3_upload.json
 }
 

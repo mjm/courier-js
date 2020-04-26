@@ -23,7 +23,7 @@ executors:
       workspace:
         type: string
     docker:
-      - image: hashicorp/terraform:0.12.20
+      - image: hashicorp/terraform:0.12.24
     environment:
       TF_INPUT: "false"
       TF_IN_AUTOMATION: "true"
