@@ -8,7 +8,7 @@ import (
 
 // Config gives fields to configure tracing.
 type Config struct {
-	Dataset  string `env:"HONEY_DATASET"`
+	Dataset  string `secret:"honeycomb/dataset"`
 	WriteKey string `secret:"honey-write-key"`
 }
 

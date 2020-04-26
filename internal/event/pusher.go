@@ -15,7 +15,7 @@ var PusherSet = wire.NewSet(NewPusherConfig, NewPusherClient, NewBeamsClient)
 
 type PusherConfig struct {
 	ChannelsURL     string `secret:"pusher-url"`
-	BeamsInstanceID string `env:"BEAMS_INSTANCE_ID",secret:"push/beams/instance-id"`
+	BeamsInstanceID string `secret:"push/beams/instance-id"`
 	BeamsSecretKey  string `secret:"beams-secret-key"`
 }
 
