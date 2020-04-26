@@ -10,6 +10,7 @@ go_library(
         "pusher.go",
         "sink.go",
         "source.go",
+        "sqs_publisher.go",
         "trace.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/event",
@@ -17,6 +18,10 @@ go_library(
     deps = [
         "//internal/config:go_default_library",
         "//internal/secret:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws/session:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/sqs:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/sqs/sqsiface:go_default_library",
         "@com_github_golang_protobuf//proto:go_default_library",
         "@com_github_golang_protobuf//ptypes:go_default_library_gen",
         "@com_github_google_wire//:go_default_library",

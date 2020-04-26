@@ -86,7 +86,7 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	tasksTasks, err := tasks.New(tasksConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -99,11 +99,7 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 		return nil, err
 	}
 	externalTweetRepository := tweets2.NewExternalTweetRepository(authConfig, twitterConfig)
-	keyManagementClient, err := tweets2.NewKeyManagementClient(gcpConfig)
-	if err != nil {
-		return nil, err
-	}
-	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig, api)
+	userRepository := tweets2.NewUserRepository(management, api)
 	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
 	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
 	customerRepository := billing3.NewCustomerRepository(api)

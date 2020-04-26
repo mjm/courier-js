@@ -13,12 +13,14 @@ def lambda_function(
   name,
   svcname,
   importpath,
+  handler = None,
   deps = [],
 ):
   lambda_function_handler(
     name = name + "_main",
     svcname = svcname,
     importpath = importpath,
+    handler = handler,
   )
 
   go_binary(
@@ -43,14 +45,21 @@ def lambda_function(
   )
 
 def _lambda_function_handler_impl(ctx):
+  template = ctx.file._template
+  subs = {
+    "{SERVICE_NAME}": ctx.attr.svcname,
+    "{IMPORT_PATH}": ctx.attr.importpath,
+  }
+
+  if ctx.attr.handler != "":
+    template = ctx.file._custom_template
+    subs["{HANDLER_FUNC}"] = ctx.attr.handler
+
   out = ctx.actions.declare_file(ctx.label.name + ".go")
   ctx.actions.expand_template(
       output = out,
-      template = ctx.file._template,
-      substitutions = {
-        "{SERVICE_NAME}": ctx.attr.svcname,
-        "{IMPORT_PATH}": ctx.attr.importpath,
-      },
+      template = template,
+      substitutions = subs,
   )
   return [DefaultInfo(files = depset([out]))]
 
@@ -59,9 +68,14 @@ lambda_function_handler = rule(
   attrs = {
     "svcname": attr.string(),
     "importpath": attr.string(),
+    "handler": attr.string(),
     "_template": attr.label(
       allow_single_file = True,
       default = "//internal/functions:lambda_handler.go.tpl",
+    ),
+    "_custom_template": attr.label(
+      allow_single_file = True,
+      default = "//internal/functions:lambda_custom_handler.go.tpl",
     ),
   },
 )

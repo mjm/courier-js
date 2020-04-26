@@ -50,7 +50,7 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	tasksTasks, err := tasks.New(tasksConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -71,16 +71,12 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	keyManagementClient, err := tweets2.NewKeyManagementClient(gcpConfig)
-	if err != nil {
-		return nil, err
-	}
 	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
 	api := billing.NewClient(billingConfig)
-	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig, api)
+	userRepository := tweets2.NewUserRepository(management, api)
 	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
 	tweetsCommandHandler := tweets2.NewCommandHandler(writeCommandBus, bus, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
 	eventHandler := tweets2.NewEventHandler(writeCommandBus, bus, tweetsCommandHandler)

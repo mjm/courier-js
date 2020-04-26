@@ -44,7 +44,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	tasksTasks, err := tasks.New(tasksConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -61,16 +61,12 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	keyManagementClient, err := tweets.NewKeyManagementClient(gcpConfig)
-	if err != nil {
-		return nil, err
-	}
 	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
 	api := billing.NewClient(billingConfig)
-	userRepository := tweets.NewUserRepository(management, keyManagementClient, gcpConfig, api)
+	userRepository := tweets.NewUserRepository(management, api)
 	dynamoConfig, err := db.NewDynamoConfig(loader)
 	if err != nil {
 		return nil, err

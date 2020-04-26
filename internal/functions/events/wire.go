@@ -40,3 +40,25 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		user.EventHandlerSet,
 	))
 }
+
+func InitializeLambda() (*Handler, error) {
+	panic(wire.Build(
+		NewHandler,
+		NewPusher,
+		config.DefaultSet,
+		secret.AWSSet,
+		notifications.NewNotifier,
+		event.PusherSet,
+		event.SourceSet,
+		event.AWSPublishingSet,
+		write.NewCommandBus,
+		db.DefaultSet,
+		auth.DefaultSet,
+		billing.DefaultSet,
+		tasks.DefaultSet,
+		shared.DefaultSet,
+		tweets.EventHandlerSet,
+		user.NewEventRecorder,
+		user.EventHandlerSet,
+	))
+}

@@ -41,7 +41,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	tasksTasks, err := tasks.New(tasksConfig)
 	if err != nil {
 		return nil, err
 	}

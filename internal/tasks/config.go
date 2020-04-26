@@ -7,9 +7,10 @@ import (
 )
 
 type Config struct {
-	TaskURL        string `env:"TASKS_URL"`
-	Queue          string `env:"GCP_TASKS_QUEUE"`
-	ServiceAccount string `env:"TASKS_SERVICE_ACCOUNT"`
+	TaskURL         string `env:"TASKS_URL" secret:"tasks/url"`
+	Queue           string `env:"GCP_TASKS_QUEUE" secret:"tasks/queue"`
+	ServiceAccount  string `env:"TASKS_SERVICE_ACCOUNT"`
+	CredentialsJSON string `secret:"tasks/credentials"`
 }
 
 func NewConfig(l *config.Loader) (cfg Config, err error) {

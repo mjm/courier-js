@@ -1,4 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//internal/functions:lambda.bzl", "lambda_function")
 
 go_library(
     name = "go_default_library",
@@ -25,6 +26,7 @@ go_library(
         "//internal/write/shared:go_default_library",
         "//internal/write/tweets:go_default_library",
         "//internal/write/user:go_default_library",
+        "@com_github_aws_aws_lambda_go//events:go_default_library",
         "@com_github_golang_protobuf//proto:go_default_library",
         "@com_github_golang_protobuf//ptypes:go_default_library_gen",
         "@com_github_jonboulle_clockwork//:go_default_library",
@@ -37,4 +39,12 @@ go_library(
         "@io_opentelemetry_go_otel//api/propagation:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
     ],
+)
+
+lambda_function(
+    name = "events",
+    svcname = "events",
+    importpath = "github.com/mjm/courier-js/internal/functions/events",
+    handler = "HandleSQS",
+    deps = [":go_default_library"],
 )

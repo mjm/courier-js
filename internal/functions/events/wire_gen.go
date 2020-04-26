@@ -72,7 +72,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	tasksTasks, err := tasks.New(tasksConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,83 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	keyManagementClient, err := tweets.NewKeyManagementClient(gcpConfig)
+	billingConfig, err := billing.NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	api := billing.NewClient(billingConfig)
+	userRepository := tweets.NewUserRepository(management, api)
+	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
+	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
+	eventHandler := tweets.NewEventHandler(commandBus, bus, commandHandler)
+	userUserRepository := user.NewUserRepository(management)
+	userCommandHandler := user.NewCommandHandler(commandBus, publisher, userUserRepository)
+	userEventHandler := user.NewEventHandler(commandBus, bus, userCommandHandler)
+	handler := NewHandler(bus, eventRecorder, pusher, notifier, eventHandler, userEventHandler)
+	return handler, nil
+}
+
+func InitializeLambda() (*Handler, error) {
+	bus := event.NewBus()
+	defaultEnv := &config.DefaultEnv{}
+	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
+	if err != nil {
+		return nil, err
+	}
+	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
+	if err != nil {
+		return nil, err
+	}
+	clock := clockwork.NewRealClock()
+	eventRepository := shared.NewEventRepository(dynamoDB, dynamoConfig, clock)
+	eventRecorder := user.NewEventRecorder(eventRepository, clock, bus)
+	pusherConfig, err := event.NewPusherConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	client, err := event.NewPusherClient(pusherConfig)
+	if err != nil {
+		return nil, err
+	}
+	pusher := NewPusher(bus, client)
+	pushNotifications, err := event.NewBeamsClient(pusherConfig)
+	if err != nil {
+		return nil, err
+	}
+	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	notifier := notifications.NewNotifier(bus, pushNotifications, tweetRepository)
+	commandBus := write.NewCommandBus()
+	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
+	if err != nil {
+		return nil, err
+	}
+	tasksConfig, err := tasks.NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	tasksTasks, err := tasks.New(tasksConfig)
+	if err != nil {
+		return nil, err
+	}
+	authConfig, err := auth.NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	twitterConfig, err := tweets.NewTwitterConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	externalTweetRepository := tweets.NewExternalTweetRepository(authConfig, twitterConfig)
+	management, err := auth.NewManagementClient(authConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -98,12 +174,12 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	api := billing.NewClient(billingConfig)
-	userRepository := tweets.NewUserRepository(management, keyManagementClient, gcpConfig, api)
+	userRepository := tweets.NewUserRepository(management, api)
 	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
+	commandHandler := tweets.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
 	eventHandler := tweets.NewEventHandler(commandBus, bus, commandHandler)
 	userUserRepository := user.NewUserRepository(management)
-	userCommandHandler := user.NewCommandHandler(commandBus, publisher, userUserRepository)
+	userCommandHandler := user.NewCommandHandler(commandBus, sqsPublisher, userUserRepository)
 	userEventHandler := user.NewEventHandler(commandBus, bus, userCommandHandler)
 	handler := NewHandler(bus, eventRecorder, pusher, notifier, eventHandler, userEventHandler)
 	return handler, nil

@@ -17,7 +17,6 @@ import (
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 
 	"github.com/mjm/courier-js/internal/functions"
-	"github.com/mjm/courier-js/internal/secret"
 )
 
 var DefaultSet = wire.NewSet(New, NewConfig)
@@ -33,13 +32,9 @@ type Tasks struct {
 	client         tasksClient
 }
 
-func New(cfg Config, secretCfg secret.GCPConfig) (*Tasks, error) {
+func New(cfg Config) (*Tasks, error) {
 	ctx := context.Background()
-	var o []option.ClientOption
-	if secretCfg.CredentialsFile != "" {
-		o = append(o, option.WithCredentialsFile(secretCfg.CredentialsFile))
-	}
-	client, err := cloudtasks.NewClient(ctx, o...)
+	client, err := cloudtasks.NewClient(ctx, option.WithCredentialsJSON([]byte(cfg.CredentialsJSON)))
 	if err != nil {
 		return nil, err
 	}

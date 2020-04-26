@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"strings"
 
 	cloudkms "cloud.google.com/go/kms/apiv1"
@@ -41,12 +40,12 @@ type UserRepository struct {
 	stripe     *client.API
 }
 
-func NewUserRepository(m *management.Management, kms *cloudkms.KeyManagementClient, cfg secret.GCPConfig, stripe *client.API) *UserRepository {
+func NewUserRepository(m *management.Management, stripe *client.API) *UserRepository {
 	return &UserRepository{
 		management: m,
-		kms:        kms,
-		keyID:      fmt.Sprintf("projects/%s/locations/global/keyRings/keys/cryptoKeys/micropub-token", cfg.ProjectID),
-		stripe:     stripe,
+		// kms:        kms,
+		// keyID:      fmt.Sprintf("projects/%s/locations/global/keyRings/keys/cryptoKeys/micropub-token", cfg.ProjectID),
+		stripe: stripe,
 	}
 }
 
