@@ -3,6 +3,7 @@ package secret
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -43,6 +44,10 @@ func (sk *AWSSecretKeeper) GetSecret(ctx context.Context, key string) (string, e
 		WithDecryption: aws.Bool(true),
 	})
 	if err != nil {
+		if _, ok := err.(*ssm.ParameterNotFound); ok {
+			log.Printf("Parameter at path %q could not be found", path)
+			return "", nil
+		}
 		return "", err
 	}
 

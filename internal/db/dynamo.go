@@ -40,7 +40,7 @@ const (
 )
 
 type DynamoConfig struct {
-	TableName          string `env:"DYNAMO_TABLE_NAME"`
+	TableName          string `env:"DYNAMO_TABLE_NAME" secret:"db/table-name"`
 	AWSAccessKeyID     string `secret:"aws-access-key-id"`
 	AWSSecretAccessKey string `secret:"aws-secret-access-key"`
 }

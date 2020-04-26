@@ -15,7 +15,7 @@
   "build": {
     "env": {
       "GRAPHQL_URL": "https://graphql-346j6nvz2q-uc.a.run.app/",
-      "PUSHER_AUTH_URL": "https://pusher-auth-346j6nvz2q-uc.a.run.app/",
+      "PUSHER_AUTH_URL": "https://al8c1ew7lc.execute-api.us-east-2.amazonaws.com/staging/pusherauth",
       "CLIENT_ID": "@courier-staging-frontend-client-id",
       "AUTH_DOMAIN": "@courier-staging-auth-domain",
       "API_IDENTIFIER": "https://courier.mjm.now.sh/api/",

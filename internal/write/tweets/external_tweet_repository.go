@@ -30,8 +30,8 @@ var (
 )
 
 type TwitterConfig struct {
-	ConsumerKey    string `secret:"twitter-consumer-key"`
-	ConsumerSecret string `secret:"twitter-consumer-secret"`
+	ConsumerKey    string `secret:"twitter/consumer-key"`
+	ConsumerSecret string `secret:"twitter/consumer-secret"`
 }
 
 func NewTwitterConfig(l *config.Loader) (cfg TwitterConfig, err error) {

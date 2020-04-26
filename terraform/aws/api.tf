@@ -56,8 +56,12 @@ output "base_url" {
   value = aws_api_gateway_deployment.courier.invoke_url
 }
 
-resource "aws_ssm_parameter" "graphql_url" {
-  name  = "/courier/${var.env}/api/graphql-url"
+output "pusherauth_url" {
+  value = "${aws_api_gateway_deployment.courier.invoke_url}${aws_api_gateway_resource.pusherauth.path}"
+}
+
+resource "aws_ssm_parameter" "dynamo_table_name" {
+  name  = "/courier/${var.env}/db/table-name"
   type  = "String"
-  value = "${aws_api_gateway_deployment.courier.invoke_url}/graphql"
+  value = aws_dynamodb_table.courier.name
 }
