@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -40,9 +39,7 @@ const (
 )
 
 type DynamoConfig struct {
-	TableName          string `env:"DYNAMO_TABLE_NAME" secret:"db/table-name"`
-	AWSAccessKeyID     string `secret:"aws-access-key-id"`
-	AWSSecretAccessKey string `secret:"aws-secret-access-key"`
+	TableName string `env:"DYNAMO_TABLE_NAME" secret:"db/table-name"`
 }
 
 func NewDynamoConfig(l *config.Loader) (cfg DynamoConfig, err error) {
@@ -56,8 +53,7 @@ type DynamoDB struct {
 }
 
 func NewDynamoDB(cfg DynamoConfig) (*DynamoDB, error) {
-	sess, err := session.NewSession(aws.NewConfig().
-		WithCredentials(credentials.NewStaticCredentials(cfg.AWSAccessKeyID, cfg.AWSSecretAccessKey, "")))
+	sess, err := session.NewSession(aws.NewConfig())
 	if err != nil {
 		return nil, err
 	}
