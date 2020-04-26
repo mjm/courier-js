@@ -7,13 +7,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"reflect"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
+	"github.com/honeycombio/libhoney-go"
 	"go.opentelemetry.io/otel/api/core"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/propagation"
@@ -114,6 +117,8 @@ func (h *Handler) HandleHTTP(ctx context.Context, _ http.ResponseWriter, r *http
 }
 
 func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
+	defer libhoney.Flush()
+
 	ctx, span := tracer.Start(ctx, "events.HandleSQS",
 		trace.WithAttributes(
 			key.String("messaging.system", "sqs"),
@@ -122,6 +127,8 @@ func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
 	defer span.End()
 
 	for _, evt := range event.Records {
+		sc := extractLinkedSpanContext(evt)
+
 		err := tracer.WithSpan(ctx, "processEvent", func(ctx context.Context) error {
 			span := trace.SpanFromContext(ctx)
 
@@ -131,11 +138,13 @@ func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
 
 			data, err := base64.StdEncoding.DecodeString(evt.Body)
 			if err != nil {
+				span.RecordError(ctx, err)
 				return err
 			}
 
 			var a any.Any
 			if err := proto.Unmarshal(data, &a); err != nil {
+				span.RecordError(ctx, err)
 				return err
 			}
 
@@ -143,6 +152,7 @@ func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
 
 			var msg ptypes.DynamicAny
 			if err := ptypes.UnmarshalAny(&a, &msg); err != nil {
+				span.RecordError(ctx, err)
 				return err
 			}
 
@@ -150,7 +160,7 @@ func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
 
 			h.bus.Fire(ctx, reflect.ValueOf(msg.Message).Elem().Interface())
 			return nil
-		})
+		}, trace.LinkedTo(sc))
 
 		if err != nil {
 			span.RecordError(ctx, err)
@@ -159,4 +169,25 @@ func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
 	}
 
 	return nil
+}
+
+func extractLinkedSpanContext(msg events.SQSMessage) core.SpanContext {
+	var sc core.SpanContext
+	var err error
+
+	if traceIDAttr, ok := msg.MessageAttributes["TraceID"]; ok {
+		sc.TraceID, err = core.TraceIDFromHex(aws.StringValue(traceIDAttr.StringValue))
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	if spanIDAttr, ok := msg.MessageAttributes["SpanID"]; ok {
+		sc.SpanID, err = core.SpanIDFromHex(aws.StringValue(spanIDAttr.StringValue))
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	return sc
 }
