@@ -9,11 +9,15 @@ executors:
       project:
         description: Google Cloud Project ID
         type: string
+      bucket:
+        description: S3 bucket for Lambda deployment packages
+        type: string
     docker:
       - image: mmoriarity/circleci-bazel
       - image: circleci/dynamodb:15
     environment:
       GOOGLE_PROJECT: << parameters.project >>
+      FUNCTION_BUCKET: << parameters.bucket >>
   terraform:
     parameters:
       workspace:
@@ -32,9 +36,12 @@ jobs:
         type: string
       credentials:
         type: env_var_name
+      bucket:
+        type: string
     executor:
       name: bazel
       project: << parameters.project >>
+      bucket: << parameters.bucket >>
     steps:
       - checkout
       - run:
@@ -61,6 +68,9 @@ jobs:
       - run:
           name: Push functions container image
           command: bazel run --config=ci //image:courier-functions-push
+      - run:
+          name: Upload Lambda functions
+          command: bazel run --config=ci //:upload_functions
 
   deploy_frontend:
     parameters:
@@ -121,6 +131,31 @@ jobs:
           name: terraform apply
           command: cd terraform/gcp && terraform apply -auto-approve
 
+  deploy_backend_aws:
+    parameters:
+      workspace:
+        type: string
+    executor:
+      name: terraform
+      workspace: << parameters.workspace >>
+    steps:
+      - checkout
+      - run:
+          name: Configure Terraform
+          command: |
+            printf "credentials \"app.terraform.io\" {\n  token = \"%s\"\n}\n" "$TF_TOKEN" > ~/.terraformrc
+
+            cd terraform/aws
+            echo "function_revision = \"$CIRCLE_SHA1\"" > revision.auto.tfvars
+            echo "revision.auto.tfvars:"
+            cat revision.auto.tfvars
+      - run:
+          name: terraform init
+          command: cd terraform/aws && terraform init
+      - run:
+          name: terraform apply
+          command: cd terraform/aws && terraform apply -auto-approve
+
   mark_deploy:
     parameters:
       dataset:
@@ -144,6 +179,7 @@ workflows:
           name: build_and_test_backend_staging
           project: courier-staging-267902
           credentials: GCLOUD_SERVICE_KEY
+          bucket: courier-staging-handlers
       - update_auth0:
           name: update_auth0_staging
           env: staging
@@ -161,11 +197,18 @@ workflows:
           requires:
             - build_and_test_backend_staging
             - update_auth0_staging
+      - deploy_backend_aws:
+          name: deploy_backend_aws_staging
+          workspace: staging-us-east-2
+          requires:
+            - build_and_test_backend_staging
+            - update_auth0_staging
       - mark_deploy:
           name: mark_deploy_staging
           dataset: courier-staging
           requires:
             - deploy_backend_staging
+            - deploy_backned_aws_staging
 
       - build_and_test_backend:
           name: build_and_test_backend_prod
