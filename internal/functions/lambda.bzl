@@ -15,6 +15,7 @@ def lambda_function(
   importpath,
   handler = None,
   deps = [],
+  data = [],
 ):
   lambda_function_handler(
     name = name + "_main",
@@ -32,15 +33,18 @@ def lambda_function(
       "//internal/trace:go_default_library",
     ] + deps,
     pure = "on",
+    x_defs = {
+      "github.com/mjm/courier-js/internal/trace.ServiceVersion": "{GIT_COMMIT_SHA}",
+    },
   )
 
   handler = ":" + name
 
   native.genrule(
     name = name + "_bundle",
-    srcs = [handler],
+    srcs = [handler] + data,
     outs = [name + ".zip"],
-    cmd = "zip -jq $@ $(location " + handler + ")",
+    cmd = "zip -jq $@ $(SRCS)",
     visibility = ["//:__subpackages__"],
   )
 

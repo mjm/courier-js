@@ -1,4 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//internal/functions:lambda.bzl", "lambda_function")
 
 go_library(
     name = "go_default_library",
@@ -42,4 +43,12 @@ go_library(
         "@org_golang_google_grpc//codes:go_default_library",
         "@org_golang_google_grpc//status:go_default_library",
     ],
+)
+
+lambda_function(
+    name = "graphql",
+    svcname = "graphql",
+    importpath = "github.com/mjm/courier-js/internal/functions/graphql",
+    deps = [":go_default_library"],
+    data = ["//:schema.graphql"],
 )

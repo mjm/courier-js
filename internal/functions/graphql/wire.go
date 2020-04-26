@@ -22,7 +22,7 @@ import (
 )
 
 func InitializeHandler(
-	schemaString string,
+	schemaString SchemaString,
 	gcpConfig secret.GCPConfig,
 ) (*Handler, error) {
 	panic(
@@ -38,6 +38,30 @@ func InitializeHandler(
 			write.NewCommandBus,
 			tasks.DefaultSet,
 			event.PublishingSet,
+			shared.DefaultSet,
+			feeds.DefaultSet,
+			tweets.DefaultSet,
+			billing.DefaultSet,
+			user.DefaultSet,
+		),
+	)
+}
+func InitializeLambda() (*Handler, error) {
+	panic(
+		wire.Build(
+			wire.Value(SchemaFile("schema.graphql")),
+			NewHandler,
+			NewSchema,
+			LoadSchemaFromFile,
+			config.DefaultSet,
+			secret.AWSSet,
+			resolvers.DefaultSet,
+			auth.DefaultSet,
+			db.DefaultSet,
+			billing2.DefaultSet,
+			write.NewCommandBus,
+			tasks.DefaultSet,
+			event.AWSPublishingSet,
 			shared.DefaultSet,
 			feeds.DefaultSet,
 			tweets.DefaultSet,

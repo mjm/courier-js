@@ -8,6 +8,19 @@ resource "aws_s3_bucket" "lambda_handlers" {
   }
 }
 
+module "graphql_function" {
+  source = "../modules/lambda_function"
+
+  function_name = "graphql"
+  env           = var.env
+  s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
+  revision      = var.function_revision
+  policies = [
+    aws_iam_policy.courier_table.arn,
+    aws_iam_policy.config_params.arn,
+  ]
+}
+
 module "pusherauth_function" {
   source = "../modules/lambda_function"
 

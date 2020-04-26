@@ -13,5 +13,5 @@ var graphQLHandler = functions.NewHTTP("graphql", func() (functions.HTTPHandler,
 		panic(err)
 	}
 
-	return graphql.InitializeHandler(string(s), secretConfig)
+	return graphql.InitializeHandler(graphql.SchemaString(s), secretConfig)
 })
