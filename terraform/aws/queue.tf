@@ -24,7 +24,13 @@ resource "aws_sqs_queue" "events_dead_letter" {
 }
 
 resource "aws_lambda_event_source_mapping" "events" {
-  function_name    = aws_lambda_function.events.function_name
+  function_name    = module.events_function.function_name
   event_source_arn = aws_sqs_queue.events.arn
   batch_size       = 5
+}
+
+resource "aws_ssm_parameter" "events-queue-url" {
+  name  = "/courier/${var.env}/events/queue-url"
+  type  = "String"
+  value = aws_sqs_queue.events.id
 }

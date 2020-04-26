@@ -7,19 +7,6 @@ resource "aws_api_gateway_rest_api" "courier" {
   }
 }
 
-data "aws_iam_policy_document" "lambda_exec" {
-  statement {
-    actions = [
-    "sts:AssumeRole"]
-
-    principals {
-      type = "Service"
-      identifiers = [
-      "lambda.amazonaws.com"]
-    }
-  }
-}
-
 resource "aws_api_gateway_resource" "pusherauth" {
   rest_api_id = aws_api_gateway_rest_api.courier.id
   parent_id   = aws_api_gateway_rest_api.courier.root_resource_id
@@ -40,7 +27,7 @@ resource "aws_api_gateway_integration" "pusherauth" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.pusherauth.invoke_arn
+  uri                     = module.pusherauth_function.invoke_arn
 }
 
 resource "aws_api_gateway_resource" "ping" {
@@ -63,7 +50,7 @@ resource "aws_api_gateway_integration" "ping" {
 
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.ping.invoke_arn
+  uri                     = module.ping_function.invoke_arn
 }
 
 resource "aws_api_gateway_deployment" "courier" {
