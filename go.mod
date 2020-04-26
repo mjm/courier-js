@@ -7,19 +7,18 @@ require (
 	cloud.google.com/go/pubsub v1.1.0
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/PuerkitoBio/purell v1.1.1
-	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/aws/aws-lambda-go v1.16.0
 	github.com/aws/aws-sdk-go v1.30.7
 	github.com/awslabs/aws-lambda-go-api-proxy v0.6.0
 	github.com/aybabtme/iocontrol v0.0.0-20150809002002-ad15bcfc95a0 // indirect
+	github.com/bazelbuild/rules_docker v0.14.1
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/divan/gorilla-xmlrpc v0.0.0-20190926132722-f0686da74fda
 	github.com/dlclark/regexp2 v1.2.0
-	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/golang/protobuf v1.3.5
+	github.com/google/go-containerregistry v0.0.0-20200425101607-48f605c3b60a // indirect
 	github.com/google/uuid v1.1.1
 	github.com/google/wire v0.4.0
 	github.com/googleapis/gax-go/v2 v2.0.5
@@ -53,7 +52,7 @@ require (
 	google.golang.org/grpc v1.27.1
 	gopkg.in/auth0.v3 v3.0.3
 	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0
-	gopkg.in/yaml.v2 v2.2.7
+	gopkg.in/yaml.v2 v2.2.8
 	willnorris.com/go/microformats v1.0.0
 )
 

@@ -50,7 +50,10 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 
 func InitializeLambda() (*Handler, error) {
 	defaultEnv := &config.DefaultEnv{}
-	awsSecretKeeper := secret.NewAWSSecretKeeper()
+	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
+	if err != nil {
+		return nil, err
+	}
 	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {

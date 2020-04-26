@@ -3,7 +3,12 @@ package secret
 import (
 	"context"
 	"fmt"
+	"os"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go/service/ssm/ssmiface"
 	"github.com/google/wire"
 
 	"github.com/mjm/courier-js/internal/config"
@@ -15,12 +20,31 @@ var AWSSet = wire.NewSet(
 	NewAWSSecretKeeper)
 
 type AWSSecretKeeper struct {
+	prefix string
+	ssm    ssmiface.SSMAPI
 }
 
-func NewAWSSecretKeeper() *AWSSecretKeeper {
-	return &AWSSecretKeeper{}
+func NewAWSSecretKeeper() (*AWSSecretKeeper, error) {
+	sess, err := session.NewSession(aws.NewConfig())
+	if err != nil {
+		return nil, err
+	}
+
+	return &AWSSecretKeeper{
+		prefix: os.Getenv("PARAM_PATH_PREFIX"),
+		ssm:    ssm.New(sess),
+	}, nil
 }
 
 func (sk *AWSSecretKeeper) GetSecret(ctx context.Context, key string) (string, error) {
-	return "", fmt.Errorf("secret fetching has not yet been implemented")
+	path := fmt.Sprintf("%s/%s", sk.prefix, key)
+	res, err := sk.ssm.GetParameterWithContext(ctx, &ssm.GetParameterInput{
+		Name:           aws.String(path),
+		WithDecryption: aws.Bool(true),
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return aws.StringValue(res.Parameter.Value), nil
 }

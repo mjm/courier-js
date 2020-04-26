@@ -8,31 +8,9 @@ resource "aws_iam_user" "external_function" {
   }
 }
 
-data "aws_iam_policy_document" "external_function" {
-  statement {
-    actions = [
-      "dynamodb:BatchGetItem",
-      "dynamodb:BatchWriteItem",
-      "dynamodb:DeleteItem",
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:Query",
-      "dynamodb:Scan",
-      "dynamodb:UpdateItem",
-    ]
-
-    resources = [
-      aws_dynamodb_table.courier.arn,
-      "${aws_dynamodb_table.courier.arn}/index/*",
-    ]
-  }
-}
-
-resource "aws_iam_user_policy" "external_function" {
-  name = "external-function-policy"
-  user = aws_iam_user.external_function.name
-
-  policy = data.aws_iam_policy_document.external_function.json
+resource "aws_iam_user_policy_attachment" "external_function_table" {
+  user       = aws_iam_user.external_function.name
+  policy_arn = aws_iam_policy.courier_table.arn
 }
 
 resource "aws_iam_access_key" "external_function" {

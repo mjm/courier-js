@@ -37,6 +37,7 @@ rules_proto_dependencies()
 
 rules_proto_toolchains()
 
+# gazelle:repository go_repository name=io_bazel_rules_docker importpath=github.com/bazelbuild/rules_docker
 http_archive(
     name = "io_bazel_rules_docker",
     sha256 = "dc97fccceacd4c6be14e800b2a00693d5e8d07f69ee187babfd04a80a9f8e250",

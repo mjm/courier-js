@@ -22,4 +22,4 @@ go_library(
     ],
 )
 
-exports_files(["lambda_handler.go.tpl"])
+exports_files(["lambda_handler.go.tpl", "lambda_upload.sh.tpl"])

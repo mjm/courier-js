@@ -59,3 +59,28 @@ resource "aws_dynamodb_table" "courier" {
     Environment = var.env
   }
 }
+
+data "aws_iam_policy_document" "courier_table" {
+  statement {
+    actions = [
+      "dynamodb:BatchGetItem",
+      "dynamodb:BatchWriteItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:Query",
+      "dynamodb:Scan",
+      "dynamodb:UpdateItem",
+    ]
+
+    resources = [
+      aws_dynamodb_table.courier.arn,
+      "${aws_dynamodb_table.courier.arn}/index/*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "courier_table" {
+  name   = "courier-${var.env}-dynamo-table"
+  policy = data.aws_iam_policy_document.courier_table.json
+}

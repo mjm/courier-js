@@ -9,3 +9,7 @@ variable "region" {
 variable "keybase_username" {
   default = "mmoriarity"
 }
+
+variable "function_revision" {
+  type = string
+}
