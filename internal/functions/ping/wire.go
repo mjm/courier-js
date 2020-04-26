@@ -28,3 +28,17 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		feeds.DefaultSet,
 	))
 }
+
+func InitializeLambda() (*Handler, error) {
+	panic(wire.Build(
+		NewHandler,
+		config.DefaultSet,
+		secret.AWSSet,
+		write.NewCommandBus,
+		event.AWSPublishingSet,
+		tasks.DefaultSet,
+		db.DefaultSet,
+		shared.DefaultSet,
+		feeds.DefaultSet,
+	))
+}

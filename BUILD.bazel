@@ -12,6 +12,8 @@ gazelle(name = "gazelle")
 lambda_functions_upload(
     name = "upload_functions",
     bundles = [
+        "//internal/functions/events:events_bundle",
+        "//internal/functions/ping:ping_bundle",
         "//internal/functions/pusherauth:pusherauth_bundle",
     ],
     bucket = "{FUNCTION_BUCKET}",
