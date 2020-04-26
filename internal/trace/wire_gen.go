@@ -35,3 +35,25 @@ func initProvider(gcpConfig secret.GCPConfig, serviceName ServiceName) (*trace.P
 	}
 	return provider, nil
 }
+
+func initProviderLambda(serviceName ServiceName) (*trace.Provider, error) {
+	defaultEnv := &config.DefaultEnv{}
+	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
+	if err != nil {
+		return nil, err
+	}
+	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
+	traceConfig, err := NewConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	exporter, err := newExporter(traceConfig)
+	if err != nil {
+		return nil, err
+	}
+	provider, err := newProvider(exporter, serviceName)
+	if err != nil {
+		return nil, err
+	}
+	return provider, nil
+}

@@ -27,6 +27,7 @@ def lambda_function(
     deps = [
       "@com_github_aws_aws_lambda_go//lambda:go_default_library",
       "//internal/functions:go_default_library",
+      "//internal/trace:go_default_library",
     ] + deps,
     pure = "on",
   )
