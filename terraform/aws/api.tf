@@ -7,15 +7,15 @@ resource "aws_api_gateway_rest_api" "courier" {
   }
 }
 
-//module "graphql_api" {
-//  source = "../modules/lambda_api_method"
-//
-//  api_name      = aws_api_gateway_rest_api.courier.name
-//  function_name = module.graphql_function.function_name
-//  http_method   = "ANY"
-//  path_part     = "graphql"
-//}
-//
+module "graphql_api" {
+  source = "../modules/lambda_api_method"
+
+  api_name      = aws_api_gateway_rest_api.courier.name
+  function_name = module.graphql_function.function_name
+  http_method   = "ANY"
+  path_part     = "graphql"
+}
+
 module "pusherauth_api" {
   source = "../modules/lambda_api_method"
 

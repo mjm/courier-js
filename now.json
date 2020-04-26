@@ -10,11 +10,11 @@
     "API_IDENTIFIER": "https://courier.mjm.now.sh/api/",
     "MONTHLY_PLAN_ID": "plan_DdvIUmVUiibVMa",
     "STRIPE_PUBLISHABLE_KEY": "pk_test_P2pW0N6UFzp1OY5In8KApmxj",
-    "PING_URL": "https://ping-346j6nvz2q-uc.a.run.app/"
+    "PING_URL": "https://al8c1ew7lc.execute-api.us-east-2.amazonaws.com/staging/ping"
   },
   "build": {
     "env": {
-      "GRAPHQL_URL": "https://graphql-346j6nvz2q-uc.a.run.app/",
+      "GRAPHQL_URL": "https://al8c1ew7lc.execute-api.us-east-2.amazonaws.com/staging/graphql",
       "PUSHER_AUTH_URL": "https://al8c1ew7lc.execute-api.us-east-2.amazonaws.com/staging/pusherauth",
       "CLIENT_ID": "@courier-staging-frontend-client-id",
       "AUTH_DOMAIN": "@courier-staging-auth-domain",
