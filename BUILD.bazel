@@ -16,6 +16,7 @@ lambda_functions_upload(
         "//internal/functions/graphql:graphql_bundle",
         "//internal/functions/ping:ping_bundle",
         "//internal/functions/pusherauth:pusherauth_bundle",
+        "//internal/functions/stripecb:stripecb_bundle",
     ],
     bucket = "{FUNCTION_BUCKET}",
     prefix = "{GIT_COMMIT_SHA}/",

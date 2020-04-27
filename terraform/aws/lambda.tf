@@ -64,6 +64,20 @@ module "ping_function" {
   ]
 }
 
+module "stripecb_function" {
+  source = "../modules/lambda_function"
+
+  function_name = "stripecb"
+  env           = var.env
+  s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
+  revision      = var.function_revision
+  policies = [
+    aws_iam_policy.courier_table.arn,
+    aws_iam_policy.config_params.arn,
+    aws_iam_policy.enqueue_events.arn,
+  ]
+}
+
 data "aws_iam_policy_document" "events_queue" {
   statement {
     actions = [
