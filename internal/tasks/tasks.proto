@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+package courier.tasks;
+option go_package = "tasks";
+
+message FireTaskEvent {
+  string name = 1;
+  google.protobuf.Any task = 2;
+}

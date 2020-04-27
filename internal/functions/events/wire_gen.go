@@ -16,6 +16,7 @@ import (
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/internal/write/tweets"
 	"github.com/mjm/courier-js/internal/write/user"
@@ -52,30 +53,22 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	pusher := NewPusher(bus, pusherClient)
-	pushNotifications, err := event.NewBeamsClient(pusherConfig)
-	if err != nil {
-		return nil, err
-	}
-	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
-	notifier := notifications.NewNotifier(bus, pushNotifications, tweetRepository)
 	commandBus := write.NewCommandBus()
-	publisherConfig, err := event.NewPublisherConfig(loader)
+	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	pubsubClient, err := event.NewPubSubClient(gcpConfig)
+	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	publisher := event.NewPublisher(publisherConfig, pubsubClient)
-	tasksConfig, err := tasks.NewConfig(loader)
+	tasksTasks, err := tasks.New(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig)
-	if err != nil {
-		return nil, err
-	}
+	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
+	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
+	commandHandler := feeds.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, feedRepository, postRepository)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -95,13 +88,19 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	}
 	api := billing.NewClient(billingConfig)
 	userRepository := tweets.NewUserRepository(management, api)
-	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := tweets.NewCommandHandler(commandBus, publisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
-	eventHandler := tweets.NewEventHandler(commandBus, bus, commandHandler)
+	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	tweetsCommandHandler := tweets.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
+	taskHandler := NewTaskHandler(commandBus, bus, commandHandler, tweetsCommandHandler)
+	pushNotifications, err := event.NewBeamsClient(pusherConfig)
+	if err != nil {
+		return nil, err
+	}
+	notifier := notifications.NewNotifier(bus, pushNotifications, tweetRepository)
+	eventHandler := tweets.NewEventHandler(commandBus, bus, tweetsCommandHandler)
 	userUserRepository := user.NewUserRepository(management)
-	userCommandHandler := user.NewCommandHandler(commandBus, publisher, userUserRepository)
+	userCommandHandler := user.NewCommandHandler(commandBus, sqsPublisher, userUserRepository)
 	userEventHandler := user.NewEventHandler(commandBus, bus, userCommandHandler)
-	handler := NewHandler(bus, eventRecorder, pusher, notifier, eventHandler, userEventHandler)
+	handler := NewHandler(bus, eventRecorder, pusher, taskHandler, notifier, eventHandler, userEventHandler)
 	return handler, nil
 }
 
@@ -133,12 +132,6 @@ func InitializeLambda() (*Handler, error) {
 		return nil, err
 	}
 	pusher := NewPusher(bus, client)
-	pushNotifications, err := event.NewBeamsClient(pusherConfig)
-	if err != nil {
-		return nil, err
-	}
-	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
-	notifier := notifications.NewNotifier(bus, pushNotifications, tweetRepository)
 	commandBus := write.NewCommandBus()
 	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
 	if err != nil {
@@ -148,14 +141,13 @@ func InitializeLambda() (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	tasksConfig, err := tasks.NewConfig(loader)
+	tasksTasks, err := tasks.New(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig)
-	if err != nil {
-		return nil, err
-	}
+	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
+	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
+	commandHandler := feeds.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, feedRepository, postRepository)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -175,12 +167,18 @@ func InitializeLambda() (*Handler, error) {
 	}
 	api := billing.NewClient(billingConfig)
 	userRepository := tweets.NewUserRepository(management, api)
-	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := tweets.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
-	eventHandler := tweets.NewEventHandler(commandBus, bus, commandHandler)
+	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	tweetsCommandHandler := tweets.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
+	taskHandler := NewTaskHandler(commandBus, bus, commandHandler, tweetsCommandHandler)
+	pushNotifications, err := event.NewBeamsClient(pusherConfig)
+	if err != nil {
+		return nil, err
+	}
+	notifier := notifications.NewNotifier(bus, pushNotifications, tweetRepository)
+	eventHandler := tweets.NewEventHandler(commandBus, bus, tweetsCommandHandler)
 	userUserRepository := user.NewUserRepository(management)
 	userCommandHandler := user.NewCommandHandler(commandBus, sqsPublisher, userUserRepository)
 	userEventHandler := user.NewEventHandler(commandBus, bus, userCommandHandler)
-	handler := NewHandler(bus, eventRecorder, pusher, notifier, eventHandler, userEventHandler)
+	handler := NewHandler(bus, eventRecorder, pusher, taskHandler, notifier, eventHandler, userEventHandler)
 	return handler, nil
 }

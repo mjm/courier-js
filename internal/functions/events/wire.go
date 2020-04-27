@@ -14,6 +14,7 @@ import (
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/internal/write/tweets"
 	"github.com/mjm/courier-js/internal/write/user"
@@ -23,18 +24,20 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	panic(wire.Build(
 		NewHandler,
 		NewPusher,
+		NewTaskHandler,
 		config.DefaultSet,
 		secret.GCPSet,
 		notifications.NewNotifier,
 		event.PusherSet,
 		event.SourceSet,
-		event.PublishingSet,
+		event.AWSPublishingSet,
 		write.NewCommandBus,
 		db.DefaultSet,
 		auth.DefaultSet,
 		billing.DefaultSet,
 		tasks.DefaultSet,
 		shared.DefaultSet,
+		feeds.DefaultSet,
 		tweets.EventHandlerSet,
 		user.NewEventRecorder,
 		user.EventHandlerSet,
@@ -45,6 +48,7 @@ func InitializeLambda() (*Handler, error) {
 	panic(wire.Build(
 		NewHandler,
 		NewPusher,
+		NewTaskHandler,
 		config.DefaultSet,
 		secret.AWSSet,
 		notifications.NewNotifier,
@@ -57,6 +61,7 @@ func InitializeLambda() (*Handler, error) {
 		billing.DefaultSet,
 		tasks.DefaultSet,
 		shared.DefaultSet,
+		feeds.DefaultSet,
 		tweets.EventHandlerSet,
 		user.NewEventRecorder,
 		user.EventHandlerSet,

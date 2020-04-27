@@ -36,6 +36,7 @@ func NewHandler(
 	bus *event.Bus,
 	_ *user.EventRecorder,
 	_ *Pusher,
+	_ *TaskHandler,
 	_ *notifications.Notifier,
 	_ *tweets.EventHandler,
 	_ *user.EventHandler,
