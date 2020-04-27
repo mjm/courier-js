@@ -34,6 +34,15 @@ module "ping_api" {
   path_part     = "ping"
 }
 
+module "stripecb_api" {
+  source = "../modules/lambda_api_method"
+
+  api_name      = aws_api_gateway_rest_api.courier.name
+  function_name = module.stripecb_function.function_name
+  http_method   = "POST"
+  path_part     = "stripe-callback"
+}
+
 resource "aws_api_gateway_deployment" "courier" {
   depends_on = [
     module.pusherauth_api,
@@ -54,4 +63,8 @@ output "pusherauth_url" {
 
 output "ping_url" {
   value = "${aws_api_gateway_deployment.courier.invoke_url}${module.ping_api.path}"
+}
+
+output "stripe_callback_url" {
+  value = "${aws_api_gateway_deployment.courier.invoke_url}${module.stripecb_api.path}"
 }
