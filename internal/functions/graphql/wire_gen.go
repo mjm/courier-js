@@ -29,93 +29,13 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeHandler(schemaString SchemaString, gcpConfig secret.GCPConfig) (*Handler, error) {
-	defaultEnv := &config.DefaultEnv{}
-	client, err := secret.NewSecretManager(gcpConfig)
-	if err != nil {
-		return nil, err
-	}
-	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	dynamoConfig, err := db.NewDynamoConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
-	if err != nil {
-		return nil, err
-	}
-	feedQueries := feeds.NewFeedQueries(dynamoDB, dynamoConfig)
-	postQueries := feeds.NewPostQueries(dynamoDB, dynamoConfig)
-	tweetQueries := tweets.NewTweetQueries(dynamoDB, dynamoConfig)
-	eventQueries := user.NewEventQueries(dynamoDB, dynamoConfig)
-	billingConfig, err := billing.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	api := billing.NewClient(billingConfig)
-	customerQueries := billing2.NewCustomerQueries(api)
-	authConfig, err := auth.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	management, err := auth.NewManagementClient(authConfig)
-	if err != nil {
-		return nil, err
-	}
-	subscriptionQueries := billing2.NewSubscriptionQueries(api, management)
-	queries := resolvers.Queries{
-		Feeds:         feedQueries,
-		Posts:         postQueries,
-		Tweets:        tweetQueries,
-		Events:        eventQueries,
-		Customers:     customerQueries,
-		Subscriptions: subscriptionQueries,
-	}
-	commandBus := write.NewCommandBus()
-	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
-	if err != nil {
-		return nil, err
-	}
-	tasksTasks, err := tasks.New(sqsPublisherConfig)
-	if err != nil {
-		return nil, err
-	}
-	clock := clockwork.NewRealClock()
-	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
-	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := feeds2.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, feedRepository, postRepository)
-	twitterConfig, err := tweets2.NewTwitterConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	externalTweetRepository := tweets2.NewExternalTweetRepository(authConfig, twitterConfig)
-	userRepository := tweets2.NewUserRepository(management, api)
-	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
-	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
-	customerRepository := billing3.NewCustomerRepository(api)
-	subscriptionRepository := billing3.NewSubscriptionRepository(api)
-	billingCommandHandler := billing3.NewCommandHandler(commandBus, sqsPublisher, billingConfig, customerRepository, subscriptionRepository)
-	userUserRepository := user2.NewUserRepository(management)
-	userCommandHandler := user2.NewCommandHandler(commandBus, sqsPublisher, userUserRepository)
-	root := resolvers.New(queries, commandBus, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
-	schema, err := NewSchema(schemaString, root)
-	if err != nil {
-		return nil, err
-	}
-	jwksClient := auth.NewJWKSClient(authConfig)
-	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
-	handler := NewHandler(schema, authenticator)
-	return handler, nil
-}
-
 func InitializeLambda() (*Handler, error) {
 	schemaFile := _wireSchemaFileValue
 	schemaString, err := LoadSchemaFromFile(schemaFile)
+	if err != nil {
+		return nil, err
+	}
+	dynamoDB, err := db.NewDynamoDB()
 	if err != nil {
 		return nil, err
 	}
@@ -129,10 +49,6 @@ func InitializeLambda() (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
-	if err != nil {
-		return nil, err
-	}
 	feedQueries := feeds.NewFeedQueries(dynamoDB, dynamoConfig)
 	postQueries := feeds.NewPostQueries(dynamoDB, dynamoConfig)
 	tweetQueries := tweets.NewTweetQueries(dynamoDB, dynamoConfig)
@@ -182,7 +98,10 @@ func InitializeLambda() (*Handler, error) {
 		return nil, err
 	}
 	externalTweetRepository := tweets2.NewExternalTweetRepository(authConfig, twitterConfig)
-	userRepository := tweets2.NewUserRepository(management, api)
+	userRepository, err := tweets2.NewUserRepository(authConfig, management, api)
+	if err != nil {
+		return nil, err
+	}
 	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
 	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
 	customerRepository := billing3.NewCustomerRepository(api)

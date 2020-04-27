@@ -21,7 +21,7 @@ import (
 var AWSPublishingSet = wire.NewSet(wire.Bind(new(Sink), new(*SQSPublisher)), NewSQSPublisher, NewSQSPublisherConfig)
 
 type SQSPublisherConfig struct {
-	QueueURL string `secret:"events/queue-url"`
+	QueueURL string `env:"QUEUE_URL" secret:"events/queue-url"`
 }
 
 func NewSQSPublisherConfig(l *config.Loader) (cfg SQSPublisherConfig, err error) {

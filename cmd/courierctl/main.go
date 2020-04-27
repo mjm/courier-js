@@ -12,7 +12,6 @@ import (
 
 	feeds2 "github.com/mjm/courier-js/internal/read/feeds"
 	tweets2 "github.com/mjm/courier-js/internal/read/tweets"
-	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/trace"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
@@ -27,9 +26,9 @@ var tweetQueries *tweets2.TweetQueries
 var tr = global.Tracer("courierctl")
 
 func main() {
-	trace.Init(secretConfig, "courierctl")
+	trace.InitLambda("courierctl")
 
-	app, err := setupApp(secretConfig)
+	app, err := setupApp()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,15 +78,5 @@ func newApp(
 			libhoney.Flush()
 			return nil
 		},
-	}
-}
-
-var secretConfig secret.GCPConfig
-
-func init() {
-	var err error
-	secretConfig, err = secret.GCPConfigFromEnv()
-	if err != nil {
-		panic(err)
 	}
 }

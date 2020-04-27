@@ -3,8 +3,6 @@ module github.com/mjm/courier-js
 go 1.13
 
 require (
-	cloud.google.com/go v0.53.0
-	cloud.google.com/go/pubsub v1.1.0
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/PuerkitoBio/purell v1.1.1
 	github.com/aws/aws-lambda-go v1.16.0
@@ -21,7 +19,6 @@ require (
 	github.com/google/go-containerregistry v0.0.0-20200425101607-48f605c3b60a // indirect
 	github.com/google/uuid v1.1.1
 	github.com/google/wire v0.4.0
-	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/gorilla/rpc v1.2.0
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/honeycombio/libhoney-go v1.12.4
@@ -47,8 +44,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/text v0.3.2
-	google.golang.org/api v0.17.0
-	google.golang.org/genproto v0.0.0-20200218151345-dad8c97a84f5
+	google.golang.org/genproto v0.0.0-20200218151345-dad8c97a84f5 // indirect
 	google.golang.org/grpc v1.27.1
 	gopkg.in/auth0.v3 v3.0.3
 	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0

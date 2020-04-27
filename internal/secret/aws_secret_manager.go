@@ -16,7 +16,6 @@ import (
 )
 
 var AWSSet = wire.NewSet(
-	wire.Bind(new(Keeper), new(*AWSSecretKeeper)),
 	wire.Bind(new(config.Secrets), new(*AWSSecretKeeper)),
 	NewAWSSecretKeeper)
 

@@ -52,7 +52,7 @@ type DynamoDB struct {
 	real dynamodbiface.DynamoDBAPI
 }
 
-func NewDynamoDB(cfg DynamoConfig) (*DynamoDB, error) {
+func NewDynamoDB() (*DynamoDB, error) {
 	sess, err := session.NewSession(aws.NewConfig())
 	if err != nil {
 		return nil, err

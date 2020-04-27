@@ -24,88 +24,12 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
-	bus := event.NewBus()
-	defaultEnv := &config.DefaultEnv{}
-	client, err := secret.NewSecretManager(gcpConfig)
-	if err != nil {
-		return nil, err
-	}
-	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	dynamoConfig, err := db.NewDynamoConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
-	if err != nil {
-		return nil, err
-	}
-	clock := clockwork.NewRealClock()
-	eventRepository := shared.NewEventRepository(dynamoDB, dynamoConfig, clock)
-	eventRecorder := user.NewEventRecorder(eventRepository, clock, bus)
-	pusherConfig, err := event.NewPusherConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	pusherClient, err := event.NewPusherClient(pusherConfig)
-	if err != nil {
-		return nil, err
-	}
-	pusher := NewPusher(bus, pusherClient)
-	commandBus := write.NewCommandBus()
-	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
-	if err != nil {
-		return nil, err
-	}
-	tasksTasks, err := tasks.New(sqsPublisherConfig)
-	if err != nil {
-		return nil, err
-	}
-	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
-	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := feeds.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, feedRepository, postRepository)
-	authConfig, err := auth.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	twitterConfig, err := tweets.NewTwitterConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	externalTweetRepository := tweets.NewExternalTweetRepository(authConfig, twitterConfig)
-	management, err := auth.NewManagementClient(authConfig)
-	if err != nil {
-		return nil, err
-	}
-	billingConfig, err := billing.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	api := billing.NewClient(billingConfig)
-	userRepository := tweets.NewUserRepository(management, api)
-	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
-	tweetsCommandHandler := tweets.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
-	taskHandler := NewTaskHandler(commandBus, bus, commandHandler, tweetsCommandHandler)
-	pushNotifications, err := event.NewBeamsClient(pusherConfig)
-	if err != nil {
-		return nil, err
-	}
-	notifier := notifications.NewNotifier(bus, pushNotifications, tweetRepository)
-	eventHandler := tweets.NewEventHandler(commandBus, bus, tweetsCommandHandler)
-	userUserRepository := user.NewUserRepository(management)
-	userCommandHandler := user.NewCommandHandler(commandBus, sqsPublisher, userUserRepository)
-	userEventHandler := user.NewEventHandler(commandBus, bus, userCommandHandler)
-	handler := NewHandler(bus, eventRecorder, pusher, taskHandler, notifier, eventHandler, userEventHandler)
-	return handler, nil
-}
-
 func InitializeLambda() (*Handler, error) {
 	bus := event.NewBus()
+	dynamoDB, err := db.NewDynamoDB()
+	if err != nil {
+		return nil, err
+	}
 	defaultEnv := &config.DefaultEnv{}
 	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
 	if err != nil {
@@ -113,10 +37,6 @@ func InitializeLambda() (*Handler, error) {
 	}
 	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
 	dynamoConfig, err := db.NewDynamoConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +86,10 @@ func InitializeLambda() (*Handler, error) {
 		return nil, err
 	}
 	api := billing.NewClient(billingConfig)
-	userRepository := tweets.NewUserRepository(management, api)
+	userRepository, err := tweets.NewUserRepository(authConfig, management, api)
+	if err != nil {
+		return nil, err
+	}
 	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
 	tweetsCommandHandler := tweets.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
 	taskHandler := NewTaskHandler(commandBus, bus, commandHandler, tweetsCommandHandler)

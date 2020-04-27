@@ -6,5 +6,5 @@ import (
 )
 
 var stripeCallbackHandler = functions.NewHTTP("stripe_callback", func() (functions.HTTPHandler, error) {
-	return stripecb.InitializeHandler(secretConfig)
+	return stripecb.InitializeLambda()
 })

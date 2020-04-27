@@ -10,6 +10,7 @@ import (
 	"github.com/pusher/pusher-http-go"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/resolvers"
@@ -33,7 +34,8 @@ func NewPusher(events event.Source, client *pusher.Client) *Pusher {
 }
 
 func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
-	ctx, span := tracer.Start(ctx, "Pusher.HandleEvent")
+	ctx, span := tracer.Start(ctx, "Pusher.HandleEvent",
+		trace.WithAttributes(key.String("pusher.app_id", p.client.AppID)))
 	defer span.End()
 
 	var pushed bool

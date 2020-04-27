@@ -26,20 +26,19 @@ import (
 
 // Injectors from wire.go:
 
-func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
+func setupApp() (*cli.App, error) {
 	writeCommandBus := write.NewCommandBus()
+	dynamoDB, err := db.NewDynamoDB()
+	if err != nil {
+		return nil, err
+	}
 	defaultEnv := &config.DefaultEnv{}
-	client, err := secret.NewSecretManager(gcpConfig)
+	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
 	if err != nil {
 		return nil, err
 	}
-	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
 	dynamoConfig, err := db.NewDynamoConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +75,10 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 		return nil, err
 	}
 	api := billing.NewClient(billingConfig)
-	userRepository := tweets2.NewUserRepository(management, api)
+	userRepository, err := tweets2.NewUserRepository(authConfig, management, api)
+	if err != nil {
+		return nil, err
+	}
 	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
 	tweetsCommandHandler := tweets2.NewCommandHandler(writeCommandBus, bus, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
 	eventHandler := tweets2.NewEventHandler(writeCommandBus, bus, tweetsCommandHandler)

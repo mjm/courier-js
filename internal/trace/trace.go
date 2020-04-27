@@ -9,8 +9,6 @@ import (
 	exporttrace "go.opentelemetry.io/otel/sdk/export/trace"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-
-	"github.com/mjm/courier-js/internal/secret"
 )
 
 type ServiceName string
@@ -35,16 +33,6 @@ func newProvider(exporter exporttrace.SpanSyncer, svcname ServiceName) (*sdktrac
 				key.String("env", os.Getenv("APP_ENV"))),
 		}),
 		sdktrace.WithSyncer(exporter))
-}
-
-// Init initializes tracing support so it is correctly configured.
-func Init(cfg secret.GCPConfig, svcname string) error {
-	tp, err := initProvider(cfg, ServiceName(svcname))
-	if err != nil {
-		return err
-	}
-	global.SetTraceProvider(tp)
-	return nil
 }
 
 func InitLambda(svcname string) error {

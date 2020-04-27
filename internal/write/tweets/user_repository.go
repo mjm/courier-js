@@ -6,17 +6,16 @@ import (
 	"errors"
 	"strings"
 
-	cloudkms "cloud.google.com/go/kms/apiv1"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/kms"
+	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/client"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
-	"google.golang.org/api/option"
-	"google.golang.org/genproto/googleapis/cloud/kms/v1"
-	"google.golang.org/grpc/status"
 	"gopkg.in/auth0.v3/management"
 
-	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
@@ -35,26 +34,23 @@ var (
 
 type UserRepository struct {
 	management *management.Management
-	kms        *cloudkms.KeyManagementClient
+	kms        kmsiface.KMSAPI
 	keyID      string
 	stripe     *client.API
 }
 
-func NewUserRepository(m *management.Management, stripe *client.API) *UserRepository {
+func NewUserRepository(cfg auth.Config, m *management.Management, stripe *client.API) (*UserRepository, error) {
+	sess, err := session.NewSession()
+	if err != nil {
+		return nil, err
+	}
+
 	return &UserRepository{
 		management: m,
-		// kms:        kms,
-		// keyID:      fmt.Sprintf("projects/%s/locations/global/keyRings/keys/cryptoKeys/micropub-token", cfg.ProjectID),
-		stripe: stripe,
-	}
-}
-
-func NewKeyManagementClient(cfg secret.GCPConfig) (*cloudkms.KeyManagementClient, error) {
-	var o []option.ClientOption
-	if cfg.CredentialsFile != "" {
-		o = append(o, option.WithCredentialsFile(cfg.CredentialsFile))
-	}
-	return cloudkms.NewKeyManagementClient(context.Background(), o...)
+		kms:        kms.New(sess),
+		keyID:      cfg.MicropubTokenKey,
+		stripe:     stripe,
+	}, nil
 }
 
 func (r *UserRepository) MicropubToken(ctx context.Context, userID string, url string) (string, error) {
@@ -114,12 +110,11 @@ func (r *UserRepository) decryptToken(ctx context.Context, encString string) (st
 		return "", err
 	}
 
-	res, err := r.kms.Decrypt(ctx, &kms.DecryptRequest{
-		Name:       r.keyID,
-		Ciphertext: encData,
+	res, err := r.kms.DecryptWithContext(ctx, &kms.DecryptInput{
+		CiphertextBlob: encData,
 	})
 	if err != nil {
-		span.RecordError(ctx, err, trace.WithErrorStatus(status.Code(err)))
+		span.RecordError(ctx, err)
 		return "", err
 	}
 
@@ -180,16 +175,16 @@ func (r *UserRepository) encryptToken(ctx context.Context, plainString string) (
 		trace.WithAttributes(keyIDKey(r.keyID)))
 	defer span.End()
 
-	res, err := r.kms.Encrypt(ctx, &kms.EncryptRequest{
-		Name:      r.keyID,
+	res, err := r.kms.EncryptWithContext(ctx, &kms.EncryptInput{
+		KeyId:     &r.keyID,
 		Plaintext: []byte(plainString),
 	})
 	if err != nil {
-		span.RecordError(ctx, err, trace.WithErrorStatus(status.Code(err)))
+		span.RecordError(ctx, err)
 		return "", err
 	}
 
-	return base64.URLEncoding.EncodeToString(res.Ciphertext), nil
+	return base64.URLEncoding.EncodeToString(res.CiphertextBlob), nil
 }
 
 func (r *UserRepository) IsSubscribed(ctx context.Context, userID string) (bool, error) {

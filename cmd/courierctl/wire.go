@@ -22,12 +22,12 @@ import (
 	"github.com/mjm/courier-js/internal/write/user"
 )
 
-func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
+func setupApp() (*cli.App, error) {
 	panic(
 		wire.Build(
 			newApp,
 			config.DefaultSet,
-			secret.GCPSet,
+			secret.AWSSet,
 			db.DefaultSet,
 			auth.DefaultSet,
 			billing.DefaultSet,

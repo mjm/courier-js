@@ -16,39 +16,6 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
-	defaultEnv := &config.DefaultEnv{}
-	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
-	if err != nil {
-		return nil, err
-	}
-	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
-	billingConfig, err := billing.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
-	if err != nil {
-		return nil, err
-	}
-	api := billing.NewClient(billingConfig)
-	authConfig, err := auth.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	management, err := auth.NewManagementClient(authConfig)
-	if err != nil {
-		return nil, err
-	}
-	subscriptionQueries := billing2.NewSubscriptionQueries(api, management)
-	handler := NewHandler(billingConfig, sqsPublisher, subscriptionQueries)
-	return handler, nil
-}
-
 func InitializeLambda() (*Handler, error) {
 	defaultEnv := &config.DefaultEnv{}
 	awsSecretKeeper, err := secret.NewAWSSecretKeeper()

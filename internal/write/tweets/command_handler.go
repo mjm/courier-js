@@ -19,7 +19,6 @@ var DefaultSet = wire.NewSet(
 	NewExternalTweetRepository,
 	NewTwitterConfig,
 	NewUserRepository,
-	NewKeyManagementClient,
 )
 
 // CommandHandler processes tweet-related commands and updates the data store appropriately.

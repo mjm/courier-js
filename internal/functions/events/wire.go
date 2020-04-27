@@ -20,30 +20,6 @@ import (
 	"github.com/mjm/courier-js/internal/write/user"
 )
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
-	panic(wire.Build(
-		NewHandler,
-		NewPusher,
-		NewTaskHandler,
-		config.DefaultSet,
-		secret.GCPSet,
-		notifications.NewNotifier,
-		event.PusherSet,
-		event.SourceSet,
-		event.AWSPublishingSet,
-		write.NewCommandBus,
-		db.DefaultSet,
-		auth.DefaultSet,
-		billing.DefaultSet,
-		tasks.DefaultSet,
-		shared.DefaultSet,
-		feeds.DefaultSet,
-		tweets.EventHandlerSet,
-		user.NewEventRecorder,
-		user.EventHandlerSet,
-	))
-}
-
 func InitializeLambda() (*Handler, error) {
 	panic(wire.Build(
 		NewHandler,

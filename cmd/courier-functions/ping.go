@@ -6,5 +6,5 @@ import (
 )
 
 var pingHandler = functions.NewHTTP("ping", func() (functions.HTTPHandler, error) {
-	return ping.InitializeHandler(secretConfig)
+	return ping.InitializeLambda()
 })

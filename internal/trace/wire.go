@@ -12,16 +12,6 @@ import (
 	"github.com/mjm/courier-js/internal/secret"
 )
 
-func initProvider(_ secret.GCPConfig, _ ServiceName) (*trace.Provider, error) {
-	panic(wire.Build(
-		config.DefaultSet,
-		secret.GCPSet,
-		NewConfig,
-		wire.Bind(new(trace2.SpanSyncer), new(*honeycomb.Exporter)),
-		newExporter,
-		newProvider))
-}
-
 func initProviderLambda(_ ServiceName) (*trace.Provider, error) {
 	panic(wire.Build(
 		config.DefaultSet,

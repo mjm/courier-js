@@ -19,42 +19,6 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
-	commandBus := write.NewCommandBus()
-	defaultEnv := &config.DefaultEnv{}
-	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
-	if err != nil {
-		return nil, err
-	}
-	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
-	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
-	if err != nil {
-		return nil, err
-	}
-	tasksTasks, err := tasks.New(sqsPublisherConfig)
-	if err != nil {
-		return nil, err
-	}
-	dynamoConfig, err := db.NewDynamoConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
-	if err != nil {
-		return nil, err
-	}
-	clock := clockwork.NewRealClock()
-	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
-	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := feeds.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, feedRepository, postRepository)
-	handler := NewHandler(commandBus, commandHandler)
-	return handler, nil
-}
-
 func InitializeLambda() (*Handler, error) {
 	commandBus := write.NewCommandBus()
 	defaultEnv := &config.DefaultEnv{}
@@ -75,11 +39,11 @@ func InitializeLambda() (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	dynamoConfig, err := db.NewDynamoConfig(loader)
+	dynamoDB, err := db.NewDynamoDB()
 	if err != nil {
 		return nil, err
 	}
-	dynamoDB, err := db.NewDynamoDB(dynamoConfig)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
 	if err != nil {
 		return nil, err
 	}

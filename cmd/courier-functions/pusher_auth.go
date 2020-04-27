@@ -6,5 +6,5 @@ import (
 )
 
 var pusherAuthHandler = functions.NewHTTP("pusher_auth", func() (functions.HTTPHandler, error) {
-	return pusherauth.InitializeHandler(secretConfig)
+	return pusherauth.InitializeLambda()
 })
