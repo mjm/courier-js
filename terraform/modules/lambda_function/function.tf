@@ -9,7 +9,7 @@ resource "aws_lambda_function" "fn" {
 
   environment {
     variables = {
-      APP_ENV           = "dev"
+      APP_ENV           = var.env
       PARAM_PATH_PREFIX = "/courier/${var.env}"
     }
   }
