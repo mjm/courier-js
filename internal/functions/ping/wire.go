@@ -19,9 +19,9 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	panic(wire.Build(
 		NewHandler,
 		config.DefaultSet,
-		secret.GCPSet,
+		secret.AWSSet,
 		write.NewCommandBus,
-		event.PublishingSet,
+		event.AWSPublishingSet,
 		tasks.DefaultSet,
 		db.DefaultSet,
 		shared.DefaultSet,

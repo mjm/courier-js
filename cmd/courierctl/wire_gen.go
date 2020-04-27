@@ -46,11 +46,11 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 	feedsFeedQueries := feeds.NewFeedQueries(dynamoDB, dynamoConfig)
 	tweetsTweetQueries := tweets.NewTweetQueries(dynamoDB, dynamoConfig)
 	bus := event.NewBus()
-	tasksConfig, err := tasks.NewConfig(loader)
+	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig)
+	tasksTasks, err := tasks.New(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}

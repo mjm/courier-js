@@ -22,26 +22,20 @@ import (
 func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	commandBus := write.NewCommandBus()
 	defaultEnv := &config.DefaultEnv{}
-	client, err := secret.NewSecretManager(gcpConfig)
+	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
 	if err != nil {
 		return nil, err
 	}
-	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	publisherConfig, err := event.NewPublisherConfig(loader)
+	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
+	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	pubsubClient, err := event.NewPubSubClient(gcpConfig)
+	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	publisher := event.NewPublisher(publisherConfig, pubsubClient)
-	tasksConfig, err := tasks.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	tasksTasks, err := tasks.New(tasksConfig)
+	tasksTasks, err := tasks.New(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +50,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	clock := clockwork.NewRealClock()
 	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := feeds.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, postRepository)
+	commandHandler := feeds.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, feedRepository, postRepository)
 	handler := NewHandler(commandBus, commandHandler)
 	return handler, nil
 }
@@ -77,11 +71,7 @@ func InitializeLambda() (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	tasksConfig, err := tasks.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	tasksTasks, err := tasks.New(tasksConfig)
+	tasksTasks, err := tasks.New(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}

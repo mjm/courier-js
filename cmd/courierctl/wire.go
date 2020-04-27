@@ -34,6 +34,7 @@ func setupApp(gcpConfig secret.GCPConfig) (*cli.App, error) {
 			write.NewCommandBus,
 			tasks.DefaultSet,
 			event.NewBus,
+			event.NewSQSPublisherConfig,
 			wire.Bind(new(event.Sink), new(*event.Bus)),
 			wire.Bind(new(event.Source), new(*event.Bus)),
 			shared.DefaultSet,

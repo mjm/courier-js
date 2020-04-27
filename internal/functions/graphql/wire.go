@@ -37,7 +37,7 @@ func InitializeHandler(
 			billing2.DefaultSet,
 			write.NewCommandBus,
 			tasks.DefaultSet,
-			event.PublishingSet,
+			event.AWSPublishingSet,
 			shared.DefaultSet,
 			feeds.DefaultSet,
 			tweets.DefaultSet,

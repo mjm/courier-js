@@ -73,27 +73,22 @@ func InitializeHandler(schemaString SchemaString, gcpConfig secret.GCPConfig) (*
 		Subscriptions: subscriptionQueries,
 	}
 	commandBus := write.NewCommandBus()
-	publisherConfig, err := event.NewPublisherConfig(loader)
+	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	pubsubClient, err := event.NewPubSubClient(gcpConfig)
+	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	publisher := event.NewPublisher(publisherConfig, pubsubClient)
-	tasksConfig, err := tasks.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	tasksTasks, err := tasks.New(tasksConfig)
+	tasksTasks, err := tasks.New(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
 	clock := clockwork.NewRealClock()
 	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
 	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
-	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, postRepository)
+	commandHandler := feeds2.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, feedRepository, postRepository)
 	twitterConfig, err := tweets2.NewTwitterConfig(loader)
 	if err != nil {
 		return nil, err
@@ -101,12 +96,12 @@ func InitializeHandler(schemaString SchemaString, gcpConfig secret.GCPConfig) (*
 	externalTweetRepository := tweets2.NewExternalTweetRepository(authConfig, twitterConfig)
 	userRepository := tweets2.NewUserRepository(management, api)
 	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
-	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
+	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
 	customerRepository := billing3.NewCustomerRepository(api)
 	subscriptionRepository := billing3.NewSubscriptionRepository(api)
-	billingCommandHandler := billing3.NewCommandHandler(commandBus, publisher, billingConfig, customerRepository, subscriptionRepository)
+	billingCommandHandler := billing3.NewCommandHandler(commandBus, sqsPublisher, billingConfig, customerRepository, subscriptionRepository)
 	userUserRepository := user2.NewUserRepository(management)
-	userCommandHandler := user2.NewCommandHandler(commandBus, publisher, userUserRepository)
+	userCommandHandler := user2.NewCommandHandler(commandBus, sqsPublisher, userUserRepository)
 	root := resolvers.New(queries, commandBus, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
@@ -174,11 +169,7 @@ func InitializeLambda() (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	tasksConfig, err := tasks.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	tasksTasks, err := tasks.New(tasksConfig)
+	tasksTasks, err := tasks.New(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}

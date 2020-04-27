@@ -24,7 +24,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		config.DefaultSet,
 		secret.GCPSet,
 		tasks.DefaultSet,
-		event.PublishingSet,
+		event.AWSPublishingSet,
 		write.NewCommandBus,
 		db.DefaultSet,
 		shared.DefaultSet,
