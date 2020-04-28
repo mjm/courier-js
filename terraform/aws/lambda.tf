@@ -19,6 +19,7 @@ module "graphql_function" {
     aws_iam_policy.courier_table.arn,
     aws_iam_policy.config_params.arn,
     aws_iam_policy.enqueue_events.arn,
+    aws_iam_policy.encrypt_micropub_token.arn,
   ]
 }
 
@@ -47,6 +48,7 @@ module "events_function" {
     aws_iam_policy.config_params.arn,
     aws_iam_policy.events_queue.arn,
     aws_iam_policy.enqueue_events.arn,
+    aws_iam_policy.decrypt_micropub_token.arn,
   ]
 }
 
