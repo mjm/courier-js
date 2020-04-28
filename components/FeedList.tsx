@@ -14,7 +14,7 @@ const FeedList: React.FC<{
   feeds: FeedList_feeds
   relay: RelayPaginationProp
 }> = ({ feeds }) => {
-  if (!feeds.allFeeds) {
+  if (!feeds?.allFeeds) {
     return null
   }
 
