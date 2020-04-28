@@ -51,19 +51,30 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 		return nil
 	}
 
-	// TODO replace with a similar method that uses LSI1
 	posts, err := h.postRepo.Recent(ctx, cmd.FeedID, *oldestPublished)
 	if err != nil {
 		return err
 	}
 
+	var oldestExisting *time.Time
 	postsByItemID := make(map[string]*model.Post)
 	for _, post := range posts {
 		postsByItemID[post.ItemID()] = post
+		if post.PublishedAt != nil && (oldestExisting == nil || post.PublishedAt.Before(*oldestPublished)) {
+			oldestExisting = post.PublishedAt
+		}
 	}
 
 	var ps []shared.WritePostParams
 	oldestPublished = nil
+
+	entriesToScan := cmd.Entries
+	// on the initial import, we won't have any existing posts, and we don't really want to import their whole
+	// feed, since we don't know how long it could be and they probably don't want to tweet old posts anyway. so
+	// we grab the first 10 in this case.
+	if len(posts) == 0 && len(entriesToScan) > 10 {
+		entriesToScan = entriesToScan[:10]
+	}
 
 	for _, entry := range cmd.Entries {
 		// don't import post content if the post has a title, since we know it won't get used
@@ -78,6 +89,14 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 
 		post, ok := postsByItemID[entry.ID]
 		if ok && postMatchesEntry(post, entry) {
+			continue
+		}
+
+		// on the first import, we only grab the first 10 posts, but on subsequent refreshes, we'll look at the whole
+		// feed. so if a scraped entry doesn't match an existing post, we check if it's older than the oldest post we
+		// fetched, and if it is, then we assume that it was intentionally skipped in the initial import and we don'
+		// create it.
+		if !ok && oldestExisting != nil && entry.PublishedAt != nil && entry.PublishedAt.Before(*oldestExisting) {
 			continue
 		}
 

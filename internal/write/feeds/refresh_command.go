@@ -19,18 +19,9 @@ import (
 // RefreshCommand is a request to refresh a feed's contents and create/update
 // posts for the feed.
 type RefreshCommand struct {
-	// UserID is the user who initiated the command. A feed can be shared between users,
-	// so sometimes a user can causes posts to be created that affect other users.
-	//
-	// The UserID may be empty if the refresh was triggered by an automated request
-	// instead of a user action.
-	UserID string
-	// FeedID is the ID of the feed that should be refreshed.
-	FeedID model.FeedID
-	// Force causes scraping to ignore saved cache headers and always fetch and process
-	// the full contents of the feed.
-	Force bool
-
+	UserID   string
+	FeedID   model.FeedID
+	Force    bool
 	TaskName string
 }
 

@@ -32,6 +32,8 @@ func (GraphQLTracer) TraceQuery(ctx context.Context, queryString string, operati
 		return ctx, func([]*errors.QueryError) {}
 	}
 
+	trace.SpanFromContext(ctx).SetAttributes(operationNameKey.String(operationName))
+
 	ctx, span := tracer.Start(ctx, "graphql.Query",
 		trace.WithAttributes(
 			queryKey.String(queryString),

@@ -58,13 +58,5 @@ func (h *EventHandler) HandleEvent(ctx context.Context, evt interface{}) {
 			span.RecordError(ctx, err)
 		}
 
-	case feeds.FeedSubscribed:
-		if _, err := h.commandBus.Run(ctx, ImportTweetsCommand{
-			UserID: evt.UserId,
-			FeedID: model.FeedID(evt.FeedId),
-		}); err != nil {
-			span.RecordError(ctx, err)
-		}
-
 	}
 }
