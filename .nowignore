@@ -1,7 +1,7 @@
-.git
-ios
-internal
-pkg
-cmd
-image
-terraform
+/ios
+/internal
+/pkg
+/cmd
+/image
+/terraform
+/bazel-*
