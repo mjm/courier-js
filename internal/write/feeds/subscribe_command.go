@@ -41,8 +41,6 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 
 	span.SetAttributes(key.String("feed.resolved_url", u.String()))
 
-	// TODO handle existing feed for the URL by returning an error
-
 	if err := h.feedRepo.Create(ctx, cmd.UserID, cmd.FeedID, u.String()); err != nil {
 		return err
 	}

@@ -19,7 +19,9 @@ import (
 )
 
 var (
-	ErrNoFeed = status.Error(codes.NotFound, "no feed found")
+	ErrNoFeed          = status.Error(codes.NotFound, "no feed found")
+	ErrExistingFeedID  = status.Error(codes.FailedPrecondition, "feed with ID already exists")
+	ErrExistingFeedURL = status.Error(codes.FailedPrecondition, "feed with URL already exists")
 )
 
 type FeedRepository struct {
@@ -175,28 +177,64 @@ func (r *FeedRepository) GetWithRecentItems(ctx context.Context, feedID model.Fe
 }
 
 func (r *FeedRepository) Create(ctx context.Context, userID string, feedID model.FeedID, url string) error {
-	pk, sk := r.primaryKeyValues(userID, feedID)
+	id := model.UserFeedID{
+		UserID: userID,
+		FeedID: feedID,
+	}
+	pk, sk := id.PrimaryKeyValues()
+	urlSK := "FEEDURL#" + url
+
 	now := model.FormatTime(r.clock.Now())
-	_, err := r.dynamo.PutItemWithContext(ctx, &dynamodb.PutItemInput{
-		TableName: &r.dynamoConfig.TableName,
-		Item: map[string]*dynamodb.AttributeValue{
-			db.PK:              {S: &pk},
-			db.SK:              {S: &sk},
-			db.LSI1SK:          {S: aws.String("FEED#")},
-			db.GSI2PK:          {S: &sk},
-			db.GSI2SK:          {S: &sk},
-			db.Type:            {S: aws.String(model.TypeFeed)},
-			model.ColURL:       {S: &url},
-			model.ColAutopost:  {BOOL: aws.Bool(false)},
-			model.ColCreatedAt: {S: &now},
-			model.ColUpdatedAt: {S: &now},
-		},
-		ConditionExpression: aws.String("attribute_not_exists(#pk)"),
-		ExpressionAttributeNames: map[string]*string{
-			"#pk": aws.String(db.PK),
+	_, err := r.dynamo.TransactWriteItemsWithContext(ctx, &dynamodb.TransactWriteItemsInput{
+		TransactItems: []*dynamodb.TransactWriteItem{
+			{
+				Put: &dynamodb.Put{
+					TableName: &r.dynamoConfig.TableName,
+					Item: map[string]*dynamodb.AttributeValue{
+						db.PK:              {S: &pk},
+						db.SK:              {S: &sk},
+						db.LSI1SK:          {S: aws.String("FEED#")},
+						db.GSI2PK:          {S: &sk},
+						db.GSI2SK:          {S: &sk},
+						db.Type:            {S: aws.String(model.TypeFeed)},
+						model.ColURL:       {S: &url},
+						model.ColAutopost:  {BOOL: aws.Bool(false)},
+						model.ColCreatedAt: {S: &now},
+						model.ColUpdatedAt: {S: &now},
+					},
+					ConditionExpression: aws.String("attribute_not_exists(#pk)"),
+					ExpressionAttributeNames: map[string]*string{
+						"#pk": aws.String(db.PK),
+					},
+				},
+			},
+			{
+				Put: &dynamodb.Put{
+					TableName: &r.dynamoConfig.TableName,
+					Item: map[string]*dynamodb.AttributeValue{
+						db.PK:    {S: &pk},
+						db.SK:    {S: &urlSK},
+						"FeedID": {S: aws.String(string(feedID))},
+					},
+					ConditionExpression: aws.String(`attribute_not_exists(#pk)`),
+					ExpressionAttributeNames: map[string]*string{
+						"#pk": aws.String(db.PK),
+					},
+				},
+			},
 		},
 	})
 	if err != nil {
+		if err, ok := err.(*dynamodb.TransactionCanceledException); ok {
+			if len(err.CancellationReasons) == 2 {
+				if aws.StringValue(err.CancellationReasons[0].Code) == "ConditionalCheckFailed" {
+					return ErrExistingFeedID
+				}
+				if aws.StringValue(err.CancellationReasons[1].Code) == "ConditionalCheckFailed" {
+					return ErrExistingFeedURL
+				}
+			}
+		}
 		return err
 	}
 

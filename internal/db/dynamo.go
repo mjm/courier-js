@@ -415,6 +415,39 @@ func (d *DynamoDB) UpdateItemWithContext(ctx context.Context, input *dynamodb.Up
 	return out, nil
 }
 
+func (d *DynamoDB) TransactWriteItemsWithContext(ctx context.Context, input *dynamodb.TransactWriteItemsInput, opts ...request.Option) (*dynamodb.TransactWriteItemsOutput, error) {
+	ctx, span := tr.Start(ctx, "dynamodb.TransactWriteItems",
+		trace.WithSpanKind(trace.SpanKindClient),
+		trace.WithAttributes(dbTypeDynamo))
+	defer span.End()
+
+	span.SetAttributes(
+		requestedItemCountKey(len(input.TransactItems)))
+
+	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
+
+	out, err := d.real.TransactWriteItemsWithContext(ctx, input, opts...)
+	if err != nil {
+		span.RecordError(ctx, err)
+		return nil, err
+	}
+
+	var total, read, write float64
+	for _, capacity := range out.ConsumedCapacity {
+		total += aws.Float64Value(capacity.CapacityUnits)
+		read += aws.Float64Value(capacity.ReadCapacityUnits)
+		write += aws.Float64Value(capacity.WriteCapacityUnits)
+	}
+
+	recordConsumedCapacity(span, &dynamodb.ConsumedCapacity{
+		CapacityUnits:      &total,
+		ReadCapacityUnits:  &read,
+		WriteCapacityUnits: &write,
+	})
+
+	return out, nil
+}
+
 func consumedCapacityAttrs(capacity *dynamodb.ConsumedCapacity) []core.KeyValue {
 	if capacity == nil {
 		return nil

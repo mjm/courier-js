@@ -1,8 +1,9 @@
 import React from "react"
 
-import { Field,Form, Formik } from "formik"
+import { Field, Form, Formik } from "formik"
 
 import AsyncButton from "components/AsyncButton"
+import { ErrorBox } from "components/ErrorBox"
 
 interface Props {
   url: string
@@ -48,6 +49,10 @@ const PreviewFeedForm: React.FC<Props> = ({ url, onChange, onWatch }) => {
               </button>
             )}
           </div>
+          <ErrorBox
+            title="There was an issue adding the feed"
+            className="mt-4"
+          />
         </Form>
       )}
     </Formik>
