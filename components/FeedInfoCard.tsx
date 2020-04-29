@@ -52,7 +52,7 @@ export default createFragmentContainer(FeedInfoCard, {
     }
   `,
   user: graphql`
-    fragment FeedInfoCard_user on User {
+    fragment FeedInfoCard_user on Viewer {
       micropubSites
     }
   `,

@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -19,43 +20,43 @@ export type PreviewFeedContent_feed$key = {
 
 
 const node: ReaderFragment = {
-  "kind": "Fragment",
-  "name": "PreviewFeedContent_feed",
-  "type": "FeedPreview",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "PreviewFeedContent_feed",
   "selections": [
     {
-      "kind": "ScalarField",
       "alias": null,
+      "args": null,
+      "kind": "ScalarField",
       "name": "url",
-      "args": null,
       "storageKey": null
     },
     {
+      "alias": null,
+      "args": null,
       "kind": "ScalarField",
-      "alias": null,
       "name": "title",
-      "args": null,
       "storageKey": null
     },
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "tweets",
-      "storageKey": null,
       "args": null,
       "concreteType": "TweetPreview",
+      "kind": "LinkedField",
+      "name": "tweets",
       "plural": true,
       "selections": [
         {
+          "args": null,
           "kind": "FragmentSpread",
-          "name": "TweetCard_tweet",
-          "args": null
+          "name": "TweetCard_tweet"
         }
-      ]
+      ],
+      "storageKey": null
     }
-  ]
+  ],
+  "type": "FeedPreview"
 };
 (node as any).hash = 'dd734b77513b29c475bf8f9e50bc6935';
 export default node;

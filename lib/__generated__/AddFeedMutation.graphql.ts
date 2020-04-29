@@ -1,10 +1,10 @@
 /* tslint:disable */
-/* @relayHash 76b5afb0f5cec183df75f29522de81c2 */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type AddFeedInput = {
-    readonly url: string;
+    url: string;
 };
 export type AddFeedMutationVariables = {
     input: AddFeedInput;
@@ -59,10 +59,10 @@ fragment FeedCard_feed on Feed {
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input",
-    "type": "AddFeedInput!",
-    "defaultValue": null
+    "type": "AddFeedInput!"
   }
 ],
 v1 = [
@@ -73,159 +73,159 @@ v1 = [
   }
 ],
 v2 = {
-  "kind": "ScalarField",
   "alias": null,
-  "name": "id",
   "args": null,
+  "kind": "ScalarField",
+  "name": "id",
   "storageKey": null
 },
 v3 = {
-  "kind": "LinkedField",
   "alias": null,
-  "name": "feed",
-  "storageKey": null,
   "args": null,
   "concreteType": "Feed",
+  "kind": "LinkedField",
+  "name": "feed",
   "plural": false,
   "selections": [
     (v2/*: any*/)
-  ]
+  ],
+  "storageKey": null
 },
 v4 = {
-  "kind": "ScalarField",
   "alias": null,
-  "name": "cursor",
   "args": null,
+  "kind": "ScalarField",
+  "name": "cursor",
   "storageKey": null
 };
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "AddFeedMutation",
-    "type": "Mutation",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "AddFeedMutation",
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "addFeed",
-        "storageKey": null,
         "args": (v1/*: any*/),
         "concreteType": "AddFeedPayload",
+        "kind": "LinkedField",
+        "name": "addFeed",
         "plural": false,
         "selections": [
           (v3/*: any*/),
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "feedEdge",
-            "storageKey": null,
             "args": null,
             "concreteType": "FeedEdge",
+            "kind": "LinkedField",
+            "name": "feedEdge",
             "plural": false,
             "selections": [
               {
-                "kind": "LinkedField",
                 "alias": null,
-                "name": "node",
-                "storageKey": null,
                 "args": null,
                 "concreteType": "Feed",
+                "kind": "LinkedField",
+                "name": "node",
                 "plural": false,
                 "selections": [
                   {
+                    "args": null,
                     "kind": "FragmentSpread",
-                    "name": "FeedCard_feed",
-                    "args": null
+                    "name": "FeedCard_feed"
                   }
-                ]
+                ],
+                "storageKey": null
               },
               (v4/*: any*/)
-            ]
+            ],
+            "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "type": "Mutation"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "AddFeedMutation",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "addFeed",
-        "storageKey": null,
         "args": (v1/*: any*/),
         "concreteType": "AddFeedPayload",
+        "kind": "LinkedField",
+        "name": "addFeed",
         "plural": false,
         "selections": [
           (v3/*: any*/),
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "feedEdge",
-            "storageKey": null,
             "args": null,
             "concreteType": "FeedEdge",
+            "kind": "LinkedField",
+            "name": "feedEdge",
             "plural": false,
             "selections": [
               {
-                "kind": "LinkedField",
                 "alias": null,
-                "name": "node",
-                "storageKey": null,
                 "args": null,
                 "concreteType": "Feed",
+                "kind": "LinkedField",
+                "name": "node",
                 "plural": false,
                 "selections": [
                   (v2/*: any*/),
                   {
-                    "kind": "ScalarField",
                     "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "title",
-                    "args": null,
                     "storageKey": null
                   },
                   {
-                    "kind": "ScalarField",
                     "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "homePageURL",
-                    "args": null,
                     "storageKey": null
                   },
                   {
-                    "kind": "ScalarField",
                     "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "refreshedAt",
-                    "args": null,
                     "storageKey": null
                   },
                   {
-                    "kind": "ScalarField",
                     "alias": null,
-                    "name": "autopost",
                     "args": null,
+                    "kind": "ScalarField",
+                    "name": "autopost",
                     "storageKey": null
                   }
-                ]
+                ],
+                "storageKey": null
               },
               (v4/*: any*/)
-            ]
+            ],
+            "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
     ]
   },
   "params": {
-    "operationKind": "mutation",
-    "name": "AddFeedMutation",
     "id": null,
-    "text": "mutation AddFeedMutation(\n  $input: AddFeedInput!\n) {\n  addFeed(input: $input) {\n    feed {\n      id\n    }\n    feedEdge {\n      node {\n        ...FeedCard_feed\n        id\n      }\n      cursor\n    }\n  }\n}\n\nfragment FeedCard_feed on Feed {\n  id\n  title\n  homePageURL\n  refreshedAt\n  autopost\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "AddFeedMutation",
+    "operationKind": "mutation",
+    "text": "mutation AddFeedMutation(\n  $input: AddFeedInput!\n) {\n  addFeed(input: $input) {\n    feed {\n      id\n    }\n    feedEdge {\n      node {\n        ...FeedCard_feed\n        id\n      }\n      cursor\n    }\n  }\n}\n\nfragment FeedCard_feed on Feed {\n  id\n  title\n  homePageURL\n  refreshedAt\n  autopost\n}\n"
   }
 };
 })();

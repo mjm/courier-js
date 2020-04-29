@@ -16,7 +16,7 @@ const UserInfoCard: React.FC<{
 
 export default createFragmentContainer(UserInfoCard, {
   user: graphql`
-    fragment UserInfoCard_user on User {
+    fragment UserInfoCard_user on Viewer {
       name
       nickname
       picture

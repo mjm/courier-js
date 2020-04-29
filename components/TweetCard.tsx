@@ -1,8 +1,9 @@
 import React from "react"
-import { createFragmentContainer, graphql } from "react-relay"
+import { graphql } from "react-relay"
+import { useFragment } from "react-relay/hooks"
 
 import {
-  TweetCard_tweet,
+  TweetCard_tweet$key,
   TweetStatus,
 } from "@generated/TweetCard_tweet.graphql"
 import EditTweetForm from "components/EditTweetForm"
@@ -11,10 +12,24 @@ import { ErrorContainer } from "components/ErrorContainer"
 import ViewTweetGroup from "components/ViewTweetGroup"
 
 const TweetCard: React.FC<{
-  tweet: TweetCard_tweet
+  tweet: TweetCard_tweet$key
 }> = ({ tweet }) => {
+  const data = useFragment(
+    graphql`
+      fragment TweetCard_tweet on TweetContent {
+        ...EditTweetForm_tweet
+        ...ViewTweetGroup_tweet
+
+        ... on TweetGroup {
+          status
+        }
+      }
+    `,
+    tweet
+  )
+
   const [editing, setEditing] = React.useState(false)
-  const statusClass = tweet.status ? cardTypeStyles[tweet.status].container : ""
+  const statusClass = data.status ? cardTypeStyles[data.status].container : ""
 
   return (
     <ErrorContainer>
@@ -24,36 +39,22 @@ const TweetCard: React.FC<{
       >
         <div
           className={`absolute top-0 right-0 py-1 px-4 uppercase rounded-tr-lg rounded-bl-lg text-xs font-bold ${
-            cardTypeStyles[tweet.status || "DRAFT"].badge
+            cardTypeStyles[data.status || "DRAFT"].badge
           }`}
         >
-          {tweet.status || "PREVIEW"}
+          {data.status || "PREVIEW"}
         </div>
         {editing ? (
-          <EditTweetForm
-            tweet={tweet}
-            onStopEditing={() => setEditing(false)}
-          />
+          <EditTweetForm tweet={data} onStopEditing={() => setEditing(false)} />
         ) : (
-          <ViewTweetGroup tweet={tweet} onEdit={() => setEditing(true)} />
+          <ViewTweetGroup tweet={data} onEdit={() => setEditing(true)} />
         )}
       </article>
     </ErrorContainer>
   )
 }
 
-export default createFragmentContainer(TweetCard, {
-  tweet: graphql`
-    fragment TweetCard_tweet on TweetContent {
-      ...EditTweetForm_tweet
-      ...ViewTweetGroup_tweet
-
-      ... on TweetGroup {
-        status
-      }
-    }
-  `,
-})
+export default TweetCard
 
 interface CardTypeStyle {
   container: string

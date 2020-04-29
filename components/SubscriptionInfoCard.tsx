@@ -1,18 +1,36 @@
 import Moment from "react-moment"
-import { createFragmentContainer, graphql, RelayProp } from "react-relay"
+import { graphql } from "react-relay"
+import { useFragment, useRelayEnvironment } from "react-relay/hooks"
 
 import Link from "next/link"
 
-import { SubscriptionInfoCard_user } from "@generated/SubscriptionInfoCard_user.graphql"
+import { SubscriptionInfoCard_user$key } from "@generated/SubscriptionInfoCard_user.graphql"
 import { cancelSubscription } from "@mutations/CancelSubscription"
 import AsyncButton from "components/AsyncButton"
 import CreditCardIcon from "components/CreditCardIcon"
 
 const SubscriptionInfoCard: React.FC<{
-  user: SubscriptionInfoCard_user
-  relay: RelayProp
-}> = ({ user, relay: { environment } }) => {
-  const { customer, subscription, subscriptionStatusOverride } = user
+  user: SubscriptionInfoCard_user$key
+}> = ({ user }) => {
+  const environment = useRelayEnvironment()
+  const { customer, subscription, subscriptionStatusOverride } = useFragment(
+    graphql`
+      fragment SubscriptionInfoCard_user on Viewer {
+        customer {
+          creditCard {
+            brand
+            lastFour
+          }
+        }
+        subscription {
+          status
+          periodEnd
+        }
+        subscriptionStatusOverride
+      }
+    `,
+    user
+  )
 
   async function cancel(): Promise<void> {
     try {
@@ -101,20 +119,4 @@ const SubscriptionInfoCard: React.FC<{
   )
 }
 
-export default createFragmentContainer(SubscriptionInfoCard, {
-  user: graphql`
-    fragment SubscriptionInfoCard_user on User {
-      customer {
-        creditCard {
-          brand
-          lastFour
-        }
-      }
-      subscription {
-        status
-        periodEnd
-      }
-      subscriptionStatusOverride
-    }
-  `,
-})
+export default SubscriptionInfoCard

@@ -1,12 +1,12 @@
 /* tslint:disable */
-/* @relayHash fe0f4df90b601d9be46abcb7e9a25a0c */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 export type TweetStatus = "CANCELED" | "DRAFT" | "POSTED" | "%future added value";
 export type PostTweetInput = {
-    readonly id: string;
-    readonly body?: string | null;
-    readonly mediaURLs?: ReadonlyArray<string> | null;
+    id: string;
+    body?: string | null;
+    mediaURLs?: Array<string> | null;
 };
 export type PostTweetMutationVariables = {
     input: PostTweetInput;
@@ -56,18 +56,15 @@ mutation PostTweetMutation(
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input",
-    "type": "PostTweetInput!",
-    "defaultValue": null
+    "type": "PostTweetInput!"
   }
 ],
 v1 = [
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "postTweet",
-    "storageKey": null,
     "args": [
       {
         "kind": "Variable",
@@ -76,104 +73,107 @@ v1 = [
       }
     ],
     "concreteType": "PostTweetPayload",
+    "kind": "LinkedField",
+    "name": "postTweet",
     "plural": false,
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "tweetGroup",
-        "storageKey": null,
         "args": null,
         "concreteType": "TweetGroup",
+        "kind": "LinkedField",
+        "name": "tweetGroup",
         "plural": false,
         "selections": [
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "id",
             "args": null,
+            "kind": "ScalarField",
+            "name": "id",
             "storageKey": null
           },
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "tweets",
-            "storageKey": null,
             "args": null,
             "concreteType": "Tweet",
+            "kind": "LinkedField",
+            "name": "tweets",
             "plural": true,
             "selections": [
               {
-                "kind": "ScalarField",
                 "alias": null,
+                "args": null,
+                "kind": "ScalarField",
                 "name": "body",
-                "args": null,
                 "storageKey": null
               },
               {
-                "kind": "ScalarField",
                 "alias": null,
+                "args": null,
+                "kind": "ScalarField",
                 "name": "mediaURLs",
-                "args": null,
                 "storageKey": null
               },
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "postedTweetID",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "postedTweetID",
                 "storageKey": null
               }
-            ]
+            ],
+            "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "status",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "postedAt",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "postAfter",
             "args": null,
+            "kind": "ScalarField",
+            "name": "postAfter",
             "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   }
 ];
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "PostTweetMutation",
-    "type": "Mutation",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
-    "selections": (v1/*: any*/)
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "PostTweetMutation",
+    "selections": (v1/*: any*/),
+    "type": "Mutation"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "PostTweetMutation",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": (v1/*: any*/)
   },
   "params": {
-    "operationKind": "mutation",
-    "name": "PostTweetMutation",
     "id": null,
-    "text": "mutation PostTweetMutation(\n  $input: PostTweetInput!\n) {\n  postTweet(input: $input) {\n    tweetGroup {\n      id\n      tweets {\n        body\n        mediaURLs\n        postedTweetID\n      }\n      status\n      postedAt\n      postAfter\n    }\n  }\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "PostTweetMutation",
+    "operationKind": "mutation",
+    "text": "mutation PostTweetMutation(\n  $input: PostTweetInput!\n) {\n  postTweet(input: $input) {\n    tweetGroup {\n      id\n      tweets {\n        body\n        mediaURLs\n        postedTweetID\n      }\n      status\n      postedAt\n      postAfter\n    }\n  }\n}\n"
   }
 };
 })();

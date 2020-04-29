@@ -1,10 +1,10 @@
 /* tslint:disable */
-/* @relayHash 97394c15d50bc5ab90ed1584dd419b3b */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 export type SubscriptionStatus = "ACTIVE" | "CANCELED" | "EXPIRED" | "INACTIVE" | "%future added value";
 export type CancelSubscriptionInput = {
-    readonly placeholder?: string | null;
+    placeholder?: string | null;
 };
 export type CancelSubscriptionMutationVariables = {
     input: CancelSubscriptionInput;
@@ -42,18 +42,15 @@ mutation CancelSubscriptionMutation(
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input",
-    "type": "CancelSubscriptionInput!",
-    "defaultValue": null
+    "type": "CancelSubscriptionInput!"
   }
 ],
 v1 = [
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "cancelSubscription",
-    "storageKey": null,
     "args": [
       {
         "kind": "Variable",
@@ -62,62 +59,65 @@ v1 = [
       }
     ],
     "concreteType": "CancelSubscriptionPayload",
+    "kind": "LinkedField",
+    "name": "cancelSubscription",
     "plural": false,
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "user",
-        "storageKey": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "user",
         "plural": false,
         "selections": [
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "subscription",
-            "storageKey": null,
             "args": null,
             "concreteType": "UserSubscription",
+            "kind": "LinkedField",
+            "name": "subscription",
             "plural": false,
             "selections": [
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "status",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "status",
                 "storageKey": null
               }
-            ]
+            ],
+            "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   }
 ];
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "CancelSubscriptionMutation",
-    "type": "Mutation",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
-    "selections": (v1/*: any*/)
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "CancelSubscriptionMutation",
+    "selections": (v1/*: any*/),
+    "type": "Mutation"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "CancelSubscriptionMutation",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": (v1/*: any*/)
   },
   "params": {
-    "operationKind": "mutation",
-    "name": "CancelSubscriptionMutation",
     "id": null,
-    "text": "mutation CancelSubscriptionMutation(\n  $input: CancelSubscriptionInput!\n) {\n  cancelSubscription(input: $input) {\n    user {\n      subscription {\n        status\n      }\n    }\n  }\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "CancelSubscriptionMutation",
+    "operationKind": "mutation",
+    "text": "mutation CancelSubscriptionMutation(\n  $input: CancelSubscriptionInput!\n) {\n  cancelSubscription(input: $input) {\n    user {\n      subscription {\n        status\n      }\n    }\n  }\n}\n"
   }
 };
 })();

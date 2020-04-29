@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -22,63 +23,63 @@ export type SubscribeForm_user$key = {
 
 
 const node: ReaderFragment = {
-  "kind": "Fragment",
-  "name": "SubscribeForm_user",
-  "type": "User",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "SubscribeForm_user",
   "selections": [
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "customer",
-      "storageKey": null,
       "args": null,
       "concreteType": "Customer",
+      "kind": "LinkedField",
+      "name": "customer",
       "plural": false,
       "selections": [
         {
-          "kind": "LinkedField",
           "alias": null,
-          "name": "creditCard",
-          "storageKey": null,
           "args": null,
           "concreteType": "CreditCard",
+          "kind": "LinkedField",
+          "name": "creditCard",
           "plural": false,
           "selections": [
             {
-              "kind": "ScalarField",
               "alias": null,
+              "args": null,
+              "kind": "ScalarField",
               "name": "brand",
-              "args": null,
               "storageKey": null
             },
             {
-              "kind": "ScalarField",
               "alias": null,
+              "args": null,
+              "kind": "ScalarField",
               "name": "lastFour",
-              "args": null,
               "storageKey": null
             },
             {
-              "kind": "ScalarField",
               "alias": null,
+              "args": null,
+              "kind": "ScalarField",
               "name": "expirationMonth",
-              "args": null,
               "storageKey": null
             },
             {
-              "kind": "ScalarField",
               "alias": null,
-              "name": "expirationYear",
               "args": null,
+              "kind": "ScalarField",
+              "name": "expirationYear",
               "storageKey": null
             }
-          ]
+          ],
+          "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     }
-  ]
+  ],
+  "type": "Viewer"
 };
-(node as any).hash = 'ac9796175235ed3ae637fb3ba0da485e';
+(node as any).hash = 'a07ed9fabde45c87c8ffafd39a110259';
 export default node;

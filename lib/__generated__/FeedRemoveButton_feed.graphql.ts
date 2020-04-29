@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -15,20 +16,20 @@ export type FeedRemoveButton_feed$key = {
 
 
 const node: ReaderFragment = {
-  "kind": "Fragment",
-  "name": "FeedRemoveButton_feed",
-  "type": "Feed",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "FeedRemoveButton_feed",
   "selections": [
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "id",
       "args": null,
+      "kind": "ScalarField",
+      "name": "id",
       "storageKey": null
     }
-  ]
+  ],
+  "type": "Feed"
 };
 (node as any).hash = 'd9c2540940c221f840dbd7e3ea514cd7';
 export default node;

@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -19,45 +20,45 @@ export type EditTweetForm_tweet$key = {
 
 
 const node: ReaderFragment = {
-  "kind": "Fragment",
-  "name": "EditTweetForm_tweet",
-  "type": "TweetGroup",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "EditTweetForm_tweet",
   "selections": [
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "id",
       "args": null,
+      "kind": "ScalarField",
+      "name": "id",
       "storageKey": null
     },
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "tweets",
-      "storageKey": null,
       "args": null,
       "concreteType": "Tweet",
+      "kind": "LinkedField",
+      "name": "tweets",
       "plural": true,
       "selections": [
         {
-          "kind": "ScalarField",
           "alias": null,
-          "name": "body",
           "args": null,
+          "kind": "ScalarField",
+          "name": "body",
           "storageKey": null
         },
         {
-          "kind": "ScalarField",
           "alias": null,
-          "name": "mediaURLs",
           "args": null,
+          "kind": "ScalarField",
+          "name": "mediaURLs",
           "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     }
-  ]
+  ],
+  "type": "TweetGroup"
 };
 (node as any).hash = '1c44bd76b098a5f26fdbfa25b45a00ce';
 export default node;

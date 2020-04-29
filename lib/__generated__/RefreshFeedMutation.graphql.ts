@@ -1,9 +1,9 @@
 /* tslint:disable */
-/* @relayHash ed01e3f8b1176b936c2e57bde099ecf9 */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 export type RefreshFeedInput = {
-    readonly id: string;
+    id: string;
 };
 export type RefreshFeedMutationVariables = {
     input: RefreshFeedInput;
@@ -45,18 +45,15 @@ mutation RefreshFeedMutation(
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input",
-    "type": "RefreshFeedInput!",
-    "defaultValue": null
+    "type": "RefreshFeedInput!"
   }
 ],
 v1 = [
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "refreshFeed",
-    "storageKey": null,
     "args": [
       {
         "kind": "Variable",
@@ -65,79 +62,82 @@ v1 = [
       }
     ],
     "concreteType": "RefreshFeedPayload",
+    "kind": "LinkedField",
+    "name": "refreshFeed",
     "plural": false,
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "feed",
-        "storageKey": null,
         "args": null,
         "concreteType": "Feed",
+        "kind": "LinkedField",
+        "name": "feed",
         "plural": false,
         "selections": [
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "id",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "title",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "homePageURL",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "refreshedAt",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "refreshing",
             "args": null,
+            "kind": "ScalarField",
+            "name": "refreshing",
             "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   }
 ];
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "RefreshFeedMutation",
-    "type": "Mutation",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
-    "selections": (v1/*: any*/)
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "RefreshFeedMutation",
+    "selections": (v1/*: any*/),
+    "type": "Mutation"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "RefreshFeedMutation",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": (v1/*: any*/)
   },
   "params": {
-    "operationKind": "mutation",
-    "name": "RefreshFeedMutation",
     "id": null,
-    "text": "mutation RefreshFeedMutation(\n  $input: RefreshFeedInput!\n) {\n  refreshFeed(input: $input) {\n    feed {\n      id\n      title\n      homePageURL\n      refreshedAt\n      refreshing\n    }\n  }\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "RefreshFeedMutation",
+    "operationKind": "mutation",
+    "text": "mutation RefreshFeedMutation(\n  $input: RefreshFeedInput!\n) {\n  refreshFeed(input: $input) {\n    feed {\n      id\n      title\n      homePageURL\n      refreshedAt\n      refreshing\n    }\n  }\n}\n"
   }
 };
 })();

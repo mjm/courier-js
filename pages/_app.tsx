@@ -1,15 +1,17 @@
 import React from "react"
+import { RelayEnvironmentProvider } from "react-relay/hooks"
 
 import { AppProps } from "next/app"
 import { useRouter } from "next/router"
 
 import { config } from "@fortawesome/fontawesome-svg-core"
-import NProgress from "nprogress"
 import { Elements } from "@stripe/react-stripe-js"
 import { loadStripe } from "@stripe/stripe-js"
+import NProgress from "nprogress"
 
 import { Auth0Provider, useAuth0 } from "components/Auth0Provider"
 import MDXContainer from "components/MDXContainer"
+import { getEnvironment } from "hocs/withData"
 import { isAuthenticated } from "utils/auth0"
 
 import "components/Tailwind.css"
@@ -23,14 +25,16 @@ const stripePromise = process.browser
   : null
 
 const App: React.FC<AppProps> = props => (
-  <Auth0Provider>
-    <Elements
-      stripe={stripePromise}
-      options={{ fonts: [{ cssSrc: "https://rsms.me/inter/inter.css" }] }}
-    >
-      <AppInner {...props} />
-    </Elements>
-  </Auth0Provider>
+  <RelayEnvironmentProvider environment={getEnvironment()}>
+    <Auth0Provider>
+      <Elements
+        stripe={stripePromise}
+        options={{ fonts: [{ cssSrc: "https://rsms.me/inter/inter.css" }] }}
+      >
+        <AppInner {...props} />
+      </Elements>
+    </Auth0Provider>
+  </RelayEnvironmentProvider>
 )
 
 export default App

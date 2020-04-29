@@ -160,7 +160,7 @@ const SubscribeForm: React.FC<Props> = ({ user, relay: { environment } }) => {
 
 export default createFragmentContainer(SubscribeForm, {
   user: graphql`
-    fragment SubscribeForm_user on User {
+    fragment SubscribeForm_user on Viewer {
       customer {
         creditCard {
           brand

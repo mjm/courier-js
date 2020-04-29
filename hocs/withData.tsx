@@ -138,6 +138,10 @@ function withData<
 export default withData
 
 function makeFetchQuery(ctx?: NextPageContext): FetchFunction {
+  if (!ctx && !process.browser) {
+    return () => new Promise(() => {})
+  }
+
   const req = ctx && ctx.req
   const url = apiUrl("/api/graphql", req)
 
@@ -192,7 +196,7 @@ function makeFetchSubscription(ctx?: NextPageContext): SubscribeFunction {
   }
 }
 
-function initEnvironment(
+export function initEnvironment(
   ctx?: NextPageContext,
   records?: RecordMap
 ): Environment {
@@ -215,6 +219,16 @@ function initEnvironment(
     })
   }
 
+  return relayEnvironment
+}
+
+export function getEnvironment(): Environment {
+  if (!relayEnvironment) {
+    relayEnvironment = new Environment({
+      network: Network.create(makeFetchQuery()),
+      store: new Store(new RecordSource()),
+    })
+  }
   return relayEnvironment
 }
 

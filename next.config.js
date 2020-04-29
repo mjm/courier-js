@@ -21,6 +21,10 @@ module.exports = withImages(
       PUSHER_CLUSTER: process.env.PUSHER_CLUSTER,
     },
 
+    experimental: {
+      reactMode: "concurrent",
+    },
+
     webpack(config, _options) {
       config.resolve.modules.push(__dirname)
       config.resolve.alias = {

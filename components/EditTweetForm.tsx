@@ -1,11 +1,15 @@
 import React from "react"
-import { createFragmentContainer, graphql, RelayProp } from "react-relay"
+import { graphql } from "react-relay"
+import { useFragment, useRelayEnvironment } from "react-relay/hooks"
 
 import { faPlus, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Field, FieldArray, Form, Formik, useFormikContext } from "formik"
 
-import { EditTweetForm_tweet } from "@generated/EditTweetForm_tweet.graphql"
+import {
+  EditTweetForm_tweet,
+  EditTweetForm_tweet$key,
+} from "@generated/EditTweetForm_tweet.graphql"
 import { editTweet } from "@mutations/EditTweet"
 import { postTweet } from "@mutations/PostTweet"
 import { ErrorBox } from "components/ErrorBox"
@@ -17,12 +21,24 @@ interface FormValues {
 }
 
 const EditTweetForm: React.FC<{
-  tweet: EditTweetForm_tweet
+  tweet: EditTweetForm_tweet$key
   onStopEditing: () => void
-  relay: RelayProp
-}> = ({ tweet, onStopEditing, relay }) => {
+}> = ({ tweet, onStopEditing }) => {
+  const environment = useRelayEnvironment()
+  const { id, tweets } = useFragment(
+    graphql`
+      fragment EditTweetForm_tweet on TweetGroup {
+        id
+        tweets {
+          body
+          mediaURLs
+        }
+      }
+    `,
+    tweet
+  )
   const initialValues: FormValues = {
-    tweets: tweet.tweets.map(t => ({ ...t })),
+    tweets: tweets.map(t => ({ ...t })),
     action: "save",
   }
 
@@ -32,7 +48,7 @@ const EditTweetForm: React.FC<{
       initialStatus={{ error: null }}
       onSubmit={async ({ action, tweets }, actions) => {
         const input = {
-          id: tweet.id,
+          id,
           tweets: tweets.map(({ mediaURLs, ...t }) => ({
             mediaURLs: mediaURLs.filter(url => url !== ""),
             ...t,
@@ -41,9 +57,9 @@ const EditTweetForm: React.FC<{
 
         try {
           if (action === "save") {
-            editTweet(relay.environment, input)
+            editTweet(environment, input)
           } else {
-            await postTweet(relay.environment, input)
+            await postTweet(environment, input)
           }
           onStopEditing()
         } catch (err) {
@@ -120,17 +136,7 @@ const EditTweetForm: React.FC<{
   )
 }
 
-export default createFragmentContainer(EditTweetForm, {
-  tweet: graphql`
-    fragment EditTweetForm_tweet on TweetGroup {
-      id
-      tweets {
-        body
-        mediaURLs
-      }
-    }
-  `,
-})
+export default EditTweetForm
 
 interface MediaURLFieldsProps {
   name: string

@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -16,27 +17,27 @@ export type ViewTweet_tweet$key = {
 
 
 const node: ReaderFragment = {
-  "kind": "Fragment",
-  "name": "ViewTweet_tweet",
-  "type": "Tweet",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "ViewTweet_tweet",
   "selections": [
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "body",
       "args": null,
+      "kind": "ScalarField",
+      "name": "body",
       "storageKey": null
     },
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "mediaURLs",
       "args": null,
+      "kind": "ScalarField",
+      "name": "mediaURLs",
       "storageKey": null
     }
-  ]
+  ],
+  "type": "Tweet"
 };
 (node as any).hash = '4ec25b6b9fe60d737f58e51e9c96f803';
 export default node;

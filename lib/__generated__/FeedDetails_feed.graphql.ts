@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -18,49 +19,49 @@ export type FeedDetails_feed$key = {
 
 
 const node: ReaderFragment = {
-  "kind": "Fragment",
-  "name": "FeedDetails_feed",
-  "type": "Feed",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "FeedDetails_feed",
   "selections": [
     {
-      "kind": "ScalarField",
       "alias": null,
+      "args": null,
+      "kind": "ScalarField",
       "name": "id",
-      "args": null,
       "storageKey": null
     },
     {
-      "kind": "ScalarField",
       "alias": null,
+      "args": null,
+      "kind": "ScalarField",
       "name": "title",
-      "args": null,
       "storageKey": null
     },
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "url",
       "args": null,
+      "kind": "ScalarField",
+      "name": "url",
       "storageKey": null
     },
     {
+      "args": null,
       "kind": "FragmentSpread",
-      "name": "FeedRecentPostList_feed",
-      "args": null
+      "name": "FeedRecentPostList_feed"
     },
     {
+      "args": null,
       "kind": "FragmentSpread",
-      "name": "FeedInfoCard_feed",
-      "args": null
+      "name": "FeedInfoCard_feed"
     },
     {
+      "args": null,
       "kind": "FragmentSpread",
-      "name": "FeedRemoveButton_feed",
-      "args": null
+      "name": "FeedRemoveButton_feed"
     }
-  ]
+  ],
+  "type": "Feed"
 };
 (node as any).hash = '03d906736fdcf774215f6f91c6195e59';
 export default node;

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Suspense } from "react"
 
 import { NextComponentType, NextPage, NextPageContext } from "next"
 
@@ -6,6 +6,7 @@ import { AuthProvider } from "components/AuthProvider"
 import { EventsProvider } from "components/EventsProvider"
 import Nav from "components/Nav"
 import { getUser, IdToken, isAuthenticated } from "utils/auth0"
+import Loading from "components/Loading"
 
 export type DefaultPageWrapped<P = {}, IP = P> = NextComponentType<
   DefaultPageContext,
@@ -43,7 +44,9 @@ export default function withDefaultPage<P, IP = P>(
       >
         <EventsProvider>
           <Nav user={user} isAuthenticating={isAuthenticating} />
-          <Page {...props} />
+          <Suspense fallback={<Loading />}>
+            <Page {...props} />
+          </Suspense>
         </EventsProvider>
       </AuthProvider>
     )

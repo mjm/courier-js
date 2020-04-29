@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 5a7952b8e9b892844178f46954cb528f */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 export type FeedInfoCardEndpointsQueryVariables = {
@@ -32,18 +32,15 @@ query FeedInfoCardEndpointsQuery(
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "url",
-    "type": "String!",
-    "defaultValue": null
+    "type": "String!"
   }
 ],
 v1 = [
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "microformats",
-    "storageKey": null,
     "args": [
       {
         "kind": "Variable",
@@ -52,47 +49,50 @@ v1 = [
       }
     ],
     "concreteType": "MicroformatPage",
+    "kind": "LinkedField",
+    "name": "microformats",
     "plural": false,
     "selections": [
       {
-        "kind": "ScalarField",
         "alias": null,
-        "name": "authorizationEndpoint",
         "args": null,
+        "kind": "ScalarField",
+        "name": "authorizationEndpoint",
         "storageKey": null
       },
       {
-        "kind": "ScalarField",
         "alias": null,
-        "name": "tokenEndpoint",
         "args": null,
+        "kind": "ScalarField",
+        "name": "tokenEndpoint",
         "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   }
 ];
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "FeedInfoCardEndpointsQuery",
-    "type": "Query",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
-    "selections": (v1/*: any*/)
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "FeedInfoCardEndpointsQuery",
+    "selections": (v1/*: any*/),
+    "type": "Query"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "FeedInfoCardEndpointsQuery",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": (v1/*: any*/)
   },
   "params": {
-    "operationKind": "query",
-    "name": "FeedInfoCardEndpointsQuery",
     "id": null,
-    "text": "query FeedInfoCardEndpointsQuery(\n  $url: String!\n) {\n  microformats(url: $url) {\n    authorizationEndpoint\n    tokenEndpoint\n  }\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "FeedInfoCardEndpointsQuery",
+    "operationKind": "query",
+    "text": "query FeedInfoCardEndpointsQuery(\n  $url: String!\n) {\n  microformats(url: $url) {\n    authorizationEndpoint\n    tokenEndpoint\n  }\n}\n"
   }
 };
 })();

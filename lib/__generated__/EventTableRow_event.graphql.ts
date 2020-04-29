@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -30,91 +31,91 @@ export type EventTableRow_event$key = {
 
 const node: ReaderFragment = (function(){
 var v0 = {
-  "kind": "ScalarField",
   "alias": null,
-  "name": "id",
   "args": null,
+  "kind": "ScalarField",
+  "name": "id",
   "storageKey": null
 };
 return {
-  "kind": "Fragment",
-  "name": "EventTableRow_event",
-  "type": "Event",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "EventTableRow_event",
   "selections": [
     (v0/*: any*/),
     {
-      "kind": "ScalarField",
       "alias": null,
+      "args": null,
+      "kind": "ScalarField",
       "name": "eventType",
-      "args": null,
       "storageKey": null
     },
     {
+      "alias": null,
+      "args": null,
       "kind": "ScalarField",
-      "alias": null,
       "name": "createdAt",
-      "args": null,
       "storageKey": null
     },
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "feed",
-      "storageKey": null,
       "args": null,
       "concreteType": "Feed",
+      "kind": "LinkedField",
+      "name": "feed",
       "plural": false,
       "selections": [
         (v0/*: any*/),
         {
-          "kind": "ScalarField",
           "alias": null,
-          "name": "title",
           "args": null,
+          "kind": "ScalarField",
+          "name": "title",
           "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     },
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "tweetGroup",
-      "storageKey": null,
       "args": null,
       "concreteType": "TweetGroup",
+      "kind": "LinkedField",
+      "name": "tweetGroup",
       "plural": false,
       "selections": [
         (v0/*: any*/),
         {
-          "kind": "LinkedField",
           "alias": null,
-          "name": "tweets",
-          "storageKey": null,
           "args": null,
           "concreteType": "Tweet",
+          "kind": "LinkedField",
+          "name": "tweets",
           "plural": true,
           "selections": [
             {
-              "kind": "ScalarField",
               "alias": null,
-              "name": "body",
               "args": null,
+              "kind": "ScalarField",
+              "name": "body",
               "storageKey": null
             }
-          ]
+          ],
+          "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     },
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "boolValue",
       "args": null,
+      "kind": "ScalarField",
+      "name": "boolValue",
       "storageKey": null
     }
-  ]
+  ],
+  "type": "Event"
 };
 })();
 (node as any).hash = '651ad7daec887e52feaf98a8ae0c31dd';

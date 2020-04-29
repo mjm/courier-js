@@ -1,14 +1,14 @@
 /* tslint:disable */
-/* @relayHash a58e605fca6f34b0dc945903bce074de */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 export type EditTweetInput = {
-    readonly id: string;
-    readonly tweets: ReadonlyArray<TweetEdit>;
+    id: string;
+    tweets: Array<TweetEdit>;
 };
 export type TweetEdit = {
-    readonly body: string;
-    readonly mediaURLs?: ReadonlyArray<string> | null;
+    body: string;
+    mediaURLs?: Array<string> | null;
 };
 export type EditTweetMutationVariables = {
     input: EditTweetInput;
@@ -50,18 +50,15 @@ mutation EditTweetMutation(
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input",
-    "type": "EditTweetInput!",
-    "defaultValue": null
+    "type": "EditTweetInput!"
   }
 ],
 v1 = [
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "editTweet",
-    "storageKey": null,
     "args": [
       {
         "kind": "Variable",
@@ -70,76 +67,79 @@ v1 = [
       }
     ],
     "concreteType": "EditTweetPayload",
+    "kind": "LinkedField",
+    "name": "editTweet",
     "plural": false,
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "tweetGroup",
-        "storageKey": null,
         "args": null,
         "concreteType": "TweetGroup",
+        "kind": "LinkedField",
+        "name": "tweetGroup",
         "plural": false,
         "selections": [
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "id",
             "args": null,
+            "kind": "ScalarField",
+            "name": "id",
             "storageKey": null
           },
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "tweets",
-            "storageKey": null,
             "args": null,
             "concreteType": "Tweet",
+            "kind": "LinkedField",
+            "name": "tweets",
             "plural": true,
             "selections": [
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "body",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "body",
                 "storageKey": null
               },
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "mediaURLs",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "mediaURLs",
                 "storageKey": null
               }
-            ]
+            ],
+            "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   }
 ];
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "EditTweetMutation",
-    "type": "Mutation",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
-    "selections": (v1/*: any*/)
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "EditTweetMutation",
+    "selections": (v1/*: any*/),
+    "type": "Mutation"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "EditTweetMutation",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": (v1/*: any*/)
   },
   "params": {
-    "operationKind": "mutation",
-    "name": "EditTweetMutation",
     "id": null,
-    "text": "mutation EditTweetMutation(\n  $input: EditTweetInput!\n) {\n  editTweet(input: $input) {\n    tweetGroup {\n      id\n      tweets {\n        body\n        mediaURLs\n      }\n    }\n  }\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "EditTweetMutation",
+    "operationKind": "mutation",
+    "text": "mutation EditTweetMutation(\n  $input: EditTweetInput!\n) {\n  editTweet(input: $input) {\n    tweetGroup {\n      id\n      tweets {\n        body\n        mediaURLs\n      }\n    }\n  }\n}\n"
   }
 };
 })();

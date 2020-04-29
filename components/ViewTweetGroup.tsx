@@ -1,11 +1,7 @@
 import React from "react"
 import Moment from "react-moment"
-import {
-  createFragmentContainer,
-  Environment,
-  graphql,
-  RelayProp,
-} from "react-relay"
+import { graphql } from "react-relay"
+import { useFragment, useRelayEnvironment } from "react-relay/hooks"
 
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -13,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   TweetStatus,
   ViewTweetGroup_tweet,
+  ViewTweetGroup_tweet$key,
 } from "@generated/ViewTweetGroup_tweet.graphql"
 import { cancelTweet } from "@mutations/CancelTweet"
 import { postTweet } from "@mutations/PostTweet"
@@ -25,67 +22,61 @@ import TweetCardActions from "components/TweetCardActions"
 import ViewTweet from "components/ViewTweet"
 
 const ViewTweetGroup: React.FC<{
-  tweet: ViewTweetGroup_tweet
+  tweet: ViewTweetGroup_tweet$key
   onEdit: () => void
-  relay: RelayProp
-}> = ({ tweet, onEdit, relay }) => {
+}> = ({ tweet, onEdit }) => {
+  const data = useFragment(
+    graphql`
+      fragment ViewTweetGroup_tweet on TweetContent {
+        tweets {
+          ...ViewTweet_tweet
+          body
+          mediaURLs
+          postedTweetID
+        }
+        action
+        retweetID
+
+        ... on TweetGroup {
+          id
+          status
+          postAfter
+          postedAt
+          postedRetweetID
+        }
+      }
+    `,
+    tweet
+  )
+
   return (
     <>
-      {tweet.action === "TWEET" ? (
-        tweet.tweets.map((t, i) => (
+      {data.action === "TWEET" ? (
+        data.tweets.map((t, i) => (
           <ViewTweet
             key={i}
-            linkClassName={linkStyles[tweet.status || "DRAFT"]}
+            linkClassName={linkStyles[data.status || "DRAFT"]}
             tweet={t}
           />
         ))
       ) : (
         <div>
           <a
-            href={`https://twitter.com/user/status/${tweet.retweetID}`}
+            href={`https://twitter.com/user/status/${data.retweetID}`}
             target="_blank"
           >
             Retweet
           </a>
         </div>
       )}
-      {tweet.status === "DRAFT" && (
-        <DraftActions
-          tweet={tweet}
-          environment={relay.environment}
-          onEdit={onEdit}
-        />
-      )}
-      {tweet.status === "CANCELED" && (
-        <CanceledActions tweet={tweet} environment={relay.environment} />
-      )}
-      {tweet.status === "POSTED" && <PostedActions tweet={tweet} />}
+      {data.status === "DRAFT" && <DraftActions tweet={data} onEdit={onEdit} />}
+      {data.status === "CANCELED" && <CanceledActions tweet={data} />}
+      {data.status === "POSTED" && <PostedActions tweet={data} />}
     </>
   )
 }
 
-export default createFragmentContainer(ViewTweetGroup, {
-  tweet: graphql`
-    fragment ViewTweetGroup_tweet on TweetContent {
-      tweets {
-        ...ViewTweet_tweet
-        body
-        mediaURLs
-        postedTweetID
-      }
-      action
-      retweetID
-
-      ... on TweetGroup {
-        id
-        status
-        postAfter
-        postedAt
-        postedRetweetID
-      }
-    }
-  `,
-})
+export default ViewTweetGroup
 
 const linkStyles: Record<TweetStatus, string> = {
   DRAFT: "text-primary-9",
@@ -96,14 +87,10 @@ const linkStyles: Record<TweetStatus, string> = {
 
 interface DraftActionsProps {
   tweet: ViewTweetGroup_tweet
-  environment: Environment
   onEdit: () => void
 }
-const DraftActions: React.FC<DraftActionsProps> = ({
-  tweet,
-  environment,
-  onEdit,
-}) => {
+const DraftActions: React.FC<DraftActionsProps> = ({ tweet, onEdit }) => {
+  const environment = useRelayEnvironment()
   const { isSubscribed } = useSubscription()
   const { setError } = useErrors()
 
@@ -167,13 +154,11 @@ const DraftActions: React.FC<DraftActionsProps> = ({
 
 interface CanceledActionsProps {
   tweet: ViewTweetGroup_tweet
-  environment: Environment
 }
 
-const CanceledActions: React.FC<CanceledActionsProps> = ({
-  tweet,
-  environment,
-}) => {
+const CanceledActions: React.FC<CanceledActionsProps> = ({ tweet }) => {
+  const environment = useRelayEnvironment()
+
   return (
     <TweetCardActions
       inline

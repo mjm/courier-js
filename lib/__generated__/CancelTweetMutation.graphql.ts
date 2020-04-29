@@ -1,10 +1,10 @@
 /* tslint:disable */
-/* @relayHash fbd1d40f96e82605d965a39e380fbbb1 */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 export type TweetStatus = "CANCELED" | "DRAFT" | "POSTED" | "%future added value";
 export type CancelTweetInput = {
-    readonly id: string;
+    id: string;
 };
 export type CancelTweetMutationVariables = {
     input: CancelTweetInput;
@@ -40,18 +40,15 @@ mutation CancelTweetMutation(
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input",
-    "type": "CancelTweetInput!",
-    "defaultValue": null
+    "type": "CancelTweetInput!"
   }
 ],
 v1 = [
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "cancelTweet",
-    "storageKey": null,
     "args": [
       {
         "kind": "Variable",
@@ -60,58 +57,61 @@ v1 = [
       }
     ],
     "concreteType": "CancelTweetPayload",
+    "kind": "LinkedField",
+    "name": "cancelTweet",
     "plural": false,
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "tweetGroup",
-        "storageKey": null,
         "args": null,
         "concreteType": "TweetGroup",
+        "kind": "LinkedField",
+        "name": "tweetGroup",
         "plural": false,
         "selections": [
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "id",
             "args": null,
+            "kind": "ScalarField",
+            "name": "id",
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "status",
             "args": null,
+            "kind": "ScalarField",
+            "name": "status",
             "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   }
 ];
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "CancelTweetMutation",
-    "type": "Mutation",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
-    "selections": (v1/*: any*/)
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "CancelTweetMutation",
+    "selections": (v1/*: any*/),
+    "type": "Mutation"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "CancelTweetMutation",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": (v1/*: any*/)
   },
   "params": {
-    "operationKind": "mutation",
-    "name": "CancelTweetMutation",
     "id": null,
-    "text": "mutation CancelTweetMutation(\n  $input: CancelTweetInput!\n) {\n  cancelTweet(input: $input) {\n    tweetGroup {\n      id\n      status\n    }\n  }\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "CancelTweetMutation",
+    "operationKind": "mutation",
+    "text": "mutation CancelTweetMutation(\n  $input: CancelTweetInput!\n) {\n  cancelTweet(input: $input) {\n    tweetGroup {\n      id\n      status\n    }\n  }\n}\n"
   }
 };
 })();

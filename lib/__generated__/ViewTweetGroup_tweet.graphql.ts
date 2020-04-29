@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -29,105 +30,105 @@ export type ViewTweetGroup_tweet$key = {
 
 
 const node: ReaderFragment = {
-  "kind": "Fragment",
-  "name": "ViewTweetGroup_tweet",
-  "type": "TweetContent",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "ViewTweetGroup_tweet",
   "selections": [
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "tweets",
-      "storageKey": null,
       "args": null,
       "concreteType": "Tweet",
+      "kind": "LinkedField",
+      "name": "tweets",
       "plural": true,
       "selections": [
         {
-          "kind": "ScalarField",
           "alias": null,
+          "args": null,
+          "kind": "ScalarField",
           "name": "body",
-          "args": null,
           "storageKey": null
         },
         {
-          "kind": "ScalarField",
           "alias": null,
+          "args": null,
+          "kind": "ScalarField",
           "name": "mediaURLs",
-          "args": null,
           "storageKey": null
         },
         {
-          "kind": "ScalarField",
           "alias": null,
-          "name": "postedTweetID",
           "args": null,
+          "kind": "ScalarField",
+          "name": "postedTweetID",
           "storageKey": null
         },
         {
+          "args": null,
           "kind": "FragmentSpread",
-          "name": "ViewTweet_tweet",
-          "args": null
+          "name": "ViewTweet_tweet"
         }
-      ]
-    },
-    {
-      "kind": "ScalarField",
-      "alias": null,
-      "name": "action",
-      "args": null,
+      ],
       "storageKey": null
     },
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "retweetID",
       "args": null,
+      "kind": "ScalarField",
+      "name": "action",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "retweetID",
       "storageKey": null
     },
     {
       "kind": "InlineFragment",
-      "type": "TweetGroup",
       "selections": [
         {
-          "kind": "ScalarField",
           "alias": null,
+          "args": null,
+          "kind": "ScalarField",
           "name": "id",
-          "args": null,
           "storageKey": null
         },
         {
-          "kind": "ScalarField",
           "alias": null,
+          "args": null,
+          "kind": "ScalarField",
           "name": "status",
-          "args": null,
           "storageKey": null
         },
         {
-          "kind": "ScalarField",
           "alias": null,
+          "args": null,
+          "kind": "ScalarField",
           "name": "postAfter",
-          "args": null,
           "storageKey": null
         },
         {
-          "kind": "ScalarField",
           "alias": null,
+          "args": null,
+          "kind": "ScalarField",
           "name": "postedAt",
-          "args": null,
           "storageKey": null
         },
         {
-          "kind": "ScalarField",
           "alias": null,
-          "name": "postedRetweetID",
           "args": null,
+          "kind": "ScalarField",
+          "name": "postedRetweetID",
           "storageKey": null
         }
-      ]
+      ],
+      "type": "TweetGroup"
     }
-  ]
+  ],
+  "type": "TweetContent"
 };
 (node as any).hash = 'e232fb0222636f3062a905254515cf2b';
 export default node;

@@ -1,13 +1,21 @@
 import React from "react"
-import { Environment, graphql } from "react-relay"
+import { graphql } from "react-relay"
+import {
+  preloadQuery,
+  usePreloadedQuery,
+  useRelayEnvironment,
+} from "react-relay/hooks"
 
 import { NextPage } from "next"
 import Link from "next/link"
 
 import { useTweetCanceledEvent } from "@events/TweetCanceledEvent"
+import { useTweetEditedEvent } from "@events/TweetEditedEvent"
 import { useTweetPostedEvent } from "@events/TweetPostedEvent"
 import { useTweetUncanceledEvent } from "@events/TweetUncanceledEvent"
-import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
+import pageQuery, {
+  TweetsPageQuery,
+} from "../../lib/__generated__/TweetsPageQuery.graphql"
 import Head from "components/Head"
 import Loading from "components/Loading"
 import Notice from "components/Notice"
@@ -15,35 +23,58 @@ import SubscriptionProvider, {
   useSubscription,
 } from "components/SubscriptionProvider"
 import TweetList from "components/TweetList"
-import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-import { useTweetEditedEvent } from "@events/TweetEditedEvent"
+import { getEnvironment } from "hocs/withData"
 
-const TweetsPage: NextPage<TweetsPageQueryResponse & {
-  environment: Environment
-}> = ({ upcoming, past, viewer, environment }) => {
+let preloadedQuery = preloadQuery<TweetsPageQuery>(
+  getEnvironment(),
+  pageQuery,
+  {},
+  { fetchPolicy: "store-and-network" }
+)
+
+const TweetsPage: NextPage = () => {
+  const environment = useRelayEnvironment()
+
   useTweetCanceledEvent(environment)
   useTweetUncanceledEvent(environment)
   useTweetEditedEvent(environment)
   useTweetPostedEvent(environment)
 
+  const data = usePreloadedQuery<TweetsPageQuery>(
+    graphql`
+      query TweetsPageQuery {
+        upcoming: viewer {
+          ...TweetList_tweets @arguments(filter: UPCOMING)
+        }
+        past: viewer {
+          ...TweetList_tweets @arguments(filter: PAST)
+        }
+        viewer {
+          ...SubscriptionProvider_user
+        }
+      }
+    `,
+    preloadedQuery
+  )
+
   return (
     <main className="container my-8 mx-auto py-0 px-8">
       <Head title="Your Tweets" />
-      {viewer && (
-        <SubscriptionProvider user={viewer}>
+      {data?.viewer && (
+        <SubscriptionProvider user={data.viewer}>
           <SubscribeBanner />
-          {upcoming && past ? (
+          {data?.upcoming && data?.past ? (
             <div className="flex flex-row flex-wrap -mx-4">
               <TweetList
                 description="You have some new tweets to review."
                 emptyDescription="You don't have any tweets to review."
-                tweets={upcoming}
+                tweets={data.upcoming}
               />
               <TweetList
                 description="Here are your already reviewed tweets."
                 emptyDescription="You haven't posted or reviewed any tweets yet."
-                tweets={past}
+                tweets={data.past}
               />
             </div>
           ) : (
@@ -55,21 +86,17 @@ const TweetsPage: NextPage<TweetsPageQueryResponse & {
   )
 }
 
-export default withData(withSecurePage(TweetsPage), {
-  query: graphql`
-    query TweetsPageQuery {
-      upcoming: viewer {
-        ...TweetList_tweets @arguments(filter: UPCOMING)
-      }
-      past: viewer {
-        ...TweetList_tweets @arguments(filter: PAST)
-      }
-      viewer {
-        ...SubscriptionProvider_user
-      }
-    }
-  `,
-})
+TweetsPage.getInitialProps = async () => {
+  preloadedQuery = preloadQuery(
+    getEnvironment(),
+    pageQuery,
+    {},
+    { fetchPolicy: "store-and-network" }
+  )
+  return {}
+}
+
+export default withSecurePage(TweetsPage)
 
 const SubscribeBanner: React.FC = () => {
   const { isSubscribed } = useSubscription()

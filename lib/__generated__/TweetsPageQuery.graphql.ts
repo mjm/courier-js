@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 1ed9506cdb0532665f600d053b4bb33b */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -43,7 +43,7 @@ fragment EditTweetForm_tweet on TweetGroup {
   }
 }
 
-fragment SubscriptionProvider_user on User {
+fragment SubscriptionProvider_user on Viewer {
   subscription {
     status
   }
@@ -58,7 +58,7 @@ fragment TweetCard_tweet on TweetContent {
   }
 }
 
-fragment TweetList_tweets_2ixgHQ on User {
+fragment TweetList_tweets_2ixgHQ on Viewer {
   allTweets(filter: PAST, first: 10) {
     edges {
       node {
@@ -75,7 +75,7 @@ fragment TweetList_tweets_2ixgHQ on User {
   }
 }
 
-fragment TweetList_tweets_30lx3F on User {
+fragment TweetList_tweets_30lx3F on Viewer {
   allTweets(filter: UPCOMING, first: 10) {
     edges {
       node {
@@ -137,148 +137,148 @@ v3 = [
   (v2/*: any*/)
 ],
 v4 = {
-  "kind": "ScalarField",
   "alias": null,
-  "name": "status",
   "args": null,
+  "kind": "ScalarField",
+  "name": "status",
   "storageKey": null
 },
 v5 = [
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "edges",
-    "storageKey": null,
     "args": null,
     "concreteType": "TweetGroupEdge",
+    "kind": "LinkedField",
+    "name": "edges",
     "plural": true,
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "node",
-        "storageKey": null,
         "args": null,
         "concreteType": "TweetGroup",
+        "kind": "LinkedField",
+        "name": "node",
         "plural": false,
         "selections": [
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "id",
             "args": null,
+            "kind": "ScalarField",
+            "name": "id",
             "storageKey": null
           },
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "tweets",
-            "storageKey": null,
             "args": null,
             "concreteType": "Tweet",
+            "kind": "LinkedField",
+            "name": "tweets",
             "plural": true,
             "selections": [
               {
-                "kind": "ScalarField",
                 "alias": null,
+                "args": null,
+                "kind": "ScalarField",
                 "name": "body",
-                "args": null,
                 "storageKey": null
               },
               {
-                "kind": "ScalarField",
                 "alias": null,
+                "args": null,
+                "kind": "ScalarField",
                 "name": "mediaURLs",
-                "args": null,
                 "storageKey": null
               },
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "postedTweetID",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "postedTweetID",
                 "storageKey": null
               }
-            ]
-          },
-          {
-            "kind": "ScalarField",
-            "alias": null,
-            "name": "action",
-            "args": null,
+            ],
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "retweetID",
             "args": null,
+            "kind": "ScalarField",
+            "name": "action",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "retweetID",
             "storageKey": null
           },
           (v4/*: any*/),
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "postAfter",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "postedAt",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "postedRetweetID",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "__typename",
             "args": null,
+            "kind": "ScalarField",
+            "name": "__typename",
             "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       },
       {
-        "kind": "ScalarField",
         "alias": null,
-        "name": "cursor",
         "args": null,
+        "kind": "ScalarField",
+        "name": "cursor",
         "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   },
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "pageInfo",
-    "storageKey": null,
     "args": null,
     "concreteType": "PageInfo",
+    "kind": "LinkedField",
+    "name": "pageInfo",
     "plural": false,
     "selections": [
       {
-        "kind": "ScalarField",
         "alias": null,
-        "name": "endCursor",
         "args": null,
+        "kind": "ScalarField",
+        "name": "endCursor",
         "storageKey": null
       },
       {
-        "kind": "ScalarField",
         "alias": null,
-        "name": "hasNextPage",
         "args": null,
+        "kind": "ScalarField",
+        "name": "hasNextPage",
         "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   }
 ],
 v6 = [
@@ -289,171 +289,171 @@ v7 = [
   (v2/*: any*/)
 ];
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "TweetsPageQuery",
-    "type": "Query",
-    "metadata": null,
     "argumentDefinitions": [],
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "TweetsPageQuery",
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": "upcoming",
-        "name": "viewer",
-        "storageKey": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "viewer",
         "plural": false,
         "selections": [
           {
-            "kind": "FragmentSpread",
-            "name": "TweetList_tweets",
             "args": [
               (v0/*: any*/)
-            ]
+            ],
+            "kind": "FragmentSpread",
+            "name": "TweetList_tweets"
           }
-        ]
+        ],
+        "storageKey": null
       },
       {
-        "kind": "LinkedField",
         "alias": "past",
-        "name": "viewer",
-        "storageKey": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "viewer",
         "plural": false,
         "selections": [
           {
-            "kind": "FragmentSpread",
-            "name": "TweetList_tweets",
             "args": [
               (v1/*: any*/)
-            ]
+            ],
+            "kind": "FragmentSpread",
+            "name": "TweetList_tweets"
           }
-        ]
+        ],
+        "storageKey": null
       },
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "viewer",
-        "storageKey": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "viewer",
         "plural": false,
         "selections": [
           {
+            "args": null,
             "kind": "FragmentSpread",
-            "name": "SubscriptionProvider_user",
-            "args": null
+            "name": "SubscriptionProvider_user"
           }
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "type": "Query"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": [],
     "kind": "Operation",
     "name": "TweetsPageQuery",
-    "argumentDefinitions": [],
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": "upcoming",
-        "name": "viewer",
-        "storageKey": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "viewer",
         "plural": false,
         "selections": [
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "allTweets",
-            "storageKey": "allTweets(filter:\"UPCOMING\",first:10)",
             "args": (v3/*: any*/),
             "concreteType": "TweetGroupConnection",
+            "kind": "LinkedField",
+            "name": "allTweets",
             "plural": false,
-            "selections": (v5/*: any*/)
+            "selections": (v5/*: any*/),
+            "storageKey": "allTweets(filter:\"UPCOMING\",first:10)"
           },
           {
-            "kind": "LinkedHandle",
             "alias": null,
-            "name": "allTweets",
             "args": (v3/*: any*/),
+            "filters": (v6/*: any*/),
             "handle": "connection",
             "key": "TweetList_allTweets",
-            "filters": (v6/*: any*/)
+            "kind": "LinkedHandle",
+            "name": "allTweets"
           }
-        ]
+        ],
+        "storageKey": null
       },
       {
-        "kind": "LinkedField",
         "alias": "past",
-        "name": "viewer",
-        "storageKey": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "viewer",
         "plural": false,
         "selections": [
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "allTweets",
-            "storageKey": "allTweets(filter:\"PAST\",first:10)",
             "args": (v7/*: any*/),
             "concreteType": "TweetGroupConnection",
+            "kind": "LinkedField",
+            "name": "allTweets",
             "plural": false,
-            "selections": (v5/*: any*/)
+            "selections": (v5/*: any*/),
+            "storageKey": "allTweets(filter:\"PAST\",first:10)"
           },
           {
-            "kind": "LinkedHandle",
             "alias": null,
-            "name": "allTweets",
             "args": (v7/*: any*/),
+            "filters": (v6/*: any*/),
             "handle": "connection",
             "key": "TweetList_allTweets",
-            "filters": (v6/*: any*/)
+            "kind": "LinkedHandle",
+            "name": "allTweets"
           }
-        ]
+        ],
+        "storageKey": null
       },
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "viewer",
-        "storageKey": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "viewer",
         "plural": false,
         "selections": [
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "subscription",
-            "storageKey": null,
             "args": null,
             "concreteType": "UserSubscription",
+            "kind": "LinkedField",
+            "name": "subscription",
             "plural": false,
             "selections": [
               (v4/*: any*/)
-            ]
+            ],
+            "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "subscriptionStatusOverride",
             "args": null,
+            "kind": "ScalarField",
+            "name": "subscriptionStatusOverride",
             "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
     ]
   },
   "params": {
-    "operationKind": "query",
-    "name": "TweetsPageQuery",
     "id": null,
-    "text": "query TweetsPageQuery {\n  upcoming: viewer {\n    ...TweetList_tweets_30lx3F\n  }\n  past: viewer {\n    ...TweetList_tweets_2ixgHQ\n  }\n  viewer {\n    ...SubscriptionProvider_user\n  }\n}\n\nfragment EditTweetForm_tweet on TweetGroup {\n  id\n  tweets {\n    body\n    mediaURLs\n  }\n}\n\nfragment SubscriptionProvider_user on User {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment TweetCard_tweet on TweetContent {\n  ...EditTweetForm_tweet\n  ...ViewTweetGroup_tweet\n  ... on TweetGroup {\n    status\n  }\n}\n\nfragment TweetList_tweets_2ixgHQ on User {\n  allTweets(filter: PAST, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment TweetList_tweets_30lx3F on User {\n  allTweets(filter: UPCOMING, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweetGroup_tweet on TweetContent {\n  tweets {\n    ...ViewTweet_tweet\n    body\n    mediaURLs\n    postedTweetID\n  }\n  action\n  retweetID\n  ... on TweetGroup {\n    id\n    status\n    postAfter\n    postedAt\n    postedRetweetID\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  body\n  mediaURLs\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "TweetsPageQuery",
+    "operationKind": "query",
+    "text": "query TweetsPageQuery {\n  upcoming: viewer {\n    ...TweetList_tweets_30lx3F\n  }\n  past: viewer {\n    ...TweetList_tweets_2ixgHQ\n  }\n  viewer {\n    ...SubscriptionProvider_user\n  }\n}\n\nfragment EditTweetForm_tweet on TweetGroup {\n  id\n  tweets {\n    body\n    mediaURLs\n  }\n}\n\nfragment SubscriptionProvider_user on Viewer {\n  subscription {\n    status\n  }\n  subscriptionStatusOverride\n}\n\nfragment TweetCard_tweet on TweetContent {\n  ...EditTweetForm_tweet\n  ...ViewTweetGroup_tweet\n  ... on TweetGroup {\n    status\n  }\n}\n\nfragment TweetList_tweets_2ixgHQ on Viewer {\n  allTweets(filter: PAST, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment TweetList_tweets_30lx3F on Viewer {\n  allTweets(filter: UPCOMING, first: 10) {\n    edges {\n      node {\n        id\n        ...TweetCard_tweet\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ViewTweetGroup_tweet on TweetContent {\n  tweets {\n    ...ViewTweet_tweet\n    body\n    mediaURLs\n    postedTweetID\n  }\n  action\n  retweetID\n  ... on TweetGroup {\n    id\n    status\n    postAfter\n    postedAt\n    postedRetweetID\n  }\n}\n\nfragment ViewTweet_tweet on Tweet {\n  body\n  mediaURLs\n}\n"
   }
 };
 })();

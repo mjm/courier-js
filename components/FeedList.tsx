@@ -56,7 +56,7 @@ export default createPaginationContainer(
   FeedList,
   {
     feeds: graphql`
-      fragment FeedList_feeds on User
+      fragment FeedList_feeds on Viewer
         @argumentDefinitions(
           count: { type: "Int", defaultValue: 20 }
           cursor: { type: "Cursor" }

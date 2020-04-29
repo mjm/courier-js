@@ -53,7 +53,7 @@ export default createFragmentContainer(FeedDetails, {
     }
   `,
   user: graphql`
-    fragment FeedDetails_user on User {
+    fragment FeedDetails_user on Viewer {
       ...FeedInfoCard_user
     }
   `,
