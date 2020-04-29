@@ -14,6 +14,11 @@ variable "revision" {
   type = string
 }
 
+variable "timeout" {
+  type    = number
+  default = 10
+}
+
 variable "policies" {
   type    = list(string)
   default = []

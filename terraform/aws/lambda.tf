@@ -43,6 +43,7 @@ module "events_function" {
   env           = var.env
   s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
   revision      = var.function_revision
+  timeout       = 60
   policies = [
     aws_iam_policy.courier_table.arn,
     aws_iam_policy.config_params.arn,

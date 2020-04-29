@@ -7,6 +7,8 @@ resource "aws_lambda_function" "fn" {
   s3_bucket = var.s3_bucket
   s3_key    = "${var.revision}/${var.function_name}.zip"
 
+  timeout = var.timeout
+
   environment {
     variables = {
       APP_ENV           = var.env
