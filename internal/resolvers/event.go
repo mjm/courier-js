@@ -2,11 +2,13 @@ package resolvers
 
 import (
 	"context"
+	"errors"
 	"strings"
 
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
 
+	"github.com/mjm/courier-js/internal/loader"
 	"github.com/mjm/courier-js/internal/shared/model"
 )
 
@@ -38,6 +40,9 @@ func (e *Event) Feed(ctx context.Context) (*Feed, error) {
 
 	f, err := e.q.Feeds.Get(ctx, e.event.Feed.ID)
 	if err != nil {
+		if errors.Is(err, loader.ErrNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -51,6 +56,9 @@ func (e *Event) TweetGroup(ctx context.Context) (*TweetGroup, error) {
 
 	tg, err := e.q.Tweets.Get(ctx, e.event.TweetGroup.ID)
 	if err != nil {
+		if errors.Is(err, loader.ErrNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 

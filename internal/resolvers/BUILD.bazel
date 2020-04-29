@@ -27,6 +27,7 @@ go_library(
     visibility = ["//:__subpackages__"],
     deps = [
         "//internal/auth:go_default_library",
+        "//internal/loader:go_default_library",
         "//internal/pager:go_default_library",
         "//internal/read/billing:go_default_library",
         "//internal/read/feeds:go_default_library",
