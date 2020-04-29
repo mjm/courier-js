@@ -76,7 +76,7 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 		entriesToScan = entriesToScan[:10]
 	}
 
-	for _, entry := range cmd.Entries {
+	for _, entry := range entriesToScan {
 		// don't import post content if the post has a title, since we know it won't get used
 		if entry.Title != "" {
 			entry.HTMLContent = ""
