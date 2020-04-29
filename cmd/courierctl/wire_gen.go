@@ -28,6 +28,7 @@ import (
 
 func setupApp() (*cli.App, error) {
 	writeCommandBus := write.NewCommandBus()
+	bus := event.NewBus()
 	dynamoDB, err := db.NewDynamoDB()
 	if err != nil {
 		return nil, err
@@ -44,7 +45,6 @@ func setupApp() (*cli.App, error) {
 	}
 	feedsFeedQueries := feeds.NewFeedQueries(dynamoDB, dynamoConfig)
 	tweetsTweetQueries := tweets.NewTweetQueries(dynamoDB, dynamoConfig)
-	bus := event.NewBus()
 	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
 	if err != nil {
 		return nil, err
@@ -84,6 +84,6 @@ func setupApp() (*cli.App, error) {
 	eventHandler := tweets2.NewEventHandler(writeCommandBus, bus, tweetsCommandHandler)
 	eventRepository := shared.NewEventRepository(dynamoDB, dynamoConfig, clock)
 	eventRecorder := user.NewEventRecorder(eventRepository, clock, bus)
-	app := newApp(writeCommandBus, feedsFeedQueries, tweetsTweetQueries, commandHandler, tweetsCommandHandler, eventHandler, eventRecorder)
+	app := newApp(writeCommandBus, bus, feedsFeedQueries, tweetsTweetQueries, commandHandler, tweetsCommandHandler, eventHandler, eventRecorder)
 	return app, nil
 }

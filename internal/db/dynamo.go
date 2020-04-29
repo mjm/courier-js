@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/google/wire"
+	"go.opentelemetry.io/otel/api/core"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 
@@ -210,6 +211,31 @@ func (d *DynamoDB) CreateTableWithContext(ctx context.Context, input *dynamodb.C
 	return out, nil
 }
 
+func (d *DynamoDB) DeleteItemWithContext(ctx context.Context, input *dynamodb.DeleteItemInput, opts ...request.Option) (*dynamodb.DeleteItemOutput, error) {
+	ctx, span := tr.Start(ctx, "dynamodb.DeleteItem",
+		trace.WithSpanKind(trace.SpanKindClient),
+		trace.WithAttributes(
+			dbTypeDynamo,
+			dbInstanceKey(aws.StringValue(input.TableName))))
+	defer span.End()
+
+	for k, v := range input.Key {
+		span.SetAttributes(keyAttr(k, v))
+	}
+
+	input.ReturnConsumedCapacity = aws.String(dynamodb.ReturnConsumedCapacityIndexes)
+
+	out, err := d.real.DeleteItemWithContext(ctx, input, opts...)
+	if err != nil {
+		span.RecordError(ctx, err)
+		return nil, err
+	}
+
+	recordConsumedCapacity(span, out.ConsumedCapacity)
+
+	return out, nil
+}
+
 func (d *DynamoDB) DeleteTableWithContext(ctx context.Context, input *dynamodb.DeleteTableInput, opts ...request.Option) (*dynamodb.DeleteTableOutput, error) {
 	ctx, span := tr.Start(ctx, "dynamodb.DeleteTable",
 		trace.WithSpanKind(trace.SpanKindClient),
@@ -319,6 +345,45 @@ func (d *DynamoDB) QueryWithContext(ctx context.Context, input *dynamodb.QueryIn
 	return out, nil
 }
 
+func (d *DynamoDB) QueryPagesWithContext(ctx context.Context, input *dynamodb.QueryInput, fn func(res *dynamodb.QueryOutput, lastPage bool) bool, opts ...request.Option) error {
+	ctx, span := tr.Start(ctx, "dynamodb.Query",
+		trace.WithSpanKind(trace.SpanKindClient),
+		trace.WithAttributes(
+			dbTypeDynamo,
+			dbInstanceKey(aws.StringValue(input.TableName))))
+	defer span.End()
+
+	if input.IndexName != nil {
+		span.SetAttributes(indexNameKey(aws.StringValue(input.IndexName)))
+	}
+
+	span.SetAttributes(
+		dbStatementKey(aws.StringValue(input.KeyConditionExpression)))
+
+	for k, v := range input.ExpressionAttributeValues {
+		span.SetAttributes(exprValAttr(k[1:], v))
+	}
+
+	input.SetReturnConsumedCapacity(dynamodb.ReturnConsumedCapacityIndexes)
+
+	err := d.real.QueryPagesWithContext(ctx, input, func(out *dynamodb.QueryOutput, lastPage bool) bool {
+		attrs := []core.KeyValue{
+			itemCountKey(len(out.Items)),
+		}
+		attrs = append(attrs, consumedCapacityAttrs(out.ConsumedCapacity)...)
+
+		for k, v := range out.LastEvaluatedKey {
+			attrs = append(attrs, key.String("db.last_evaluated_key."+k, v.String()))
+		}
+
+		span.AddEvent(ctx, "dynamodb.QueryPage", attrs...)
+
+		return fn(out, lastPage)
+	})
+
+	return err
+}
+
 func (d *DynamoDB) UpdateItemWithContext(ctx context.Context, input *dynamodb.UpdateItemInput, opts ...request.Option) (*dynamodb.UpdateItemOutput, error) {
 	ctx, span := tr.Start(ctx, "dynamodb.UpdateItem",
 		trace.WithSpanKind(trace.SpanKindClient),
@@ -350,13 +415,18 @@ func (d *DynamoDB) UpdateItemWithContext(ctx context.Context, input *dynamodb.Up
 	return out, nil
 }
 
-func recordConsumedCapacity(span trace.Span, capacity *dynamodb.ConsumedCapacity) {
+func consumedCapacityAttrs(capacity *dynamodb.ConsumedCapacity) []core.KeyValue {
 	if capacity == nil {
-		return
+		return nil
 	}
 
-	span.SetAttributes(
+	return []core.KeyValue{
 		unitsConsumedKey(fmt.Sprintf("%.1f", aws.Float64Value(capacity.CapacityUnits))),
 		readsConsumedKey(fmt.Sprintf("%.1f", aws.Float64Value(capacity.ReadCapacityUnits))),
-		writesConsumedKey(fmt.Sprintf("%.1f", aws.Float64Value(capacity.WriteCapacityUnits))))
+		writesConsumedKey(fmt.Sprintf("%.1f", aws.Float64Value(capacity.WriteCapacityUnits))),
+	}
+}
+
+func recordConsumedCapacity(span trace.Span, capacity *dynamodb.ConsumedCapacity) {
+	span.SetAttributes(consumedCapacityAttrs(capacity)...)
 }

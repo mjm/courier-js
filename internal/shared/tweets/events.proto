@@ -40,3 +40,9 @@ message TweetsImported {
   bool autopost = 5;
   string feed_id = 6;
 }
+
+message TweetsPurged {
+  string user_id = 1;
+  string feed_id = 2;
+  int64 tweet_count = 3;
+}

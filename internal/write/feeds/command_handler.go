@@ -46,7 +46,9 @@ func NewCommandHandler(
 		RefreshCommand{},
 		UpdateOptionsCommand{},
 		UnsubscribeCommand{},
-		ImportPostsCommand{})
+		ImportPostsCommand{},
+		PurgeCommand{},
+	)
 	return h
 }
 
@@ -74,6 +76,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 
 	case ImportPostsCommand:
 		return nil, h.handleImportPosts(ctx, cmd)
+
+	case PurgeCommand:
+		return nil, h.handlePurge(ctx, cmd)
 
 	}
 

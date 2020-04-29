@@ -6,6 +6,7 @@ go_library(
         "command_handler.go",
         "import_posts_command.go",
         "ping_command.go",
+        "purge_command.go",
         "queue_refresh_command.go",
         "refresh_command.go",
         "subscribe_command.go",

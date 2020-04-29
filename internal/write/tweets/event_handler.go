@@ -58,5 +58,13 @@ func (h *EventHandler) HandleEvent(ctx context.Context, evt interface{}) {
 			span.RecordError(ctx, err)
 		}
 
+	case feeds.FeedPurged:
+		if _, err := h.commandBus.Run(ctx, PurgeCommand{
+			UserID: evt.UserId,
+			FeedID: model.FeedID(evt.FeedId),
+		}); err != nil {
+			span.RecordError(ctx, err)
+		}
+
 	}
 }

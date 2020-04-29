@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -8,7 +9,9 @@ import (
 
 	"github.com/mjm/courier-js/internal/pager"
 	feeds2 "github.com/mjm/courier-js/internal/read/feeds"
+	feeds3 "github.com/mjm/courier-js/internal/shared/feeds"
 	"github.com/mjm/courier-js/internal/shared/model"
+	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
@@ -20,6 +23,7 @@ var feedCommand = &cli.Command{
 		feedSubscribeCommand,
 		feedRefreshCommand,
 		feedSetCommand,
+		feedPurgeCommand,
 	},
 }
 
@@ -154,6 +158,49 @@ var feedSetCommand = &cli.Command{
 			UserID:   userID,
 			FeedID:   feedID,
 			Autopost: autopost,
+		}
+		if _, err := commandBus.Run(ctx.Context, cmd); err != nil {
+			return err
+		}
+
+		fmt.Fprintf(os.Stderr, "Done.\n")
+		return nil
+	},
+}
+
+type purgeNotifier struct{}
+
+func (purgeNotifier) HandleEvent(ctx context.Context, evt interface{}) {
+	switch evt := evt.(type) {
+	case feeds3.FeedPurged:
+		fmt.Fprintf(os.Stderr, "Purged feed %s.\n", evt.FeedId)
+	case feeds3.PostsPurged:
+		fmt.Fprintf(os.Stderr, "Purged %d posts from feed %s.\n", evt.PostCount, evt.FeedId)
+	case tweets.TweetsPurged:
+		fmt.Fprintf(os.Stderr, "Purged %d tweets from feed %s.\n", evt.TweetCount, evt.FeedId)
+	}
+}
+
+var feedPurgeCommand = &cli.Command{
+	Name:      "purge",
+	Usage:     "Delete a feed, its posts, and its tweets",
+	ArgsUsage: "[id]",
+	Action: func(ctx *cli.Context) error {
+		id := ctx.Args().Get(0)
+		userID := ctx.String("user")
+
+		if id == "" || userID == "" {
+			return cli.ShowSubcommandHelp(ctx)
+		}
+
+		feedID := model.FeedID(id)
+		fmt.Fprintf(os.Stderr, "Purge feed %s as %s\n", feedID, userID)
+
+		events.Notify(&purgeNotifier{})
+
+		cmd := feeds.PurgeCommand{
+			UserID: userID,
+			FeedID: feedID,
 		}
 		if _, err := commandBus.Run(ctx.Context, cmd); err != nil {
 			return err

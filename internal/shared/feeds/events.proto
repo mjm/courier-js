@@ -39,3 +39,14 @@ message PostsImported {
   string oldest_published_at = 3;
   string user_id = 4;
 }
+
+message FeedPurged {
+  string user_id = 1;
+  string feed_id = 2;
+}
+
+message PostsPurged {
+  string user_id = 1;
+  string feed_id = 2;
+  int64 post_count = 3;
+}

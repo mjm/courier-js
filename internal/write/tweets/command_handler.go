@@ -61,6 +61,7 @@ func NewCommandHandler(
 		ImportTweetsCommand{},
 		SyndicateCommand{},
 		SetupSyndicationCommand{},
+		PurgeCommand{},
 	)
 	return h
 }
@@ -95,6 +96,9 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 
 	case SetupSyndicationCommand:
 		return nil, h.handleSetupSyndication(ctx, cmd)
+
+	case PurgeCommand:
+		return nil, h.handlePurge(ctx, cmd)
 
 	}
 

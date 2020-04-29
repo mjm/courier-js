@@ -10,6 +10,7 @@ import (
 	"go.opentelemetry.io/otel/api/global"
 	trace2 "go.opentelemetry.io/otel/api/trace"
 
+	"github.com/mjm/courier-js/internal/event"
 	feeds2 "github.com/mjm/courier-js/internal/read/feeds"
 	tweets2 "github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/trace"
@@ -20,6 +21,7 @@ import (
 )
 
 var commandBus *write.CommandBus
+var events *event.Bus
 var feedQueries *feeds2.FeedQueries
 var tweetQueries *tweets2.TweetQueries
 
@@ -46,6 +48,7 @@ func main() {
 
 func newApp(
 	bus *write.CommandBus,
+	eventBus *event.Bus,
 	feedQ *feeds2.FeedQueries,
 	tweetQ *tweets2.TweetQueries,
 	_ *feeds.CommandHandler,
@@ -53,6 +56,7 @@ func newApp(
 	_ *tweets.EventHandler,
 	_ *user.EventRecorder) *cli.App {
 	commandBus = bus
+	events = eventBus
 	feedQueries = feedQ
 	tweetQueries = tweetQ
 

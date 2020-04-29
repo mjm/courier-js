@@ -363,6 +363,20 @@ func (r *FeedRepository) Deactivate(ctx context.Context, userID string, feedID m
 	return nil
 }
 
+func (r *FeedRepository) Delete(ctx context.Context, userID string, feedID model.FeedID) error {
+	id := model.UserFeedID{
+		UserID: userID,
+		FeedID: feedID,
+	}
+
+	_, err := r.dynamo.DeleteItemWithContext(ctx, &dynamodb.DeleteItemInput{
+		TableName: &r.dynamoConfig.TableName,
+		Key:       id.PrimaryKey(),
+	})
+
+	return err
+}
+
 func (r *FeedRepository) primaryKeyValues(userID string, feedID model.FeedID) (string, string) {
 	pk := fmt.Sprintf("USER#%s", userID)
 	sk := fmt.Sprintf("FEED#%s", feedID)

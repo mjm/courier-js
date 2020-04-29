@@ -364,6 +364,61 @@ func (r *TweetRepository) EnqueuePost(ctx context.Context, id model.TweetGroupID
 	return nil
 }
 
+func (r *TweetRepository) PurgeByFeed(ctx context.Context, userID string, feedID model.FeedID) (int64, error) {
+	var total int64
+
+	var err2 error
+	err := r.dynamo.QueryPagesWithContext(ctx, &dynamodb.QueryInput{
+		TableName:              &r.dynamoConfig.TableName,
+		KeyConditionExpression: aws.String(`#pk = :pk and begins_with(#sk, :sk)`),
+		ProjectionExpression:   aws.String(`#pk, #sk`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk": aws.String(db.PK),
+			"#sk": aws.String(db.SK),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":pk": {S: aws.String("USER#" + userID)},
+			":sk": {S: aws.String("FEED#" + string(feedID) + "#")},
+		},
+	}, func(res *dynamodb.QueryOutput, lastPage bool) bool {
+		var reqs []*dynamodb.WriteRequest
+		for _, item := range res.Items {
+			reqs = append(reqs, &dynamodb.WriteRequest{
+				DeleteRequest: &dynamodb.DeleteRequest{
+					Key: map[string]*dynamodb.AttributeValue{
+						db.PK: item[db.PK],
+						db.SK: item[db.SK],
+					},
+				},
+			})
+		}
+
+		for i := 0; i < len(reqs); i += dynamoBatchSize {
+			j := i + dynamoBatchSize
+			if j > len(reqs) {
+				j = len(reqs)
+			}
+
+			_, err := r.dynamo.BatchWriteItemWithContext(ctx, &dynamodb.BatchWriteItemInput{
+				RequestItems: map[string][]*dynamodb.WriteRequest{
+					r.dynamoConfig.TableName: reqs[i:j],
+				},
+			})
+			if err != nil {
+				err2 = err
+				return false
+			}
+		}
+
+		total += int64(len(res.Items))
+		return true
+	})
+	if err2 != nil {
+		return total, err2
+	}
+	return total, err
+}
+
 func (r *TweetRepository) primaryKeyValues(id model.TweetGroupID) (string, string) {
 	pk := "USER#" + id.UserID
 	sk := fmt.Sprintf("FEED#%s#TWEETGROUP#%s", id.FeedID, id.ItemID)

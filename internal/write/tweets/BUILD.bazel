@@ -9,6 +9,7 @@ go_library(
         "external_tweet_repository.go",
         "import_tweets_command.go",
         "post_command.go",
+        "purge_command.go",
         "queue_post_command.go",
         "send_tweet_command.go",
         "setup_syndication_command.go",

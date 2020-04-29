@@ -199,6 +199,60 @@ func (r *PostRepository) Write(ctx context.Context, ps []WritePostParams) error 
 	return nil
 }
 
+func (r *PostRepository) PurgeByFeed(ctx context.Context, feedID model.FeedID) (int64, error) {
+	var total int64
+
+	var err2 error
+	err := r.dynamo.QueryPagesWithContext(ctx, &dynamodb.QueryInput{
+		TableName:              &r.dynamoConfig.TableName,
+		KeyConditionExpression: aws.String(`#pk = :pk`),
+		ProjectionExpression:   aws.String(`#pk, #sk`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk": aws.String(db.PK),
+			"#sk": aws.String(db.SK),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":pk": {S: aws.String("FEED#" + string(feedID))},
+		},
+	}, func(res *dynamodb.QueryOutput, lastPage bool) bool {
+		var reqs []*dynamodb.WriteRequest
+		for _, item := range res.Items {
+			reqs = append(reqs, &dynamodb.WriteRequest{
+				DeleteRequest: &dynamodb.DeleteRequest{
+					Key: map[string]*dynamodb.AttributeValue{
+						db.PK: item[db.PK],
+						db.SK: item[db.SK],
+					},
+				},
+			})
+		}
+
+		for i := 0; i < len(reqs); i += dynamoBatchSize {
+			j := i + dynamoBatchSize
+			if j > len(reqs) {
+				j = len(reqs)
+			}
+
+			_, err := r.dynamo.BatchWriteItemWithContext(ctx, &dynamodb.BatchWriteItemInput{
+				RequestItems: map[string][]*dynamodb.WriteRequest{
+					r.dynamoConfig.TableName: reqs[i:j],
+				},
+			})
+			if err != nil {
+				err2 = err
+				return false
+			}
+		}
+
+		total += int64(len(res.Items))
+		return true
+	})
+	if err2 != nil {
+		return total, err2
+	}
+	return total, err
+}
+
 func (r *PostRepository) primaryKeyValues(id model.PostID) (string, string) {
 	pk := fmt.Sprintf("FEED#%s", id.FeedID)
 	sk := fmt.Sprintf("POST#%s", id.ItemID)
