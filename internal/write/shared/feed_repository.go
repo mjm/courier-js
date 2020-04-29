@@ -407,9 +407,42 @@ func (r *FeedRepository) Delete(ctx context.Context, userID string, feedID model
 		FeedID: feedID,
 	}
 
-	_, err := r.dynamo.DeleteItemWithContext(ctx, &dynamodb.DeleteItemInput{
-		TableName: &r.dynamoConfig.TableName,
-		Key:       id.PrimaryKey(),
+	res, err := r.dynamo.GetItemWithContext(ctx, &dynamodb.GetItemInput{
+		TableName:            &r.dynamoConfig.TableName,
+		Key:                  id.PrimaryKey(),
+		ProjectionExpression: aws.String(`#pk, #sk, #url`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk":  aws.String(db.PK),
+			"#sk":  aws.String(db.SK),
+			"#url": aws.String(model.ColURL),
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	if res.Item == nil {
+		return nil
+	}
+
+	_, err = r.dynamo.BatchWriteItemWithContext(ctx, &dynamodb.BatchWriteItemInput{
+		RequestItems: map[string][]*dynamodb.WriteRequest{
+			r.dynamoConfig.TableName: {
+				{
+					DeleteRequest: &dynamodb.DeleteRequest{
+						Key: id.PrimaryKey(),
+					},
+				},
+				{
+					DeleteRequest: &dynamodb.DeleteRequest{
+						Key: map[string]*dynamodb.AttributeValue{
+							db.PK: res.Item[db.PK],
+							db.SK: {S: aws.String("FEEDURL#" + aws.StringValue(res.Item[model.ColURL].S))},
+						},
+					},
+				},
+			},
+		},
 	})
 
 	return err
