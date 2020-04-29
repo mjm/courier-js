@@ -30,7 +30,7 @@ export async function addFeed(
     variables,
     configs: [
       {
-        parentID: ROOT_ID,
+        parentID: `${ROOT_ID}:viewer`,
         type: "RANGE_ADD",
         connectionInfo: [
           {
