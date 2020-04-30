@@ -1,13 +1,40 @@
+import React from "react"
 import Moment from "react-moment"
-import { createFragmentContainer, graphql } from "react-relay"
+import { graphql } from "react-relay"
+import { useFragment } from "react-relay/hooks"
 
 import Link from "next/link"
 
-import { EventTableRow_event } from "@generated/EventTableRow_event.graphql"
+import {
+  EventTableRow_event,
+  EventTableRow_event$key,
+} from "@generated/EventTableRow_event.graphql"
 
 const EventTableRow: React.FC<{
-  event: EventTableRow_event
-}> = ({ event }) => {
+  event: EventTableRow_event$key
+}> = props => {
+  const event = useFragment(
+    graphql`
+      fragment EventTableRow_event on Event {
+        id
+        eventType
+        createdAt
+        feed {
+          id
+          title
+        }
+        tweetGroup {
+          id
+          tweets {
+            body
+          }
+        }
+        boolValue
+      }
+    `,
+    props.event
+  )
+
   return (
     <div
       className={`p-4 flex items-baseline justify-stretch border-neutral-2 border-t first:border-0`}
@@ -22,26 +49,7 @@ const EventTableRow: React.FC<{
   )
 }
 
-export default createFragmentContainer(EventTableRow, {
-  event: graphql`
-    fragment EventTableRow_event on Event {
-      id
-      eventType
-      createdAt
-      feed {
-        id
-        title
-      }
-      tweetGroup {
-        id
-        tweets {
-          body
-        }
-      }
-      boolValue
-    }
-  `,
-})
+export default EventTableRow
 
 const EventDescription: React.FC<{
   event: EventTableRow_event
