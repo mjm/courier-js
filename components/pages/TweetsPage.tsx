@@ -78,14 +78,16 @@ const TweetsPage: NextPage = () => {
   )
 }
 
-TweetsPage.getInitialProps = () => {
-  preloadedQuery = preloadQuery(
-    getEnvironment(),
-    pageQuery,
-    {},
-    { fetchPolicy: "store-and-network" }
-  )
-  return Promise.resolve({})
+if (process.browser) {
+  TweetsPage.getInitialProps = () => {
+    preloadedQuery = preloadQuery(
+      getEnvironment(),
+      pageQuery,
+      {},
+      { fetchPolicy: "store-and-network" }
+    )
+    return Promise.resolve({})
+  }
 }
 
 export default withSecurePage(TweetsPage)
