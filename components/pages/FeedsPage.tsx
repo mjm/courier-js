@@ -1,21 +1,16 @@
 import React from "react"
 import { graphql } from "react-relay"
-import {
-  preloadQuery,
-  usePreloadedQuery,
-  useRelayEnvironment,
-} from "react-relay/hooks"
+import { preloadQuery, usePreloadedQuery } from "react-relay/hooks"
 
 import { NextPage } from "next"
 
 import { useFeedOptionsChangedEvent } from "@events/FeedOptionsChangedEvent"
 import { useFeedRefreshedEvent } from "@events/FeedRefreshedEvent"
+import pageQuery, { FeedsPageQuery } from "@generated/FeedsPageQuery.graphql"
 import FeedList from "components/FeedList"
 import Head from "components/Head"
 import { getEnvironment } from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-
-import pageQuery, { FeedsPageQuery } from "@generated/FeedsPageQuery.graphql"
 
 let preloadedQuery = preloadQuery<FeedsPageQuery>(
   getEnvironment(),
@@ -25,9 +20,8 @@ let preloadedQuery = preloadQuery<FeedsPageQuery>(
 )
 
 const FeedsPage: NextPage = () => {
-  const environment = useRelayEnvironment()
-  useFeedRefreshedEvent(environment)
-  useFeedOptionsChangedEvent(environment)
+  useFeedRefreshedEvent()
+  useFeedOptionsChangedEvent()
 
   const data = usePreloadedQuery(
     graphql`

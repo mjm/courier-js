@@ -1,10 +1,6 @@
 import React from "react"
 import { graphql } from "react-relay"
-import {
-  preloadQuery,
-  usePreloadedQuery,
-  useRelayEnvironment,
-} from "react-relay/hooks"
+import { preloadQuery, usePreloadedQuery } from "react-relay/hooks"
 import { PreloadedQuery } from "react-relay/lib/relay-experimental/EntryPointTypes"
 
 import { NextPage } from "next"
@@ -31,9 +27,8 @@ function preload(id: string): void {
 }
 
 const FeedDetailsPage: NextPage<{ id: string }> = ({ id }) => {
-  const environment = useRelayEnvironment()
-  useFeedRefreshedEvent(environment)
-  useFeedOptionsChangedEvent(environment)
+  useFeedRefreshedEvent()
+  useFeedOptionsChangedEvent()
 
   if (preloadedQuery) {
     return <FeedDetailsPageInner query={preloadedQuery} />

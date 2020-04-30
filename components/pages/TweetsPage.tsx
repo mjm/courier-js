@@ -1,10 +1,6 @@
 import React from "react"
 import { graphql } from "react-relay"
-import {
-  preloadQuery,
-  usePreloadedQuery,
-  useRelayEnvironment,
-} from "react-relay/hooks"
+import { preloadQuery, usePreloadedQuery } from "react-relay/hooks"
 
 import { NextPage } from "next"
 import Link from "next/link"
@@ -32,12 +28,10 @@ let preloadedQuery = preloadQuery<TweetsPageQuery>(
 )
 
 const TweetsPage: NextPage = () => {
-  const environment = useRelayEnvironment()
-
-  useTweetCanceledEvent(environment)
-  useTweetUncanceledEvent(environment)
-  useTweetEditedEvent(environment)
-  useTweetPostedEvent(environment)
+  useTweetCanceledEvent()
+  useTweetUncanceledEvent()
+  useTweetEditedEvent()
+  useTweetPostedEvent()
 
   const data = usePreloadedQuery<TweetsPageQuery>(
     graphql`
