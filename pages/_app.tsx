@@ -26,7 +26,14 @@ const App: React.FC<AppProps> = props => {
   return (
     <Elements
       stripe={stripePromise}
-      options={{ fonts: [{ cssSrc: "https://rsms.me/inter/inter.css" }] }}
+      options={{
+        fonts: [
+          {
+            cssSrc:
+              "https://fonts.googleapis.com/css2?family=Inter&display=swap",
+          },
+        ],
+      }}
     >
       <RelayEnvironmentProvider environment={getEnvironment()}>
         <Auth0Provider>
