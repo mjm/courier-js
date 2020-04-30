@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Suspense } from "react"
 import { useRelayEnvironment } from "react-relay/hooks"
 
 import { NextPage } from "next"
@@ -7,6 +7,7 @@ import Router from "next/router"
 import { addFeed } from "@mutations/AddFeed"
 import { ErrorContainer, useErrors } from "components/ErrorContainer"
 import Head from "components/Head"
+import Loading from "components/Loading"
 import PreviewFeedForm from "components/PreviewFeedForm"
 import PreviewFeedResult from "components/PreviewFeedResult"
 import withSecurePage from "hocs/withSecurePage"
@@ -47,9 +48,11 @@ const NewFeedContent: React.FC = () => {
   return (
     <>
       <PreviewFeedForm url={url} onChange={onChangeURL} onWatch={watchFeed} />
-      <div className="mt-4">
-        <PreviewFeedResult url={url} onWatch={watchFeed} />
-      </div>
+      <Suspense fallback={<Loading />}>
+        <div className="mt-4">
+          {url && <PreviewFeedResult url={url} onWatch={watchFeed} />}
+        </div>
+      </Suspense>
     </>
   )
 }

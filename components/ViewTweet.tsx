@@ -1,5 +1,5 @@
 import React from "react"
-import { createFragmentContainer, graphql } from "react-relay"
+import { graphql } from "react-relay"
 
 import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"

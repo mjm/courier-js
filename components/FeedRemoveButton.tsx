@@ -1,5 +1,5 @@
 import React from "react"
-import { createFragmentContainer, graphql } from "react-relay"
+import { graphql } from "react-relay"
 import { useFragment, useRelayEnvironment } from "react-relay/hooks"
 
 import Router from "next/router"

@@ -1,11 +1,18 @@
 import React from "react"
-import { createFragmentContainer, graphql, RelayProp } from "react-relay"
+import { graphql } from "react-relay"
+import { useFragment, useRelayEnvironment } from "react-relay/hooks"
 
 import { useRouter } from "next/router"
 
 import { IconProp } from "@fortawesome/fontawesome-svg-core"
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {
+  CardElement,
+  CardElementProps,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js"
 import {
   ErrorMessage,
   Field,
@@ -16,30 +23,38 @@ import {
 } from "formik"
 import * as yup from "yup"
 
-import { SubscribeForm_user } from "@generated/SubscribeForm_user.graphql"
+import { SubscribeForm_user$key } from "@generated/SubscribeForm_user.graphql"
 import { subscribe } from "@mutations/Subscribe"
 import { useAuth0 } from "components/Auth0Provider"
 import { iconForBrand } from "components/CreditCardIcon"
 import { ErrorBox } from "components/ErrorBox"
 import { FieldError } from "components/FieldError"
 import { theme } from "tailwind.config"
-import {
-  CardElement,
-  CardElementProps,
-  useElements,
-  useStripe,
-} from "@stripe/react-stripe-js"
 
-interface Props {
-  user: SubscribeForm_user
-  relay: RelayProp
-}
-
-const SubscribeForm: React.FC<Props> = ({ user, relay: { environment } }) => {
+const SubscribeForm: React.FC<{
+  user: SubscribeForm_user$key
+}> = props => {
   const router = useRouter()
   const { renewSession } = useAuth0()
   const stripe = useStripe()
   const elements = useElements()
+  const environment = useRelayEnvironment()
+
+  const user = useFragment(
+    graphql`
+      fragment SubscribeForm_user on Viewer {
+        customer {
+          creditCard {
+            brand
+            lastFour
+            expirationMonth
+            expirationYear
+          }
+        }
+      }
+    `,
+    props.user
+  )
 
   const savedCard = user.customer?.creditCard
 
@@ -158,20 +173,7 @@ const SubscribeForm: React.FC<Props> = ({ user, relay: { environment } }) => {
   )
 }
 
-export default createFragmentContainer(SubscribeForm, {
-  user: graphql`
-    fragment SubscribeForm_user on Viewer {
-      customer {
-        creditCard {
-          brand
-          lastFour
-          expirationMonth
-          expirationYear
-        }
-      }
-    }
-  `,
-})
+export default SubscribeForm
 
 const CardChoice: React.FC<{
   icon: IconProp
