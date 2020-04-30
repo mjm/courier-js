@@ -20,22 +20,22 @@ import "@fortawesome/fontawesome-svg-core/styles.css"
 
 config.autoAddCss = false
 
-const stripePromise = process.browser
-  ? loadStripe(process.env.STRIPE_KEY || "")
-  : null
+const stripePromise = loadStripe(process.env.STRIPE_KEY || "")
 
-const App: React.FC<AppProps> = props => (
-  <RelayEnvironmentProvider environment={getEnvironment()}>
-    <Auth0Provider>
-      <Elements
-        stripe={stripePromise}
-        options={{ fonts: [{ cssSrc: "https://rsms.me/inter/inter.css" }] }}
-      >
-        <AppInner {...props} />
-      </Elements>
-    </Auth0Provider>
-  </RelayEnvironmentProvider>
-)
+const App: React.FC<AppProps> = props => {
+  return (
+    <Elements
+      stripe={stripePromise}
+      options={{ fonts: [{ cssSrc: "https://rsms.me/inter/inter.css" }] }}
+    >
+      <RelayEnvironmentProvider environment={getEnvironment()}>
+        <Auth0Provider>
+          <AppInner {...props} />
+        </Auth0Provider>
+      </RelayEnvironmentProvider>
+    </Elements>
+  )
+}
 
 export default App
 
