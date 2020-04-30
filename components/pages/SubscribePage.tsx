@@ -1,23 +1,39 @@
 import React from "react"
 import { graphql } from "react-relay"
+import { preloadQuery, usePreloadedQuery } from "react-relay/hooks"
 
 import { NextPage } from "next"
 
 import { faCheckCircle, faCreditCard } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-import { SubscribePageQueryResponse } from "@generated/SubscribePageQuery.graphql"
+import pageQuery, {
+  SubscribePageQuery,
+} from "@generated/SubscribePageQuery.graphql"
 import Head from "components/Head"
 import SubscribeForm from "components/SubscribeForm"
-import withData from "hocs/withData"
+import { getEnvironment } from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
 
-const SubscribePage: NextPage<SubscribePageQueryResponse> = ({ viewer }) => {
-  const [isFormVisible, setFormVisible] = React.useState(true)
+let preloadedQuery = preloadQuery<SubscribePageQuery>(
+  getEnvironment(),
+  pageQuery,
+  {},
+  { fetchPolicy: "store-and-network" }
+)
 
-  if (!viewer) {
-    return <></>
-  }
+const SubscribePage: NextPage = () => {
+  const [isFormVisible, setFormVisible] = React.useState(true)
+  const data = usePreloadedQuery(
+    graphql`
+      query SubscribePageQuery {
+        viewer {
+          ...SubscribeForm_user
+        }
+      }
+    `,
+    preloadedQuery
+  )
 
   return (
     <main className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg my-8 text-neutral-10">
@@ -59,30 +75,33 @@ const SubscribePage: NextPage<SubscribePageQueryResponse> = ({ viewer }) => {
         </p>
       </div>
 
-      {isFormVisible ? (
-        <SubscribeForm user={viewer} />
-      ) : (
-        <div className="flex justify-center p-6">
-          <button
-            type="button"
-            className="btn btn-first btn-first-primary text-xl font-medium py-2 px-10"
-            onClick={() => setFormVisible(true)}
-          >
-            <FontAwesomeIcon icon={faCreditCard} className="mr-2" />
-            Subscribe
-          </button>
-        </div>
-      )}
+      {data?.viewer &&
+        (isFormVisible ? (
+          <SubscribeForm user={data.viewer} />
+        ) : (
+          <div className="flex justify-center p-6">
+            <button
+              type="button"
+              className="btn btn-first btn-first-primary text-xl font-medium py-2 px-10"
+              onClick={() => setFormVisible(true)}
+            >
+              <FontAwesomeIcon icon={faCreditCard} className="mr-2" />
+              Subscribe
+            </button>
+          </div>
+        ))}
     </main>
   )
 }
 
-export default withData(withSecurePage(SubscribePage), {
-  query: graphql`
-    query SubscribePageQuery {
-      viewer {
-        ...SubscribeForm_user
-      }
-    }
-  `,
-})
+SubscribePage.getInitialProps = () => {
+  preloadedQuery = preloadQuery(
+    getEnvironment(),
+    pageQuery,
+    {},
+    { fetchPolicy: "store-and-network" }
+  )
+  return {}
+}
+
+export default withSecurePage(SubscribePage)

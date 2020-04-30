@@ -1,6 +1,11 @@
 {
   "presets": ["next/babel"],
   "plugins": [
+    ["module-resolver", {
+      "alias": {
+        "@generated": "./lib/__generated__"
+      }
+    }],
     ["relay", {"eagerESModules":  true}],
     "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-proposal-nullish-coalescing-operator",

@@ -1,52 +1,81 @@
-import { Environment, graphql } from "react-relay"
+import React from "react"
+import { graphql } from "react-relay"
+import {
+  preloadQuery,
+  usePreloadedQuery,
+  useRelayEnvironment,
+} from "react-relay/hooks"
+import { PreloadedQuery } from "react-relay/lib/relay-experimental/EntryPointTypes"
 
 import { NextPage } from "next"
 
 import { useFeedOptionsChangedEvent } from "@events/FeedOptionsChangedEvent"
 import { useFeedRefreshedEvent } from "@events/FeedRefreshedEvent"
-import { FeedDetailsPageQueryResponse } from "@generated/FeedDetailsPageQuery.graphql"
+import pageQuery, {
+  FeedDetailsPageQuery,
+} from "@generated/FeedDetailsPageQuery.graphql"
 import { ErrorContainer } from "components/ErrorContainer"
 import FeedDetails from "components/FeedDetails"
-import withData from "hocs/withData"
+import { getEnvironment } from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
 
-const FeedDetailsPage: NextPage<
-  FeedDetailsPageQueryResponse & { environment: Environment },
-  { id: string }
-> = ({ feed, viewer, environment }) => {
+let preloadedQuery: PreloadedQuery<FeedDetailsPageQuery> | null = null
+
+function preload(id: string): void {
+  preloadedQuery = preloadQuery(
+    getEnvironment(),
+    pageQuery,
+    { id },
+    { fetchPolicy: "store-and-network" }
+  )
+}
+
+const FeedDetailsPage: NextPage<{ id: string }> = ({ id }) => {
+  const environment = useRelayEnvironment()
   useFeedRefreshedEvent(environment)
   useFeedOptionsChangedEvent(environment)
 
-  if (!feed || !viewer) {
-    // TODO I think this means there's no such feed
-    return <></>
+  if (preloadedQuery) {
+    return <FeedDetailsPageInner query={preloadedQuery} />
+  } else {
+    preload(id)
+    return null
+  }
+}
+
+FeedDetailsPage.getInitialProps = ({ query }) => {
+  preload(query.id as string)
+  return { id: query.id as string }
+}
+
+export default withSecurePage(FeedDetailsPage)
+
+const FeedDetailsPageInner: React.FC<{
+  query: PreloadedQuery<FeedDetailsPageQuery>
+}> = ({ query }) => {
+  const data = usePreloadedQuery(
+    graphql`
+      query FeedDetailsPageQuery($id: ID!) {
+        feed(id: $id) {
+          ...FeedDetails_feed
+        }
+        viewer {
+          ...FeedDetails_user
+        }
+      }
+    `,
+    query
+  )
+
+  if (!data?.viewer || !data?.feed) {
+    return null
   }
 
   return (
     <main className="container mx-auto my-8">
       <ErrorContainer>
-        <FeedDetails feed={feed} user={viewer} />
+        <FeedDetails feed={data.feed} user={data.viewer} />
       </ErrorContainer>
     </main>
   )
 }
-
-FeedDetailsPage.getInitialProps = ({ query }) => {
-  return { id: query.id as string }
-}
-
-export default withData(withSecurePage(FeedDetailsPage), {
-  query: graphql`
-    query FeedDetailsPageQuery($id: ID!) {
-      feed(id: $id) {
-        ...FeedDetails_feed
-      }
-      viewer {
-        ...FeedDetails_user
-      }
-    }
-  `,
-  getVariables({ id }) {
-    return { id }
-  },
-})

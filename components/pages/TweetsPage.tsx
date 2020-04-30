@@ -13,9 +13,7 @@ import { useTweetCanceledEvent } from "@events/TweetCanceledEvent"
 import { useTweetEditedEvent } from "@events/TweetEditedEvent"
 import { useTweetPostedEvent } from "@events/TweetPostedEvent"
 import { useTweetUncanceledEvent } from "@events/TweetUncanceledEvent"
-import pageQuery, {
-  TweetsPageQuery,
-} from "../../lib/__generated__/TweetsPageQuery.graphql"
+import pageQuery, { TweetsPageQuery } from "@generated/TweetsPageQuery.graphql"
 import Head from "components/Head"
 import Loading from "components/Loading"
 import Notice from "components/Notice"
@@ -23,8 +21,8 @@ import SubscriptionProvider, {
   useSubscription,
 } from "components/SubscriptionProvider"
 import TweetList from "components/TweetList"
-import withSecurePage from "hocs/withSecurePage"
 import { getEnvironment } from "hocs/withData"
+import withSecurePage from "hocs/withSecurePage"
 
 let preloadedQuery = preloadQuery<TweetsPageQuery>(
   getEnvironment(),
@@ -86,14 +84,14 @@ const TweetsPage: NextPage = () => {
   )
 }
 
-TweetsPage.getInitialProps = async () => {
+TweetsPage.getInitialProps = () => {
   preloadedQuery = preloadQuery(
     getEnvironment(),
     pageQuery,
     {},
     { fetchPolicy: "store-and-network" }
   )
-  return {}
+  return Promise.resolve({})
 }
 
 export default withSecurePage(TweetsPage)

@@ -1,38 +1,34 @@
 import React from "react"
-import { Environment } from "react-relay"
+import { useRelayEnvironment } from "react-relay/hooks"
 
 import { NextPage } from "next"
 import Router from "next/router"
 
 import { addFeed } from "@mutations/AddFeed"
+import { ErrorContainer, useErrors } from "components/ErrorContainer"
 import Head from "components/Head"
 import PreviewFeedForm from "components/PreviewFeedForm"
 import PreviewFeedResult from "components/PreviewFeedResult"
-import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-import { ErrorContainer, useErrors } from "components/ErrorContainer"
 
-const NewFeedPage: NextPage<{ environment: Environment }> = ({
-  environment,
-}) => {
+const NewFeedPage: NextPage = () => {
   return (
     <main className="mx-auto max-w-lg">
       <Head title="Watch New Feed" />
 
       <ErrorContainer>
-        <NewFeedContent environment={environment} />
+        <NewFeedContent />
       </ErrorContainer>
     </main>
   )
 }
 
-export default withData(withSecurePage(NewFeedPage))
+export default withSecurePage(NewFeedPage)
 
-const NewFeedContent: React.FC<{
-  environment: Environment
-}> = ({ environment }) => {
+const NewFeedContent: React.FC = () => {
   const [url, setURL] = React.useState("")
   const { setError, clearErrors } = useErrors()
+  const environment = useRelayEnvironment()
 
   async function watchFeed(): Promise<void> {
     try {

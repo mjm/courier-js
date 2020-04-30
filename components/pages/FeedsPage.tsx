@@ -1,41 +1,62 @@
 import React from "react"
-import { Environment, graphql } from "react-relay"
+import { graphql } from "react-relay"
+import {
+  preloadQuery,
+  usePreloadedQuery,
+  useRelayEnvironment,
+} from "react-relay/hooks"
 
 import { NextPage } from "next"
 
+import { useFeedOptionsChangedEvent } from "@events/FeedOptionsChangedEvent"
 import { useFeedRefreshedEvent } from "@events/FeedRefreshedEvent"
-import { FeedsPageQueryResponse } from "@generated/FeedsPageQuery.graphql"
 import FeedList from "components/FeedList"
 import Head from "components/Head"
-import withData from "hocs/withData"
+import { getEnvironment } from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-import { useFeedOptionsChangedEvent } from "@events/FeedOptionsChangedEvent"
 
-const FeedsPage: NextPage<FeedsPageQueryResponse & {
-  environment: Environment
-}> = ({ environment, ...props }) => {
+import pageQuery, { FeedsPageQuery } from "@generated/FeedsPageQuery.graphql"
+
+let preloadedQuery = preloadQuery<FeedsPageQuery>(
+  getEnvironment(),
+  pageQuery,
+  {},
+  { fetchPolicy: "store-and-network" }
+)
+
+const FeedsPage: NextPage = () => {
+  const environment = useRelayEnvironment()
   useFeedRefreshedEvent(environment)
   useFeedOptionsChangedEvent(environment)
 
-  if (!props.viewer) {
-    return null
-  }
+  const data = usePreloadedQuery(
+    graphql`
+      query FeedsPageQuery {
+        viewer {
+          ...FeedList_feeds
+        }
+      }
+    `,
+    preloadedQuery
+  )
 
   return (
     <main className="container mx-auto my-8">
       <Head title="Watched Feeds" />
 
-      <FeedList feeds={props.viewer} />
+      {data?.viewer && <FeedList feeds={data.viewer} />}
     </main>
   )
 }
 
-export default withData(withSecurePage(FeedsPage), {
-  query: graphql`
-    query FeedsPageQuery {
-      viewer {
-        ...FeedList_feeds
-      }
-    }
-  `,
-})
+FeedsPage.getInitialProps = () => {
+  preloadedQuery = preloadQuery(
+    getEnvironment(),
+    pageQuery,
+    {},
+    { fetchPolicy: "store-and-network" }
+  )
+  return Promise.resolve({})
+}
+
+export default withSecurePage(FeedsPage)

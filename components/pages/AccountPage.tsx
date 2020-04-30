@@ -1,21 +1,39 @@
 import { graphql } from "react-relay"
+import { preloadQuery, usePreloadedQuery } from "react-relay/hooks"
 
 import { NextPage } from "next"
 
-import { AccountPageQueryResponse } from "@generated/AccountPageQuery.graphql"
+import pageQuery, {
+  AccountPageQuery,
+} from "@generated/AccountPageQuery.graphql"
 import Head from "components/Head"
 import RecentEventsCard from "components/RecentEventsCard"
 import SubscriptionInfoCard from "components/SubscriptionInfoCard"
 import UserActionsCard from "components/UserActionsCard"
 import UserInfoCard from "components/UserInfoCard"
-import withData from "hocs/withData"
+import { getEnvironment } from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
 
-const AccountPage: NextPage<AccountPageQueryResponse> = props => {
-  const { viewer } = props
-  if (!viewer) {
-    return null
-  }
+let preloadedQuery = preloadQuery<AccountPageQuery>(
+  getEnvironment(),
+  pageQuery,
+  {},
+  { fetchPolicy: "store-and-network" }
+)
+
+const AccountPage: NextPage = () => {
+  const data = usePreloadedQuery(
+    graphql`
+      query AccountPageQuery {
+        viewer {
+          ...UserInfoCard_user
+          ...SubscriptionInfoCard_user
+        }
+        ...RecentEventsCard_events
+      }
+    `,
+    preloadedQuery
+  )
 
   return (
     <main className="container mx-auto my-8">
@@ -24,12 +42,16 @@ const AccountPage: NextPage<AccountPageQueryResponse> = props => {
       <div className="px-3">
         <div className="flex flex-wrap -mx-3">
           <div className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0 px-3 mb-6">
-            <UserInfoCard user={viewer} />
-            <SubscriptionInfoCard user={viewer} />
+            {data?.viewer && (
+              <>
+                <UserInfoCard user={data.viewer} />
+                <SubscriptionInfoCard user={data.viewer} />
+              </>
+            )}
             <UserActionsCard />
           </div>
           <div className="w-full md:w-2/3 lg:w-3/4 px-3">
-            <RecentEventsCard events={props} />
+            {data && <RecentEventsCard events={data} />}
           </div>
         </div>
       </div>
@@ -37,14 +59,14 @@ const AccountPage: NextPage<AccountPageQueryResponse> = props => {
   )
 }
 
-export default withData(withSecurePage(AccountPage), {
-  query: graphql`
-    query AccountPageQuery {
-      viewer {
-        ...UserInfoCard_user
-        ...SubscriptionInfoCard_user
-      }
-      ...RecentEventsCard_events
-    }
-  `,
-})
+AccountPage.getInitialProps = () => {
+  preloadedQuery = preloadQuery<AccountPageQuery>(
+    getEnvironment(),
+    pageQuery,
+    {},
+    { fetchPolicy: "store-and-network" }
+  )
+  return {}
+}
+
+export default withSecurePage(AccountPage)
