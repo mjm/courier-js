@@ -22,7 +22,11 @@ export type FeedList_feeds$key = {
 
 
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = [
+  "allFeeds"
+];
+return {
   "argumentDefinitions": [
     {
       "defaultValue": 20,
@@ -44,11 +48,23 @@ const node: ReaderFragment = {
         "count": "count",
         "cursor": "cursor",
         "direction": "forward",
-        "path": [
-          "allFeeds"
-        ]
+        "path": (v0/*: any*/)
       }
-    ]
+    ],
+    "refetch": {
+      "connection": {
+        "forward": {
+          "count": "count",
+          "cursor": "cursor"
+        },
+        "backward": null,
+        "path": (v0/*: any*/)
+      },
+      "fragmentPathInResult": [
+        "viewer"
+      ],
+      "operation": require('./FeedListPaginationQuery.graphql.ts')
+    }
   },
   "name": "FeedList_feeds",
   "selections": [
@@ -139,5 +155,6 @@ const node: ReaderFragment = {
   ],
   "type": "Viewer"
 };
-(node as any).hash = '4c8cd3136e57fb5efcc4784961bbd747';
+})();
+(node as any).hash = 'bd0f327d8fe77909bcb22d5b740061ef';
 export default node;

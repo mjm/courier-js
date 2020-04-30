@@ -2,37 +2,40 @@
 /* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
-import { FragmentRefs } from "relay-runtime";
-export type FeedRecentPostListRefetchQueryVariables = {
+import { FragmentReference, FragmentRefs } from "relay-runtime";
+export type FeedRecentPostRefetchQueryVariables = {
+    count?: number | null;
+    cursor?: unknown | null;
     id: string;
 };
-export type FeedRecentPostListRefetchQueryResponse = {
+export type FeedRecentPostRefetchQueryResponse = {
     readonly node: {
-        readonly id: string;
         readonly " $fragmentRefs": FragmentRefs<"FeedRecentPostList_feed">;
     } | null;
 };
-export type FeedRecentPostListRefetchQuery = {
-    readonly response: FeedRecentPostListRefetchQueryResponse;
-    readonly variables: FeedRecentPostListRefetchQueryVariables;
+export type FeedRecentPostRefetchQuery = {
+    readonly response: FeedRecentPostRefetchQueryResponse;
+    readonly variables: FeedRecentPostRefetchQueryVariables;
 };
 
 
 
 /*
-query FeedRecentPostListRefetchQuery(
+query FeedRecentPostRefetchQuery(
+  $count: Int = 10
+  $cursor: Cursor
   $id: ID!
 ) {
   node(id: $id) {
     __typename
+    ...FeedRecentPostList_feed_1G22uz
     id
-    ...FeedRecentPostList_feed
   }
 }
 
-fragment FeedRecentPostList_feed on Feed {
+fragment FeedRecentPostList_feed_1G22uz on Feed {
   id
-  posts(first: 10) {
+  posts(first: $count, after: $cursor) {
     edges {
       node {
         id
@@ -55,6 +58,18 @@ fragment FeedRecentPostList_feed on Feed {
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": 10,
+    "kind": "LocalArgument",
+    "name": "count",
+    "type": "Int"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "cursor",
+    "type": "Cursor"
+  },
+  {
     "defaultValue": null,
     "kind": "LocalArgument",
     "name": "id",
@@ -72,21 +87,26 @@ v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "id",
+  "name": "__typename",
   "storageKey": null
 },
 v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "__typename",
+  "name": "id",
   "storageKey": null
 },
 v4 = [
   {
-    "kind": "Literal",
+    "kind": "Variable",
+    "name": "after",
+    "variableName": "cursor"
+  },
+  {
+    "kind": "Variable",
     "name": "first",
-    "value": 10
+    "variableName": "count"
   }
 ];
 return {
@@ -94,7 +114,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "FeedRecentPostListRefetchQuery",
+    "name": "FeedRecentPostRefetchQuery",
     "selections": [
       {
         "alias": null,
@@ -104,9 +124,19 @@ return {
         "name": "node",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
           {
-            "args": null,
+            "args": [
+              {
+                "kind": "Variable",
+                "name": "count",
+                "variableName": "count"
+              },
+              {
+                "kind": "Variable",
+                "name": "cursor",
+                "variableName": "cursor"
+              }
+            ],
             "kind": "FragmentSpread",
             "name": "FeedRecentPostList_feed"
           }
@@ -120,7 +150,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "FeedRecentPostListRefetchQuery",
+    "name": "FeedRecentPostRefetchQuery",
     "selections": [
       {
         "alias": null,
@@ -130,8 +160,8 @@ return {
         "name": "node",
         "plural": false,
         "selections": [
-          (v3/*: any*/),
           (v2/*: any*/),
+          (v3/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
@@ -159,7 +189,7 @@ return {
                         "name": "node",
                         "plural": false,
                         "selections": [
-                          (v2/*: any*/),
+                          (v3/*: any*/),
                           {
                             "alias": null,
                             "args": null,
@@ -188,7 +218,7 @@ return {
                             "name": "publishedAt",
                             "storageKey": null
                           },
-                          (v3/*: any*/)
+                          (v2/*: any*/)
                         ],
                         "storageKey": null
                       },
@@ -228,7 +258,7 @@ return {
                     "storageKey": null
                   }
                 ],
-                "storageKey": "posts(first:10)"
+                "storageKey": null
               },
               {
                 "alias": null,
@@ -249,12 +279,15 @@ return {
   },
   "params": {
     "id": null,
-    "metadata": {},
-    "name": "FeedRecentPostListRefetchQuery",
+    "metadata": {
+      "derivedFrom": "FeedRecentPostList_feed",
+      "isRefetchableQuery": true
+    },
+    "name": "FeedRecentPostRefetchQuery",
     "operationKind": "query",
-    "text": "query FeedRecentPostListRefetchQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ...FeedRecentPostList_feed\n  }\n}\n\nfragment FeedRecentPostList_feed on Feed {\n  id\n  posts(first: 10) {\n    edges {\n      node {\n        id\n        url\n        title\n        htmlContent\n        publishedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query FeedRecentPostRefetchQuery(\n  $count: Int = 10\n  $cursor: Cursor\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...FeedRecentPostList_feed_1G22uz\n    id\n  }\n}\n\nfragment FeedRecentPostList_feed_1G22uz on Feed {\n  id\n  posts(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        url\n        title\n        htmlContent\n        publishedAt\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = 'adabcd4594d64211eb91d848f8c7725f';
+(node as any).hash = 'dc458fc423e074232d6a8028d6b3f4de';
 export default node;

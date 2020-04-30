@@ -1,24 +1,42 @@
 import React from "react"
-import {
-  createPaginationContainer,
-  graphql,
-  RelayPaginationProp,
-} from "react-relay"
+import { graphql } from "react-relay"
+import { usePaginationFragment } from "react-relay/lib/hooks"
 
 import Link from "next/link"
 
-import { FeedList_feeds } from "@generated/FeedList_feeds.graphql"
+import { FeedList_feeds$key } from "@generated/FeedList_feeds.graphql"
 import FeedCard from "components/FeedCard"
 
 const FeedList: React.FC<{
-  feeds: FeedList_feeds
-  relay: RelayPaginationProp
+  feeds: FeedList_feeds$key
 }> = ({ feeds }) => {
-  if (!feeds?.allFeeds) {
+  const { data } = usePaginationFragment(
+    graphql`
+      fragment FeedList_feeds on Viewer
+        @refetchable(queryName: "FeedListPaginationQuery")
+        @argumentDefinitions(
+          count: { type: "Int", defaultValue: 20 }
+          cursor: { type: "Cursor" }
+        ) {
+        allFeeds(first: $count, after: $cursor)
+          @connection(key: "FeedList_allFeeds") {
+          edges {
+            node {
+              id
+              ...FeedCard_feed
+            }
+          }
+        }
+      }
+    `,
+    feeds
+  )
+
+  if (!data?.allFeeds) {
     return null
   }
 
-  const { edges } = feeds.allFeeds
+  const { edges } = data.allFeeds
 
   return (
     <div>
@@ -52,40 +70,4 @@ const FeedList: React.FC<{
   )
 }
 
-export default createPaginationContainer(
-  FeedList,
-  {
-    feeds: graphql`
-      fragment FeedList_feeds on Viewer
-        @argumentDefinitions(
-          count: { type: "Int", defaultValue: 20 }
-          cursor: { type: "Cursor" }
-        ) {
-        allFeeds(first: $count, after: $cursor)
-          @connection(key: "FeedList_allFeeds") {
-          edges {
-            node {
-              id
-              ...FeedCard_feed
-            }
-          }
-        }
-      }
-    `,
-  },
-  {
-    getVariables(_props, { count, cursor }, _fragmentVariables) {
-      return {
-        count,
-        cursor,
-      }
-    },
-    query: graphql`
-      query FeedListPaginationQuery($count: Int!, $cursor: Cursor) {
-        viewer {
-          ...FeedList_feeds @arguments(count: $count, cursor: $cursor)
-        }
-      }
-    `,
-  }
-)
+export default FeedList

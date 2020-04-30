@@ -27,7 +27,10 @@ export type FeedRecentPostList_feed$key = {
 
 
 const node: ReaderFragment = (function(){
-var v0 = {
+var v0 = [
+  "posts"
+],
+v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -35,23 +38,49 @@ var v0 = {
   "storageKey": null
 };
 return {
-  "argumentDefinitions": [],
+  "argumentDefinitions": [
+    {
+      "defaultValue": 10,
+      "kind": "LocalArgument",
+      "name": "count",
+      "type": "Int"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "cursor",
+      "type": "Cursor"
+    }
+  ],
   "kind": "Fragment",
   "metadata": {
     "connection": [
       {
-        "count": null,
-        "cursor": null,
+        "count": "count",
+        "cursor": "cursor",
         "direction": "forward",
-        "path": [
-          "posts"
-        ]
+        "path": (v0/*: any*/)
       }
-    ]
+    ],
+    "refetch": {
+      "connection": {
+        "forward": {
+          "count": "count",
+          "cursor": "cursor"
+        },
+        "backward": null,
+        "path": (v0/*: any*/)
+      },
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": require('./FeedRecentPostRefetchQuery.graphql.ts'),
+      "identifierField": "id"
+    }
   },
   "name": "FeedRecentPostList_feed",
   "selections": [
-    (v0/*: any*/),
+    (v1/*: any*/),
     {
       "alias": "posts",
       "args": null,
@@ -76,7 +105,7 @@ return {
               "name": "node",
               "plural": false,
               "selections": [
-                (v0/*: any*/),
+                (v1/*: any*/),
                 {
                   "alias": null,
                   "args": null,
@@ -157,5 +186,5 @@ return {
   "type": "Feed"
 };
 })();
-(node as any).hash = '83dc564ff1e5a8efa1ea63fdfae57409';
+(node as any).hash = 'dc458fc423e074232d6a8028d6b3f4de';
 export default node;

@@ -2,9 +2,9 @@
 /* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
-import { FragmentRefs } from "relay-runtime";
+import { FragmentReference, FragmentRefs } from "relay-runtime";
 export type FeedListPaginationQueryVariables = {
-    count: number;
+    count?: number | null;
     cursor?: unknown | null;
 };
 export type FeedListPaginationQueryResponse = {
@@ -21,7 +21,7 @@ export type FeedListPaginationQuery = {
 
 /*
 query FeedListPaginationQuery(
-  $count: Int!
+  $count: Int = 20
   $cursor: Cursor
 ) {
   viewer {
@@ -58,10 +58,10 @@ fragment FeedList_feeds_1G22uz on Viewer {
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
-    "defaultValue": null,
+    "defaultValue": 20,
     "kind": "LocalArgument",
     "name": "count",
-    "type": "Int!"
+    "type": "Int"
   },
   {
     "defaultValue": null,
@@ -256,12 +256,15 @@ return {
   },
   "params": {
     "id": null,
-    "metadata": {},
+    "metadata": {
+      "derivedFrom": "FeedList_feeds",
+      "isRefetchableQuery": true
+    },
     "name": "FeedListPaginationQuery",
     "operationKind": "query",
-    "text": "query FeedListPaginationQuery(\n  $count: Int!\n  $cursor: Cursor\n) {\n  viewer {\n    ...FeedList_feeds_1G22uz\n  }\n}\n\nfragment FeedCard_feed on Feed {\n  id\n  title\n  homePageURL\n  refreshedAt\n  autopost\n}\n\nfragment FeedList_feeds_1G22uz on Viewer {\n  allFeeds(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...FeedCard_feed\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query FeedListPaginationQuery(\n  $count: Int = 20\n  $cursor: Cursor\n) {\n  viewer {\n    ...FeedList_feeds_1G22uz\n  }\n}\n\nfragment FeedCard_feed on Feed {\n  id\n  title\n  homePageURL\n  refreshedAt\n  autopost\n}\n\nfragment FeedList_feeds_1G22uz on Viewer {\n  allFeeds(first: $count, after: $cursor) {\n    edges {\n      node {\n        id\n        ...FeedCard_feed\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = '99d8bbf2fe3daa53b4e60c3eab9bfc97';
+(node as any).hash = 'bd0f327d8fe77909bcb22d5b740061ef';
 export default node;
