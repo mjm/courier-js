@@ -67,13 +67,16 @@ func main() {
 			Key:    aws.String(key),
 		})
 		if err == nil {
-			log.Printf("Skipping %q because it already exists at s3://%s/%s", stampedBucket, key)
+			log.Printf("Skipping %q because it already exists at s3://%s/%s", filepath.Base(path), stampedBucket, key)
 			continue
 		}
 
-		if err, ok := err.(awserr.Error); !ok || err.Code() != "NotFound" {
+		if aerr, ok := err.(awserr.Error); !ok || aerr.Code() != "NotFound" {
 			anyFailed = true
-			log.Printf("could not check if %q was already uploaded: %#v", path, err)
+			log.Printf("could not check if %q was already uploaded: %v", path, err)
+			if ok {
+				log.Printf("  code: %s", aerr.Code())
+			}
 			continue
 		}
 
