@@ -1,28 +1,19 @@
 import { graphql } from "react-relay"
-import { preloadQuery, usePreloadedQuery } from "react-relay/hooks"
+import { usePreloadedQuery } from "react-relay/hooks"
 
 import { NextPage } from "next"
 
-import pageQuery, {
-  AccountPageQuery,
-} from "@generated/AccountPageQuery.graphql"
+import { AccountPageQuery } from "@generated/AccountPageQuery.graphql"
 import Head from "components/Head"
 import RecentEventsCard from "components/RecentEventsCard"
 import SubscriptionInfoCard from "components/SubscriptionInfoCard"
 import UserActionsCard from "components/UserActionsCard"
 import UserInfoCard from "components/UserInfoCard"
-import { getEnvironment } from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-
-let preloadedQuery = preloadQuery<AccountPageQuery>(
-  getEnvironment(),
-  pageQuery,
-  {},
-  { fetchPolicy: "store-and-network" }
-)
+import { preloader } from "utils/preloader"
 
 const AccountPage: NextPage = () => {
-  const data = usePreloadedQuery(
+  const data = usePreloadedQuery<AccountPageQuery>(
     graphql`
       query AccountPageQuery {
         viewer {
@@ -32,7 +23,7 @@ const AccountPage: NextPage = () => {
         ...RecentEventsCard_events
       }
     `,
-    preloadedQuery
+    preloader.get("/account")
   )
 
   return (
@@ -57,16 +48,6 @@ const AccountPage: NextPage = () => {
       </div>
     </main>
   )
-}
-
-AccountPage.getInitialProps = () => {
-  preloadedQuery = preloadQuery<AccountPageQuery>(
-    getEnvironment(),
-    pageQuery,
-    {},
-    { fetchPolicy: "store-and-network" }
-  )
-  return {}
 }
 
 export default withSecurePage(AccountPage)

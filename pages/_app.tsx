@@ -17,6 +17,7 @@ import { isAuthenticated } from "utils/auth0"
 import "components/Tailwind.css"
 import "components/Progress.css"
 import "@fortawesome/fontawesome-svg-core/styles.css"
+import { preloader, usePreloader } from "utils/preloader"
 
 config.autoAddCss = false
 
@@ -108,6 +109,7 @@ function useProgressBar(): void {
 const AppInner: React.FC<AppProps> = ({ Component, pageProps }) => {
   const isAuthenticating = useAuthenticating()
   useProgressBar()
+  usePreloader(preloader)
 
   return (
     <MDXContainer>

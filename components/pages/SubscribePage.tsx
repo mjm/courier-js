@@ -1,30 +1,21 @@
 import React from "react"
 import { graphql } from "react-relay"
-import { preloadQuery, usePreloadedQuery } from "react-relay/hooks"
+import { usePreloadedQuery } from "react-relay/hooks"
 
 import { NextPage } from "next"
 
 import { faCheckCircle, faCreditCard } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-import pageQuery, {
-  SubscribePageQuery,
-} from "@generated/SubscribePageQuery.graphql"
+import { SubscribePageQuery } from "@generated/SubscribePageQuery.graphql"
 import Head from "components/Head"
 import SubscribeForm from "components/SubscribeForm"
-import { getEnvironment } from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-
-let preloadedQuery = preloadQuery<SubscribePageQuery>(
-  getEnvironment(),
-  pageQuery,
-  {},
-  { fetchPolicy: "store-and-network" }
-)
+import { preloader } from "utils/preloader"
 
 const SubscribePage: NextPage = () => {
   const [isFormVisible, setFormVisible] = React.useState(true)
-  const data = usePreloadedQuery(
+  const data = usePreloadedQuery<SubscribePageQuery>(
     graphql`
       query SubscribePageQuery {
         viewer {
@@ -32,7 +23,7 @@ const SubscribePage: NextPage = () => {
         }
       }
     `,
-    preloadedQuery
+    preloader.get("/subscribe")
   )
 
   return (
@@ -92,16 +83,6 @@ const SubscribePage: NextPage = () => {
         ))}
     </main>
   )
-}
-
-SubscribePage.getInitialProps = () => {
-  preloadedQuery = preloadQuery(
-    getEnvironment(),
-    pageQuery,
-    {},
-    { fetchPolicy: "store-and-network" }
-  )
-  return {}
 }
 
 export default withSecurePage(SubscribePage)

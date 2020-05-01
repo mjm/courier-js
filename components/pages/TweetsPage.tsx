@@ -1,6 +1,6 @@
 import React from "react"
 import { graphql } from "react-relay"
-import { preloadQuery, usePreloadedQuery } from "react-relay/hooks"
+import { usePreloadedQuery } from "react-relay/hooks"
 
 import { NextPage } from "next"
 import Link from "next/link"
@@ -9,7 +9,7 @@ import { useTweetCanceledEvent } from "@events/TweetCanceledEvent"
 import { useTweetEditedEvent } from "@events/TweetEditedEvent"
 import { useTweetPostedEvent } from "@events/TweetPostedEvent"
 import { useTweetUncanceledEvent } from "@events/TweetUncanceledEvent"
-import pageQuery, { TweetsPageQuery } from "@generated/TweetsPageQuery.graphql"
+import { TweetsPageQuery } from "@generated/TweetsPageQuery.graphql"
 import Head from "components/Head"
 import Loading from "components/Loading"
 import Notice from "components/Notice"
@@ -17,15 +17,8 @@ import SubscriptionProvider, {
   useSubscription,
 } from "components/SubscriptionProvider"
 import TweetList from "components/TweetList"
-import { getEnvironment } from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-
-let preloadedQuery = preloadQuery<TweetsPageQuery>(
-  getEnvironment(),
-  pageQuery,
-  {},
-  { fetchPolicy: "store-and-network" }
-)
+import { preloader } from "utils/preloader"
 
 const TweetsPage: NextPage = () => {
   useTweetCanceledEvent()
@@ -47,7 +40,7 @@ const TweetsPage: NextPage = () => {
         }
       }
     `,
-    preloadedQuery
+    preloader.get("/tweets")
   )
 
   return (
@@ -76,18 +69,6 @@ const TweetsPage: NextPage = () => {
       )}
     </main>
   )
-}
-
-if (process.browser) {
-  TweetsPage.getInitialProps = () => {
-    preloadedQuery = preloadQuery(
-      getEnvironment(),
-      pageQuery,
-      {},
-      { fetchPolicy: "store-and-network" }
-    )
-    return Promise.resolve({})
-  }
 }
 
 export default withSecurePage(TweetsPage)
