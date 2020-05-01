@@ -47,6 +47,7 @@ data "aws_iam_policy_document" "ci_s3_upload" {
       "s3:*"
     ]
     resources = [
+      aws_s3_bucket.lambda_handlers.arn,
       "${aws_s3_bucket.lambda_handlers.arn}/*",
     ]
   }
