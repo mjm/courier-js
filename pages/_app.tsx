@@ -12,12 +12,13 @@ import NProgress from "nprogress"
 import { Auth0Provider, useAuth0 } from "components/Auth0Provider"
 import MDXContainer from "components/MDXContainer"
 import { getEnvironment } from "hocs/withData"
-import { isAuthenticated } from "utils/auth0"
+import { getUser, isAuthenticated } from "utils/auth0"
 
 import "components/Tailwind.css"
 import "components/Progress.css"
 import "@fortawesome/fontawesome-svg-core/styles.css"
 import { preloader, usePreloader } from "utils/preloader"
+import { AuthProvider } from "components/AuthProvider"
 
 config.autoAddCss = false
 

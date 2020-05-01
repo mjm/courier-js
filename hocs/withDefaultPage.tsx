@@ -1,50 +1,29 @@
 import React, { Suspense } from "react"
 
-import { NextComponentType, NextPage, NextPageContext } from "next"
-
-import { AuthProvider } from "components/AuthProvider"
+import { NextPage } from "next"
 import { EventsProvider } from "components/EventsProvider"
 import Nav from "components/Nav"
-import { getUser, IdToken, isAuthenticated } from "utils/auth0"
 import Loading from "components/Loading"
 import ErrorBoundary from "components/ErrorBoundary"
-
-export type DefaultPageWrapped<P = {}, IP = P> = NextComponentType<
-  DefaultPageContext,
-  IP,
-  P
->
-
-export type DefaultPage<P, IP = P> = NextPage<
-  P & {
-    user: IdToken | undefined
-    isAuthenticating: boolean
-    isAuthenticated: boolean
-  },
-  IP & {
-    user: IdToken | undefined
-    isAuthenticated: boolean
-  }
->
-
-export interface DefaultPageContext extends NextPageContext {
-  user: IdToken | undefined
-}
+import { AuthProvider } from "components/AuthProvider"
+import { getUser } from "utils/auth0"
 
 export default function withDefaultPage<P, IP = P>(
-  Page: DefaultPageWrapped<P, IP>
-): DefaultPage<P, IP> {
-  const defaultPage: DefaultPage<P, IP> = props => {
-    const { user, isAuthenticated, isAuthenticating } = props
-
+  Page: NextPage<P, IP>
+): NextPage<P & { isAuthenticating: boolean }, IP> {
+  const defaultPage: NextPage<
+    P & { isAuthenticating: boolean },
+    IP
+  > = props => {
+    const user = getUser()
     return (
       <AuthProvider
         user={user}
-        isAuthenticated={isAuthenticated}
-        isAuthenticating={isAuthenticating}
+        isAuthenticated={!!user && !props.isAuthenticating}
+        isAuthenticating={props.isAuthenticating}
       >
         <EventsProvider>
-          <Nav user={user} isAuthenticating={isAuthenticating} />
+          <Nav />
           <ErrorBoundary>
             <Suspense fallback={<Loading />}>
               <Page {...props} />
@@ -55,20 +34,8 @@ export default function withDefaultPage<P, IP = P>(
     )
   }
 
-  defaultPage.getInitialProps = async ctx => {
-    const req = ctx && ctx.req
-    const user = getUser(req)
-
-    let pageProps = {}
-    if (Page.getInitialProps) {
-      pageProps = await Page.getInitialProps({ ...ctx, user })
-    }
-
-    return {
-      ...(pageProps as IP),
-      user,
-      isAuthenticated: !!user && isAuthenticated(req),
-    }
+  if (Page.getInitialProps) {
+    defaultPage.getInitialProps = Page.getInitialProps.bind(Page)
   }
 
   return defaultPage

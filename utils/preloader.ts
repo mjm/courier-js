@@ -53,7 +53,7 @@ class Preloader {
     for (const route of queries) {
       const match = route.matcher(url)
       if (match) {
-        return { query: route.query, variables: match.params }
+        return { query: route.query, variables: { ...match.params } }
       }
     }
     return null

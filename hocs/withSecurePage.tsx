@@ -5,11 +5,11 @@ import Router from "next/router"
 
 import { useAuth } from "components/AuthProvider"
 import Loading from "components/Loading"
-import withDefaultPage, { DefaultPage } from "hocs/withDefaultPage"
+import withDefaultPage from "hocs/withDefaultPage"
 
 export default function withSecurePage<P, IP>(
   Page: NextPage<P, IP>
-): DefaultPage<P, IP> {
+): NextPage<P & { isAuthenticating: boolean }, IP> {
   const securePage: NextPage<P, IP> = props => {
     const { isAuthenticated, isAuthenticating } = useAuth()
 
