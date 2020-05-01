@@ -85,14 +85,6 @@ lambda_function_handler = rule(
 )
 
 def _lambda_functions_upload_impl(ctx):
-  upload_args = ctx.actions.args()
-
-  upload_args.add("-info-file", ctx.info_file)
-  upload_args.add("-version-file", ctx.version_file)
-  upload_args.add("-bucket", ctx.attr.bucket)
-  upload_args.add("-key-prefix", ctx.attr.prefix)
-  upload_args.add_all(ctx.attr.bundles)
-
   runfiles = ctx.runfiles(
     files = [
       ctx.executable._uploader,
@@ -108,7 +100,7 @@ def _lambda_functions_upload_impl(ctx):
       "{INFO_FILE}": _runfile_path(ctx, ctx.info_file),
       "{VERSION_FILE}": _runfile_path(ctx, ctx.version_file),
       "{BUCKET}": ctx.attr.bucket,
-      "{KEY_PREFIX}": ctx.attr.prefix,
+      "{MANIFEST_KEY}": ctx.attr.manifest_key,
       "{UPLOADER_ARGS}": " ".join([
         _runfile_path(ctx, f) for f in ctx.files.bundles
       ]),
@@ -129,7 +121,7 @@ lambda_functions_upload = rule(
   attrs = {
     "bundles": attr.label_list(),
     "bucket": attr.string(),
-    "prefix": attr.string(),
+    "manifest_key": attr.string(),
     "_uploader": attr.label(
       default = "//cmd/upload-functions",
       cfg = "host",

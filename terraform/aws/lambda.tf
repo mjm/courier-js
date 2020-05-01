@@ -8,13 +8,22 @@ resource "aws_s3_bucket" "lambda_handlers" {
   }
 }
 
+data "aws_s3_bucket_object" "lambda_manifest" {
+  bucket = aws_s3_bucket.lambda_handlers.bucket
+  key    = "${var.function_revision}.json"
+}
+
+locals {
+  function_keys = jsondecode(data.aws_s3_bucket_object.lambda_manifest.body)
+}
+
 module "graphql_function" {
   source = "../modules/lambda_function"
 
   function_name = "graphql"
   env           = var.env
   s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
-  revision      = var.function_revision
+  s3_key        = local.function_keys["graphql"]
   policies = [
     aws_iam_policy.courier_table.arn,
     aws_iam_policy.config_params.arn,
@@ -29,7 +38,7 @@ module "pusherauth_function" {
   function_name = "pusherauth"
   env           = var.env
   s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
-  revision      = var.function_revision
+  s3_key        = local.function_keys["pusherauth"]
   policies = [
     aws_iam_policy.courier_table.arn,
     aws_iam_policy.config_params.arn,
@@ -42,7 +51,7 @@ module "events_function" {
   function_name = "events"
   env           = var.env
   s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
-  revision      = var.function_revision
+  s3_key        = local.function_keys["events"]
   timeout       = 60
   policies = [
     aws_iam_policy.courier_table.arn,
@@ -59,7 +68,7 @@ module "ping_function" {
   function_name = "ping"
   env           = var.env
   s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
-  revision      = var.function_revision
+  s3_key        = local.function_keys["ping"]
   policies = [
     aws_iam_policy.courier_table.arn,
     aws_iam_policy.config_params.arn,
@@ -73,7 +82,7 @@ module "stripecb_function" {
   function_name = "stripecb"
   env           = var.env
   s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
-  revision      = var.function_revision
+  s3_key        = local.function_keys["stripecb"]
   policies = [
     aws_iam_policy.courier_table.arn,
     aws_iam_policy.config_params.arn,

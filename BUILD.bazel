@@ -19,5 +19,5 @@ lambda_functions_upload(
         "//internal/functions/stripecb:stripecb_bundle",
     ],
     bucket = "{FUNCTION_BUCKET}",
-    prefix = "{GIT_COMMIT_SHA}/",
+    manifest_key = "{GIT_COMMIT_SHA}.json",
 )

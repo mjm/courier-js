@@ -17,5 +17,5 @@ RUNFILES=$(guess_runfiles)
   -info-file "{INFO_FILE}" \
   -version-file "{VERSION_FILE}" \
   -bucket "{BUCKET}" \
-  -key-prefix "{KEY_PREFIX}" \
+  -manifest-key "{MANIFEST_KEY}" \
   {UPLOADER_ARGS}

@@ -5,7 +5,7 @@ resource "aws_lambda_function" "fn" {
   role          = aws_iam_role.role.arn
 
   s3_bucket = var.s3_bucket
-  s3_key    = "${var.revision}/${var.function_name}.zip"
+  s3_key    = var.s3_key
 
   timeout = var.timeout
 
