@@ -7,6 +7,7 @@ import { EventsProvider } from "components/EventsProvider"
 import Nav from "components/Nav"
 import { getUser, IdToken, isAuthenticated } from "utils/auth0"
 import Loading from "components/Loading"
+import ErrorBoundary from "components/ErrorBoundary"
 
 export type DefaultPageWrapped<P = {}, IP = P> = NextComponentType<
   DefaultPageContext,
@@ -44,9 +45,11 @@ export default function withDefaultPage<P, IP = P>(
       >
         <EventsProvider>
           <Nav user={user} isAuthenticating={isAuthenticating} />
-          <Suspense fallback={<Loading />}>
-            <Page {...props} />
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<Loading />}>
+              <Page {...props} />
+            </Suspense>
+          </ErrorBoundary>
         </EventsProvider>
       </AuthProvider>
     )
