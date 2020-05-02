@@ -63,12 +63,6 @@ jobs:
       - store_test_results:
           path: /tmp/test-results
       - run:
-          name: Build container image
-          command: bazel build --config=ci //image:courier-functions
-      - run:
-          name: Push functions container image
-          command: bazel run --config=ci //image:courier-functions-push
-      - run:
           name: Upload Lambda functions
           command: bazel run --config=ci //:upload_functions
 
@@ -90,21 +84,21 @@ jobs:
     parameters:
       env:
         type: string
-    executor: node
+    executor:
+      name: terraform
+      workspace: courier-<< parameters.env >>-auth0
     steps:
       - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
       - run:
-          name: Install NPM modules
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
+          name: Configure Terraform
+          command: |
+            printf "credentials \"app.terraform.io\" {\n  token = \"%s\"\n}\n" "$TF_TOKEN" > ~/.terraformrc
       - run:
-          name: Update Auth0 configuration
-          command: npm run auth:import:<< parameters.env >>
+          name: terraform init
+          command: cd terraform/auth0 && terraform init
+      - run:
+          name: terraform apply
+          command: cd terraform/auth0 && terraform apply -auto-approve
 
   deploy_backend:
     parameters:
@@ -190,24 +184,16 @@ workflows:
           now_config_file: now.json
           requires:
             - build_and_test_backend_staging
-            - update_auth0_staging
-#      - deploy_backend:
-#          name: deploy_backend_staging
-#          workspace: staging-us-central1
-#          requires:
-#            - build_and_test_backend_staging
-#            - update_auth0_staging
       - deploy_backend_aws:
           name: deploy_backend_aws_staging
           workspace: staging-us-east-2
           requires:
             - build_and_test_backend_staging
-            - update_auth0_staging
       - mark_deploy:
           name: mark_deploy_staging
           dataset: courier-staging
           requires:
-#            - deploy_backend_staging
+            - update_auth0_staging
             - deploy_backend_aws_staging
 
       - build_and_test_backend:
