@@ -5,9 +5,6 @@
     "node": "12.x"
   },
   "scripts": {
-    "auth:import:staging": "a0deploy import -c auth0.staging.json -i auth0/ -x $STAGING_AUTH_SECRET",
-    "auth:import:prod": "a0deploy import -c auth0.prod.json -i auth0/ -x $PROD_AUTH_SECRET",
-    "auth:export:staging": "a0deploy export -c auth0.staging.json -f directory -o auth0/ -x $STAGING_AUTH_SECRET",
     "dev": "concurrently \"npm:dev-*\"",
     "dev-now": "now dev",
     "dev-relay": "npm run relay -- --watch",
@@ -40,7 +37,6 @@
     "@types/react-redux": "^7.1.7",
     "@types/uuid": "^3.4.6",
     "@types/yup": "^0.26.13",
-    "auth0-deploy-cli": "^3.3.2",
     "auth0-js": "^9.10.2",
     "autoprefixer": "^9.7.3",
     "cookie": "^0.4.0",

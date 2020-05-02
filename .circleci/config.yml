@@ -209,7 +209,7 @@ workflows:
               only: master
       - update_auth0:
           name: update_auth0_prod
-          env: prod
+          env: production
           requires:
             - build_and_test_backend_prod
       - deploy_frontend:
@@ -217,15 +217,14 @@ workflows:
           now_config_file: now.prod.json
           requires:
             - build_and_test_backend_prod
-            - update_auth0_prod
       - deploy_backend:
           name: deploy_backend_prod
           workspace: production-us-central1
           requires:
             - build_and_test_backend_prod
-            - update_auth0_prod
       - mark_deploy:
           name: mark_deploy_prod
           dataset: courier
           requires:
+            - update_auth0_prod
             - deploy_backend_prod

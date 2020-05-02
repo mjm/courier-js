@@ -1,7 +1,0 @@
-{
-  "enabled": true,
-  "script": "./micropub-tokens.js",
-  "name": "Include sites for Micropub tokens in access token",
-  "order": 4,
-  "stage": "login_success"
-}

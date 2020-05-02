@@ -1,7 +1,0 @@
-{
-  "enabled": true,
-  "script": "./allowed-users.js",
-  "name": "Only allow certain users",
-  "order": 1,
-  "stage": "login_success"
-}
