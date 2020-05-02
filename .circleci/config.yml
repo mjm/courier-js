@@ -86,7 +86,7 @@ jobs:
         type: string
     executor:
       name: terraform
-      workspace: courier-<< parameters.env >>-auth0
+      workspace: << parameters.env >>-auth0
     steps:
       - checkout
       - run:
