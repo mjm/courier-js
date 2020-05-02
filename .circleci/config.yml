@@ -17,7 +17,7 @@ executors:
       - image: circleci/dynamodb:15
     environment:
       GOOGLE_PROJECT: << parameters.project >>
-      FUNCTION_BUCKET: << parameters.bucket >>
+      LAMBDA_BUCKET: << parameters.bucket >>
   terraform:
     parameters:
       workspace:
@@ -38,12 +38,25 @@ jobs:
         type: env_var_name
       bucket:
         type: string
+      aws_access_key_id:
+        description: Env var name for access key ID
+        type: env_var_name
+        default: AWS_ACCESS_KEY_ID
+      aws_secret_access_key:
+        description: Env var name of secret access key
+        type: env_var_name
+        default: AWS_SECRET_ACCESS_KEY
     executor:
       name: bazel
       project: << parameters.project >>
       bucket: << parameters.bucket >>
     steps:
       - checkout
+      - run:
+          name: Set up env vars
+          command: |
+            echo 'export AWS_ACCESS_KEY_ID=$<< parameters.aws_access_key_id >>' >> $BASH_ENV
+            echo 'export AWS_SECRET_ACCESS_KEY=$<< parameters.aws_secret_access_key >>' >> $BASH_ENV
       - run:
           name: Set up GCP credentials
           command: |
@@ -99,31 +112,6 @@ jobs:
       - run:
           name: terraform apply
           command: cd terraform/auth0 && terraform apply -auto-approve
-
-  deploy_backend:
-    parameters:
-      workspace:
-        type: string
-    executor:
-      name: terraform
-      workspace: << parameters.workspace >>
-    steps:
-      - checkout
-      - run:
-          name: Configure Terraform
-          command: |
-            printf "credentials \"app.terraform.io\" {\n  token = \"%s\"\n}\n" "$TF_TOKEN" > ~/.terraformrc
-
-            cd terraform/gcp
-            echo "function_revision = \"$CIRCLE_SHA1\"" > revision.auto.tfvars
-            echo "revision.auto.tfvars:"
-            cat revision.auto.tfvars
-      - run:
-          name: terraform init
-          command: cd terraform/gcp && terraform init
-      - run:
-          name: terraform apply
-          command: cd terraform/gcp && terraform apply -auto-approve
 
   deploy_backend_aws:
     parameters:
@@ -185,7 +173,7 @@ workflows:
           requires:
             - build_and_test_backend_staging
       - deploy_backend_aws:
-          name: deploy_backend_aws_staging
+          name: deploy_backend_staging
           workspace: staging-us-east-2
           requires:
             - build_and_test_backend_staging
@@ -194,13 +182,15 @@ workflows:
           dataset: courier-staging
           requires:
             - update_auth0_staging
-            - deploy_backend_aws_staging
+            - deploy_backend_staging
 
       - build_and_test_backend:
           name: build_and_test_backend_prod
           project: courier-prod-269822
           credentials: PROD_GCLOUD_SERVICE_KEY
           bucket: courier-production-handlers
+          aws_access_key_id: PROD_AWS_ACCESS_KEY_ID
+          aws_secret_access_key: PROD_AWS_SECRET_ACCESS_KEY
           requires:
             # run the staging one first so we can rely on its build cache
             - build_and_test_backend_staging
@@ -217,9 +207,9 @@ workflows:
           now_config_file: now.prod.json
           requires:
             - build_and_test_backend_prod
-      - deploy_backend:
+      - deploy_backend_aws:
           name: deploy_backend_prod
-          workspace: production-us-central1
+          workspace: production-us-east-2
           requires:
             - build_and_test_backend_prod
       - mark_deploy:

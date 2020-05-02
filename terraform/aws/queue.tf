@@ -1,6 +1,7 @@
 resource "aws_sqs_queue" "events" {
-  name                      = "courier-${var.env}-events"
-  message_retention_seconds = 86400
+  name                       = "courier-${var.env}-events"
+  message_retention_seconds  = 86400
+  visibility_timeout_seconds = 300
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.events_dead_letter.arn,
