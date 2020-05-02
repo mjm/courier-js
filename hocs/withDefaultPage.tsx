@@ -1,11 +1,13 @@
 import React, { Suspense } from "react"
 
 import { NextPage } from "next"
-import { EventsProvider } from "components/EventsProvider"
-import Nav from "components/Nav"
-import Loading from "components/Loading"
-import ErrorBoundary from "components/ErrorBoundary"
+
 import { AuthProvider } from "components/AuthProvider"
+import ErrorBoundary from "components/ErrorBoundary"
+import { EventsProvider } from "components/EventsProvider"
+import Head from "components/Head"
+import Loading from "components/Loading"
+import Nav from "components/Nav"
 import { getUser } from "utils/auth0"
 
 export default function withDefaultPage<P, IP = P>(
@@ -25,7 +27,14 @@ export default function withDefaultPage<P, IP = P>(
         <EventsProvider>
           <Nav />
           <ErrorBoundary>
-            <Suspense fallback={<Loading />}>
+            <Suspense
+              fallback={
+                <main className="container my-8 mx-auto py-0 px-8">
+                  <Head title="Loading…" />
+                  <Loading />
+                </main>
+              }
+            >
               <Page {...props} />
             </Suspense>
           </ErrorBoundary>
