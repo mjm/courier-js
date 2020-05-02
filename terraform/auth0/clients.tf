@@ -85,3 +85,23 @@ resource "auth0_client" "ios" {
     lifetime_in_seconds = 36000
   }
 }
+
+resource "auth0_client" "deploy_extension" {
+  name = "auth0-deploy-cli-extension"
+
+  custom_login_page_on = true
+  is_first_party       = true
+  oidc_conformant      = true
+
+  grant_types = [
+    "authorization_code",
+    "implicit",
+    "refresh_token",
+    "client_credentials",
+  ]
+
+  jwt_configuration {
+    alg                 = "RS256"
+    lifetime_in_seconds = 36000
+  }
+}
