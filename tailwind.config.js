@@ -1,6 +1,7 @@
 const fonts = ["Inter", "Helvetica Neue", "sans-serif"]
 
 module.exports = {
+  purge: ["./**/*.tsx"],
   theme: {
     screens: {
       sm: "640px",
