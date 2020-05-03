@@ -9,7 +9,9 @@ resource "aws_s3_bucket" "lambda_handlers" {
 }
 
 data "aws_s3_bucket_object" "lambda_manifest" {
-  bucket = aws_s3_bucket.lambda_handlers.bucket
+  # always use production for this, since it's content addressable.
+  # this lets us reuse the same handler zips between staging and production.
+  bucket = "courier-production-handlers"
   key    = "${var.function_revision}.json"
 }
 
