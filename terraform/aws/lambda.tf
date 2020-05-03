@@ -11,11 +11,12 @@ resource "aws_s3_bucket" "lambda_handlers" {
 data "aws_s3_bucket_object" "lambda_manifest" {
   # always use production for this, since it's content addressable.
   # this lets us reuse the same handler zips between staging and production.
-  bucket = "courier-production-handlers"
+  bucket = local.lambda_bucket
   key    = "${var.function_revision}.json"
 }
 
 locals {
+  lambda_bucket = "courier-production-handlers"
   function_keys = jsondecode(data.aws_s3_bucket_object.lambda_manifest.body)
 }
 
@@ -24,7 +25,7 @@ module "graphql_function" {
 
   function_name = "graphql"
   env           = var.env
-  s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
+  s3_bucket     = local.lambda_bucket
   s3_key        = local.function_keys["graphql"]
   policies = [
     aws_iam_policy.courier_table.arn,
@@ -39,7 +40,7 @@ module "pusherauth_function" {
 
   function_name = "pusherauth"
   env           = var.env
-  s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
+  s3_bucket     = local.lambda_bucket
   s3_key        = local.function_keys["pusherauth"]
   policies = [
     aws_iam_policy.courier_table.arn,
@@ -52,7 +53,7 @@ module "events_function" {
 
   function_name = "events"
   env           = var.env
-  s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
+  s3_bucket     = local.lambda_bucket
   s3_key        = local.function_keys["events"]
   timeout       = 60
   policies = [
@@ -69,7 +70,7 @@ module "ping_function" {
 
   function_name = "ping"
   env           = var.env
-  s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
+  s3_bucket     = local.lambda_bucket
   s3_key        = local.function_keys["ping"]
   policies = [
     aws_iam_policy.courier_table.arn,
@@ -83,7 +84,7 @@ module "stripecb_function" {
 
   function_name = "stripecb"
   env           = var.env
-  s3_bucket     = aws_s3_bucket.lambda_handlers.bucket
+  s3_bucket     = local.lambda_bucket
   s3_key        = local.function_keys["stripecb"]
   policies = [
     aws_iam_policy.courier_table.arn,
