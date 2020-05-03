@@ -10,9 +10,11 @@ import (
 	"github.com/pusher/pusher-http-go"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/resolvers"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
@@ -32,7 +34,8 @@ func NewPusher(events event.Source, client *pusher.Client) *Pusher {
 }
 
 func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
-	ctx, span := tracer.Start(ctx, "Pusher.HandleEvent")
+	ctx, span := tracer.Start(ctx, "Pusher.HandleEvent",
+		trace.WithAttributes(key.String("pusher.app_id", p.client.AppID)))
 	defer span.End()
 
 	var pushed bool
@@ -44,9 +47,9 @@ func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
 	eventName := t.Name()
 	span.SetAttributes(key.String("event.name", eventName))
 
-	// for now, only send events when a user ID matches
+	// only send events when a user ID matches
 	userIDField := reflect.ValueOf(evt).FieldByName("UserId")
-	if userIDField.Kind() == reflect.Invalid {
+	if !userIDField.IsValid() {
 		return
 	}
 	userID := userIDField.String()
@@ -69,13 +72,6 @@ func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
 	pushed = true
 }
 
-var fieldsToNodeKind = map[string]string{
-	"FeedId":             resolvers.FeedNode,
-	"FeedSubscriptionId": resolvers.SubscribedFeedNode,
-	"PostId":             resolvers.PostNode,
-	"TweetId":            resolvers.TweetNode,
-}
-
 func convertIDsToGraphQL(evt interface{}) interface{} {
 	v := reflect.ValueOf(evt)
 	ptr := reflect.PtrTo(v.Type())
@@ -83,15 +79,14 @@ func convertIDsToGraphQL(evt interface{}) interface{} {
 	pv.Elem().Set(v)
 	v = pv.Elem()
 
-	for i := 0; i < v.NumField(); i++ {
-		fieldName := v.Type().Field(i).Name
-		nodeType, ok := fieldsToNodeKind[fieldName]
-		if !ok {
-			continue
+	if feedID := v.FieldByName("FeedId"); feedID.IsValid() {
+		if itemID := v.FieldByName("ItemId"); itemID.IsValid() {
+			// treat this as a tweet ID, we don't have events that deal with posts
+			postID := model.PostIDFromParts(model.FeedID(feedID.String()), itemID.String())
+			itemID.SetString(string(relay.MarshalID(resolvers.TweetNode, postID)))
 		}
 
-		id := relay.MarshalID(nodeType, fmt.Sprintf("%s", v.Field(i)))
-		v.Field(i).SetString(string(id))
+		feedID.SetString(string(relay.MarshalID(resolvers.FeedNode, feedID.String())))
 	}
 
 	return pv.Elem().Interface()

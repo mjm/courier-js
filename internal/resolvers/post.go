@@ -6,24 +6,24 @@ import (
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
 
-	"github.com/mjm/courier-js/internal/read/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 )
 
 type Post struct {
-	q    Queries
-	post *feeds.Post
+	q Queries
+	p *model.Post
 }
 
-func NewPost(q Queries, p *feeds.Post) *Post {
-	return &Post{q: q, post: p}
+func NewPost(q Queries, p *model.Post) *Post {
+	return &Post{q: q, p: p}
 }
 
 func (p *Post) ID() graphql.ID {
-	return relay.MarshalID(FeedNode, p.post.ID)
+	return relay.MarshalID(PostNode, p.p.ID)
 }
 
 func (p *Post) Feed(ctx context.Context) (*Feed, error) {
-	f, err := p.q.Feeds.Get(ctx, p.post.FeedID)
+	f, err := p.q.Feeds.Get(ctx, p.p.FeedID())
 	if err != nil {
 		return nil, err
 	}
@@ -31,47 +31,43 @@ func (p *Post) Feed(ctx context.Context) (*Feed, error) {
 }
 
 func (p *Post) ItemID() string {
-	return p.post.ItemID
+	return p.p.ItemID()
 }
 
 func (p *Post) URL() string {
-	return p.post.URL
+	return p.p.URL
 }
 
 func (p *Post) Title() string {
-	return p.post.Title
+	return p.p.Title
 }
 
 func (p *Post) TextContent() string {
-	return p.post.TextContent
+	return p.p.TextContent
 }
 
 func (p *Post) HTMLContent() string {
-	return p.post.HTMLContent
+	return p.p.HTMLContent
 }
 
 func (p *Post) PublishedAt() *graphql.Time {
-	if p.post.PublishedAt.Valid {
-		return &graphql.Time{
-			Time: p.post.PublishedAt.Time,
-		}
+	if p.p.PublishedAt != nil {
+		return &graphql.Time{Time: *p.p.PublishedAt}
 	}
 	return nil
 }
 
 func (p *Post) ModifiedAt() *graphql.Time {
-	if p.post.ModifiedAt.Valid {
-		return &graphql.Time{
-			Time: p.post.ModifiedAt.Time,
-		}
+	if p.p.ModifiedAt != nil {
+		return &graphql.Time{Time: *p.p.ModifiedAt}
 	}
 	return nil
 }
 
 func (p *Post) CreatedAt() graphql.Time {
-	return graphql.Time{Time: p.post.CreatedAt}
+	return graphql.Time{Time: p.p.CreatedAt}
 }
 
 func (p *Post) UpdatedAt() graphql.Time {
-	return graphql.Time{Time: p.post.UpdatedAt}
+	return graphql.Time{Time: p.p.UpdatedAt}
 }

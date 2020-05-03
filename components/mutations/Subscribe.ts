@@ -1,4 +1,4 @@
-import { Environment,graphql } from "react-relay"
+import { Environment, graphql } from "react-relay"
 
 import { commitMutationAsync } from "./commitMutationAsync"
 
@@ -24,7 +24,7 @@ const mutation = graphql`
 `
 
 export interface SubscribeInput {
-  tokenID: string
+  paymentMethodID: string
   email: string
 }
 

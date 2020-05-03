@@ -1,14 +1,16 @@
+import React from "react"
 import Moment from "react-moment"
-import {
-  createFragmentContainer,
-  Environment,
-  fetchQuery,
-  graphql,
-  RelayProp,
-} from "react-relay"
+import { fetchQuery, graphql } from "react-relay"
+import { useFragment, useRelayEnvironment } from "react-relay/hooks"
 
-import { FeedInfoCard_feed } from "@generated/FeedInfoCard_feed.graphql"
-import { FeedInfoCard_user } from "@generated/FeedInfoCard_user.graphql"
+import {
+  FeedInfoCard_feed,
+  FeedInfoCard_feed$key,
+} from "@generated/FeedInfoCard_feed.graphql"
+import {
+  FeedInfoCard_user,
+  FeedInfoCard_user$key,
+} from "@generated/FeedInfoCard_user.graphql"
 import { FeedInfoCardEndpointsQuery } from "@generated/FeedInfoCardEndpointsQuery.graphql"
 import { refreshFeed } from "@mutations/RefreshFeed"
 import { setFeedOptions } from "@mutations/SetFeedOptions"
@@ -16,52 +18,46 @@ import AsyncButton from "components/AsyncButton"
 import { useErrors } from "components/ErrorContainer"
 import { beginIndieAuth } from "utils/indieauth"
 
-interface Props {
-  feed: FeedInfoCard_feed
-  user: FeedInfoCard_user
-  relay: RelayProp
-}
-
-const FeedInfoCard: React.FC<Props> = ({
-  feed,
-  user,
-  relay: { environment },
-}) => {
-  return (
-    <div className="rounded-lg shadow-md bg-neutral-1 p-4">
-      <div className="flex flex-wrap -mx-4 -mb-4">
-        <LastCheckedSection feed={feed.feed} environment={environment} />
-        <AutopostSection feed={feed} environment={environment} />
-        <MicropubSection
-          feed={feed.feed}
-          user={user}
-          environment={environment}
-        />
-      </div>
-    </div>
-  )
-}
-
-export default createFragmentContainer(FeedInfoCard, {
-  feed: graphql`
-    fragment FeedInfoCard_feed on SubscribedFeed {
-      id
-      feed {
+const FeedInfoCard: React.FC<{
+  feed: FeedInfoCard_feed$key
+  user: FeedInfoCard_user$key
+}> = props => {
+  const feed = useFragment(
+    graphql`
+      fragment FeedInfoCard_feed on Feed {
         id
         url
         homePageURL
         micropubEndpoint
         refreshedAt
+        refreshing
+        autopost
       }
-      autopost
-    }
-  `,
-  user: graphql`
-    fragment FeedInfoCard_user on User {
-      micropubSites
-    }
-  `,
-})
+    `,
+    props.feed
+  )
+
+  const user = useFragment(
+    graphql`
+      fragment FeedInfoCard_user on Viewer {
+        micropubSites
+      }
+    `,
+    props.user
+  )
+
+  return (
+    <div className="rounded-lg shadow-md bg-neutral-1 p-4">
+      <div className="flex flex-wrap -mx-4 -mb-4">
+        <LastCheckedSection feed={feed} />
+        <AutopostSection feed={feed} />
+        <MicropubSection feed={feed} user={user} />
+      </div>
+    </div>
+  )
+}
+
+export default FeedInfoCard
 
 const InfoSection: React.FC<{
   className?: string
@@ -84,9 +80,9 @@ const InfoSection: React.FC<{
 }
 
 const LastCheckedSection: React.FC<{
-  feed: FeedInfoCard_feed["feed"]
-  environment: Environment
-}> = ({ feed, environment }) => {
+  feed: FeedInfoCard_feed
+}> = ({ feed }) => {
+  const environment = useRelayEnvironment()
   const { setError, clearErrors } = useErrors()
 
   async function onClick(): Promise<void> {
@@ -108,7 +104,7 @@ const LastCheckedSection: React.FC<{
           </span>
         </>
       }
-      buttonLabel="Check now"
+      buttonLabel={feed.refreshing ? "Checking…" : "Check now"}
       onClick={onClick}
     />
   )
@@ -116,8 +112,8 @@ const LastCheckedSection: React.FC<{
 
 const AutopostSection: React.FC<{
   feed: FeedInfoCard_feed
-  environment: Environment
-}> = ({ feed, environment }) => {
+}> = ({ feed }) => {
+  const environment = useRelayEnvironment()
   const { setError, clearErrors } = useErrors()
 
   async function onClick(): Promise<void> {
@@ -158,10 +154,11 @@ const micropubQuery = graphql`
 `
 
 export const MicropubSection: React.FC<{
-  feed: FeedInfoCard_feed["feed"]
+  feed: FeedInfoCard_feed
   user: FeedInfoCard_user
-  environment: Environment
-}> = ({ feed, user, environment }) => {
+}> = ({ feed, user }) => {
+  const environment = useRelayEnvironment()
+
   if (!feed.micropubEndpoint) {
     return null
   }
@@ -199,7 +196,7 @@ export const MicropubSection: React.FC<{
         isMicropubAuthenticated ? (
           <>Syndicating with Micropub</>
         ) : (
-          <>Not syncidating with Micropub</>
+          <>Not syndicating with Micropub</>
         )
       }
       buttonLabel={

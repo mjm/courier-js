@@ -15,7 +15,7 @@ func (c *PostConnection) Edges() []*PostEdge {
 	for _, edge := range c.conn.Edges {
 		edges = append(edges, &PostEdge{
 			q:    c.q,
-			edge: edge.(*feeds.Post),
+			edge: edge.(*feeds.PostEdge),
 		})
 	}
 	return edges
@@ -24,8 +24,8 @@ func (c *PostConnection) Edges() []*PostEdge {
 func (c *PostConnection) Nodes() []*Post {
 	var nodes []*Post
 	for _, edge := range c.conn.Edges {
-		node := edge.(*feeds.Post)
-		nodes = append(nodes, NewPost(c.q, node))
+		node := edge.(*feeds.PostEdge).Post
+		nodes = append(nodes, NewPost(c.q, &node))
 	}
 	return nodes
 }
@@ -40,11 +40,11 @@ func (c *PostConnection) TotalCount() int32 {
 
 type PostEdge struct {
 	q    Queries
-	edge *feeds.Post
+	edge *feeds.PostEdge
 }
 
 func (e *PostEdge) Node() *Post {
-	return NewPost(e.q, e.edge)
+	return NewPost(e.q, &e.edge.Post)
 }
 
 func (e *PostEdge) Cursor() pager.Cursor {

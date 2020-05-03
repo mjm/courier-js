@@ -1,11 +1,12 @@
 import React from "react"
+import { useRelayEnvironment } from "react-relay/hooks"
+import { Environment } from "relay-runtime"
 
 import Pusher, { AuthInfo, Channel } from "pusher-js"
 import { AuthData } from "pusher-js/types/src/core/auth/options"
 
 import { useAuth } from "components/AuthProvider"
 import { getToken } from "utils/auth0"
-import { Environment } from "relay-runtime"
 
 const pusher = process.browser
   ? new Pusher(process.env.PUSHER_KEY ?? "", {
@@ -59,7 +60,7 @@ export function useEvent(
   eventName: string,
   handler: Function,
   deps: unknown[]
-) {
+): void {
   const { channel } = React.useContext(EventsContext)
   React.useEffect(() => {
     if (!channel) {
@@ -78,14 +79,15 @@ export interface EventHandler<T> {
 }
 
 export interface EventHook {
-  (environment: Environment): void
+  (): void
 }
 
 export function createEventHook<T>(
   eventName: string,
   handler: EventHandler<T>
 ): EventHook {
-  return environment => {
+  return () => {
+    const environment = useRelayEnvironment()
     useEvent(
       eventName,
       (data: T) => {

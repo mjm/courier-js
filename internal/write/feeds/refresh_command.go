@@ -10,28 +10,24 @@ import (
 	"willnorris.com/go/microformats"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/trace/keys"
+	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/pkg/scraper"
 )
 
 // RefreshCommand is a request to refresh a feed's contents and create/update
 // posts for the feed.
 type RefreshCommand struct {
-	// UserID is the user who initiated the command. A feed can be shared between users,
-	// so sometimes a user can causes posts to be created that affect other users.
-	//
-	// The UserID may be empty if the refresh was triggered by an automated request
-	// instead of a user action.
-	UserID string
-	// FeedID is the ID of the feed that should be refreshed.
-	FeedID FeedID
-	// Force causes scraping to ignore saved cache headers and always fetch and process
-	// the full contents of the feed.
-	Force bool
+	UserID   string
+	FeedID   model.FeedID
+	Force    bool
+	TaskName string
 }
 
 var (
 	upToDateKey = key.New("feed.up_to_date").Bool
+	skippedKey  = key.New("task.skipped").Bool
 )
 
 func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) error {
@@ -39,12 +35,21 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 	span.SetAttributes(
 		keys.UserID(cmd.UserID),
 		keys.FeedID(cmd.FeedID),
+		keys.TaskName(cmd.TaskName),
 		key.Bool("feed.force_refresh", cmd.Force))
 
-	f, err := h.feedRepo.Get(ctx, cmd.FeedID)
+	f, err := h.feedRepo.Get(ctx, cmd.UserID, cmd.FeedID)
 	if err != nil {
 		return err
 	}
+
+	span.SetAttributes(key.String("feed.expected_task_name", f.RefreshTaskName))
+
+	if cmd.TaskName != "" && f.RefreshTaskName != cmd.TaskName {
+		span.SetAttributes(skippedKey(true))
+		return nil
+	}
+	span.SetAttributes(skippedKey(false))
 
 	var headers *scraper.CachingHeaders
 	if !cmd.Force && f.CachingHeaders != nil {
@@ -66,11 +71,31 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 
 	if scraped == nil {
 		span.SetAttributes(upToDateKey(true))
+
+		// this updates the refreshed at time and clears the refresh task
+		p := shared.UpdateFeedParams{
+			ID:               f.ID,
+			UserID:           f.UserID,
+			Title:            f.Title,
+			HomePageURL:      f.HomePageURL,
+			CachingHeaders:   f.CachingHeaders,
+			MicropubEndpoint: f.MicropubEndpoint,
+		}
+		if err := h.feedRepo.UpdateDetails(ctx, p); err != nil {
+			return err
+		}
+
+		h.events.Fire(ctx, feeds.FeedRefreshed{
+			FeedId: string(f.ID),
+			UserId: cmd.UserID,
+		})
+
 		return nil
 	}
 	span.SetAttributes(upToDateKey(false))
 
 	_, err = h.bus.Run(ctx, ImportPostsCommand{
+		UserID:  f.UserID,
 		FeedID:  f.ID,
 		Entries: scraped.Entries,
 	})
@@ -83,22 +108,23 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 		return err
 	}
 
-	p := UpdateFeedParams{
+	p := shared.UpdateFeedParams{
 		ID:          f.ID,
+		UserID:      f.UserID,
 		Title:       scraped.Title,
 		HomePageURL: scraped.HomePageURL,
-		CachingHeaders: &CachingHeaders{
+		CachingHeaders: &model.CachingHeaders{
 			Etag:         scraped.CachingHeaders.Etag,
 			LastModified: scraped.CachingHeaders.LastModified,
 		},
-		MPEndpoint: mpEndpoint,
+		MicropubEndpoint: mpEndpoint,
 	}
-	if err = h.feedRepo.Update(ctx, p); err != nil {
+	if err = h.feedRepo.UpdateDetails(ctx, p); err != nil {
 		return err
 	}
 
 	h.events.Fire(ctx, feeds.FeedRefreshed{
-		FeedId: f.ID.String(),
+		FeedId: string(f.ID),
 		UserId: cmd.UserID,
 	})
 

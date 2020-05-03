@@ -21,7 +21,7 @@ import (
 	"github.com/mjm/courier-js/internal/trace/keys"
 )
 
-var tracer = global.TraceProvider().Tracer("courier.blog/internal/functions/stripecb")
+var tracer = global.Tracer("courier.blog/internal/functions/stripecb")
 
 type Handler struct {
 	webhookSecret string
@@ -29,7 +29,7 @@ type Handler struct {
 	subQueries    billing.SubscriptionQueries
 }
 
-func NewHandler(stripeCfg billing2.Config, events event.Sink, subQueries billing.SubscriptionQueries, _ *event.Publisher) *Handler {
+func NewHandler(stripeCfg billing2.Config, events event.Sink, subQueries billing.SubscriptionQueries) *Handler {
 	return &Handler{
 		webhookSecret: stripeCfg.WebhookSecret,
 		events:        events,

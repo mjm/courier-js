@@ -3,25 +3,5 @@
   "name": "courier",
   "routes": [
     { "src": "/ping", "dest": "/api/ping" }
-  ],
-  "env": {
-    "CLIENT_ID": "@courier-prod-frontend-client-id",
-    "AUTH_DOMAIN": "@courier-prod-auth-domain",
-    "API_IDENTIFIER": "https://courier.blog/api/",
-    "MONTHLY_PLAN_ID": "plan_DcPlEgFAqBYpnH",
-    "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM",
-    "PING_URL": "https://ping-upnlzarjda-uc.a.run.app/"
-  },
-  "build": {
-    "env": {
-      "GRAPHQL_URL": "https://graphql-upnlzarjda-uc.a.run.app/",
-      "PUSHER_AUTH_URL": "https://pusher-auth-upnlzarjda-uc.a.run.app/",
-      "CLIENT_ID": "@courier-prod-frontend-client-id",
-      "AUTH_DOMAIN": "@courier-prod-auth-domain",
-      "API_IDENTIFIER": "https://courier.blog/api/",
-      "STRIPE_PUBLISHABLE_KEY": "pk_live_TsBkj95TgCAWK3Kjd8bAw6fM",
-      "PUSHER_KEY": "d45a33818a7ac71ba250",
-      "PUSHER_CLUSTER": "us2"
-    }
-  }
+  ]
 }

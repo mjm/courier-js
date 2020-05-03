@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "event.go",
+        "feed.go",
+        "post.go",
+        "time.go",
+        "tweet.go",
+        "type.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/shared/model",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/pager:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
+        "@com_github_segmentio_ksuid//:go_default_library",
+    ],
+)

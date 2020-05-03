@@ -1,0 +1,49 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "event_repository.go",
+        "feed_repository.go",
+        "post_repository.go",
+        "trace.go",
+        "tweet_repository.go",
+        "wire.go",
+    ],
+    importpath = "github.com/mjm/courier-js/internal/write/shared",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/db/expr:go_default_library",
+        "//internal/shared/model:go_default_library",
+        "//pkg/scraper:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/dynamodb/dynamodbiface:go_default_library",
+        "@com_github_google_wire//:go_default_library",
+        "@com_github_jonboulle_clockwork//:go_default_library",
+        "@io_opentelemetry_go_otel//api/global:go_default_library",
+        "@org_golang_google_grpc//codes:go_default_library",
+        "@org_golang_google_grpc//status:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "feed_repository_test.go",
+        "post_repository_test.go",
+        "suite_test.go",
+        "tweet_repository_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "//internal/db:go_default_library",
+        "//internal/pager:go_default_library",
+        "//internal/shared/model:go_default_library",
+        "//internal/trace:go_default_library",
+        "@com_github_jonboulle_clockwork//:go_default_library",
+        "@com_github_segmentio_ksuid//:go_default_library",
+        "@com_github_stretchr_testify//suite:go_default_library",
+    ],
+)

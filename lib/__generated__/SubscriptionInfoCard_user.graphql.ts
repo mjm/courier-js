@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -26,81 +27,81 @@ export type SubscriptionInfoCard_user$key = {
 
 
 const node: ReaderFragment = {
-  "kind": "Fragment",
-  "name": "SubscriptionInfoCard_user",
-  "type": "User",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "SubscriptionInfoCard_user",
   "selections": [
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "customer",
-      "storageKey": null,
       "args": null,
       "concreteType": "Customer",
+      "kind": "LinkedField",
+      "name": "customer",
       "plural": false,
       "selections": [
         {
-          "kind": "LinkedField",
           "alias": null,
-          "name": "creditCard",
-          "storageKey": null,
           "args": null,
           "concreteType": "CreditCard",
+          "kind": "LinkedField",
+          "name": "creditCard",
           "plural": false,
           "selections": [
             {
-              "kind": "ScalarField",
               "alias": null,
-              "name": "brand",
               "args": null,
+              "kind": "ScalarField",
+              "name": "brand",
               "storageKey": null
             },
             {
-              "kind": "ScalarField",
               "alias": null,
-              "name": "lastFour",
               "args": null,
+              "kind": "ScalarField",
+              "name": "lastFour",
               "storageKey": null
             }
-          ]
+          ],
+          "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     },
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "subscription",
-      "storageKey": null,
       "args": null,
       "concreteType": "UserSubscription",
+      "kind": "LinkedField",
+      "name": "subscription",
       "plural": false,
       "selections": [
         {
-          "kind": "ScalarField",
           "alias": null,
-          "name": "status",
           "args": null,
+          "kind": "ScalarField",
+          "name": "status",
           "storageKey": null
         },
         {
-          "kind": "ScalarField",
           "alias": null,
-          "name": "periodEnd",
           "args": null,
+          "kind": "ScalarField",
+          "name": "periodEnd",
           "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     },
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "subscriptionStatusOverride",
       "args": null,
+      "kind": "ScalarField",
+      "name": "subscriptionStatusOverride",
       "storageKey": null
     }
-  ]
+  ],
+  "type": "Viewer"
 };
-(node as any).hash = '4e4dd90b8c39e7864f237d4e9a3b511c';
+(node as any).hash = 'cf9df0952b410f9ee9d92be28423a2ad';
 export default node;

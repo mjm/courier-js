@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -10,7 +11,6 @@ export type TweetList_tweets = {
                 readonly " $fragmentRefs": FragmentRefs<"TweetCard_tweet">;
             };
         }>;
-        readonly totalCount: number;
     };
     readonly " $refType": "TweetList_tweets";
 };
@@ -22,48 +22,60 @@ export type TweetList_tweets$key = {
 
 
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = [
+  "allTweets"
+];
+return {
+  "argumentDefinitions": [
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "filter",
+      "type": "TweetFilter"
+    },
+    {
+      "defaultValue": 10,
+      "kind": "LocalArgument",
+      "name": "count",
+      "type": "Int"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "cursor",
+      "type": "Cursor"
+    }
+  ],
   "kind": "Fragment",
-  "name": "TweetList_tweets",
-  "type": "User",
   "metadata": {
     "connection": [
       {
         "count": "count",
         "cursor": "cursor",
         "direction": "forward",
-        "path": [
-          "allTweets"
-        ]
+        "path": (v0/*: any*/)
       }
-    ]
-  },
-  "argumentDefinitions": [
-    {
-      "kind": "LocalArgument",
-      "name": "filter",
-      "type": "TweetFilter",
-      "defaultValue": null
-    },
-    {
-      "kind": "LocalArgument",
-      "name": "count",
-      "type": "Int",
-      "defaultValue": 10
-    },
-    {
-      "kind": "LocalArgument",
-      "name": "cursor",
-      "type": "Cursor",
-      "defaultValue": null
+    ],
+    "refetch": {
+      "connection": {
+        "forward": {
+          "count": "count",
+          "cursor": "cursor"
+        },
+        "backward": null,
+        "path": (v0/*: any*/)
+      },
+      "fragmentPathInResult": [
+        "viewer"
+      ],
+      "operation": require('./TweetListPaginationQuery.graphql.ts')
     }
-  ],
+  },
+  "name": "TweetList_tweets",
   "selections": [
     {
-      "kind": "LinkedField",
       "alias": "allTweets",
-      "name": "__TweetList_allTweets_connection",
-      "storageKey": null,
       "args": [
         {
           "kind": "Variable",
@@ -71,92 +83,90 @@ const node: ReaderFragment = {
           "variableName": "filter"
         }
       ],
-      "concreteType": "TweetConnection",
+      "concreteType": "TweetGroupConnection",
+      "kind": "LinkedField",
+      "name": "__TweetList_allTweets_connection",
       "plural": false,
       "selections": [
         {
-          "kind": "LinkedField",
           "alias": null,
-          "name": "edges",
-          "storageKey": null,
           "args": null,
-          "concreteType": "TweetEdge",
+          "concreteType": "TweetGroupEdge",
+          "kind": "LinkedField",
+          "name": "edges",
           "plural": true,
           "selections": [
             {
-              "kind": "LinkedField",
               "alias": null,
-              "name": "node",
-              "storageKey": null,
               "args": null,
-              "concreteType": "Tweet",
+              "concreteType": "TweetGroup",
+              "kind": "LinkedField",
+              "name": "node",
               "plural": false,
               "selections": [
                 {
-                  "kind": "ScalarField",
                   "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
                   "name": "id",
-                  "args": null,
                   "storageKey": null
                 },
                 {
-                  "kind": "ScalarField",
                   "alias": null,
-                  "name": "__typename",
                   "args": null,
+                  "kind": "ScalarField",
+                  "name": "__typename",
                   "storageKey": null
                 },
                 {
+                  "args": null,
                   "kind": "FragmentSpread",
-                  "name": "TweetCard_tweet",
-                  "args": null
+                  "name": "TweetCard_tweet"
                 }
-              ]
+              ],
+              "storageKey": null
             },
             {
-              "kind": "ScalarField",
               "alias": null,
-              "name": "cursor",
               "args": null,
+              "kind": "ScalarField",
+              "name": "cursor",
               "storageKey": null
             }
-          ]
-        },
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "totalCount",
-          "args": null,
+          ],
           "storageKey": null
         },
         {
-          "kind": "LinkedField",
           "alias": null,
-          "name": "pageInfo",
-          "storageKey": null,
           "args": null,
           "concreteType": "PageInfo",
+          "kind": "LinkedField",
+          "name": "pageInfo",
           "plural": false,
           "selections": [
             {
-              "kind": "ScalarField",
               "alias": null,
-              "name": "endCursor",
               "args": null,
+              "kind": "ScalarField",
+              "name": "endCursor",
               "storageKey": null
             },
             {
-              "kind": "ScalarField",
               "alias": null,
-              "name": "hasNextPage",
               "args": null,
+              "kind": "ScalarField",
+              "name": "hasNextPage",
               "storageKey": null
             }
-          ]
+          ],
+          "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     }
-  ]
+  ],
+  "type": "Viewer"
 };
-(node as any).hash = 'f52d42aca0c08e9d484dee891cdf5414';
+})();
+(node as any).hash = '60742400a87cd6b674887784d2c3c17e';
 export default node;

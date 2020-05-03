@@ -24,14 +24,29 @@ message FeedOptionsChanged {
   string user_id = 1;
   string feed_subscription_id = 2;
   bool autopost = 3;
+  string feed_id = 4;
 }
 
 message FeedUnsubscribed {
   string user_id = 1;
   string feed_subscription_id = 2;
+  string feed_id = 3;
 }
 
 message PostsImported {
   string feed_id = 1;
   repeated string post_ids = 2;
+  string oldest_published_at = 3;
+  string user_id = 4;
+}
+
+message FeedPurged {
+  string user_id = 1;
+  string feed_id = 2;
+}
+
+message PostsPurged {
+  string user_id = 1;
+  string feed_id = 2;
+  int64 post_count = 3;
 }

@@ -1,28 +1,44 @@
 import React from "react"
-import { createFragmentContainer, graphql, RelayProp } from "react-relay"
+import { graphql } from "react-relay"
+import { useFragment, useRelayEnvironment } from "react-relay/hooks"
 
 import { faPlus, faTrashAlt } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Field, FieldArray, Form, Formik, useFormikContext } from "formik"
 
-import { EditTweetForm_tweet } from "@generated/EditTweetForm_tweet.graphql"
+import {
+  EditTweetForm_tweet,
+  EditTweetForm_tweet$key,
+} from "@generated/EditTweetForm_tweet.graphql"
 import { editTweet } from "@mutations/EditTweet"
 import { postTweet } from "@mutations/PostTweet"
 import { ErrorBox } from "components/ErrorBox"
 import TweetCardActions from "components/TweetCardActions"
 
-type FormValues = Pick<EditTweetForm_tweet, "body" | "mediaURLs"> & {
+interface FormValues {
   action: "save" | "post"
+  tweets: EditTweetForm_tweet["tweets"]
 }
 
 const EditTweetForm: React.FC<{
-  tweet: EditTweetForm_tweet
+  tweet: EditTweetForm_tweet$key
   onStopEditing: () => void
-  relay: RelayProp
-}> = ({ tweet, onStopEditing, relay }) => {
+}> = ({ tweet, onStopEditing }) => {
+  const environment = useRelayEnvironment()
+  const { id, tweets } = useFragment(
+    graphql`
+      fragment EditTweetForm_tweet on TweetGroup {
+        id
+        tweets {
+          body
+          mediaURLs
+        }
+      }
+    `,
+    tweet
+  )
   const initialValues: FormValues = {
-    body: tweet.body,
-    mediaURLs: [...tweet.mediaURLs],
+    tweets: tweets.map(t => ({ ...t })),
     action: "save",
   }
 
@@ -30,14 +46,20 @@ const EditTweetForm: React.FC<{
     <Formik
       initialValues={initialValues}
       initialStatus={{ error: null }}
-      onSubmit={async ({ action, ...values }, actions) => {
-        const input = { id: tweet.id, ...values }
-        input.mediaURLs = input.mediaURLs.filter(url => url !== "")
+      onSubmit={async ({ action, tweets }, actions) => {
+        const input = {
+          id,
+          tweets: tweets.map(({ mediaURLs, ...t }) => ({
+            mediaURLs: mediaURLs.filter(url => url !== ""),
+            ...t,
+          })),
+        }
+
         try {
           if (action === "save") {
-            editTweet(relay.environment, input)
+            editTweet(environment, input)
           } else {
-            await postTweet(relay.environment, input)
+            await postTweet(environment, input)
           }
           onStopEditing()
         } catch (err) {
@@ -59,15 +81,22 @@ const EditTweetForm: React.FC<{
         return (
           <Form>
             <ErrorBox error={status.error} />
-            <div className="px-4 pt-5 pb-3">
-              <Field
-                component="textarea"
-                name="body"
-                autoFocus
-                className="bg-neutral-1 border border-neutral-2 rounded w-full h-32 p-3 focus:outline-none"
-              />
-            </div>
-            <MediaURLFields urls={values.mediaURLs} />
+            {values.tweets.map((t, i) => (
+              <>
+                <div className="px-4 pt-5 pb-3">
+                  <Field
+                    component="textarea"
+                    name={`tweets.${i}.body`}
+                    autoFocus
+                    className="bg-neutral-1 border border-neutral-2 rounded w-full h-32 p-3 focus:outline-none"
+                  />
+                </div>
+                <MediaURLFields
+                  name={`tweets.${i}.mediaURLs`}
+                  urls={t.mediaURLs}
+                />
+              </>
+            ))}
             <TweetCardActions
               left={
                 <>
@@ -107,20 +136,13 @@ const EditTweetForm: React.FC<{
   )
 }
 
-export default createFragmentContainer(EditTweetForm, {
-  tweet: graphql`
-    fragment EditTweetForm_tweet on Tweet {
-      id
-      body
-      mediaURLs
-    }
-  `,
-})
+export default EditTweetForm
 
 interface MediaURLFieldsProps {
+  name: string
   urls: readonly string[]
 }
-const MediaURLFields: React.FC<MediaURLFieldsProps> = ({ urls }) => {
+const MediaURLFields: React.FC<MediaURLFieldsProps> = ({ name, urls }) => {
   const { setFieldValue } = useFormikContext()
   const canAddMedia = urls.length < 4 || (urls.length === 4 && urls[3] === "")
 
@@ -131,12 +153,12 @@ const MediaURLFields: React.FC<MediaURLFieldsProps> = ({ urls }) => {
     }
 
     if (lastURL !== "") {
-      setFieldValue("mediaURLs", [...urls, ""])
+      setFieldValue(name, [...urls, ""])
     }
   }, [urls, urls.length, lastURL])
 
   return (
-    <FieldArray name="mediaURLs">
+    <FieldArray name={name}>
       {({ insert, remove, pop }) => {
         function realInsert(index: number): void {
           insert(index, "")
@@ -159,7 +181,7 @@ const MediaURLFields: React.FC<MediaURLFieldsProps> = ({ urls }) => {
                   }`}
                 >
                   <Field
-                    name={`mediaURLs.${index}`}
+                    name={`${name}.${index}`}
                     placeholder="https://example.org/photo.jpg"
                     className="appearance-none bg-transparent border-none w-full p-3 text-sm focus:outline-none"
                   />

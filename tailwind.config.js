@@ -1,6 +1,7 @@
 const fonts = ["Inter", "Helvetica Neue", "sans-serif"]
 
 module.exports = {
+  purge: ["./**/*.tsx"],
   theme: {
     screens: {
       sm: "640px",
@@ -95,6 +96,7 @@ module.exports = {
     textColor: ["responsive", "hover", "group-hover", "focus", "disabled"],
     backgroundColor: ["responsive", "hover", "focus", "disabled"],
     borderWidth: ["responsive", "first"],
+    opacity: ["responsive", "disabled"],
   },
   plugins: [],
 }

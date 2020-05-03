@@ -17,11 +17,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import { IdToken } from "utils/auth0"
+import { useAuth } from "components/AuthProvider"
 
-const Nav: React.FC<{
-  user?: IdToken
-  isAuthenticating?: boolean
-}> = ({ user, isAuthenticating = false }) => {
+const Nav: React.FC = () => {
+  const { user, isAuthenticating } = useAuth()
   const [menuVisible, setMenuVisible] = React.useState(false)
 
   return (

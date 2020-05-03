@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
@@ -20,19 +19,19 @@ import (
 
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/config"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/pkg/tracehttp"
 )
 
 var (
-	ErrInvalidAction     = errors.New("unknown tweet action")
 	ErrNoTwitterIdentity = errors.New("no twitter identity found")
 	ErrNoContentType     = errors.New("no content type")
 )
 
 type TwitterConfig struct {
-	ConsumerKey    string `secret:"twitter-consumer-key"`
-	ConsumerSecret string `secret:"twitter-consumer-secret"`
+	ConsumerKey    string `secret:"twitter/consumer-key"`
+	ConsumerSecret string `secret:"twitter/consumer-secret"`
 }
 
 func NewTwitterConfig(l *config.Loader) (cfg TwitterConfig, err error) {
@@ -74,12 +73,11 @@ func NewExternalTweetRepository(authConfig auth.Config, twitterConfig TwitterCon
 	}
 }
 
-func (r *ExternalTweetRepository) Create(ctx context.Context, userID string, tweet *Tweet) (*twitter.Tweet, error) {
+func (r *ExternalTweetRepository) Create(ctx context.Context, userID string, tweet *model.Tweet, inReplyTo int64) (*twitter.Tweet, error) {
 	ctx, span := tracer.Start(ctx, "ExternalTweetRepository.Create",
 		trace.WithAttributes(
 			keys.UserID(userID),
-			keys.TweetID(tweet.ID),
-			key.String("tweet.action", string(tweet.Action))))
+			key.Int64("tweet.in_reply_to", inReplyTo)))
 	defer span.End()
 
 	client, err := r.newClient(ctx, userID)
@@ -88,47 +86,48 @@ func (r *ExternalTweetRepository) Create(ctx context.Context, userID string, twe
 		return nil, err
 	}
 
-	switch tweet.Action {
-	case ActionTweet:
-		mediaIDs, err := r.uploadMediaURLs(ctx, client, tweet.MediaURLs)
-		if err != nil {
-			span.RecordError(ctx, err)
-			return nil, err
-		}
-
-		span.SetAttributes(key.Int("tweet.media_id_count", len(mediaIDs)))
-
-		postedTweet, res, err := client.Statuses.Update(tweet.Body, &twitter.StatusUpdateParams{
-			MediaIds: mediaIDs,
-		})
-		if err != nil {
-			span.RecordError(ctx, err)
-			return nil, err
-		}
-
-		span.SetAttributes(postedTweetIDKey(postedTweet.ID), responseStatusKey(res.StatusCode))
-		return postedTweet, nil
-
-	case ActionRetweet:
-		tweetID, err := strconv.ParseInt(tweet.RetweetID, 10, 64)
-		if err != nil {
-			span.RecordError(ctx, err)
-			return nil, err
-		}
-
-		span.SetAttributes(key.Int64("tweet.retweet_id", tweetID))
-
-		postedTweet, res, err := client.Statuses.Retweet(tweetID, nil)
-		if err != nil {
-			span.RecordError(ctx, err)
-			return nil, err
-		}
-
-		span.SetAttributes(postedTweetIDKey(postedTweet.ID), responseStatusKey(res.StatusCode))
-		return postedTweet, nil
+	mediaIDs, err := r.uploadMediaURLs(ctx, client, tweet.MediaURLs)
+	if err != nil {
+		span.RecordError(ctx, err)
+		return nil, err
 	}
 
-	panic(fmt.Errorf("%w: %q", ErrInvalidAction, tweet.Action))
+	span.SetAttributes(key.Int("tweet.media_id_count", len(mediaIDs)))
+
+	postedTweet, res, err := client.Statuses.Update(tweet.Body, &twitter.StatusUpdateParams{
+		MediaIds:          mediaIDs,
+		InReplyToStatusID: inReplyTo,
+	})
+	if err != nil {
+		span.RecordError(ctx, err)
+		return nil, err
+	}
+
+	span.SetAttributes(postedTweetIDKey(postedTweet.ID), responseStatusKey(res.StatusCode))
+	return postedTweet, nil
+}
+
+func (r *ExternalTweetRepository) Retweet(ctx context.Context, userID string, retweetID int64) (*twitter.Tweet, error) {
+	ctx, span := tracer.Start(ctx, "ExternalTweetRepository.Retweet",
+		trace.WithAttributes(
+			keys.UserID(userID),
+			key.Int64("tweet.retweet_id", retweetID)))
+	defer span.End()
+
+	client, err := r.newClient(ctx, userID)
+	if err != nil {
+		span.RecordError(ctx, err)
+		return nil, err
+	}
+
+	postedTweet, res, err := client.Statuses.Retweet(retweetID, nil)
+	if err != nil {
+		span.RecordError(ctx, err)
+		return nil, err
+	}
+
+	span.SetAttributes(postedTweetIDKey(postedTweet.ID), responseStatusKey(res.StatusCode))
+	return postedTweet, nil
 }
 
 type twitterClient struct {

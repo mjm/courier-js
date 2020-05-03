@@ -1,1 +1,0 @@
-DROP INDEX posts_feed_id_published_at_index;

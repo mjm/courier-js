@@ -1,35 +1,39 @@
 import React from "react"
-import { Environment, graphql } from "react-relay"
+import { graphql } from "react-relay"
+import { usePreloadedQuery } from "react-relay/hooks"
 
 import { NextPage } from "next"
 
+import { useFeedOptionsChangedEvent } from "@events/FeedOptionsChangedEvent"
 import { useFeedRefreshedEvent } from "@events/FeedRefreshedEvent"
-import { FeedsPageQueryResponse } from "@generated/FeedsPageQuery.graphql"
+import { FeedsPageQuery } from "@generated/FeedsPageQuery.graphql"
 import FeedList from "components/FeedList"
 import Head from "components/Head"
-import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-import { useFeedOptionsChangedEvent } from "@events/FeedOptionsChangedEvent"
+import { preloader } from "utils/preloader"
 
-const FeedsPage: NextPage<FeedsPageQueryResponse & {
-  environment: Environment
-}> = ({ environment, ...props }) => {
-  useFeedRefreshedEvent(environment)
-  useFeedOptionsChangedEvent(environment)
+const FeedsPage: NextPage = () => {
+  useFeedRefreshedEvent()
+  useFeedOptionsChangedEvent()
+
+  const data = usePreloadedQuery<FeedsPageQuery>(
+    graphql`
+      query FeedsPageQuery {
+        viewer {
+          ...FeedList_feeds
+        }
+      }
+    `,
+    preloader.get("/feeds")
+  )
 
   return (
     <main className="container mx-auto my-8">
       <Head title="Watched Feeds" />
 
-      <FeedList feeds={props} />
+      {data?.viewer && <FeedList feeds={data.viewer} />}
     </main>
   )
 }
 
-export default withData(withSecurePage(FeedsPage), {
-  query: graphql`
-    query FeedsPageQuery {
-      ...FeedList_feeds
-    }
-  `,
-})
+export default withSecurePage(FeedsPage)

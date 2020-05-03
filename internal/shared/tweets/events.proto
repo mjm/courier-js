@@ -6,28 +6,43 @@ option go_package = "tweets";
 message TweetCanceled {
   string user_id = 1;
   string tweet_id = 2;
+  string feed_id = 3;
+  string item_id = 4;
 }
 
 message TweetUncanceled {
   string user_id = 1;
   string tweet_id = 2;
+  string feed_id = 3;
+  string item_id = 4;
 }
 
 message TweetEdited {
   string user_id = 1;
   string tweet_id = 2;
+  string feed_id = 3;
+  string item_id = 4;
 }
 
 message TweetPosted {
   string user_id = 1;
   string tweet_id = 2;
   bool autoposted = 3;
+  string feed_id = 4;
+  string item_id = 5;
 }
 
 message TweetsImported {
   string user_id = 1;
   string subscription_id = 2;
-  repeated string created_tweet_ids = 3;
-  repeated string updated_tweet_ids = 4;
+  repeated string created_item_ids = 3;
+  repeated string updated_item_ids = 4;
   bool autopost = 5;
+  string feed_id = 6;
+}
+
+message TweetsPurged {
+  string user_id = 1;
+  string feed_id = 2;
+  int64 tweet_count = 3;
 }

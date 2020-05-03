@@ -4,12 +4,16 @@ go_library(
     name = "go_default_library",
     srcs = [
         "http.go",
+        "lambda.go",
         "trace.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/functions",
     visibility = ["//:__subpackages__"],
     deps = [
         "//pkg/tracehttp:go_default_library",
+        "@com_github_aws_aws_lambda_go//events:go_default_library",
+        "@com_github_awslabs_aws_lambda_go_api_proxy//httpadapter:go_default_library",
+        "@com_github_honeycombio_libhoney_go//:go_default_library",
         "@io_opentelemetry_go_otel//api/correlation:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
         "@io_opentelemetry_go_otel//api/propagation:go_default_library",
@@ -18,3 +22,9 @@ go_library(
         "@org_golang_google_grpc//status:go_default_library",
     ],
 )
+
+exports_files([
+    "lambda_handler.go.tpl",
+    "lambda_custom_handler.go.tpl",
+    "lambda_upload.sh.tpl",
+])

@@ -3,20 +3,13 @@ scalar DateTime
 scalar Time
 
 type Query {
-  viewer: User
+  viewer: Viewer
 
   node(id: ID!): Node
 
-  allSubscribedFeeds(
-    first: Int
-    last: Int
-    before: Cursor
-    after: Cursor
-  ): SubscribedFeedConnection!
+  feed(id: ID!): Feed
 
-  subscribedFeed(id: ID!): SubscribedFeed
-
-  tweet(id: ID!): Tweet
+  tweetGroup(id: ID!): TweetGroup
 
   allEvents(
     first: Int
@@ -60,7 +53,7 @@ type PageInfo {
   hasPreviousPage: Boolean!
 }
 
-type User {
+type Viewer {
   name: String!
   nickname: String!
   picture: String!
@@ -75,7 +68,12 @@ type User {
     last: Int
     before: Cursor
     after: Cursor
-  ): TweetConnection!
+  ): TweetGroupConnection!
+
+  allFeeds(
+    first: Int
+    after: Cursor
+  ): FeedConnection!
 }
 
 type Customer {
@@ -121,8 +119,10 @@ type Feed implements Node {
   homePageURL: String!
   micropubEndpoint: String!
   refreshedAt: Time
+  refreshing: Boolean!
   createdAt: Time!
   updatedAt: Time!
+  autopost: Boolean!
 
   posts(first: Int, last: Int, before: Cursor, after: Cursor): PostConnection!
 }
@@ -132,8 +132,8 @@ input AddFeedInput {
 }
 
 type AddFeedPayload {
-  feed: SubscribedFeed!
-  feedEdge: SubscribedFeedEdge!
+  feed: Feed!
+  feedEdge: FeedEdge!
 }
 
 input RefreshFeedInput {
@@ -150,7 +150,7 @@ input SetFeedOptionsInput {
 }
 
 type SetFeedOptionsPayload {
-  feed: SubscribedFeed!
+  feed: Feed!
 }
 
 input DeleteFeedInput {
@@ -187,35 +187,22 @@ type Post implements Node {
   updatedAt: Time!
 }
 
-type SubscribedFeed implements Node {
+type TweetGroup implements Node & TweetContent {
   id: ID!
   feed: Feed!
-  autopost: Boolean!
-}
-
-type SubscribedFeedConnection {
-  edges: [SubscribedFeedEdge!]!
-  nodes: [SubscribedFeed!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
-}
-
-type SubscribedFeedEdge {
-  cursor: Cursor!
-  node: SubscribedFeed!
-}
-
-type Tweet implements Node & TweetContent {
-  id: ID!
-  feed: SubscribedFeed!
   post: Post!
   action: TweetAction!
-  body: String!
-  mediaURLs: [String!]!
   retweetID: String!
+  tweets: [Tweet!]!
   status: TweetStatus!
   postAfter: Time
   postedAt: Time
+  postedRetweetID: String
+}
+
+type Tweet {
+  body: String!
+  mediaURLs: [String!]!
   postedTweetID: String
 }
 
@@ -235,16 +222,16 @@ enum TweetFilter {
   PAST
 }
 
-type TweetConnection {
-  edges: [TweetEdge!]!
-  nodes: [Tweet!]!
+type TweetGroupConnection {
+  edges: [TweetGroupEdge!]!
+  nodes: [TweetGroup!]!
   pageInfo: PageInfo!
   totalCount: Int!
 }
 
-type TweetEdge {
+type TweetGroupEdge {
   cursor: Cursor!
-  node: Tweet!
+  node: TweetGroup!
 }
 
 input CancelTweetInput {
@@ -252,7 +239,7 @@ input CancelTweetInput {
 }
 
 type CancelTweetPayload {
-  tweet: Tweet!
+  tweetGroup: TweetGroup!
 }
 
 input UncancelTweetInput {
@@ -260,7 +247,7 @@ input UncancelTweetInput {
 }
 
 type UncancelTweetPayload {
-  tweet: Tweet!
+  tweetGroup: TweetGroup!
 }
 
 input PostTweetInput {
@@ -270,26 +257,30 @@ input PostTweetInput {
 }
 
 type PostTweetPayload {
-  tweet: Tweet!
+  tweetGroup: TweetGroup!
 }
 
 input EditTweetInput {
   id: ID!
+  tweets: [TweetEdit!]!
+}
+
+input TweetEdit {
   body: String!
   mediaURLs: [String!]
 }
 
 type EditTweetPayload {
-  tweet: Tweet!
+  tweetGroup: TweetGroup!
 }
 
 input SubscribeInput {
-  tokenID: ID
+  paymentMethodID: ID
   email: String
 }
 
 type SubscribePayload {
-  user: User!
+  user: Viewer!
 }
 
 input CancelSubscriptionInput {
@@ -297,7 +288,7 @@ input CancelSubscriptionInput {
 }
 
 type CancelSubscriptionPayload {
-  user: User!
+  user: Viewer!
 }
 
 input CompleteIndieAuthInput {
@@ -328,8 +319,7 @@ type Event implements Node {
   createdAt: Time!
 
   feed: Feed
-  subscribedFeed: SubscribedFeed
-  tweet: Tweet
+  tweetGroup: TweetGroup
   boolValue: Boolean
 }
 
@@ -365,14 +355,12 @@ type FeedPreview {
 
 type TweetPreview implements TweetContent {
   action: TweetAction!
-  body: String!
-  mediaURLs: [String!]!
   retweetID: String!
+  tweets: [Tweet!]!
 }
 
 interface TweetContent {
   action: TweetAction!
-  body: String!
-  mediaURLs: [String!]!
   retweetID: String!
+  tweets: [Tweet!]!
 }

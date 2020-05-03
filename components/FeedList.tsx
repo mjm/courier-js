@@ -1,47 +1,55 @@
 import React from "react"
-import {
-  createPaginationContainer,
-  graphql,
-  RelayPaginationProp,
-} from "react-relay"
+import { graphql } from "react-relay"
+import { usePaginationFragment } from "react-relay/lib/hooks"
 
 import Link from "next/link"
 
-import { FeedList_feeds } from "@generated/FeedList_feeds.graphql"
+import { FeedList_feeds$key } from "@generated/FeedList_feeds.graphql"
 import FeedCard from "components/FeedCard"
-// need to use CSS Grid _and_ media queries, so a CSS module is the best thing here
-import styles from "components/FeedList.module.css"
 
 const FeedList: React.FC<{
-  feeds: FeedList_feeds
-  relay: RelayPaginationProp
+  feeds: FeedList_feeds$key
 }> = ({ feeds }) => {
-  if (!feeds.allSubscribedFeeds) {
+  const { data } = usePaginationFragment(
+    graphql`
+      fragment FeedList_feeds on Viewer
+        @refetchable(queryName: "FeedListPaginationQuery")
+        @argumentDefinitions(
+          count: { type: "Int", defaultValue: 20 }
+          cursor: { type: "Cursor" }
+        ) {
+        allFeeds(first: $count, after: $cursor)
+          @connection(key: "FeedList_allFeeds") {
+          edges {
+            node {
+              id
+              ...FeedCard_feed
+            }
+          }
+        }
+      }
+    `,
+    feeds
+  )
+
+  if (!data?.allFeeds) {
     return null
   }
 
-  const { edges, totalCount } = feeds.allSubscribedFeeds
+  const { edges } = data.allFeeds
 
   return (
     <div>
-      <div className="pb-4 text-neutral-10">
-        {totalCount === 0 ? (
-          "You aren't watching any feeds yet."
-        ) : totalCount === 1 ? (
-          <>
-            You are currently watching{" "}
-            <strong className="text-neutral-9">1 feed</strong> for new posts.
-          </>
-        ) : (
-          <>
-            You are currently watching{" "}
-            <strong className="text-neutral-10">{totalCount} feeds</strong> for
-            new posts.
-          </>
-        )}
-      </div>
+      {edges.length === 0 && (
+        <div className="pb-4 text-neutral-10">
+          You aren't watching any feeds yet.
+        </div>
+      )}
       <div className="-m-2">
-        <div className={`w-full mb-4 ${styles.feedGrid}`}>
+        <div
+          className={`w-full mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`}
+          style={{ gridAutoRows: "1fr" }}
+        >
           {edges.map(({ node }) => (
             <div key={node.id} className="p-2">
               <FeedCard feed={node} />
@@ -62,39 +70,4 @@ const FeedList: React.FC<{
   )
 }
 
-export default createPaginationContainer(
-  FeedList,
-  {
-    feeds: graphql`
-      fragment FeedList_feeds on Query
-        @argumentDefinitions(
-          count: { type: "Int", defaultValue: 20 }
-          cursor: { type: "Cursor" }
-        ) {
-        allSubscribedFeeds(first: $count, after: $cursor)
-          @connection(key: "FeedList_allSubscribedFeeds") {
-          edges {
-            node {
-              id
-              ...FeedCard_feed
-            }
-          }
-          totalCount
-        }
-      }
-    `,
-  },
-  {
-    getVariables(_props, { count, cursor }, _fragmentVariables) {
-      return {
-        count,
-        cursor,
-      }
-    },
-    query: graphql`
-      query FeedListPaginationQuery($count: Int!, $cursor: Cursor) {
-        ...FeedList_feeds @arguments(count: $count, cursor: $cursor)
-      }
-    `,
-  }
-)
+export default FeedList

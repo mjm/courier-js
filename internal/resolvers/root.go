@@ -2,7 +2,6 @@ package resolvers
 
 import (
 	"context"
-	"errors"
 	"net/url"
 
 	"github.com/google/wire"
@@ -16,36 +15,29 @@ import (
 	"willnorris.com/go/microformats"
 
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/pager"
-	"github.com/mjm/courier-js/internal/tasks"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
 	"github.com/mjm/courier-js/internal/write/user"
+	"github.com/mjm/courier-js/pkg/locatefeed"
+	"github.com/mjm/courier-js/pkg/scraper"
 )
 
 var DefaultSet = wire.NewSet(New, QueriesProvider)
 
-var (
-	ErrUnknownKind = errors.New("unrecognized ID kind")
-)
-
 // Root is the root resolver for queries and mutations.
 type Root struct {
-	db db.DB
-
 	q          Queries
 	commandBus *write.CommandBus
-	tasks      *tasks.Tasks
 }
 
 // New creates a new root resolver.
 func New(
 	q Queries,
 	commandBus *write.CommandBus,
-	tasks *tasks.Tasks,
 	_ *feeds.CommandHandler,
 	_ *tweets.CommandHandler,
 	_ *billing.CommandHandler,
@@ -54,7 +46,6 @@ func New(
 	return &Root{
 		q:          q,
 		commandBus: commandBus,
-		tasks:      tasks,
 	}
 }
 
@@ -78,23 +69,11 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	var err error
 	switch kind {
 	case FeedNode:
-		var id feeds.FeedID
-		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
-			return nil, err
-		}
-
-		f, err := r.q.Feeds.Get(ctx, id)
-		if err != nil {
-			return nil, err
-		}
-		n = NewFeed(r.q, f)
-
-	case SubscribedFeedNode:
-		n, err = r.SubscribedFeed(ctx, args)
+		n, err = r.Feed(ctx, args)
 	case TweetNode:
-		n, err = r.Tweet(ctx, args)
+		n, err = r.TweetGroup(ctx, args)
 	case PostNode:
-		var id feeds.PostID
+		var id model.PostID
 		if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 			return nil, err
 		}
@@ -114,49 +93,42 @@ func (r *Root) Node(ctx context.Context, args struct{ ID graphql.ID }) (*Node, e
 	return &Node{n}, nil
 }
 
-// SubscribedFeed gets a feed subscription for the current user by ID.
-func (r *Root) SubscribedFeed(ctx context.Context, args struct{ ID graphql.ID }) (*SubscribedFeed, error) {
-	var id feeds.SubscriptionID
+func (r *Root) Feed(ctx context.Context, args struct{ ID graphql.ID }) (*Feed, error) {
+	var id model.FeedID
 	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
 		return nil, err
 	}
 
-	sub, err := r.q.FeedSubscriptions.Get(ctx, id)
+	f, err := r.q.Feeds.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return NewSubscribedFeed(r.q, sub), nil
+	return NewFeed(r.q, f), nil
 }
 
-// Tweet gets a tweet for the current user by ID.
-func (r *Root) Tweet(ctx context.Context, args struct{ ID graphql.ID }) (*Tweet, error) {
-	var id tweets.TweetID
-	if err := relay.UnmarshalSpec(args.ID, &id); err != nil {
-		return nil, err
-	}
-
-	t, err := r.q.Tweets.Get(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewTweet(r.q, t), nil
-}
-
-// AllSubscribedFeeds gets a paged list of feed subscriptions for the current user.
-func (r *Root) AllSubscribedFeeds(ctx context.Context, args pager.Options) (*SubscribedFeedConnection, error) {
+func (r *Root) TweetGroup(ctx context.Context, args struct{ ID graphql.ID }) (*TweetGroup, error) {
 	userID, err := auth.GetUser(ctx).ID()
 	if err != nil {
 		return nil, err
 	}
 
-	conn, err := r.q.FeedSubscriptions.Paged(ctx, userID, args)
+	var postID model.PostID
+	if err := relay.UnmarshalSpec(args.ID, &postID); err != nil {
+		return nil, err
+	}
+
+	id := model.TweetGroupID{
+		UserID: userID,
+		PostID: postID,
+	}
+
+	tg, err := r.q.Tweets.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	return &SubscribedFeedConnection{q: r.q, conn: conn}, nil
+	return NewTweetGroup(r.q, tg), nil
 }
 
 // AllEvents gets a paged list of events for the current user.
@@ -197,25 +169,29 @@ func (r *Root) Microformats(ctx context.Context, args struct {
 func (r *Root) FeedPreview(ctx context.Context, args struct {
 	URL string
 }) (*FeedPreview, error) {
-	userID, err := auth.GetUser(ctx).ID()
+	_, err := auth.GetUser(ctx).ID()
 	if err != nil {
 		return nil, err
 	}
 
-	cmd := feeds.CreateCommand{
-		UserID: userID,
-		URL:    args.URL,
-	}
-	v, err := r.commandBus.Run(ctx, cmd)
-	if err != nil {
-		return nil, err
-	}
-	feedID := v.(feeds.FeedID)
-
-	feed, err := r.q.Feeds.Get(ctx, feedID)
+	u, err := url.Parse(args.URL)
 	if err != nil {
 		return nil, err
 	}
 
-	return &FeedPreview{q: r.q, feed: feed}, nil
+	u, err = locatefeed.Locate(ctx, u)
+	if err != nil {
+		return nil, err
+	}
+
+	sf, err := scraper.Scrape(ctx, u, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return &FeedPreview{
+		q:   r.q,
+		url: u,
+		sf:  sf,
+	}, nil
 }

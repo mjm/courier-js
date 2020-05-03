@@ -1,45 +1,25 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 	"os"
 
-	"cloud.google.com/go/pubsub"
-	"google.golang.org/api/option"
+	events2 "github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/segmentio/ksuid"
 
-	"github.com/mjm/courier-js/internal/functions/events"
 	"github.com/mjm/courier-js/internal/trace"
 )
 
 var port string
 
 func main() {
-	var svcname string
-	if len(os.Args) < 2 {
-		handleAllFunctions()
-	} else {
-		svcname = os.Args[1]
-		switch os.Args[1] {
-		case "graphql":
-			handleSingleFunction(graphQLHandler)
-		case "events":
-			handleSingleFunction(eventsHandler)
-		case "ping":
-			handleSingleFunction(pingHandler)
-		case "pusher-auth":
-			handleSingleFunction(pusherAuthHandler)
-		case "stripe-callback":
-			handleSingleFunction(stripeCallbackHandler)
-		case "tasks":
-			handleSingleFunction(tasksHandler)
-		}
-	}
-
-	trace.Init(secretConfig, svcname)
+	handleAllFunctions()
+	trace.InitLambda("courier")
 
 	port = os.Getenv("PORT")
 	if port == "" {
@@ -49,68 +29,92 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
-func handleSingleFunction(handler http.Handler) {
-	http.Handle("/", handler)
-}
-
 func handleAllFunctions() {
 	http.Handle("/graphql", graphQLHandler)
 	http.Handle("/ping", pingHandler)
 	http.Handle("/pusher-auth", pusherAuthHandler)
 	http.Handle("/stripe-callback", stripeCallbackHandler)
-	http.Handle("/events", eventsHandler)
-	http.Handle("/tasks", tasksHandler)
 
 	go pollForEvents()
 }
 
 func pollForEvents() {
 	ctx := context.Background()
-	client, err := pubsub.NewClient(ctx,
-		os.Getenv("GOOGLE_PROJECT"),
-		option.WithCredentialsFile(os.Getenv("GCP_CREDENTIALS_FILE")))
-	if err != nil {
-		log.Printf("error creating pubsub client: %v", err)
-	}
+	sess := session.Must(session.NewSession())
+	client := sqs.New(sess)
 
-	sub := client.Subscription(os.Getenv("GCP_SUBSCRIPTION_ID"))
-	err = sub.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
-		log.Printf("got pubsub message")
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			res, err := client.ReceiveMessageWithContext(ctx, &sqs.ReceiveMessageInput{
+				MaxNumberOfMessages: aws.Int64(5),
+				QueueUrl:            aws.String(os.Getenv("QUEUE_URL")),
+				WaitTimeSeconds:     aws.Int64(20),
+			})
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
 
-		sentMsg := events.PubSubPayload{
-			Message: events.Message{
-				Data:       msg.Data,
-				Attributes: msg.Attributes,
-				ID:         msg.ID,
-			},
-			Subscription: sub.ID(),
+			if len(res.Messages) == 0 {
+				continue
+			}
+
+			var msgs []events2.SQSMessage
+			for _, m := range res.Messages {
+				attrs := make(map[string]string)
+				for k, v := range m.Attributes {
+					attrs[k] = aws.StringValue(v)
+				}
+				msgAttrs := make(map[string]events2.SQSMessageAttribute)
+				for k, v := range m.MessageAttributes {
+					msgAttrs[k] = events2.SQSMessageAttribute{
+						StringValue:      v.StringValue,
+						BinaryValue:      v.BinaryValue,
+						StringListValues: aws.StringValueSlice(v.StringListValues),
+						BinaryListValues: v.BinaryListValues,
+						DataType:         aws.StringValue(v.DataType),
+					}
+				}
+
+				msg := events2.SQSMessage{
+					MessageId:              aws.StringValue(m.MessageId),
+					ReceiptHandle:          aws.StringValue(m.ReceiptHandle),
+					Body:                   aws.StringValue(m.Body),
+					Md5OfBody:              aws.StringValue(m.MD5OfBody),
+					Md5OfMessageAttributes: aws.StringValue(m.MD5OfMessageAttributes),
+					Attributes:             attrs,
+					MessageAttributes:      msgAttrs,
+					EventSourceARN:         "",
+					EventSource:            "",
+					AWSRegion:              "",
+				}
+				msgs = append(msgs, msg)
+			}
+
+			if err := eventsHandler.HandleSQS(ctx, events2.SQSEvent{Records: msgs}); err != nil {
+				log.Println(err)
+				continue
+			}
+
+			var deleteEntries []*sqs.DeleteMessageBatchRequestEntry
+			for _, m := range res.Messages {
+				deleteEntries = append(deleteEntries, &sqs.DeleteMessageBatchRequestEntry{
+					Id:            aws.String(ksuid.New().String()),
+					ReceiptHandle: aws.String(*m.ReceiptHandle),
+				})
+			}
+
+			_, err = client.DeleteMessageBatchWithContext(ctx, &sqs.DeleteMessageBatchInput{
+				Entries:  deleteEntries,
+				QueueUrl: aws.String(os.Getenv("QUEUE_URL")),
+			})
+			if err != nil {
+				log.Println(err)
+				return
+			}
 		}
-		payload, err := json.Marshal(sentMsg)
-		if err != nil {
-			msg.Nack()
-			log.Fatal(err)
-		}
-
-		r, err := http.NewRequestWithContext(ctx, "POST", "http://localhost:"+port+"/events", bytes.NewBuffer(payload))
-		if err != nil {
-			msg.Nack()
-			log.Fatal(err)
-		}
-
-		res, err := http.DefaultClient.Do(r)
-		if err != nil {
-			msg.Nack()
-			log.Fatal(err)
-		}
-
-		if res.StatusCode > 299 {
-			msg.Nack()
-			log.Fatalf("unexpected status code %d handling event", res.StatusCode)
-		}
-
-		msg.Ack()
-	})
-	if err != nil {
-		log.Printf("error receiving pubsub messages: %v", err)
 	}
 }

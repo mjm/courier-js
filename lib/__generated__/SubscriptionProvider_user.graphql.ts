@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -19,38 +20,38 @@ export type SubscriptionProvider_user$key = {
 
 
 const node: ReaderFragment = {
-  "kind": "Fragment",
-  "name": "SubscriptionProvider_user",
-  "type": "User",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "SubscriptionProvider_user",
   "selections": [
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "subscription",
-      "storageKey": null,
       "args": null,
       "concreteType": "UserSubscription",
+      "kind": "LinkedField",
+      "name": "subscription",
       "plural": false,
       "selections": [
         {
-          "kind": "ScalarField",
           "alias": null,
-          "name": "status",
           "args": null,
+          "kind": "ScalarField",
+          "name": "status",
           "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     },
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "subscriptionStatusOverride",
       "args": null,
+      "kind": "ScalarField",
+      "name": "subscriptionStatusOverride",
       "storageKey": null
     }
-  ]
+  ],
+  "type": "Viewer"
 };
-(node as any).hash = 'c1f3ee1fe0cbc209f01abb17344cc064';
+(node as any).hash = '76f0838cd08629c038e6d69adf6dff78';
 export default node;

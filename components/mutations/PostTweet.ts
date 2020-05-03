@@ -5,13 +5,15 @@ import { commitMutationAsync } from "./commitMutationAsync"
 const mutation = graphql`
   mutation PostTweetMutation($input: PostTweetInput!) {
     postTweet(input: $input) {
-      tweet {
+      tweetGroup {
         id
-        body
-        mediaURLs
+        tweets {
+          body
+          mediaURLs
+          postedTweetID
+        }
         status
         postedAt
-        postedTweetID
         postAfter
       }
     }

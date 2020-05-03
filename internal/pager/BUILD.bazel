@@ -1,16 +1,32 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "go_default_library",
     srcs = [
         "cursor.go",
+        "dynamo.go",
         "pager.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/pager",
     visibility = ["//:__subpackages__"],
     deps = [
+        "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/dynamodb/dynamodbiface:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "pager_test.go",
+        "suite_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
         "//internal/db:go_default_library",
-        "@com_github_jmoiron_sqlx//:go_default_library",
-        "@org_golang_x_sync//errgroup:go_default_library",
+        "//internal/trace:go_default_library",
+        "@com_github_aws_aws_sdk_go//aws:go_default_library",
+        "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
+        "@com_github_stretchr_testify//suite:go_default_library",
     ],
 )

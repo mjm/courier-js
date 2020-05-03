@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash 25a2c62b23f42f543180a853649a3b8f */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -34,16 +34,11 @@ fragment EventTableRow_event on Event {
     id
     title
   }
-  subscribedFeed {
+  tweetGroup {
     id
-    feed {
-      title
-      id
+    tweets {
+      body
     }
-  }
-  tweet {
-    id
-    body
   }
   boolValue
 }
@@ -65,7 +60,7 @@ fragment RecentEventsCard_events on Query {
   }
 }
 
-fragment SubscriptionInfoCard_user on User {
+fragment SubscriptionInfoCard_user on Viewer {
   customer {
     creditCard {
       brand
@@ -79,7 +74,7 @@ fragment SubscriptionInfoCard_user on User {
   subscriptionStatusOverride
 }
 
-fragment UserInfoCard_user on User {
+fragment UserInfoCard_user on Viewer {
   name
   nickname
   picture
@@ -95,329 +90,314 @@ var v0 = [
   }
 ],
 v1 = {
-  "kind": "ScalarField",
   "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "id",
-  "args": null,
-  "storageKey": null
-},
-v2 = {
-  "kind": "ScalarField",
-  "alias": null,
-  "name": "title",
-  "args": null,
   "storageKey": null
 };
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "AccountPageQuery",
-    "type": "Query",
-    "metadata": null,
     "argumentDefinitions": [],
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "AccountPageQuery",
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "viewer",
-        "storageKey": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "viewer",
         "plural": false,
         "selections": [
           {
+            "args": null,
             "kind": "FragmentSpread",
-            "name": "UserInfoCard_user",
-            "args": null
+            "name": "UserInfoCard_user"
           },
           {
+            "args": null,
             "kind": "FragmentSpread",
-            "name": "SubscriptionInfoCard_user",
-            "args": null
+            "name": "SubscriptionInfoCard_user"
           }
-        ]
+        ],
+        "storageKey": null
       },
       {
+        "args": null,
         "kind": "FragmentSpread",
-        "name": "RecentEventsCard_events",
-        "args": null
+        "name": "RecentEventsCard_events"
       }
-    ]
+    ],
+    "type": "Query"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": [],
     "kind": "Operation",
     "name": "AccountPageQuery",
-    "argumentDefinitions": [],
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "viewer",
-        "storageKey": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "viewer",
         "plural": false,
         "selections": [
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "name",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "nickname",
-            "args": null,
             "storageKey": null
           },
           {
+            "alias": null,
+            "args": null,
             "kind": "ScalarField",
-            "alias": null,
             "name": "picture",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "customer",
-            "storageKey": null,
             "args": null,
             "concreteType": "Customer",
+            "kind": "LinkedField",
+            "name": "customer",
             "plural": false,
             "selections": [
               {
-                "kind": "LinkedField",
                 "alias": null,
-                "name": "creditCard",
-                "storageKey": null,
                 "args": null,
                 "concreteType": "CreditCard",
+                "kind": "LinkedField",
+                "name": "creditCard",
                 "plural": false,
                 "selections": [
                   {
-                    "kind": "ScalarField",
                     "alias": null,
-                    "name": "brand",
                     "args": null,
+                    "kind": "ScalarField",
+                    "name": "brand",
                     "storageKey": null
                   },
                   {
-                    "kind": "ScalarField",
                     "alias": null,
-                    "name": "lastFour",
                     "args": null,
+                    "kind": "ScalarField",
+                    "name": "lastFour",
                     "storageKey": null
                   }
-                ]
+                ],
+                "storageKey": null
               }
-            ]
+            ],
+            "storageKey": null
           },
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "subscription",
-            "storageKey": null,
             "args": null,
             "concreteType": "UserSubscription",
+            "kind": "LinkedField",
+            "name": "subscription",
             "plural": false,
             "selections": [
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "status",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "status",
                 "storageKey": null
               },
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "periodEnd",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "periodEnd",
                 "storageKey": null
               }
-            ]
+            ],
+            "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "subscriptionStatusOverride",
             "args": null,
+            "kind": "ScalarField",
+            "name": "subscriptionStatusOverride",
             "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       },
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "allEvents",
-        "storageKey": "allEvents(first:10)",
         "args": (v0/*: any*/),
         "concreteType": "EventConnection",
+        "kind": "LinkedField",
+        "name": "allEvents",
         "plural": false,
         "selections": [
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "edges",
-            "storageKey": null,
             "args": null,
             "concreteType": "EventEdge",
+            "kind": "LinkedField",
+            "name": "edges",
             "plural": true,
             "selections": [
               {
-                "kind": "LinkedField",
                 "alias": null,
-                "name": "node",
-                "storageKey": null,
                 "args": null,
                 "concreteType": "Event",
+                "kind": "LinkedField",
+                "name": "node",
                 "plural": false,
                 "selections": [
                   (v1/*: any*/),
                   {
-                    "kind": "ScalarField",
                     "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "eventType",
-                    "args": null,
                     "storageKey": null
                   },
                   {
+                    "alias": null,
+                    "args": null,
                     "kind": "ScalarField",
-                    "alias": null,
                     "name": "createdAt",
-                    "args": null,
                     "storageKey": null
                   },
                   {
-                    "kind": "LinkedField",
                     "alias": null,
-                    "name": "feed",
-                    "storageKey": null,
                     "args": null,
                     "concreteType": "Feed",
-                    "plural": false,
-                    "selections": [
-                      (v1/*: any*/),
-                      (v2/*: any*/)
-                    ]
-                  },
-                  {
                     "kind": "LinkedField",
-                    "alias": null,
-                    "name": "subscribedFeed",
-                    "storageKey": null,
-                    "args": null,
-                    "concreteType": "SubscribedFeed",
+                    "name": "feed",
                     "plural": false,
                     "selections": [
                       (v1/*: any*/),
                       {
-                        "kind": "LinkedField",
                         "alias": null,
-                        "name": "feed",
-                        "storageKey": null,
                         "args": null,
-                        "concreteType": "Feed",
-                        "plural": false,
-                        "selections": [
-                          (v2/*: any*/),
-                          (v1/*: any*/)
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "kind": "LinkedField",
-                    "alias": null,
-                    "name": "tweet",
-                    "storageKey": null,
-                    "args": null,
-                    "concreteType": "Tweet",
-                    "plural": false,
-                    "selections": [
-                      (v1/*: any*/),
-                      {
                         "kind": "ScalarField",
-                        "alias": null,
-                        "name": "body",
-                        "args": null,
+                        "name": "title",
                         "storageKey": null
                       }
-                    ]
-                  },
-                  {
-                    "kind": "ScalarField",
-                    "alias": null,
-                    "name": "boolValue",
-                    "args": null,
+                    ],
                     "storageKey": null
                   },
                   {
-                    "kind": "ScalarField",
                     "alias": null,
-                    "name": "__typename",
                     "args": null,
+                    "concreteType": "TweetGroup",
+                    "kind": "LinkedField",
+                    "name": "tweetGroup",
+                    "plural": false,
+                    "selections": [
+                      (v1/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "Tweet",
+                        "kind": "LinkedField",
+                        "name": "tweets",
+                        "plural": true,
+                        "selections": [
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "body",
+                            "storageKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "boolValue",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "__typename",
                     "storageKey": null
                   }
-                ]
+                ],
+                "storageKey": null
               },
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "cursor",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "cursor",
                 "storageKey": null
               }
-            ]
+            ],
+            "storageKey": null
           },
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "pageInfo",
-            "storageKey": null,
             "args": null,
             "concreteType": "PageInfo",
+            "kind": "LinkedField",
+            "name": "pageInfo",
             "plural": false,
             "selections": [
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "endCursor",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "endCursor",
                 "storageKey": null
               },
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "hasNextPage",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "hasNextPage",
                 "storageKey": null
               }
-            ]
+            ],
+            "storageKey": null
           }
-        ]
+        ],
+        "storageKey": "allEvents(first:10)"
       },
       {
-        "kind": "LinkedHandle",
         "alias": null,
-        "name": "allEvents",
         "args": (v0/*: any*/),
+        "filters": null,
         "handle": "connection",
         "key": "RecentEventsCard_allEvents",
-        "filters": null
+        "kind": "LinkedHandle",
+        "name": "allEvents"
       }
     ]
   },
   "params": {
-    "operationKind": "query",
-    "name": "AccountPageQuery",
     "id": null,
-    "text": "query AccountPageQuery {\n  viewer {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  subscribedFeed {\n    id\n    feed {\n      title\n      id\n    }\n  }\n  tweet {\n    id\n    body\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 10) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on User {\n  name\n  nickname\n  picture\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "AccountPageQuery",
+    "operationKind": "query",
+    "text": "query AccountPageQuery {\n  viewer {\n    ...UserInfoCard_user\n    ...SubscriptionInfoCard_user\n  }\n  ...RecentEventsCard_events\n}\n\nfragment EventTableRow_event on Event {\n  id\n  eventType\n  createdAt\n  feed {\n    id\n    title\n  }\n  tweetGroup {\n    id\n    tweets {\n      body\n    }\n  }\n  boolValue\n}\n\nfragment RecentEventsCard_events on Query {\n  allEvents(first: 10) {\n    edges {\n      node {\n        id\n        ...EventTableRow_event\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment SubscriptionInfoCard_user on Viewer {\n  customer {\n    creditCard {\n      brand\n      lastFour\n    }\n  }\n  subscription {\n    status\n    periodEnd\n  }\n  subscriptionStatusOverride\n}\n\nfragment UserInfoCard_user on Viewer {\n  name\n  nickname\n  picture\n}\n"
   }
 };
 })();

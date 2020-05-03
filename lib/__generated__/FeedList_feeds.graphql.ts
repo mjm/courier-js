@@ -1,16 +1,16 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type FeedList_feeds = {
-    readonly allSubscribedFeeds: {
+    readonly allFeeds: {
         readonly edges: ReadonlyArray<{
             readonly node: {
                 readonly id: string;
                 readonly " $fragmentRefs": FragmentRefs<"FeedCard_feed">;
             };
         }>;
-        readonly totalCount: number;
     };
     readonly " $refType": "FeedList_feeds";
 };
@@ -22,129 +22,139 @@ export type FeedList_feeds$key = {
 
 
 
-const node: ReaderFragment = {
+const node: ReaderFragment = (function(){
+var v0 = [
+  "allFeeds"
+];
+return {
+  "argumentDefinitions": [
+    {
+      "defaultValue": 20,
+      "kind": "LocalArgument",
+      "name": "count",
+      "type": "Int"
+    },
+    {
+      "defaultValue": null,
+      "kind": "LocalArgument",
+      "name": "cursor",
+      "type": "Cursor"
+    }
+  ],
   "kind": "Fragment",
-  "name": "FeedList_feeds",
-  "type": "Query",
   "metadata": {
     "connection": [
       {
         "count": "count",
         "cursor": "cursor",
         "direction": "forward",
-        "path": [
-          "allSubscribedFeeds"
-        ]
+        "path": (v0/*: any*/)
       }
-    ]
-  },
-  "argumentDefinitions": [
-    {
-      "kind": "LocalArgument",
-      "name": "count",
-      "type": "Int",
-      "defaultValue": 20
-    },
-    {
-      "kind": "LocalArgument",
-      "name": "cursor",
-      "type": "Cursor",
-      "defaultValue": null
+    ],
+    "refetch": {
+      "connection": {
+        "forward": {
+          "count": "count",
+          "cursor": "cursor"
+        },
+        "backward": null,
+        "path": (v0/*: any*/)
+      },
+      "fragmentPathInResult": [
+        "viewer"
+      ],
+      "operation": require('./FeedListPaginationQuery.graphql.ts')
     }
-  ],
+  },
+  "name": "FeedList_feeds",
   "selections": [
     {
-      "kind": "LinkedField",
-      "alias": "allSubscribedFeeds",
-      "name": "__FeedList_allSubscribedFeeds_connection",
-      "storageKey": null,
+      "alias": "allFeeds",
       "args": null,
-      "concreteType": "SubscribedFeedConnection",
+      "concreteType": "FeedConnection",
+      "kind": "LinkedField",
+      "name": "__FeedList_allFeeds_connection",
       "plural": false,
       "selections": [
         {
-          "kind": "LinkedField",
           "alias": null,
-          "name": "edges",
-          "storageKey": null,
           "args": null,
-          "concreteType": "SubscribedFeedEdge",
+          "concreteType": "FeedEdge",
+          "kind": "LinkedField",
+          "name": "edges",
           "plural": true,
           "selections": [
             {
-              "kind": "LinkedField",
               "alias": null,
-              "name": "node",
-              "storageKey": null,
               "args": null,
-              "concreteType": "SubscribedFeed",
+              "concreteType": "Feed",
+              "kind": "LinkedField",
+              "name": "node",
               "plural": false,
               "selections": [
                 {
-                  "kind": "ScalarField",
                   "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
                   "name": "id",
-                  "args": null,
                   "storageKey": null
                 },
                 {
-                  "kind": "ScalarField",
                   "alias": null,
-                  "name": "__typename",
                   "args": null,
+                  "kind": "ScalarField",
+                  "name": "__typename",
                   "storageKey": null
                 },
                 {
+                  "args": null,
                   "kind": "FragmentSpread",
-                  "name": "FeedCard_feed",
-                  "args": null
+                  "name": "FeedCard_feed"
                 }
-              ]
+              ],
+              "storageKey": null
             },
             {
-              "kind": "ScalarField",
               "alias": null,
-              "name": "cursor",
               "args": null,
+              "kind": "ScalarField",
+              "name": "cursor",
               "storageKey": null
             }
-          ]
-        },
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "totalCount",
-          "args": null,
+          ],
           "storageKey": null
         },
         {
-          "kind": "LinkedField",
           "alias": null,
-          "name": "pageInfo",
-          "storageKey": null,
           "args": null,
           "concreteType": "PageInfo",
+          "kind": "LinkedField",
+          "name": "pageInfo",
           "plural": false,
           "selections": [
             {
-              "kind": "ScalarField",
               "alias": null,
-              "name": "endCursor",
               "args": null,
+              "kind": "ScalarField",
+              "name": "endCursor",
               "storageKey": null
             },
             {
-              "kind": "ScalarField",
               "alias": null,
-              "name": "hasNextPage",
               "args": null,
+              "kind": "ScalarField",
+              "name": "hasNextPage",
               "storageKey": null
             }
-          ]
+          ],
+          "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     }
-  ]
+  ],
+  "type": "Viewer"
 };
-(node as any).hash = '2be6acd06f199042cf2b2cfe823a9bd7';
+})();
+(node as any).hash = 'bd0f327d8fe77909bcb22d5b740061ef';
 export default node;

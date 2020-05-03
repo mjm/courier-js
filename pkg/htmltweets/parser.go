@@ -22,6 +22,7 @@ type parser struct {
 	urls          []string
 	listType      string
 	listItemCount int
+	preformatted  bool
 }
 
 func (p *parser) parse(r io.Reader) (*parseResult, error) {
@@ -64,7 +65,10 @@ func (p *parser) visit(n *html.Node) error {
 var whitespaceRegex = regexp.MustCompile("\\s+")
 
 func (p *parser) visitText(n *html.Node) error {
-	s := whitespaceRegex.ReplaceAllString(n.Data, " ")
+	s := n.Data
+	if !p.preformatted {
+		s = whitespaceRegex.ReplaceAllString(s, " ")
+	}
 	p.text.WriteString(s)
 	return nil
 }
@@ -89,6 +93,8 @@ func (p *parser) visitElement(n *html.Node) error {
 		return p.visitP(n)
 	case "ul":
 		return p.visitUl(n)
+	case "pre":
+		return p.visitPre(n)
 	}
 
 	return p.visitChildren(n)
@@ -214,6 +220,17 @@ func (p *parser) visitUl(n *html.Node) error {
 	}
 	p.listType = ""
 	p.text.WriteRune('\n')
+	return nil
+}
+
+func (p *parser) visitPre(n *html.Node) error {
+	oldPreformatted := p.preformatted
+	p.preformatted = true
+	if err := p.visitChildren(n); err != nil {
+		return err
+	}
+	p.preformatted = oldPreformatted
+	p.text.WriteString("\n\n")
 	return nil
 }
 

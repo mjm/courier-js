@@ -12,7 +12,6 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/mjm/courier-js/internal/auth"
-	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/loader"
 )
 
@@ -21,7 +20,7 @@ type Handler struct {
 	Authenticator *auth.Authenticator
 }
 
-func NewHandler(schema *graphql.Schema, auther *auth.Authenticator, _ *event.Publisher) *Handler {
+func NewHandler(schema *graphql.Schema, auther *auth.Authenticator) *Handler {
 	return &Handler{
 		Schema:        schema,
 		Authenticator: auther,

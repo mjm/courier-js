@@ -1,13 +1,15 @@
 import React from "react"
-import { Environment, graphql } from "react-relay"
+import { graphql } from "react-relay"
+import { usePreloadedQuery } from "react-relay/hooks"
 
 import { NextPage } from "next"
 import Link from "next/link"
 
 import { useTweetCanceledEvent } from "@events/TweetCanceledEvent"
+import { useTweetEditedEvent } from "@events/TweetEditedEvent"
 import { useTweetPostedEvent } from "@events/TweetPostedEvent"
 import { useTweetUncanceledEvent } from "@events/TweetUncanceledEvent"
-import { TweetsPageQueryResponse } from "@generated/TweetsPageQuery.graphql"
+import { TweetsPageQuery } from "@generated/TweetsPageQuery.graphql"
 import Head from "components/Head"
 import Loading from "components/Loading"
 import Notice from "components/Notice"
@@ -15,33 +17,49 @@ import SubscriptionProvider, {
   useSubscription,
 } from "components/SubscriptionProvider"
 import TweetList from "components/TweetList"
-import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
+import { preloader } from "utils/preloader"
 
-const TweetsPage: NextPage<TweetsPageQueryResponse & {
-  environment: Environment
-}> = ({ upcoming, past, viewer, environment }) => {
-  useTweetCanceledEvent(environment)
-  useTweetUncanceledEvent(environment)
-  useTweetPostedEvent(environment)
+const TweetsPage: NextPage = () => {
+  useTweetCanceledEvent()
+  useTweetUncanceledEvent()
+  useTweetEditedEvent()
+  useTweetPostedEvent()
+
+  const data = usePreloadedQuery<TweetsPageQuery>(
+    graphql`
+      query TweetsPageQuery {
+        upcoming: viewer {
+          ...TweetList_tweets @arguments(filter: UPCOMING)
+        }
+        past: viewer {
+          ...TweetList_tweets @arguments(filter: PAST)
+        }
+        viewer {
+          ...SubscriptionProvider_user
+        }
+      }
+    `,
+    preloader.get("/tweets")
+  )
 
   return (
     <main className="container my-8 mx-auto py-0 px-8">
       <Head title="Your Tweets" />
-      {viewer && (
-        <SubscriptionProvider user={viewer}>
+      {data?.viewer && (
+        <SubscriptionProvider user={data.viewer}>
           <SubscribeBanner />
-          {upcoming && past ? (
+          {data?.upcoming && data?.past ? (
             <div className="flex flex-row flex-wrap -mx-4">
               <TweetList
-                emptyDescription="You don't have anymore tweets to review."
-                description={upcomingDescription}
-                tweets={upcoming}
+                description="You have some new tweets to review."
+                emptyDescription="You don't have any tweets to review."
+                tweets={data.upcoming}
               />
               <TweetList
-                emptyDescription="You haven't posted any tweets from Courier yet."
-                description={pastDescription}
-                tweets={past}
+                description="Here are your already reviewed tweets."
+                emptyDescription="You haven't posted or reviewed any tweets yet."
+                tweets={data.past}
               />
             </div>
           ) : (
@@ -53,51 +71,7 @@ const TweetsPage: NextPage<TweetsPageQueryResponse & {
   )
 }
 
-export default withData(withSecurePage(TweetsPage), {
-  query: graphql`
-    query TweetsPageQuery {
-      upcoming: viewer {
-        ...TweetList_tweets @arguments(filter: UPCOMING)
-      }
-      past: viewer {
-        ...TweetList_tweets @arguments(filter: PAST)
-      }
-      viewer {
-        ...SubscriptionProvider_user
-      }
-    }
-  `,
-})
-
-const upcomingDescription = (count: number): React.ReactNode => {
-  return (
-    <>
-      There{" "}
-      {count === 1 ? (
-        <>
-          is <strong className="text-neutral-9">1 draft tweet</strong>
-        </>
-      ) : (
-        <>
-          are <strong className="text-neutral-9">{count} draft tweets</strong>
-        </>
-      )}{" "}
-      awaiting your review.
-    </>
-  )
-}
-
-const pastDescription = (count: number): React.ReactNode => {
-  return (
-    <>
-      You have{" "}
-      <strong className="text-neutral-9">
-        {count} past tweet{count === 1 ? "" : "s"}
-      </strong>{" "}
-      that you've already reviewed.
-    </>
-  )
-}
+export default withSecurePage(TweetsPage)
 
 const SubscribeBanner: React.FC = () => {
   const { isSubscribed } = useSubscription()

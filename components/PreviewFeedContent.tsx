@@ -1,14 +1,28 @@
 import React from "react"
-import { createFragmentContainer, graphql } from "react-relay"
+import { graphql } from "react-relay"
+import { useFragment } from "react-relay/hooks"
 
-import { PreviewFeedContent_feed } from "@generated/PreviewFeedContent_feed.graphql"
+import { PreviewFeedContent_feed$key } from "@generated/PreviewFeedContent_feed.graphql"
 import AsyncButton from "components/AsyncButton"
 import TweetCard from "components/TweetCard"
 
 const PreviewFeedContent: React.FC<{
-  feed: PreviewFeedContent_feed
+  feed: PreviewFeedContent_feed$key
   onWatch: () => Promise<void>
-}> = ({ feed, onWatch }) => {
+}> = props => {
+  const feed = useFragment(
+    graphql`
+      fragment PreviewFeedContent_feed on FeedPreview {
+        url
+        title
+        tweets {
+          ...TweetCard_tweet
+        }
+      }
+    `,
+    props.feed
+  )
+
   return (
     <article className="my-8">
       <div className="mb-8">
@@ -32,7 +46,7 @@ const PreviewFeedContent: React.FC<{
         <AsyncButton
           type="button"
           className="btn btn-first btn-first-secondary"
-          onClick={async () => await onWatch()}
+          onClick={async () => await props.onWatch()}
         >
           Watch feed
         </AsyncButton>
@@ -41,14 +55,4 @@ const PreviewFeedContent: React.FC<{
   )
 }
 
-export default createFragmentContainer(PreviewFeedContent, {
-  feed: graphql`
-    fragment PreviewFeedContent_feed on FeedPreview {
-      url
-      title
-      tweets {
-        ...TweetCard_tweet
-      }
-    }
-  `,
-})
+export default PreviewFeedContent

@@ -8,8 +8,8 @@ import (
 
 // Config gives fields to configure tracing.
 type Config struct {
-	Dataset  string `env:"HONEY_DATASET"`
-	WriteKey string `secret:"honey-write-key"`
+	Dataset  string `env:"HONEY_DATASET" secret:"honeycomb/dataset"`
+	WriteKey string `secret:"honeycomb/write-key"`
 }
 
 func NewConfig(l *config.Loader) (cfg Config, err error) {

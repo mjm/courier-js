@@ -1,52 +1,70 @@
 package feeds
 
 import (
-	"time"
+	"strings"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
 
+	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/pager"
-	"github.com/mjm/courier-js/internal/read/feeds/queries"
+	"github.com/mjm/courier-js/internal/shared/model"
 )
 
 type postPager struct {
-	feedID FeedID
+	TableName string
+	FeedID    model.FeedID
 }
 
-func (p *postPager) EdgesQuery() string {
-	return queries.PostsPagerEdges
-}
+func (p *postPager) Query(cursor *pager.Cursor) *dynamodb.QueryInput {
+	pk := "FEED#" + string(p.FeedID)
 
-func (p *postPager) TotalQuery() string {
-	return queries.PostsPagerTotal
-}
+	var startKey map[string]*dynamodb.AttributeValue
+	if cursor != nil {
+		comps := strings.SplitN(string(*cursor), "###", 2)
+		sk, lsisk := comps[0], comps[1]
 
-func (p *postPager) Params() map[string]interface{} {
-	return map[string]interface{}{
-		"feed_id": p.feedID,
+		startKey = map[string]*dynamodb.AttributeValue{
+			db.PK:     {S: aws.String(pk)},
+			db.SK:     {S: aws.String(sk)},
+			db.LSI1SK: {S: aws.String(lsisk)},
+		}
+	}
+
+	return &dynamodb.QueryInput{
+		TableName:              &p.TableName,
+		IndexName:              aws.String(db.LSI1),
+		KeyConditionExpression: aws.String(`#pk = :pk and begins_with(#sk, :sk)`),
+		ExpressionAttributeNames: map[string]*string{
+			"#pk": aws.String(db.PK),
+			"#sk": aws.String(db.LSI1SK),
+		},
+		ExpressionAttributeValues: map[string]*dynamodb.AttributeValue{
+			":pk": {S: aws.String(pk)},
+			":sk": {S: aws.String("POST#")},
+		},
+		ScanIndexForward:  aws.Bool(false),
+		ExclusiveStartKey: startKey,
 	}
 }
 
-func (p *postPager) OrderBy() (string, bool) {
-	return "published_at", false
-}
-
-func (p *postPager) FromCursor(value pager.Cursor) interface{} {
-	return string(value)
-}
-
-func (p *postPager) ScanEdge(rows *sqlx.Rows) (pager.Edge, error) {
-	var post Post
-	if err := rows.StructScan(&post); err != nil {
+func (p *postPager) ScanEdge(item map[string]*dynamodb.AttributeValue) (pager.Edge, error) {
+	post, err := model.NewPostFromAttrs(item)
+	if err != nil {
 		return nil, err
 	}
 
-	return &post, nil
+	return &PostEdge{
+		Post:   *post,
+		cursor: pager.Cursor(aws.StringValue(item[db.SK].S) + "###" + aws.StringValue(item[db.LSI1SK].S)),
+	}, nil
 }
 
-func (p *Post) Cursor() pager.Cursor {
-	if !p.PublishedAt.Valid {
-		return ""
-	}
-	return pager.Cursor(p.PublishedAt.Time.Format(time.RFC3339))
+type PostEdge struct {
+	model.Post
+	cursor pager.Cursor
+}
+
+func (e *PostEdge) Cursor() pager.Cursor {
+	return e.cursor
 }

@@ -2,17 +2,18 @@ package tweets
 
 import (
 	"context"
-	"sync"
+	"reflect"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/segmentio/ksuid"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 
-	"github.com/mjm/courier-js/internal/shared/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/trace/keys"
+	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/pkg/htmltweets"
 
 	"golang.org/x/sync/errgroup"
@@ -21,49 +22,57 @@ import (
 // ImportTweetsCommand represents a request to create or update tweets in a subscription
 // to match some posts that were imported.
 type ImportTweetsCommand struct {
-	Subscription *FeedSubscription
-	Posts        []*Post
+	UserID          string
+	FeedID          model.FeedID
+	OldestPublished *time.Time
 }
 
 func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweetsCommand) error {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
-		keys.UserID(cmd.Subscription.UserID),
-		keys.FeedID(cmd.Subscription.FeedID),
-		keys.FeedSubscriptionID(cmd.Subscription.ID),
-		key.Bool("feed.autopost", cmd.Subscription.Autopost),
-		key.Int("import.post_count", len(cmd.Posts)))
+		keys.UserID(cmd.UserID),
+		keys.FeedID(cmd.FeedID))
 
-	var postIDs []feeds.PostID
-	for _, p := range cmd.Posts {
-		postIDs = append(postIDs, p.ID)
-	}
-
-	tweetsByPost, err := h.tweetRepo.ByPostIDs(ctx, cmd.Subscription.ID, postIDs)
+	feed, err := h.feedRepo.GetWithRecentItems(ctx, cmd.FeedID, cmd.OldestPublished)
 	if err != nil {
 		return err
 	}
 
+	span.SetAttributes(key.Int("import.post_count", len(feed.Posts)))
+
+	var toCreate []shared.CreateTweetParams
+	var toUpdate []shared.UpdateTweetParams
+
+	for _, post := range feed.Posts {
+		createTweet, updateTweet, err := h.planTweet(ctx, cmd.UserID, feed.Autopost, post)
+		if err != nil {
+			return err
+		}
+
+		if createTweet != nil {
+			toCreate = append(toCreate, *createTweet)
+		}
+		if updateTweet != nil {
+			toUpdate = append(toUpdate, *updateTweet)
+		}
+	}
+
+	span.SetAttributes(
+		key.Int("import.tweet_create_count", len(toCreate)),
+		key.Int("import.tweet_update_count", len(toUpdate)))
+
 	wg, subCtx := errgroup.WithContext(ctx)
-	var toCreate []CreateTweetParams
-	var toUpdate []UpdateTweetParams
-	var lock sync.Mutex
 
-	for _, post := range cmd.Posts {
-		post := post
-		tweets := tweetsByPost[post.ID]
-
+	if len(toCreate) > 0 {
 		wg.Go(func() error {
-			newTweets, updateTweets, err := h.planTweets(subCtx, post, tweets)
-			if err != nil {
-				return err
-			}
+			return h.tweetRepo.Create(subCtx, toCreate)
+		})
+	}
 
-			lock.Lock()
-			defer lock.Unlock()
-			toCreate = append(toCreate, newTweets...)
-			toUpdate = append(toUpdate, updateTweets...)
-			return nil
+	for _, params := range toUpdate {
+		params := params
+		wg.Go(func() error {
+			return h.tweetRepo.Update(subCtx, params)
 		})
 	}
 
@@ -71,23 +80,12 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 		return err
 	}
 
-	span.SetAttributes(
-		key.Int("import.tweet_create_count", len(toCreate)),
-		key.Int("import.tweet_update_count", len(toUpdate)))
-
-	if err := h.tweetRepo.Create(ctx, cmd.Subscription.ID, cmd.Subscription.Autopost, toCreate); err != nil {
-		return err
-	}
-
-	if err := h.tweetRepo.Update(ctx, toUpdate); err != nil {
-		return err
-	}
-
-	if cmd.Subscription.Autopost {
+	if feed.Autopost {
 		for _, t := range toCreate {
 			task := &tweets.PostTweetTask{
-				UserId:   cmd.Subscription.UserID,
-				TweetId:  t.ID.String(),
+				UserId:   t.ID.UserID,
+				FeedId:   string(t.ID.FeedID),
+				ItemId:   t.ID.ItemID,
 				Autopost: true,
 			}
 			if _, err := h.tasks.Enqueue(ctx, task, tasks.After(5*time.Minute), tasks.Named(t.PostTaskName)); err != nil {
@@ -97,28 +95,43 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	}
 
 	evt := tweets.TweetsImported{
-		UserId:         cmd.Subscription.UserID,
-		SubscriptionId: string(cmd.Subscription.ID),
-		Autopost:       cmd.Subscription.Autopost,
+		UserId:   feed.UserID,
+		FeedId:   string(feed.ID),
+		Autopost: feed.Autopost,
 	}
 	for _, params := range toCreate {
-		evt.CreatedTweetIds = append(evt.CreatedTweetIds, params.ID.String())
+		evt.CreatedItemIds = append(evt.CreatedItemIds, params.ID.ItemID)
 	}
 	for _, params := range toUpdate {
-		evt.UpdatedTweetIds = append(evt.UpdatedTweetIds, params.ID.String())
+		evt.UpdatedItemIds = append(evt.UpdatedItemIds, params.ID.ItemID)
 	}
 
-	if len(evt.CreatedTweetIds) > 0 || len(evt.UpdatedTweetIds) > 0 {
+	if len(evt.CreatedItemIds) > 0 || len(evt.UpdatedItemIds) > 0 {
 		h.events.Fire(ctx, evt)
 	}
 
 	return nil
 }
 
-func (h *CommandHandler) planTweets(ctx context.Context, post *Post, ts []*Tweet) ([]CreateTweetParams, []UpdateTweetParams, error) {
-	ctx, span := tracer.Start(ctx, "ImportTweetsCommand.planTweets",
-		trace.WithAttributes(keys.PostID(post.ID), key.Int("import.existing_tweet_count", len(ts))))
+func (h *CommandHandler) planTweet(ctx context.Context, userID string, autopost bool, post *shared.PostWithTweetGroup) (*shared.CreateTweetParams, *shared.UpdateTweetParams, error) {
+	ctx, span := tracer.Start(ctx, "ImportTweetsCommand.planTweet",
+		trace.WithAttributes(keys.PostID(post.ID)...),
+		trace.WithAttributes(
+			keys.UserID(userID),
+			key.Bool("feed.autopost", autopost),
+			key.Bool("import.existing_tweet.present", post.TweetGroup != nil)))
 	defer span.End()
+
+	if post.TweetGroup != nil {
+		span.SetAttributes(
+			key.String("import.existing_tweet.status", string(post.TweetGroup.Status)),
+			key.Int("import.existing_tweet.count", len(post.TweetGroup.Tweets)))
+
+		if post.TweetGroup.Status == model.Posted {
+			// do nothing if there's a tweet group and it's been posted to Twitter already
+			return nil, nil, nil
+		}
+	}
 
 	translated, err := htmltweets.Translate(htmltweets.Input{
 		Title: post.Title,
@@ -130,56 +143,49 @@ func (h *CommandHandler) planTweets(ctx context.Context, post *Post, ts []*Tweet
 		return nil, nil, err
 	}
 
-	span.SetAttributes(key.Int("import.translated_tweet_count", len(translated)))
+	span.SetAttributes(key.Int("import.translated_tweet.count", len(translated)))
 
-	var toCreate []CreateTweetParams
-	var toUpdate []UpdateTweetParams
+	var retweetID string
+	var ts []*model.Tweet
 
-	for i, newTweet := range translated {
-		if len(ts) > i {
-			existingTweet := ts[i]
-			if existingTweet.Status == Posted {
-				continue
-			}
-
-			t := UpdateTweetParams{ID: existingTweet.ID}
-
-			switch newTweet.Action {
-			case htmltweets.ActionTweet:
-				t.Action = ActionTweet
-				t.Body = newTweet.Body
-				t.MediaURLs = newTweet.MediaURLs
-			case htmltweets.ActionRetweet:
-				t.Action = ActionRetweet
-				t.RetweetID = newTweet.RetweetID
-			}
-
-			toUpdate = append(toUpdate, t)
-		} else {
-			t := CreateTweetParams{
-				ID:           tweets.NewTweetID(),
-				PostID:       post.ID,
-				PostTaskName: uuid.New().String(),
-				Position:     i,
-			}
-
-			switch newTweet.Action {
-			case htmltweets.ActionTweet:
-				t.Action = ActionTweet
-				t.Body = newTweet.Body
-				t.MediaURLs = newTweet.MediaURLs
-			case htmltweets.ActionRetweet:
-				t.Action = ActionRetweet
-				t.RetweetID = newTweet.RetweetID
-			}
-
-			toCreate = append(toCreate, t)
+	for _, newTweet := range translated {
+		switch newTweet.Action {
+		case htmltweets.ActionTweet:
+			ts = append(ts, &model.Tweet{
+				Body:      newTweet.Body,
+				MediaURLs: newTweet.MediaURLs,
+			})
+		case htmltweets.ActionRetweet:
+			retweetID = newTweet.RetweetID
 		}
 	}
 
-	span.SetAttributes(
-		key.Int("import.created_count", len(toCreate)),
-		key.Int("import.updated_count", len(toUpdate)))
+	if post.TweetGroup == nil {
+		pubAt := time.Now()
+		if post.PublishedAt != nil {
+			pubAt = *post.PublishedAt
+		}
+		return &shared.CreateTweetParams{
+			ID:           model.TweetGroupIDFromParts(userID, post.FeedID(), post.ItemID()),
+			PublishedAt:  pubAt,
+			URL:          post.URL,
+			Tweets:       ts,
+			RetweetID:    retweetID,
+			Autopost:     autopost,
+			PostTaskName: ksuid.New().String(),
+		}, nil, nil
+	}
 
-	return toCreate, toUpdate, nil
+	// check if there are changes from the existing tweet contents, avoid an update call
+	// if there are no changes.
+	if post.TweetGroup.URL == post.URL && post.TweetGroup.RetweetID == retweetID && reflect.DeepEqual(post.TweetGroup.Tweets, ts) {
+		return nil, nil, nil
+	}
+
+	return nil, &shared.UpdateTweetParams{
+		ID:        post.TweetGroup.ID,
+		URL:       post.URL,
+		Tweets:    ts,
+		RetweetID: retweetID,
+	}, nil
 }

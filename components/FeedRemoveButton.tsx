@@ -1,10 +1,6 @@
 import React from "react"
-import {
-  createFragmentContainer,
-  Environment,
-  graphql,
-  RelayProp,
-} from "react-relay"
+import { graphql } from "react-relay"
+import { useFragment, useRelayEnvironment } from "react-relay/hooks"
 
 import Router from "next/router"
 
@@ -14,17 +10,27 @@ import {
   AlertDialogLabel,
 } from "@reach/alert-dialog"
 
-import { FeedRemoveButton_feed } from "@generated/FeedRemoveButton_feed.graphql"
+import {
+  FeedRemoveButton_feed,
+  FeedRemoveButton_feed$key,
+} from "@generated/FeedRemoveButton_feed.graphql"
 import { deleteFeed } from "@mutations/DeleteFeed"
 import AsyncButton from "components/AsyncButton"
 import { ErrorBox } from "components/ErrorBox"
 import { ErrorContainer, useErrors } from "components/ErrorContainer"
 
 const FeedRemoveButton: React.FC<{
-  feed: FeedRemoveButton_feed
-  relay: RelayProp
-}> = ({ feed, relay: { environment } }) => {
+  feed: FeedRemoveButton_feed$key
+}> = props => {
   const [showDialog, setShowDialog] = React.useState(false)
+  const feed = useFragment(
+    graphql`
+      fragment FeedRemoveButton_feed on Feed {
+        id
+      }
+    `,
+    props.feed
+  )
 
   return (
     <ErrorContainer>
@@ -37,7 +43,6 @@ const FeedRemoveButton: React.FC<{
       </button>
       <RemoveDialog
         feed={feed}
-        environment={environment}
         visible={showDialog}
         onClose={() => setShowDialog(false)}
       />
@@ -45,23 +50,14 @@ const FeedRemoveButton: React.FC<{
   )
 }
 
-export default createFragmentContainer(FeedRemoveButton, {
-  feed: graphql`
-    fragment FeedRemoveButton_feed on SubscribedFeed {
-      id
-      feed {
-        title
-      }
-    }
-  `,
-})
+export default FeedRemoveButton
 
 const RemoveDialog: React.FC<{
   feed: FeedRemoveButton_feed
-  environment: Environment
   visible: boolean
   onClose: () => void
-}> = ({ feed, environment, visible, onClose }) => {
+}> = ({ feed, visible, onClose }) => {
+  const environment = useRelayEnvironment()
   const { setError, clearErrors } = useErrors()
   const buttonRef = React.useRef(null)
 
@@ -78,7 +74,7 @@ const RemoveDialog: React.FC<{
     try {
       await deleteFeed(environment, feed.id)
       closeDialog()
-      Router.push("/feeds")
+      await Router.push("/feeds")
     } catch (err) {
       setError(err)
     }

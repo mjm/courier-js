@@ -1,11 +1,11 @@
-import { commitMutation,Environment, graphql } from "react-relay"
+import { commitMutation, Environment, graphql } from "react-relay"
 
 import { UncancelTweetMutationResponse } from "@generated/UncancelTweetMutation.graphql"
 
 const mutation = graphql`
   mutation UncancelTweetMutation($input: UncancelTweetInput!) {
     uncancelTweet(input: $input) {
-      tweet {
+      tweetGroup {
         id
         status
       }
@@ -16,7 +16,7 @@ const mutation = graphql`
 function getOptimisticResponse(id: string): UncancelTweetMutationResponse {
   return {
     uncancelTweet: {
-      tweet: {
+      tweetGroup: {
         id,
         status: "DRAFT",
       },

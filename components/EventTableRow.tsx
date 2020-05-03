@@ -1,13 +1,40 @@
+import React from "react"
 import Moment from "react-moment"
-import { createFragmentContainer, graphql } from "react-relay"
+import { graphql } from "react-relay"
+import { useFragment } from "react-relay/hooks"
 
 import Link from "next/link"
 
-import { EventTableRow_event } from "@generated/EventTableRow_event.graphql"
+import {
+  EventTableRow_event,
+  EventTableRow_event$key,
+} from "@generated/EventTableRow_event.graphql"
 
 const EventTableRow: React.FC<{
-  event: EventTableRow_event
-}> = ({ event }) => {
+  event: EventTableRow_event$key
+}> = props => {
+  const event = useFragment(
+    graphql`
+      fragment EventTableRow_event on Event {
+        id
+        eventType
+        createdAt
+        feed {
+          id
+          title
+        }
+        tweetGroup {
+          id
+          tweets {
+            body
+          }
+        }
+        boolValue
+      }
+    `,
+    props.event
+  )
+
   return (
     <div
       className={`p-4 flex items-baseline justify-stretch border-neutral-2 border-t first:border-0`}
@@ -22,64 +49,38 @@ const EventTableRow: React.FC<{
   )
 }
 
-export default createFragmentContainer(EventTableRow, {
-  event: graphql`
-    fragment EventTableRow_event on Event {
-      id
-      eventType
-      createdAt
-      feed {
-        id
-        title
-      }
-      subscribedFeed {
-        id
-        feed {
-          title
-        }
-      }
-      tweet {
-        id
-        body
-      }
-      boolValue
-    }
-  `,
-})
+export default EventTableRow
 
 const EventDescription: React.FC<{
   event: EventTableRow_event
 }> = ({ event }) => {
-  const tweetBody = event.tweet?.body
-  const feed = event.feed as EventTableRow_event["feed"] & {}
-  const subscribedFeed = event.subscribedFeed as EventTableRow_event["subscribedFeed"] & {}
+  const tweets = event.tweetGroup?.tweets
+  const tweetBody = tweets?.length ? tweets[0].body : "no body"
 
   switch (event.eventType) {
     case "FEED_SET_AUTOPOST":
       return (
         <>
           You turned {event.boolValue ? "on" : "off"} autoposting for{" "}
-          <FeedLink id={subscribedFeed.id} title={subscribedFeed.feed.title} />
+          <FeedLink feed={event.feed} />
         </>
       )
     case "FEED_REFRESH":
       return (
         <>
-          You refreshed <FeedLink id={feed.id} title={feed.title} />
+          You refreshed <FeedLink feed={event.feed} />
         </>
       )
     case "FEED_SUBSCRIBE":
       return (
         <>
-          You subscribed to{" "}
-          <FeedLink id={subscribedFeed.id} title={subscribedFeed.feed.title} />
+          You subscribed to <FeedLink feed={event.feed} />
         </>
       )
     case "FEED_UNSUBSCRIBE":
       return (
         <>
-          You unsubscribed from{" "}
-          <FeedLink id={subscribedFeed.id} title={subscribedFeed.feed.title} />
+          You unsubscribed from <FeedLink feed={event.feed} />
         </>
       )
     case "TWEET_CANCEL":
@@ -127,10 +128,16 @@ const EventDescription: React.FC<{
   }
 }
 
-const FeedLink: React.FC<{ id: string; title: string }> = ({ id, title }) => {
+const FeedLink: React.FC<{ feed: EventTableRow_event["feed"] }> = ({
+  feed,
+}) => {
+  if (!feed) {
+    return <em>missing feed</em>
+  }
+
   return (
-    <Link href="/feeds/[id]" as={`/feeds/${id}`}>
-      <a className="font-medium text-primary-9 hover:underline">{title}</a>
+    <Link href="/feeds/[id]" as={`/feeds/${feed.id}`}>
+      <a className="font-medium text-primary-9 hover:underline">{feed.title}</a>
     </Link>
   )
 }

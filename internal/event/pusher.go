@@ -14,9 +14,9 @@ import (
 var PusherSet = wire.NewSet(NewPusherConfig, NewPusherClient, NewBeamsClient)
 
 type PusherConfig struct {
-	ChannelsURL     string `secret:"pusher-url"`
-	BeamsInstanceID string `env:"BEAMS_INSTANCE_ID"`
-	BeamsSecretKey  string `secret:"beams-secret-key"`
+	ChannelsURL     string `secret:"push/pusher/url"`
+	BeamsInstanceID string `secret:"push/beams/instance-id"`
+	BeamsSecretKey  string `secret:"push/beams/secret-key"`
 }
 
 func NewPusherConfig(l *config.Loader) (cfg PusherConfig, err error) {
@@ -25,8 +25,8 @@ func NewPusherConfig(l *config.Loader) (cfg PusherConfig, err error) {
 }
 
 func pusherSecretResolver(key string) string {
-	if key == "pusher-url" && os.Getenv("APP_ENV") == "dev" {
-		return "pusher-url-dev"
+	if key == "push/pusher/url" && os.Getenv("APP_ENV") == "dev" {
+		return "push/pusher/url-dev"
 	}
 	return key
 }

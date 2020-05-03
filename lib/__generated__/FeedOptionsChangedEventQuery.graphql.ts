@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* @relayHash a52f4398e47ca7b9384e438f55ac7ba9 */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 export type FeedOptionsChangedEventQueryVariables = {
@@ -25,7 +25,7 @@ query FeedOptionsChangedEventQuery(
   node(id: $id) {
     __typename
     id
-    ... on SubscribedFeed {
+    ... on Feed {
       autopost
     }
   }
@@ -35,10 +35,10 @@ query FeedOptionsChangedEventQuery(
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "id",
-    "type": "ID!",
-    "defaultValue": null
+    "type": "ID!"
   }
 ],
 v1 = [
@@ -49,84 +49,84 @@ v1 = [
   }
 ],
 v2 = {
-  "kind": "ScalarField",
   "alias": null,
-  "name": "id",
   "args": null,
+  "kind": "ScalarField",
+  "name": "id",
   "storageKey": null
 },
 v3 = {
   "kind": "InlineFragment",
-  "type": "SubscribedFeed",
   "selections": [
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "autopost",
       "args": null,
+      "kind": "ScalarField",
+      "name": "autopost",
       "storageKey": null
     }
-  ]
+  ],
+  "type": "Feed"
 };
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "FeedOptionsChangedEventQuery",
-    "type": "Query",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "FeedOptionsChangedEventQuery",
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "node",
-        "storageKey": null,
         "args": (v1/*: any*/),
         "concreteType": null,
+        "kind": "LinkedField",
+        "name": "node",
         "plural": false,
         "selections": [
           (v2/*: any*/),
           (v3/*: any*/)
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "type": "Query"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "FeedOptionsChangedEventQuery",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "node",
-        "storageKey": null,
         "args": (v1/*: any*/),
         "concreteType": null,
+        "kind": "LinkedField",
+        "name": "node",
         "plural": false,
         "selections": [
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "__typename",
             "args": null,
+            "kind": "ScalarField",
+            "name": "__typename",
             "storageKey": null
           },
           (v2/*: any*/),
           (v3/*: any*/)
-        ]
+        ],
+        "storageKey": null
       }
     ]
   },
   "params": {
-    "operationKind": "query",
-    "name": "FeedOptionsChangedEventQuery",
     "id": null,
-    "text": "query FeedOptionsChangedEventQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on SubscribedFeed {\n      autopost\n    }\n  }\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "FeedOptionsChangedEventQuery",
+    "operationKind": "query",
+    "text": "query FeedOptionsChangedEventQuery(\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    id\n    ... on Feed {\n      autopost\n    }\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = '487240c0b67229c1816139af92ec4c51';
+(node as any).hash = 'edbca2dcce3f54439791530bef658eff';
 export default node;

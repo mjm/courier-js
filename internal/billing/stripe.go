@@ -13,9 +13,9 @@ var DefaultSet = wire.NewSet(NewConfig, NewClient)
 
 // Config includes settings for configuring talking to Stripe for billing.
 type Config struct {
-	SecretKey     string `secret:"stripe-secret-key"`
-	WebhookSecret string `env:"STRIPE_WEBHOOK_SECRET" secret:"stripe-webhook-secret"`
-	MonthlyPlanID string `env:"MONTHLY_PLAN_ID"`
+	SecretKey     string `secret:"stripe/secret-key"`
+	WebhookSecret string `env:"STRIPE_WEBHOOK_SECRET" secret:"stripe/webhook-secret"`
+	MonthlyPlanID string `env:"MONTHLY_PLAN_ID" secret:"stripe/monthly-plan-id"`
 }
 
 // NewClient creates a new Stripe client from a billing config.

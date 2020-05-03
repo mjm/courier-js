@@ -148,6 +148,37 @@ And this is the rest.`,
 			body:      "This is a relative link. https://example.org/foo/bar",
 			mediaURLs: []string{"https://example.org/baz.jpg"},
 		},
+		{
+			name: "preformatted code block",
+			input: `
+<pre><code>alias fixit='git commit -a --amend -C HEAD'
+alias shipit='git push --force-with-lease'
+fixit && shipit</code></pre>
+`,
+			body: `alias fixit='git commit -a --amend -C HEAD'
+alias shipit='git push --force-with-lease'
+fixit && shipit`,
+		},
+		{
+			name: "code block between paragraphs",
+			input: `
+<p>Paragraph
+1.</p>
+<pre><code>alias fixit='git commit -a --amend -C HEAD'
+alias shipit='git push --force-with-lease'
+fixit && shipit</code></pre>
+<p>
+Paragraph
+2</p>
+`,
+			body: `Paragraph 1.
+
+alias fixit='git commit -a --amend -C HEAD'
+alias shipit='git push --force-with-lease'
+fixit && shipit
+
+Paragraph 2`,
+		},
 	}
 
 	u, err := url.Parse("https://example.org/")

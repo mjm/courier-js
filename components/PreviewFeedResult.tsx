@@ -1,54 +1,30 @@
 import React from "react"
-import { graphql, QueryRenderer, ReactRelayContext } from "react-relay"
+import { graphql } from "react-relay"
+import { useLazyLoadQuery } from "react-relay/hooks"
 
 import { PreviewFeedResultQuery } from "@generated/PreviewFeedResultQuery.graphql"
-import { ErrorBox } from "components/ErrorBox"
-import Loading from "components/Loading"
 import PreviewFeedContent from "components/PreviewFeedContent"
 
-interface Props {
+const PreviewFeedResult: React.FC<{
   url: string
   onWatch: () => Promise<void>
-}
-const PreviewFeedResult: React.FC<Props> = ({ url, onWatch }) => {
-  const relayContext = React.useContext(ReactRelayContext)
-  if (!relayContext) {
-    return null
-  }
-
-  if (!url) {
-    return null
-  }
-
-  return (
-    <QueryRenderer<PreviewFeedResultQuery>
-      environment={relayContext.environment}
-      query={graphql`
-        query PreviewFeedResultQuery($url: String!) {
-          feedPreview(url: $url) {
-            ...PreviewFeedContent_feed
-          }
+}> = ({ url, onWatch }) => {
+  const data = useLazyLoadQuery<PreviewFeedResultQuery>(
+    graphql`
+      query PreviewFeedResultQuery($url: String!) {
+        feedPreview(url: $url) {
+          ...PreviewFeedContent_feed
         }
-      `}
-      variables={{ url }}
-      render={({ error, props }) => {
-        if (error) {
-          return (
-            <ErrorBox
-              title="There was an issue previewing the feed"
-              error={error}
-            />
-          )
-        }
-
-        if (!props || !props.feedPreview) {
-          return <Loading />
-        }
-
-        return <PreviewFeedContent feed={props.feedPreview} onWatch={onWatch} />
-      }}
-    />
+      }
+    `,
+    { url }
   )
+
+  if (!data?.feedPreview) {
+    return null
+  }
+
+  return <PreviewFeedContent feed={data.feedPreview} onWatch={onWatch} />
 }
 
 export default PreviewFeedResult

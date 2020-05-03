@@ -10,18 +10,15 @@ import (
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 // DefaultSet is a provider set for creating a command handler and its dependencies.
 var DefaultSet = wire.NewSet(
 	NewCommandHandler,
-	NewTweetRepository,
-	NewFeedSubscriptionRepository,
-	NewPostRepository,
 	NewExternalTweetRepository,
 	NewTwitterConfig,
 	NewUserRepository,
-	NewKeyManagementClient,
 )
 
 // CommandHandler processes tweet-related commands and updates the data store appropriately.
@@ -29,11 +26,10 @@ type CommandHandler struct {
 	bus               *write.CommandBus
 	events            event.Sink
 	tasks             *tasks.Tasks
-	tweetRepo         *TweetRepository
-	subRepo           *FeedSubscriptionRepository
-	postRepo          *PostRepository
 	externalTweetRepo *ExternalTweetRepository
 	userRepo          *UserRepository
+	feedRepo          *shared.FeedRepository
+	tweetRepo         *shared.TweetRepository
 }
 
 // NewCommandHandler creates a new command handler for tweet commands.
@@ -41,33 +37,31 @@ func NewCommandHandler(
 	bus *write.CommandBus,
 	events event.Sink,
 	tasks *tasks.Tasks,
-	tweetRepo *TweetRepository,
-	subRepo *FeedSubscriptionRepository,
-	postRepo *PostRepository,
 	externalTweetRepo *ExternalTweetRepository,
 	userRepo *UserRepository,
+	feedRepo *shared.FeedRepository,
+	tweetRepo *shared.TweetRepository,
 ) *CommandHandler {
 	h := &CommandHandler{
 		bus:               bus,
 		events:            events,
 		tasks:             tasks,
-		tweetRepo:         tweetRepo,
-		subRepo:           subRepo,
-		postRepo:          postRepo,
 		externalTweetRepo: externalTweetRepo,
 		userRepo:          userRepo,
+		feedRepo:          feedRepo,
+		tweetRepo:         tweetRepo,
 	}
 	bus.Register(h,
 		CancelCommand{},
 		UncancelCommand{},
 		UpdateCommand{},
 		PostCommand{},
-		QueuePostCommand{},
+		EnqueuePostCommand{},
 		SendTweetCommand{},
 		ImportTweetsCommand{},
-		ImportRecentPostsCommand{},
 		SyndicateCommand{},
 		SetupSyndicationCommand{},
+		PurgeCommand{},
 	)
 	return h
 }
@@ -88,7 +82,7 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 	case PostCommand:
 		return nil, h.handlePost(ctx, cmd)
 
-	case QueuePostCommand:
+	case EnqueuePostCommand:
 		return nil, h.handleQueuePost(ctx, cmd)
 
 	case SendTweetCommand:
@@ -97,14 +91,14 @@ func (h *CommandHandler) HandleCommand(ctx context.Context, cmd interface{}) (in
 	case ImportTweetsCommand:
 		return nil, h.handleImportTweets(ctx, cmd)
 
-	case ImportRecentPostsCommand:
-		return nil, h.handleImportRecentPosts(ctx, cmd)
-
 	case SyndicateCommand:
 		return nil, h.handleSyndicate(ctx, cmd)
 
 	case SetupSyndicationCommand:
 		return nil, h.handleSetupSyndication(ctx, cmd)
+
+	case PurgeCommand:
+		return nil, h.handlePurge(ctx, cmd)
 
 	}
 

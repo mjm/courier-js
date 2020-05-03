@@ -8,23 +8,23 @@ import (
 	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
-	feeds2 "github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
+func InitializeLambda() (*Handler, error) {
 	panic(wire.Build(
 		NewHandler,
 		config.DefaultSet,
-		secret.GCPSet,
+		secret.AWSSet,
 		write.NewCommandBus,
-		event.PublishingSet,
+		event.AWSPublishingSet,
 		tasks.DefaultSet,
 		db.DefaultSet,
-		feeds2.NewFeedQueries,
+		shared.DefaultSet,
 		feeds.DefaultSet,
 	))
 }

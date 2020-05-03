@@ -25,7 +25,7 @@ const reducer: React.Reducer<{ errors: Error[] }, Action> = (
     case "setErrors":
       return { errors: action.errors }
     case "setError":
-      return { errors: [action.error] }
+      return { errors: unwrapRelayError(action.error) }
     case "clearErrors":
       return { errors: [] }
   }
@@ -71,4 +71,20 @@ function createErrorsBag({ errors, dispatch }: ErrorState): ErrorsBag {
       dispatch({ type: "clearErrors" })
     },
   }
+}
+
+interface RelayError extends Error {
+  name: "RelayNetwork"
+  source: {
+    errors: { message: string }[]
+  }
+}
+
+export function unwrapRelayError(error: Error): Error[] {
+  if (error.name === "RelayNetwork") {
+    return (error as RelayError).source.errors.map(
+      ({ message }) => new Error(message)
+    )
+  }
+  return [error]
 }

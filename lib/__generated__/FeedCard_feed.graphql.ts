@@ -1,17 +1,13 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type FeedCard_feed = {
     readonly id: string;
-    readonly feed: {
-        readonly id: string;
-        readonly url: string;
-        readonly title: string;
-        readonly homePageURL: string;
-        readonly micropubEndpoint: string;
-        readonly refreshedAt: any | null;
-    };
+    readonly title: string;
+    readonly homePageURL: string;
+    readonly refreshedAt: any | null;
     readonly autopost: boolean;
     readonly " $refType": "FeedCard_feed";
 };
@@ -23,78 +19,49 @@ export type FeedCard_feed$key = {
 
 
 
-const node: ReaderFragment = (function(){
-var v0 = {
-  "kind": "ScalarField",
-  "alias": null,
-  "name": "id",
-  "args": null,
-  "storageKey": null
-};
-return {
-  "kind": "Fragment",
-  "name": "FeedCard_feed",
-  "type": "SubscribedFeed",
-  "metadata": null,
+const node: ReaderFragment = {
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "FeedCard_feed",
   "selections": [
-    (v0/*: any*/),
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "feed",
-      "storageKey": null,
       "args": null,
-      "concreteType": "Feed",
-      "plural": false,
-      "selections": [
-        (v0/*: any*/),
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "url",
-          "args": null,
-          "storageKey": null
-        },
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "title",
-          "args": null,
-          "storageKey": null
-        },
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "homePageURL",
-          "args": null,
-          "storageKey": null
-        },
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "micropubEndpoint",
-          "args": null,
-          "storageKey": null
-        },
-        {
-          "kind": "ScalarField",
-          "alias": null,
-          "name": "refreshedAt",
-          "args": null,
-          "storageKey": null
-        }
-      ]
+      "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
     },
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "autopost",
       "args": null,
+      "kind": "ScalarField",
+      "name": "title",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "homePageURL",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "refreshedAt",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "autopost",
       "storageKey": null
     }
-  ]
+  ],
+  "type": "Feed"
 };
-})();
-(node as any).hash = '55df52bc602a10a8b57e338633e25525';
+(node as any).hash = '0ab12db66a13c7f9e2c4dbf1e58caddb';
 export default node;

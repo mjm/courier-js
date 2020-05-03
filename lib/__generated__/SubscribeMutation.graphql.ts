@@ -1,11 +1,11 @@
 /* tslint:disable */
-/* @relayHash da99dd223717c31c32ca1e26fd3c06f9 */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 export type SubscriptionStatus = "ACTIVE" | "CANCELED" | "EXPIRED" | "INACTIVE" | "%future added value";
 export type SubscribeInput = {
-    readonly tokenID?: string | null;
-    readonly email?: string | null;
+    paymentMethodID?: string | null;
+    email?: string | null;
 };
 export type SubscribeMutationVariables = {
     input: SubscribeInput;
@@ -61,18 +61,15 @@ mutation SubscribeMutation(
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input",
-    "type": "SubscribeInput!",
-    "defaultValue": null
+    "type": "SubscribeInput!"
   }
 ],
 v1 = [
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "subscribe",
-    "storageKey": null,
     "args": [
       {
         "kind": "Variable",
@@ -81,119 +78,122 @@ v1 = [
       }
     ],
     "concreteType": "SubscribePayload",
+    "kind": "LinkedField",
+    "name": "subscribe",
     "plural": false,
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "user",
-        "storageKey": null,
         "args": null,
-        "concreteType": "User",
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "user",
         "plural": false,
         "selections": [
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "customer",
-            "storageKey": null,
             "args": null,
             "concreteType": "Customer",
+            "kind": "LinkedField",
+            "name": "customer",
             "plural": false,
             "selections": [
               {
-                "kind": "LinkedField",
                 "alias": null,
-                "name": "creditCard",
-                "storageKey": null,
                 "args": null,
                 "concreteType": "CreditCard",
+                "kind": "LinkedField",
+                "name": "creditCard",
                 "plural": false,
                 "selections": [
                   {
-                    "kind": "ScalarField",
                     "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "brand",
-                    "args": null,
                     "storageKey": null
                   },
                   {
-                    "kind": "ScalarField",
                     "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "lastFour",
-                    "args": null,
                     "storageKey": null
                   },
                   {
-                    "kind": "ScalarField",
                     "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
                     "name": "expirationMonth",
-                    "args": null,
                     "storageKey": null
                   },
                   {
-                    "kind": "ScalarField",
                     "alias": null,
-                    "name": "expirationYear",
                     "args": null,
+                    "kind": "ScalarField",
+                    "name": "expirationYear",
                     "storageKey": null
                   }
-                ]
+                ],
+                "storageKey": null
               }
-            ]
+            ],
+            "storageKey": null
           },
           {
-            "kind": "LinkedField",
             "alias": null,
-            "name": "subscription",
-            "storageKey": null,
             "args": null,
             "concreteType": "UserSubscription",
+            "kind": "LinkedField",
+            "name": "subscription",
             "plural": false,
             "selections": [
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "status",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "status",
                 "storageKey": null
               },
               {
-                "kind": "ScalarField",
                 "alias": null,
-                "name": "periodEnd",
                 "args": null,
+                "kind": "ScalarField",
+                "name": "periodEnd",
                 "storageKey": null
               }
-            ]
+            ],
+            "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   }
 ];
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "SubscribeMutation",
-    "type": "Mutation",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
-    "selections": (v1/*: any*/)
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "SubscribeMutation",
+    "selections": (v1/*: any*/),
+    "type": "Mutation"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "SubscribeMutation",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": (v1/*: any*/)
   },
   "params": {
-    "operationKind": "mutation",
-    "name": "SubscribeMutation",
     "id": null,
-    "text": "mutation SubscribeMutation(\n  $input: SubscribeInput!\n) {\n  subscribe(input: $input) {\n    user {\n      customer {\n        creditCard {\n          brand\n          lastFour\n          expirationMonth\n          expirationYear\n        }\n      }\n      subscription {\n        status\n        periodEnd\n      }\n    }\n  }\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "SubscribeMutation",
+    "operationKind": "mutation",
+    "text": "mutation SubscribeMutation(\n  $input: SubscribeInput!\n) {\n  subscribe(input: $input) {\n    user {\n      customer {\n        creditCard {\n          brand\n          lastFour\n          expirationMonth\n          expirationYear\n        }\n      }\n      subscription {\n        status\n        periodEnd\n      }\n    }\n  }\n}\n"
   }
 };
 })();

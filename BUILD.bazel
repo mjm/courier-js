@@ -1,4 +1,5 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
+load("//internal/functions:lambda.bzl", "lambda_functions_upload")
 
 exports_files([
     "schema.graphql",
@@ -7,3 +8,16 @@ exports_files([
 # gazelle:prefix github.com/mjm/courier-js
 # gazelle:exclude node_modules
 gazelle(name = "gazelle")
+
+lambda_functions_upload(
+    name = "upload_functions",
+    bundles = [
+        "//internal/functions/events:events_bundle",
+        "//internal/functions/graphql:graphql_bundle",
+        "//internal/functions/ping:ping_bundle",
+        "//internal/functions/pusherauth:pusherauth_bundle",
+        "//internal/functions/stripecb:stripecb_bundle",
+    ],
+    bucket = "{FUNCTION_BUCKET}",
+    manifest_key = "{GIT_COMMIT_SHA}.json",
+)

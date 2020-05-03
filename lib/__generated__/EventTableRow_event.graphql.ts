@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -11,15 +12,11 @@ export type EventTableRow_event = {
         readonly id: string;
         readonly title: string;
     } | null;
-    readonly subscribedFeed: {
+    readonly tweetGroup: {
         readonly id: string;
-        readonly feed: {
-            readonly title: string;
-        };
-    } | null;
-    readonly tweet: {
-        readonly id: string;
-        readonly body: string;
+        readonly tweets: ReadonlyArray<{
+            readonly body: string;
+        }>;
     } | null;
     readonly boolValue: boolean | null;
     readonly " $refType": "EventTableRow_event";
@@ -34,106 +31,92 @@ export type EventTableRow_event$key = {
 
 const node: ReaderFragment = (function(){
 var v0 = {
-  "kind": "ScalarField",
   "alias": null,
+  "args": null,
+  "kind": "ScalarField",
   "name": "id",
-  "args": null,
-  "storageKey": null
-},
-v1 = {
-  "kind": "ScalarField",
-  "alias": null,
-  "name": "title",
-  "args": null,
   "storageKey": null
 };
 return {
-  "kind": "Fragment",
-  "name": "EventTableRow_event",
-  "type": "Event",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "EventTableRow_event",
   "selections": [
     (v0/*: any*/),
     {
-      "kind": "ScalarField",
       "alias": null,
+      "args": null,
+      "kind": "ScalarField",
       "name": "eventType",
-      "args": null,
       "storageKey": null
     },
     {
+      "alias": null,
+      "args": null,
       "kind": "ScalarField",
-      "alias": null,
       "name": "createdAt",
-      "args": null,
       "storageKey": null
     },
     {
-      "kind": "LinkedField",
       "alias": null,
-      "name": "feed",
-      "storageKey": null,
       "args": null,
       "concreteType": "Feed",
-      "plural": false,
-      "selections": [
-        (v0/*: any*/),
-        (v1/*: any*/)
-      ]
-    },
-    {
       "kind": "LinkedField",
-      "alias": null,
-      "name": "subscribedFeed",
-      "storageKey": null,
-      "args": null,
-      "concreteType": "SubscribedFeed",
+      "name": "feed",
       "plural": false,
       "selections": [
         (v0/*: any*/),
         {
-          "kind": "LinkedField",
           "alias": null,
-          "name": "feed",
-          "storageKey": null,
           "args": null,
-          "concreteType": "Feed",
-          "plural": false,
-          "selections": [
-            (v1/*: any*/)
-          ]
-        }
-      ]
-    },
-    {
-      "kind": "LinkedField",
-      "alias": null,
-      "name": "tweet",
-      "storageKey": null,
-      "args": null,
-      "concreteType": "Tweet",
-      "plural": false,
-      "selections": [
-        (v0/*: any*/),
-        {
           "kind": "ScalarField",
-          "alias": null,
-          "name": "body",
-          "args": null,
+          "name": "title",
           "storageKey": null
         }
-      ]
+      ],
+      "storageKey": null
     },
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "boolValue",
       "args": null,
+      "concreteType": "TweetGroup",
+      "kind": "LinkedField",
+      "name": "tweetGroup",
+      "plural": false,
+      "selections": [
+        (v0/*: any*/),
+        {
+          "alias": null,
+          "args": null,
+          "concreteType": "Tweet",
+          "kind": "LinkedField",
+          "name": "tweets",
+          "plural": true,
+          "selections": [
+            {
+              "alias": null,
+              "args": null,
+              "kind": "ScalarField",
+              "name": "body",
+              "storageKey": null
+            }
+          ],
+          "storageKey": null
+        }
+      ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "boolValue",
       "storageKey": null
     }
-  ]
+  ],
+  "type": "Event"
 };
 })();
-(node as any).hash = '202db63218434822070e4e776c23b9c2';
+(node as any).hash = '651ad7daec887e52feaf98a8ae0c31dd';
 export default node;

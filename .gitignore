@@ -32,3 +32,4 @@ terraform.tfvars
 /bazel-*
 
 .now
+revision.auto.tfvars

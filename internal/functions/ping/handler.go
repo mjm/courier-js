@@ -6,26 +6,20 @@ import (
 
 	"github.com/divan/gorilla-xmlrpc/xml"
 	"github.com/gorilla/rpc"
-	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/functions"
-	"github.com/mjm/courier-js/internal/read/feeds"
-	"github.com/mjm/courier-js/internal/trace/keys"
 	"github.com/mjm/courier-js/internal/write"
-	writefeeds "github.com/mjm/courier-js/internal/write/feeds"
-	"github.com/mjm/courier-js/pkg/scraper"
+	"github.com/mjm/courier-js/internal/write/feeds"
 )
 
 type Handler struct {
 	rpc        *rpc.Server
 	commandBus *write.CommandBus
-	feeds      feeds.FeedQueries
 }
 
-func NewHandler(feedQueries feeds.FeedQueries, commandBus *write.CommandBus, _ *writefeeds.CommandHandler) *Handler {
+func NewHandler(commandBus *write.CommandBus, _ *feeds.CommandHandler) *Handler {
 	h := &Handler{
-		feeds:      feedQueries,
 		commandBus: commandBus,
 	}
 
@@ -59,24 +53,11 @@ func (h *Handler) Ping(r *http.Request, args *struct {
 	ctx := r.Context()
 	span := trace.SpanFromContext(ctx)
 
-	url := scraper.NormalizeURL(args.HomePageURL)
-	span.SetAttributes(keys.FeedHomePageURL(url))
-
-	fs, err := h.feeds.ByHomePageURL(ctx, url)
-	if err != nil {
+	if _, err := h.commandBus.Run(ctx, feeds.PingCommand{
+		HomePageURL: args.HomePageURL,
+	}); err != nil {
 		span.RecordError(ctx, err)
 		return err
-	}
-
-	span.SetAttributes(key.Int("feed.count", len(fs)))
-
-	for _, feed := range fs {
-		if _, err := h.commandBus.Run(ctx, writefeeds.QueueRefreshCommand{
-			FeedID: feed.ID,
-		}); err != nil {
-			span.RecordError(ctx, err)
-			return err
-		}
 	}
 
 	response.Result.Message = "Thanks for the ping!"

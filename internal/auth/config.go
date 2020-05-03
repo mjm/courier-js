@@ -7,10 +7,11 @@ import (
 )
 
 type Config struct {
-	AuthDomain    string `env:"AUTH_DOMAIN"`
-	APIIdentifier string `env:"API_IDENTIFIER"`
-	ClientID      string `env:"BACKEND_CLIENT_ID"`
-	ClientSecret  string `secret:"auth0-backend-secret"`
+	AuthDomain       string `secret:"auth/domain"`
+	APIIdentifier    string `secret:"auth/api-identifier"`
+	ClientID         string `secret:"auth/backend-client-id"`
+	ClientSecret     string `secret:"auth/backend-secret"`
+	MicropubTokenKey string `secret:"auth/micropub-token-key"`
 }
 
 func NewConfig(l *config.Loader) (cfg Config, err error) {

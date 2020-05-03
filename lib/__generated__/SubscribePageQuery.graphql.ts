@@ -1,18 +1,20 @@
 /* tslint:disable */
-/* @relayHash d3fcc49e4ed78bf9f1927c32fe9e63eb */
+/* eslint-disable */
 
-import { ConcreteRequest, FragmentRefs } from "relay-runtime"
-
-export type SubscribePageQueryVariables = {}
+import { ConcreteRequest } from "relay-runtime";
+import { FragmentRefs } from "relay-runtime";
+export type SubscribePageQueryVariables = {};
 export type SubscribePageQueryResponse = {
-  readonly viewer: {
-    readonly " $fragmentRefs": FragmentRefs<"SubscribeForm_user">
-  } | null
-}
+    readonly viewer: {
+        readonly " $fragmentRefs": FragmentRefs<"SubscribeForm_user">;
+    } | null;
+};
 export type SubscribePageQuery = {
-  readonly response: SubscribePageQueryResponse
-  readonly variables: SubscribePageQueryVariables
-}
+    readonly response: SubscribePageQueryResponse;
+    readonly variables: SubscribePageQueryVariables;
+};
+
+
 
 /*
 query SubscribePageQuery {
@@ -21,7 +23,7 @@ query SubscribePageQuery {
   }
 }
 
-fragment SubscribeForm_user on User {
+fragment SubscribeForm_user on Viewer {
   customer {
     creditCard {
       brand
@@ -34,108 +36,107 @@ fragment SubscribeForm_user on User {
 */
 
 const node: ConcreteRequest = {
-  kind: "Request",
-  fragment: {
-    kind: "Fragment",
-    name: "SubscribePageQuery",
-    type: "Query",
-    metadata: null,
-    argumentDefinitions: [],
-    selections: [
+  "fragment": {
+    "argumentDefinitions": [],
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "SubscribePageQuery",
+    "selections": [
       {
-        kind: "LinkedField",
-        alias: null,
-        name: "viewer",
-        storageKey: null,
-        args: null,
-        concreteType: "User",
-        plural: false,
-        selections: [
+        "alias": null,
+        "args": null,
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "viewer",
+        "plural": false,
+        "selections": [
           {
-            kind: "FragmentSpread",
-            name: "SubscribeForm_user",
-            args: null,
-          },
+            "args": null,
+            "kind": "FragmentSpread",
+            "name": "SubscribeForm_user"
+          }
         ],
-      },
+        "storageKey": null
+      }
     ],
+    "type": "Query"
   },
-  operation: {
-    kind: "Operation",
-    name: "SubscribePageQuery",
-    argumentDefinitions: [],
-    selections: [
+  "kind": "Request",
+  "operation": {
+    "argumentDefinitions": [],
+    "kind": "Operation",
+    "name": "SubscribePageQuery",
+    "selections": [
       {
-        kind: "LinkedField",
-        alias: null,
-        name: "viewer",
-        storageKey: null,
-        args: null,
-        concreteType: "User",
-        plural: false,
-        selections: [
+        "alias": null,
+        "args": null,
+        "concreteType": "Viewer",
+        "kind": "LinkedField",
+        "name": "viewer",
+        "plural": false,
+        "selections": [
           {
-            kind: "LinkedField",
-            alias: null,
-            name: "customer",
-            storageKey: null,
-            args: null,
-            concreteType: "Customer",
-            plural: false,
-            selections: [
+            "alias": null,
+            "args": null,
+            "concreteType": "Customer",
+            "kind": "LinkedField",
+            "name": "customer",
+            "plural": false,
+            "selections": [
               {
-                kind: "LinkedField",
-                alias: null,
-                name: "creditCard",
-                storageKey: null,
-                args: null,
-                concreteType: "CreditCard",
-                plural: false,
-                selections: [
+                "alias": null,
+                "args": null,
+                "concreteType": "CreditCard",
+                "kind": "LinkedField",
+                "name": "creditCard",
+                "plural": false,
+                "selections": [
                   {
-                    kind: "ScalarField",
-                    alias: null,
-                    name: "brand",
-                    args: null,
-                    storageKey: null,
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "brand",
+                    "storageKey": null
                   },
                   {
-                    kind: "ScalarField",
-                    alias: null,
-                    name: "lastFour",
-                    args: null,
-                    storageKey: null,
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "lastFour",
+                    "storageKey": null
                   },
                   {
-                    kind: "ScalarField",
-                    alias: null,
-                    name: "expirationMonth",
-                    args: null,
-                    storageKey: null,
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "expirationMonth",
+                    "storageKey": null
                   },
                   {
-                    kind: "ScalarField",
-                    alias: null,
-                    name: "expirationYear",
-                    args: null,
-                    storageKey: null,
-                  },
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "expirationYear",
+                    "storageKey": null
+                  }
                 ],
-              },
+                "storageKey": null
+              }
             ],
-          },
+            "storageKey": null
+          }
         ],
-      },
-    ],
+        "storageKey": null
+      }
+    ]
   },
-  params: {
-    operationKind: "query",
-    name: "SubscribePageQuery",
-    id: null,
-    text:
-      "query SubscribePageQuery {\n  viewer {\n    ...SubscribeForm_user\n  }\n}\n\nfragment SubscribeForm_user on User {\n  customer {\n    creditCard {\n      brand\n      lastFour\n      expirationMonth\n      expirationYear\n    }\n  }\n}\n",
-    metadata: {},
-  },
-}
-;(node as any).hash = "ec1e4355ddb94ba2a0b7e029c48c6465"
-export default node
+  "params": {
+    "id": null,
+    "metadata": {},
+    "name": "SubscribePageQuery",
+    "operationKind": "query",
+    "text": "query SubscribePageQuery {\n  viewer {\n    ...SubscribeForm_user\n  }\n}\n\nfragment SubscribeForm_user on Viewer {\n  customer {\n    creditCard {\n      brand\n      lastFour\n      expirationMonth\n      expirationYear\n    }\n  }\n}\n"
+  }
+};
+(node as any).hash = 'ec1e4355ddb94ba2a0b7e029c48c6465';
+export default node;

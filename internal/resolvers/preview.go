@@ -1,63 +1,73 @@
 package resolvers
 
 import (
-	"context"
-	"strings"
+	"net/url"
 
-	"github.com/mjm/courier-js/internal/pager"
-	"github.com/mjm/courier-js/internal/read/feeds"
-	"github.com/mjm/courier-js/internal/read/tweets"
+	"github.com/mjm/courier-js/pkg/htmltweets"
+	"github.com/mjm/courier-js/pkg/scraper"
 )
 
 type FeedPreview struct {
-	q    Queries
-	feed *feeds.Feed
+	q   Queries
+	url *url.URL
+	sf  *scraper.Feed
 }
 
 func (fp *FeedPreview) URL() string {
-	return fp.feed.URL
+	return fp.url.String()
 }
 
 func (fp *FeedPreview) Title() string {
-	return fp.feed.Title
+	return fp.sf.Title
 }
 
 func (fp *FeedPreview) HomePageURL() string {
-	return fp.feed.HomePageURL
+	return fp.sf.HomePageURL
 }
 
-func (fp *FeedPreview) Tweets(ctx context.Context) ([]*TweetPreview, error) {
-	conn, err := fp.q.Posts.Paged(ctx, fp.feed.ID, pager.First(10, nil))
-	if err != nil {
-		return nil, err
+func (fp *FeedPreview) Tweets() ([]*TweetGroupPreview, error) {
+	var previews []*TweetGroupPreview
+
+	entries := fp.sf.Entries
+	if len(fp.sf.Entries) > 5 {
+		entries = entries[:5]
 	}
 
-	var previews []*TweetPreview
-	for _, edge := range conn.Edges {
-		p := edge.(*feeds.Post)
-		ts, err := fp.q.Tweets.GeneratePreviews(ctx, tweets.PreviewPost{
-			URL:         p.URL,
-			Title:       p.Title,
-			HTMLContent: p.HTMLContent,
+	for _, entry := range entries {
+		translated, err := htmltweets.Translate(htmltweets.Input{
+			Title: entry.Title,
+			URL:   entry.URL,
+			HTML:  entry.HTMLContent,
 		})
 		if err != nil {
 			return nil, err
 		}
 
-		for _, t := range ts {
-			previews = append(previews, &TweetPreview{tweet: t})
+		preview := &TweetGroupPreview{}
+		if translated[0].Action == htmltweets.ActionRetweet {
+			preview.Action = "RETWEET"
+			preview.RetweetID = translated[0].RetweetID
+		} else {
+			preview.Action = "TWEET"
+			for _, t := range translated {
+				preview.Tweets = append(preview.Tweets, &TweetPreview{tweet: t})
+			}
 		}
+
+		previews = append(previews, preview)
 	}
 
 	return previews, nil
 }
 
-type TweetPreview struct {
-	tweet *tweets.PreviewTweet
+type TweetGroupPreview struct {
+	Action    string
+	RetweetID string
+	Tweets    []*TweetPreview
 }
 
-func (tp *TweetPreview) Action() string {
-	return strings.ToUpper(string(tp.tweet.Action))
+type TweetPreview struct {
+	tweet htmltweets.Tweet
 }
 
 func (tp *TweetPreview) Body() string {
@@ -68,6 +78,6 @@ func (tp *TweetPreview) MediaURLs() []string {
 	return tp.tweet.MediaURLs
 }
 
-func (tp *TweetPreview) RetweetID() string {
-	return tp.tweet.RetweetID
+func (tp *TweetPreview) PostedTweetID() *string {
+	return nil
 }

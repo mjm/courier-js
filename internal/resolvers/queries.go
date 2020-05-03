@@ -10,19 +10,17 @@ import (
 )
 
 type Queries struct {
-	Feeds             feeds.FeedQueries
-	FeedSubscriptions feeds.SubscriptionQueries
-	Posts             feeds.PostQueries
-	Tweets            tweets.TweetQueries
-	Events            user.EventQueries
-	Customers         billing.CustomerQueries
-	Subscriptions     billing.SubscriptionQueries
+	Feeds         *feeds.FeedQueries
+	Posts         *feeds.PostQueries
+	Tweets        *tweets.TweetQueries
+	Events        *user.EventQueries
+	Customers     billing.CustomerQueries
+	Subscriptions billing.SubscriptionQueries
 }
 
 var QueriesProvider = wire.NewSet(
 	wire.Struct(new(Queries), "*"),
 	feeds.NewFeedQueries,
-	feeds.NewSubscriptionQueries,
 	feeds.NewPostQueries,
 	tweets.NewTweetQueries,
 	user.NewEventQueries,

@@ -11,11 +11,11 @@ import (
 	"github.com/mjm/courier-js/internal/secret"
 )
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
+func InitializeLambda() (*Handler, error) {
 	panic(wire.Build(
 		NewHandler,
 		config.DefaultSet,
-		secret.GCPSet,
+		secret.AWSSet,
 		auth.DefaultSet,
 		event.PusherSet,
 	))

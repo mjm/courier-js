@@ -6,57 +6,51 @@
 package ping
 
 import (
+	"github.com/jonboulle/clockwork"
 	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
-	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
-	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 // Injectors from wire.go:
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
-	defaultEnv := &config.DefaultEnv{}
-	client, err := secret.NewSecretManager(gcpConfig)
-	if err != nil {
-		return nil, err
-	}
-	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	dbConfig, err := db.NewConfig(loader)
-	if err != nil {
-		return nil, err
-	}
-	dbDB, err := db.New(dbConfig)
-	if err != nil {
-		return nil, err
-	}
-	feedQueries := feeds.NewFeedQueries(dbDB)
+func InitializeLambda() (*Handler, error) {
 	commandBus := write.NewCommandBus()
-	publisherConfig, err := event.NewPublisherConfig(loader)
+	defaultEnv := &config.DefaultEnv{}
+	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
 	if err != nil {
 		return nil, err
 	}
-	pubsubClient, err := event.NewPubSubClient(gcpConfig)
+	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
+	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	publisher := event.NewPublisher(publisherConfig, pubsubClient)
-	tasksConfig, err := tasks.NewConfig(loader)
+	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	tasksTasks, err := tasks.New(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	feedRepository := feeds2.NewFeedRepository(dbDB)
-	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
-	postRepository := feeds2.NewPostRepository(dbDB)
-	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository)
-	handler := NewHandler(feedQueries, commandBus, commandHandler)
+	dynamoDB, err := db.NewDynamoDB()
+	if err != nil {
+		return nil, err
+	}
+	dynamoConfig, err := db.NewDynamoConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	clock := clockwork.NewRealClock()
+	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
+	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
+	commandHandler := feeds.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, feedRepository, postRepository)
+	handler := NewHandler(commandBus, commandHandler)
 	return handler, nil
 }

@@ -14,14 +14,13 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
+func InitializeLambda() (*Handler, error) {
 	defaultEnv := &config.DefaultEnv{}
-	client, err := secret.NewSecretManager(gcpConfig)
+	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
 	if err != nil {
 		return nil, err
 	}
-	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -36,7 +35,7 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	pusherClient, err := event.NewPusherClient(pusherConfig)
+	client, err := event.NewPusherClient(pusherConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -44,6 +43,6 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 	if err != nil {
 		return nil, err
 	}
-	handler := NewHandler(authenticator, pusherClient, pushNotifications)
+	handler := NewHandler(authenticator, client, pushNotifications)
 	return handler, nil
 }

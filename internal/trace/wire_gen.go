@@ -13,14 +13,13 @@ import (
 
 // Injectors from wire.go:
 
-func initProvider(gcpConfig secret.GCPConfig, serviceName ServiceName) (*trace.Provider, error) {
+func initProviderLambda(serviceName ServiceName) (*trace.Provider, error) {
 	defaultEnv := &config.DefaultEnv{}
-	client, err := secret.NewSecretManager(gcpConfig)
+	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
 	if err != nil {
 		return nil, err
 	}
-	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
+	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
 	traceConfig, err := NewConfig(loader)
 	if err != nil {
 		return nil, err

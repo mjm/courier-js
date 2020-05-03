@@ -1,10 +1,10 @@
 /* tslint:disable */
-/* @relayHash 8d586dcacc4644a3c963235f818a9782 */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 export type SetFeedOptionsInput = {
-    readonly id: string;
-    readonly autopost?: boolean | null;
+    id: string;
+    autopost?: boolean | null;
 };
 export type SetFeedOptionsMutationVariables = {
     input: SetFeedOptionsInput;
@@ -40,18 +40,15 @@ mutation SetFeedOptionsMutation(
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input",
-    "type": "SetFeedOptionsInput!",
-    "defaultValue": null
+    "type": "SetFeedOptionsInput!"
   }
 ],
 v1 = [
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "setFeedOptions",
-    "storageKey": null,
     "args": [
       {
         "kind": "Variable",
@@ -60,58 +57,61 @@ v1 = [
       }
     ],
     "concreteType": "SetFeedOptionsPayload",
+    "kind": "LinkedField",
+    "name": "setFeedOptions",
     "plural": false,
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "feed",
-        "storageKey": null,
         "args": null,
-        "concreteType": "SubscribedFeed",
+        "concreteType": "Feed",
+        "kind": "LinkedField",
+        "name": "feed",
         "plural": false,
         "selections": [
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "id",
             "args": null,
+            "kind": "ScalarField",
+            "name": "id",
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "autopost",
             "args": null,
+            "kind": "ScalarField",
+            "name": "autopost",
             "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   }
 ];
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "SetFeedOptionsMutation",
-    "type": "Mutation",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
-    "selections": (v1/*: any*/)
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "SetFeedOptionsMutation",
+    "selections": (v1/*: any*/),
+    "type": "Mutation"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "SetFeedOptionsMutation",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": (v1/*: any*/)
   },
   "params": {
-    "operationKind": "mutation",
-    "name": "SetFeedOptionsMutation",
     "id": null,
-    "text": "mutation SetFeedOptionsMutation(\n  $input: SetFeedOptionsInput!\n) {\n  setFeedOptions(input: $input) {\n    feed {\n      id\n      autopost\n    }\n  }\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "SetFeedOptionsMutation",
+    "operationKind": "mutation",
+    "text": "mutation SetFeedOptionsMutation(\n  $input: SetFeedOptionsInput!\n) {\n  setFeedOptions(input: $input) {\n    feed {\n      id\n      autopost\n    }\n  }\n}\n"
   }
 };
 })();

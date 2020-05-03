@@ -1,98 +1,52 @@
 import React from "react"
-import Moment from "react-moment"
-import {
-  createFragmentContainer,
-  Environment,
-  graphql,
-  RelayProp,
-} from "react-relay"
+import { graphql } from "react-relay"
 
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import * as linkify from "linkifyjs"
 import mention from "linkifyjs/plugins/mention"
 import Linkify from "linkifyjs/react"
 
 import {
-  TweetStatus,
   ViewTweet_tweet,
+  ViewTweet_tweet$key,
 } from "@generated/ViewTweet_tweet.graphql"
-import { cancelTweet } from "@mutations/CancelTweet"
-import { postTweet } from "@mutations/PostTweet"
-import { uncancelTweet } from "@mutations/UncancelTweet"
-import AsyncButton from "components/AsyncButton"
-import { useAuth } from "components/AuthProvider"
-import { useErrors } from "components/ErrorContainer"
-import { useSubscription } from "components/SubscriptionProvider"
-import TweetCardActions from "components/TweetCardActions"
+import { useFragment } from "react-relay/hooks"
 
 mention(linkify)
 
 const ViewTweet: React.FC<{
-  tweet: ViewTweet_tweet
-  onEdit: () => void
-  relay: RelayProp
-}> = ({ tweet, onEdit, relay }) => {
+  tweet: ViewTweet_tweet$key
+  linkClassName?: string
+}> = ({ tweet, linkClassName = "" }) => {
+  const data = useFragment(
+    graphql`
+      fragment ViewTweet_tweet on Tweet {
+        body
+        mediaURLs
+      }
+    `,
+    tweet
+  )
+
   return (
     <>
-      {tweet.action === "TWEET" ? (
-        <>
-          <TweetBody tweet={tweet} />
-          <TweetMedia tweet={tweet} />
-        </>
-      ) : (
-        <div>
-          <a
-            href={`https://twitter.com/user/status/${tweet.retweetID}`}
-            target="_blank"
-          >
-            Retweet
-          </a>
-        </div>
-      )}
-      {tweet.status === "DRAFT" && (
-        <DraftActions
-          tweet={tweet}
-          environment={relay.environment}
-          onEdit={onEdit}
-        />
-      )}
-      {tweet.status === "CANCELED" && (
-        <CanceledActions tweet={tweet} environment={relay.environment} />
-      )}
-      {tweet.status === "POSTED" && <PostedActions tweet={tweet} />}
+      <TweetBody linkClassName={linkClassName} tweet={data} />
+      <TweetMedia tweet={data} />
     </>
   )
 }
 
-export default createFragmentContainer(ViewTweet, {
-  tweet: graphql`
-    fragment ViewTweet_tweet on TweetContent {
-      body
-      mediaURLs
-      action
-      retweetID
+export default ViewTweet
 
-      ... on Tweet {
-        id
-        status
-        postAfter
-        postedAt
-        postedTweetID
-      }
-    }
-  `,
-})
-
-const TweetBody: React.FC<{ tweet: ViewTweet_tweet }> = ({ tweet }) => {
+const TweetBody: React.FC<{
+  linkClassName: string
+  tweet: ViewTweet_tweet
+}> = ({ linkClassName, tweet }) => {
   return (
     <div className="whitespace-pre-wrap p-4">
       <Linkify
         tagName="span"
         options={{
-          className: `break-words no-underline hover:underline ${
-            linkStyles[tweet.status || "DRAFT"]
-          }`,
+          className: `break-words no-underline hover:underline ${linkClassName}`,
           formatHref: {
             mention: val => `https://twitter.com${val}`,
           },
@@ -118,132 +72,5 @@ const TweetMedia: React.FC<{ tweet: ViewTweet_tweet }> = ({ tweet }) => {
         </figure>
       ))}
     </div>
-  )
-}
-
-const linkStyles: Record<TweetStatus, string> = {
-  DRAFT: "text-primary-9",
-  CANCELED: "text-neutral-10",
-  POSTED: "text-secondary-9",
-  "%future added value": "",
-}
-
-interface DraftActionsProps {
-  tweet: ViewTweet_tweet
-  environment: Environment
-  onEdit: () => void
-}
-const DraftActions: React.FC<DraftActionsProps> = ({
-  tweet,
-  environment,
-  onEdit,
-}) => {
-  const { isSubscribed } = useSubscription()
-  const { setError } = useErrors()
-
-  let banner: React.ReactNode = null
-  if (isSubscribed && tweet.postAfter) {
-    banner = (
-      <>
-        Posting{" "}
-        <Moment
-          fromNow
-          filter={str => {
-            if (str.includes("ago")) {
-              return "soon"
-            } else {
-              return str
-            }
-          }}
-        >
-          {tweet.postAfter}
-        </Moment>
-      </>
-    )
-  }
-
-  return (
-    <TweetCardActions
-      banner={banner}
-      left={
-        <>
-          <AsyncButton
-            className="btn btn-first btn-first-primary mr-2"
-            onClick={async () => {
-              try {
-                await postTweet(environment, { id: tweet.id as string })
-              } catch (e) {
-                setError(e)
-              }
-            }}
-          >
-            Post now
-          </AsyncButton>
-          <button
-            className="btn btn-second btn-second-neutral"
-            onClick={onEdit}
-          >
-            Edit
-          </button>
-        </>
-      }
-      right={
-        <button
-          className="btn btn-third btn-third-neutral"
-          onClick={() => cancelTweet(environment, tweet.id as string)}
-        >
-          Don't post
-        </button>
-      }
-    />
-  )
-}
-
-interface CanceledActionsProps {
-  tweet: ViewTweet_tweet
-  environment: Environment
-}
-
-const CanceledActions: React.FC<CanceledActionsProps> = ({
-  tweet,
-  environment,
-}) => {
-  return (
-    <TweetCardActions
-      inline
-      left={
-        <button
-          className="btn btn-first btn-first-neutral"
-          onClick={() => uncancelTweet(environment, tweet.id as string)}
-        >
-          Restore draft
-        </button>
-      }
-    />
-  )
-}
-
-interface PostedActionsProps {
-  tweet: ViewTweet_tweet
-}
-
-const PostedActions: React.FC<PostedActionsProps> = ({ tweet }) => {
-  const { user } = useAuth()
-
-  return (
-    <TweetCardActions
-      left={
-        <a
-          href={`https://twitter.com/${user?.nickname ?? "user"}/status/${
-            tweet.postedTweetID
-          }`}
-          target="_blank"
-          className="btn btn-third btn-third-secondary"
-        >
-          Posted <Moment fromNow>{tweet.postedAt}</Moment>{" "}
-          <FontAwesomeIcon className="ml-1" icon={faExternalLinkAlt} />
-        </a>
-      }
-    />
   )
 }

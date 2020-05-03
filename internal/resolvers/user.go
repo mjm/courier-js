@@ -89,3 +89,17 @@ func (u *User) AllTweets(ctx context.Context, args struct {
 
 	return &TweetConnection{q: u.q, conn: conn}, nil
 }
+
+func (u *User) AllFeeds(ctx context.Context, args pager.Options) (*FeedConnection, error) {
+	userID, err := auth.GetUser(ctx).ID()
+	if err != nil {
+		return nil, err
+	}
+
+	conn, err := u.q.Feeds.Paged(ctx, userID, args)
+	if err != nil {
+		return nil, err
+	}
+
+	return &FeedConnection{q: u.q, conn: conn}, nil
+}

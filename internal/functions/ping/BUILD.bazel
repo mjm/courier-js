@@ -1,4 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//internal/functions:lambda.bzl", "lambda_function")
 
 go_library(
     name = "go_default_library",
@@ -13,16 +14,21 @@ go_library(
         "//internal/db:go_default_library",
         "//internal/event:go_default_library",
         "//internal/functions:go_default_library",
-        "//internal/read/feeds:go_default_library",
         "//internal/secret:go_default_library",
         "//internal/tasks:go_default_library",
-        "//internal/trace/keys:go_default_library",
         "//internal/write:go_default_library",
         "//internal/write/feeds:go_default_library",
-        "//pkg/scraper:go_default_library",
+        "//internal/write/shared:go_default_library",
         "@com_github_divan_gorilla_xmlrpc//xml:go_default_library",
         "@com_github_gorilla_rpc//:go_default_library",
-        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@com_github_jonboulle_clockwork//:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
     ],
+)
+
+lambda_function(
+    name = "ping",
+    svcname = "ping",
+    importpath = "github.com/mjm/courier-js/internal/functions/ping",
+    deps = [":go_default_library"],
 )

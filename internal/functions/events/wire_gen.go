@@ -6,91 +6,78 @@
 package events
 
 import (
+	"github.com/jonboulle/clockwork"
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/notifications"
-	"github.com/mjm/courier-js/internal/read/tweets"
-	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
-	tweets2 "github.com/mjm/courier-js/internal/write/tweets"
-	user2 "github.com/mjm/courier-js/internal/write/user"
+	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
+	"github.com/mjm/courier-js/internal/write/tweets"
+	"github.com/mjm/courier-js/internal/write/user"
 )
 
 // Injectors from wire.go:
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
+func InitializeLambda() (*Handler, error) {
 	bus := event.NewBus()
+	dynamoDB, err := db.NewDynamoDB()
+	if err != nil {
+		return nil, err
+	}
 	defaultEnv := &config.DefaultEnv{}
-	client, err := secret.NewSecretManager(gcpConfig)
+	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
 	if err != nil {
 		return nil, err
 	}
-	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	dbConfig, err := db.NewConfig(loader)
+	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	dbDB, err := db.New(dbConfig)
-	if err != nil {
-		return nil, err
-	}
-	eventRecorder := user.NewEventRecorder(dbDB, bus)
+	clock := clockwork.NewRealClock()
+	eventRepository := shared.NewEventRepository(dynamoDB, dynamoConfig, clock)
+	eventRecorder := user.NewEventRecorder(eventRepository, clock, bus)
 	pusherConfig, err := event.NewPusherConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	pusherClient, err := event.NewPusherClient(pusherConfig)
+	client, err := event.NewPusherClient(pusherConfig)
 	if err != nil {
 		return nil, err
 	}
-	pusher := NewPusher(bus, pusherClient)
-	pushNotifications, err := event.NewBeamsClient(pusherConfig)
-	if err != nil {
-		return nil, err
-	}
-	tweetQueries := tweets.NewTweetQueries(dbDB)
-	notifier := notifications.NewNotifier(bus, pushNotifications, tweetQueries)
+	pusher := NewPusher(bus, client)
 	commandBus := write.NewCommandBus()
-	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
-	postRepository := tweets2.NewPostRepository(dbDB)
-	publisherConfig, err := event.NewPublisherConfig(loader)
+	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	pubsubClient, err := event.NewPubSubClient(gcpConfig)
+	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	publisher := event.NewPublisher(publisherConfig, pubsubClient)
-	tasksConfig, err := tasks.NewConfig(loader)
+	tasksTasks, err := tasks.New(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
-	if err != nil {
-		return nil, err
-	}
-	tweetRepository := tweets2.NewTweetRepository(dbDB)
+	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
+	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
+	commandHandler := feeds.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, feedRepository, postRepository)
 	authConfig, err := auth.NewConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	twitterConfig, err := tweets2.NewTwitterConfig(loader)
+	twitterConfig, err := tweets.NewTwitterConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	externalTweetRepository := tweets2.NewExternalTweetRepository(authConfig, twitterConfig)
+	externalTweetRepository := tweets.NewExternalTweetRepository(authConfig, twitterConfig)
 	management, err := auth.NewManagementClient(authConfig)
-	if err != nil {
-		return nil, err
-	}
-	keyManagementClient, err := tweets2.NewKeyManagementClient(gcpConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -99,12 +86,22 @@ func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
 		return nil, err
 	}
 	api := billing.NewClient(billingConfig)
-	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig, api)
-	commandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, postRepository, externalTweetRepository, userRepository)
-	eventHandler := tweets2.NewEventHandler(commandBus, bus, feedSubscriptionRepository, postRepository, commandHandler)
-	userUserRepository := user2.NewUserRepository(management)
-	userCommandHandler := user2.NewCommandHandler(commandBus, publisher, userUserRepository)
-	userEventHandler := user2.NewEventHandler(commandBus, bus, userCommandHandler)
-	handler := NewHandler(bus, eventRecorder, pusher, notifier, eventHandler, userEventHandler)
+	userRepository, err := tweets.NewUserRepository(authConfig, management, api)
+	if err != nil {
+		return nil, err
+	}
+	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	tweetsCommandHandler := tweets.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
+	taskHandler := NewTaskHandler(commandBus, bus, commandHandler, tweetsCommandHandler)
+	pushNotifications, err := event.NewBeamsClient(pusherConfig)
+	if err != nil {
+		return nil, err
+	}
+	notifier := notifications.NewNotifier(bus, pushNotifications, tweetRepository)
+	eventHandler := tweets.NewEventHandler(commandBus, bus, tweetsCommandHandler)
+	userUserRepository := user.NewUserRepository(management)
+	userCommandHandler := user.NewCommandHandler(commandBus, sqsPublisher, userUserRepository)
+	userEventHandler := user.NewEventHandler(commandBus, bus, userCommandHandler)
+	handler := NewHandler(bus, eventRecorder, pusher, taskHandler, notifier, eventHandler, userEventHandler)
 	return handler, nil
 }

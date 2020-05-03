@@ -1,9 +1,9 @@
 /* tslint:disable */
-/* @relayHash 98507b0d8c05a74bd87ca07feaba489a */
+/* eslint-disable */
 
 import { ConcreteRequest } from "relay-runtime";
 export type RefreshFeedInput = {
-    readonly id: string;
+    id: string;
 };
 export type RefreshFeedMutationVariables = {
     input: RefreshFeedInput;
@@ -15,6 +15,7 @@ export type RefreshFeedMutationResponse = {
             readonly title: string;
             readonly homePageURL: string;
             readonly refreshedAt: any | null;
+            readonly refreshing: boolean;
         };
     };
 };
@@ -35,6 +36,7 @@ mutation RefreshFeedMutation(
       title
       homePageURL
       refreshedAt
+      refreshing
     }
   }
 }
@@ -43,18 +45,15 @@ mutation RefreshFeedMutation(
 const node: ConcreteRequest = (function(){
 var v0 = [
   {
+    "defaultValue": null,
     "kind": "LocalArgument",
     "name": "input",
-    "type": "RefreshFeedInput!",
-    "defaultValue": null
+    "type": "RefreshFeedInput!"
   }
 ],
 v1 = [
   {
-    "kind": "LinkedField",
     "alias": null,
-    "name": "refreshFeed",
-    "storageKey": null,
     "args": [
       {
         "kind": "Variable",
@@ -63,74 +62,84 @@ v1 = [
       }
     ],
     "concreteType": "RefreshFeedPayload",
+    "kind": "LinkedField",
+    "name": "refreshFeed",
     "plural": false,
     "selections": [
       {
-        "kind": "LinkedField",
         "alias": null,
-        "name": "feed",
-        "storageKey": null,
         "args": null,
         "concreteType": "Feed",
+        "kind": "LinkedField",
+        "name": "feed",
         "plural": false,
         "selections": [
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "id",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "title",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
+            "args": null,
+            "kind": "ScalarField",
             "name": "homePageURL",
-            "args": null,
             "storageKey": null
           },
           {
-            "kind": "ScalarField",
             "alias": null,
-            "name": "refreshedAt",
             "args": null,
+            "kind": "ScalarField",
+            "name": "refreshedAt",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "refreshing",
             "storageKey": null
           }
-        ]
+        ],
+        "storageKey": null
       }
-    ]
+    ],
+    "storageKey": null
   }
 ];
 return {
-  "kind": "Request",
   "fragment": {
-    "kind": "Fragment",
-    "name": "RefreshFeedMutation",
-    "type": "Mutation",
-    "metadata": null,
     "argumentDefinitions": (v0/*: any*/),
-    "selections": (v1/*: any*/)
+    "kind": "Fragment",
+    "metadata": null,
+    "name": "RefreshFeedMutation",
+    "selections": (v1/*: any*/),
+    "type": "Mutation"
   },
+  "kind": "Request",
   "operation": {
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "RefreshFeedMutation",
-    "argumentDefinitions": (v0/*: any*/),
     "selections": (v1/*: any*/)
   },
   "params": {
-    "operationKind": "mutation",
-    "name": "RefreshFeedMutation",
     "id": null,
-    "text": "mutation RefreshFeedMutation(\n  $input: RefreshFeedInput!\n) {\n  refreshFeed(input: $input) {\n    feed {\n      id\n      title\n      homePageURL\n      refreshedAt\n    }\n  }\n}\n",
-    "metadata": {}
+    "metadata": {},
+    "name": "RefreshFeedMutation",
+    "operationKind": "mutation",
+    "text": "mutation RefreshFeedMutation(\n  $input: RefreshFeedInput!\n) {\n  refreshFeed(input: $input) {\n    feed {\n      id\n      title\n      homePageURL\n      refreshedAt\n      refreshing\n    }\n  }\n}\n"
   }
 };
 })();
-(node as any).hash = 'abad7debf3171166abdf308168d6235c';
+(node as any).hash = 'c87f78c7dcc8a3fb155695d062c215e9';
 export default node;

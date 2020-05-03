@@ -16,27 +16,28 @@ import (
 	"github.com/mjm/courier-js/internal/write"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
 	"github.com/mjm/courier-js/internal/write/tweets"
 	"github.com/mjm/courier-js/internal/write/user"
 )
 
-func InitializeHandler(
-	schemaString string,
-	gcpConfig secret.GCPConfig,
-) (*Handler, error) {
+func InitializeLambda() (*Handler, error) {
 	panic(
 		wire.Build(
+			wire.Value(SchemaFile("schema.graphql")),
 			NewHandler,
 			NewSchema,
+			LoadSchemaFromFile,
 			config.DefaultSet,
-			secret.GCPSet,
+			secret.AWSSet,
 			resolvers.DefaultSet,
 			auth.DefaultSet,
 			db.DefaultSet,
 			billing2.DefaultSet,
 			write.NewCommandBus,
 			tasks.DefaultSet,
-			event.PublishingSet,
+			event.AWSPublishingSet,
+			shared.DefaultSet,
 			feeds.DefaultSet,
 			tweets.DefaultSet,
 			billing.DefaultSet,

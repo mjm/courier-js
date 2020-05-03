@@ -1,26 +1,50 @@
 import React from "react"
+import { RelayEnvironmentProvider } from "react-relay/hooks"
 
 import { AppProps } from "next/app"
 import { useRouter } from "next/router"
 
 import { config } from "@fortawesome/fontawesome-svg-core"
+import { Elements } from "@stripe/react-stripe-js"
+import { loadStripe } from "@stripe/stripe-js"
 import NProgress from "nprogress"
 
 import { Auth0Provider, useAuth0 } from "components/Auth0Provider"
 import MDXContainer from "components/MDXContainer"
-import { isAuthenticated } from "utils/auth0"
+import { getEnvironment } from "hocs/withData"
+import { getUser, isAuthenticated } from "utils/auth0"
 
 import "components/Tailwind.css"
 import "components/Progress.css"
 import "@fortawesome/fontawesome-svg-core/styles.css"
+import { preloader, usePreloader } from "utils/preloader"
+import { AuthProvider } from "components/AuthProvider"
 
 config.autoAddCss = false
 
-const App: React.FC<AppProps> = props => (
-  <Auth0Provider>
-    <AppInner {...props} />
-  </Auth0Provider>
-)
+const stripePromise = loadStripe(process.env.STRIPE_KEY || "")
+
+const App: React.FC<AppProps> = props => {
+  return (
+    <Elements
+      stripe={stripePromise}
+      options={{
+        fonts: [
+          {
+            cssSrc:
+              "https://fonts.googleapis.com/css2?family=Inter&display=swap",
+          },
+        ],
+      }}
+    >
+      <RelayEnvironmentProvider environment={getEnvironment()}>
+        <Auth0Provider>
+          <AppInner {...props} />
+        </Auth0Provider>
+      </RelayEnvironmentProvider>
+    </Elements>
+  )
+}
 
 export default App
 
@@ -86,6 +110,7 @@ function useProgressBar(): void {
 const AppInner: React.FC<AppProps> = ({ Component, pageProps }) => {
   const isAuthenticating = useAuthenticating()
   useProgressBar()
+  usePreloader(preloader)
 
   return (
     <MDXContainer>

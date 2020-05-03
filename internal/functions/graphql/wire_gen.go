@@ -6,6 +6,7 @@
 package graphql
 
 import (
+	"github.com/jonboulle/clockwork"
 	"github.com/mjm/courier-js/internal/auth"
 	"github.com/mjm/courier-js/internal/billing"
 	"github.com/mjm/courier-js/internal/config"
@@ -21,33 +22,37 @@ import (
 	"github.com/mjm/courier-js/internal/write"
 	billing3 "github.com/mjm/courier-js/internal/write/billing"
 	feeds2 "github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
 	tweets2 "github.com/mjm/courier-js/internal/write/tweets"
 	user2 "github.com/mjm/courier-js/internal/write/user"
 )
 
 // Injectors from wire.go:
 
-func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handler, error) {
+func InitializeLambda() (*Handler, error) {
+	schemaFile := _wireSchemaFileValue
+	schemaString, err := LoadSchemaFromFile(schemaFile)
+	if err != nil {
+		return nil, err
+	}
+	dynamoDB, err := db.NewDynamoDB()
+	if err != nil {
+		return nil, err
+	}
 	defaultEnv := &config.DefaultEnv{}
-	client, err := secret.NewSecretManager(gcpConfig)
+	awsSecretKeeper, err := secret.NewAWSSecretKeeper()
 	if err != nil {
 		return nil, err
 	}
-	gcpSecretKeeper := secret.NewGCPSecretKeeper(gcpConfig, client)
-	loader := config.NewLoader(defaultEnv, gcpSecretKeeper)
-	dbConfig, err := db.NewConfig(loader)
+	loader := config.NewLoader(defaultEnv, awsSecretKeeper)
+	dynamoConfig, err := db.NewDynamoConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	dbDB, err := db.New(dbConfig)
-	if err != nil {
-		return nil, err
-	}
-	feedQueries := feeds.NewFeedQueries(dbDB)
-	subscriptionQueries := feeds.NewSubscriptionQueries(dbDB)
-	postQueries := feeds.NewPostQueries(dbDB)
-	tweetQueries := tweets.NewTweetQueries(dbDB)
-	eventQueries := user.NewEventQueries(dbDB)
+	feedQueries := feeds.NewFeedQueries(dynamoDB, dynamoConfig)
+	postQueries := feeds.NewPostQueries(dynamoDB, dynamoConfig)
+	tweetQueries := tweets.NewTweetQueries(dynamoDB, dynamoConfig)
+	eventQueries := user.NewEventQueries(dynamoDB, dynamoConfig)
 	billingConfig, err := billing.NewConfig(loader)
 	if err != nil {
 		return nil, err
@@ -62,64 +67,59 @@ func InitializeHandler(schemaString string, gcpConfig secret.GCPConfig) (*Handle
 	if err != nil {
 		return nil, err
 	}
-	billingSubscriptionQueries := billing2.NewSubscriptionQueries(api, management)
+	subscriptionQueries := billing2.NewSubscriptionQueries(api, management)
 	queries := resolvers.Queries{
-		Feeds:             feedQueries,
-		FeedSubscriptions: subscriptionQueries,
-		Posts:             postQueries,
-		Tweets:            tweetQueries,
-		Events:            eventQueries,
-		Customers:         customerQueries,
-		Subscriptions:     billingSubscriptionQueries,
+		Feeds:         feedQueries,
+		Posts:         postQueries,
+		Tweets:        tweetQueries,
+		Events:        eventQueries,
+		Customers:     customerQueries,
+		Subscriptions: subscriptionQueries,
 	}
 	commandBus := write.NewCommandBus()
-	tasksConfig, err := tasks.NewConfig(loader)
+	sqsPublisherConfig, err := event.NewSQSPublisherConfig(loader)
 	if err != nil {
 		return nil, err
 	}
-	tasksTasks, err := tasks.New(tasksConfig, gcpConfig)
+	sqsPublisher, err := event.NewSQSPublisher(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	publisherConfig, err := event.NewPublisherConfig(loader)
+	tasksTasks, err := tasks.New(sqsPublisherConfig)
 	if err != nil {
 		return nil, err
 	}
-	pubsubClient, err := event.NewPubSubClient(gcpConfig)
-	if err != nil {
-		return nil, err
-	}
-	publisher := event.NewPublisher(publisherConfig, pubsubClient)
-	feedRepository := feeds2.NewFeedRepository(dbDB)
-	subscriptionRepository := feeds2.NewSubscriptionRepository(dbDB)
-	postRepository := feeds2.NewPostRepository(dbDB)
-	commandHandler := feeds2.NewCommandHandler(commandBus, publisher, tasksTasks, feedRepository, subscriptionRepository, postRepository)
-	tweetRepository := tweets2.NewTweetRepository(dbDB)
-	feedSubscriptionRepository := tweets2.NewFeedSubscriptionRepository(dbDB)
-	tweetsPostRepository := tweets2.NewPostRepository(dbDB)
+	clock := clockwork.NewRealClock()
+	feedRepository := shared.NewFeedRepository(dynamoDB, dynamoConfig, clock)
+	postRepository := shared.NewPostRepository(dynamoDB, dynamoConfig, clock)
+	commandHandler := feeds2.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, feedRepository, postRepository)
 	twitterConfig, err := tweets2.NewTwitterConfig(loader)
 	if err != nil {
 		return nil, err
 	}
 	externalTweetRepository := tweets2.NewExternalTweetRepository(authConfig, twitterConfig)
-	keyManagementClient, err := tweets2.NewKeyManagementClient(gcpConfig)
+	userRepository, err := tweets2.NewUserRepository(authConfig, management, api)
 	if err != nil {
 		return nil, err
 	}
-	userRepository := tweets2.NewUserRepository(management, keyManagementClient, gcpConfig, api)
-	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, publisher, tasksTasks, tweetRepository, feedSubscriptionRepository, tweetsPostRepository, externalTweetRepository, userRepository)
+	tweetRepository := shared.NewTweetRepository(dynamoDB, dynamoConfig, clock)
+	tweetsCommandHandler := tweets2.NewCommandHandler(commandBus, sqsPublisher, tasksTasks, externalTweetRepository, userRepository, feedRepository, tweetRepository)
 	customerRepository := billing3.NewCustomerRepository(api)
-	billingSubscriptionRepository := billing3.NewSubscriptionRepository(api)
-	billingCommandHandler := billing3.NewCommandHandler(commandBus, publisher, billingConfig, customerRepository, billingSubscriptionRepository)
+	subscriptionRepository := billing3.NewSubscriptionRepository(api)
+	billingCommandHandler := billing3.NewCommandHandler(commandBus, sqsPublisher, billingConfig, customerRepository, subscriptionRepository)
 	userUserRepository := user2.NewUserRepository(management)
-	userCommandHandler := user2.NewCommandHandler(commandBus, publisher, userUserRepository)
-	root := resolvers.New(queries, commandBus, tasksTasks, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
+	userCommandHandler := user2.NewCommandHandler(commandBus, sqsPublisher, userUserRepository)
+	root := resolvers.New(queries, commandBus, commandHandler, tweetsCommandHandler, billingCommandHandler, userCommandHandler)
 	schema, err := NewSchema(schemaString, root)
 	if err != nil {
 		return nil, err
 	}
 	jwksClient := auth.NewJWKSClient(authConfig)
 	authenticator := auth.NewAuthenticator(authConfig, management, jwksClient)
-	handler := NewHandler(schema, authenticator, publisher)
+	handler := NewHandler(schema, authenticator)
 	return handler, nil
 }
+
+var (
+	_wireSchemaFileValue = SchemaFile("schema.graphql")
+)

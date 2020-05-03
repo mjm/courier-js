@@ -2,79 +2,61 @@ package tasks
 
 import (
 	"context"
-	"fmt"
+	"encoding/base64"
 	"time"
 
-	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go/service/sqs/sqsiface"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/wire"
-	"github.com/googleapis/gax-go/v2"
+	"github.com/segmentio/ksuid"
 	"go.opentelemetry.io/otel/api/key"
-	"go.opentelemetry.io/otel/api/propagation"
 	"go.opentelemetry.io/otel/api/trace"
-	"google.golang.org/api/option"
-	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 
-	"github.com/mjm/courier-js/internal/functions"
-	"github.com/mjm/courier-js/internal/secret"
+	"github.com/mjm/courier-js/internal/event"
 )
 
-var DefaultSet = wire.NewSet(New, NewConfig)
-
-type tasksClient interface {
-	CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error)
-}
+var DefaultSet = wire.NewSet(New)
 
 type Tasks struct {
-	url            string
-	queue          string
-	serviceAccount string
-	client         tasksClient
+	cfg event.SQSPublisherConfig
+	sqs sqsiface.SQSAPI
 }
 
-func New(cfg Config, secretCfg secret.GCPConfig) (*Tasks, error) {
-	ctx := context.Background()
-	var o []option.ClientOption
-	if secretCfg.CredentialsFile != "" {
-		o = append(o, option.WithCredentialsFile(secretCfg.CredentialsFile))
-	}
-	client, err := cloudtasks.NewClient(ctx, o...)
+func New(cfg event.SQSPublisherConfig) (*Tasks, error) {
+	sess, err := session.NewSession(aws.NewConfig())
 	if err != nil {
 		return nil, err
 	}
 
 	return &Tasks{
-		url:            cfg.TaskURL,
-		queue:          cfg.Queue,
-		serviceAccount: cfg.ServiceAccount,
-		client:         client,
+		cfg: cfg,
+		sqs: sqs.New(sess),
 	}, nil
 }
 
 type taskOption interface {
-	Apply(*Tasks, *taskspb.CreateTaskRequest)
+	Apply(*Tasks, *sqs.SendMessageInput, *FireTaskEvent)
 }
 
-type fnTaskOption func(*Tasks, *taskspb.CreateTaskRequest)
+type fnTaskOption func(*Tasks, *sqs.SendMessageInput, *FireTaskEvent)
 
-func (o fnTaskOption) Apply(t *Tasks, r *taskspb.CreateTaskRequest) {
-	o(t, r)
+func (o fnTaskOption) Apply(t *Tasks, input *sqs.SendMessageInput, msg *FireTaskEvent) {
+	o(t, input, msg)
 }
 
 func After(d time.Duration) taskOption {
-	return fnTaskOption(func(_ *Tasks, r *taskspb.CreateTaskRequest) {
-		t, err := ptypes.TimestampProto(time.Now().Add(d))
-		if err != nil {
-			panic(err)
-		}
-		r.GetTask().ScheduleTime = t
+	return fnTaskOption(func(_ *Tasks, input *sqs.SendMessageInput, _ *FireTaskEvent) {
+		input.SetDelaySeconds(int64(d.Seconds()))
 	})
 }
 
 func Named(name string) taskOption {
-	return fnTaskOption(func(t *Tasks, r *taskspb.CreateTaskRequest) {
-		r.GetTask().Name = fmt.Sprintf("%s/tasks/%s", t.queue, name)
+	return fnTaskOption(func(t *Tasks, _ *sqs.SendMessageInput, msg *FireTaskEvent) {
+		msg.Name = name
 	})
 }
 
@@ -82,82 +64,64 @@ func (t *Tasks) Enqueue(ctx context.Context, task proto.Message, opts ...taskOpt
 	ctx, span := tracer.Start(ctx, "Tasks.Enqueue",
 		trace.WithSpanKind(trace.SpanKindProducer),
 		trace.WithAttributes(
-			key.String("messaging.system", "google_cloud_tasks"),
+			key.String("messaging.system", "sqs"),
 			key.String("messaging.destination_kind", "queue"),
-			key.String("messaging.destination", t.queue),
-			key.String("messaging.url", t.url),
+			key.String("messaging.destination", t.cfg.QueueURL),
 			key.String("messaging.operation", "send")))
 	defer span.End()
 
-	req, err := t.newTaskRequest(ctx, task)
+	evt := &FireTaskEvent{
+		Name: ksuid.New().String(),
+	}
+
+	var err error
+	evt.Task, err = ptypes.MarshalAny(task)
 	if err != nil {
 		span.RecordError(ctx, err)
 		return "", err
 	}
 
-	for _, opt := range opts {
-		opt.Apply(t, req)
-	}
-
-	createdTask, err := t.client.CreateTask(ctx, req)
-	if err != nil {
-		span.RecordError(ctx, err)
-		return "", err
-	}
-
-	span.SetAttributes(
-		nameKey.String(createdTask.GetName()),
-		key.String("messaging.message_id", createdTask.GetName()))
-
-	return createdTask.GetName(), nil
-}
-
-func (t *Tasks) newTaskRequest(ctx context.Context, task proto.Message) (*taskspb.CreateTaskRequest, error) {
-	span := trace.SpanFromContext(ctx)
-	span.SetAttributes(
-		typeKey.String(fmt.Sprintf("%T", task)),
-		queueKey.String(t.queue),
-		urlKey.String(t.url),
-		serviceAccountKey.String(t.serviceAccount))
-
-	a, err := ptypes.MarshalAny(task)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := proto.Marshal(a)
-	if err != nil {
-		return nil, err
-	}
-
-	span.SetAttributes(dataLenKey.Int(len(data)))
-
-	headers := make(taskHeaders)
-	propagation.InjectHTTP(ctx, functions.Propagators, headers)
-
-	httpReq := &taskspb.HttpRequest{
-		Body:       data,
-		HttpMethod: taskspb.HttpMethod_POST,
-		Url:        t.url,
-		Headers:    headers,
-	}
-
-	if t.serviceAccount != "" {
-		httpReq.AuthorizationHeader = &taskspb.HttpRequest_OidcToken{
-			OidcToken: &taskspb.OidcToken{
-				ServiceAccountEmail: t.serviceAccount,
+	input := &sqs.SendMessageInput{
+		QueueUrl: aws.String(t.cfg.QueueURL),
+		MessageAttributes: map[string]*sqs.MessageAttributeValue{
+			"TraceID": {
+				DataType:    aws.String("String"),
+				StringValue: aws.String(span.SpanContext().TraceIDString()),
 			},
-		}
-	}
-
-	req := &taskspb.CreateTaskRequest{
-		Parent: t.queue,
-		Task: &taskspb.Task{
-			MessageType: &taskspb.Task_HttpRequest{
-				HttpRequest: httpReq,
+			"SpanID": {
+				DataType:    aws.String("String"),
+				StringValue: aws.String(span.SpanContext().SpanIDString()),
 			},
 		},
 	}
 
-	return req, nil
+	for _, opt := range opts {
+		opt.Apply(t, input, evt)
+	}
+
+	a, err := ptypes.MarshalAny(evt)
+	if err != nil {
+		span.RecordError(ctx, err)
+		return "", err
+	}
+
+	data, err := proto.Marshal(a)
+	if err != nil {
+		span.RecordError(ctx, err)
+		return "", err
+	}
+
+	span.SetAttributes(dataLenKey.Int(len(data)))
+
+	input.SetMessageBody(base64.StdEncoding.EncodeToString(data))
+	res, err := t.sqs.SendMessageWithContext(ctx, input)
+	if err != nil {
+		span.RecordError(ctx, err)
+		return "", err
+	}
+
+	span.SetAttributes(
+		nameKey.String(evt.Name),
+		key.String("messaging.message_id", aws.StringValue(res.MessageId)))
+	return aws.StringValue(res.MessageId), nil
 }

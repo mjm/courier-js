@@ -5,9 +5,16 @@ import Link from "next/link"
 import Router from "next/router"
 
 import Head from "components/Head"
-import withDefaultPage, { DefaultPageContext } from "hocs/withDefaultPage"
+import withDefaultPage from "hocs/withDefaultPage"
+import { useAuth } from "components/AuthProvider"
 
-const Home: NextPage<{}> = () => {
+const Home: NextPage = () => {
+  const { isAuthenticated } = useAuth()
+  if (isAuthenticated) {
+    Router.push("/tweets")
+    return null
+  }
+
   return (
     <main>
       <Head title="Courier" />
@@ -60,21 +67,6 @@ const Home: NextPage<{}> = () => {
       </section>
     </main>
   )
-}
-
-Home.getInitialProps = ({ res, ...ctx }: DefaultPageContext) => {
-  if (!ctx.user) {
-    return {}
-  }
-
-  if (res) {
-    res.writeHead(302, { Location: "/tweets" })
-    res.end()
-  } else {
-    Router.push("/tweets")
-  }
-
-  return {}
 }
 
 export default withDefaultPage(Home)

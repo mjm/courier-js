@@ -1,52 +1,48 @@
-import { Environment, graphql } from "react-relay"
+import React from "react"
+import { graphql } from "react-relay"
+import { usePreloadedQuery } from "react-relay/hooks"
 
 import { NextPage } from "next"
 
-import { FeedDetailsPageQueryResponse } from "@generated/FeedDetailsPageQuery.graphql"
+import { useFeedOptionsChangedEvent } from "@events/FeedOptionsChangedEvent"
+import { useFeedRefreshedEvent } from "@events/FeedRefreshedEvent"
+import { FeedDetailsPageQuery } from "@generated/FeedDetailsPageQuery.graphql"
 import { ErrorContainer } from "components/ErrorContainer"
 import FeedDetails from "components/FeedDetails"
-import withData from "hocs/withData"
 import withSecurePage from "hocs/withSecurePage"
-import { useFeedRefreshedEvent } from "@events/FeedRefreshedEvent"
-import { useFeedOptionsChangedEvent } from "@events/FeedOptionsChangedEvent"
+import { preloader } from "utils/preloader"
+import { useRouter } from "next/router"
 
-const FeedDetailsPage: NextPage<
-  FeedDetailsPageQueryResponse & { environment: Environment },
-  { id: string }
-> = ({ subscribedFeed, viewer, environment }) => {
-  useFeedRefreshedEvent(environment)
-  useFeedOptionsChangedEvent(environment)
+const FeedDetailsPage: NextPage = () => {
+  const router = useRouter()
+  useFeedRefreshedEvent()
+  useFeedOptionsChangedEvent()
 
-  if (!subscribedFeed || !viewer) {
-    // TODO I think this means there's no such feed
-    return <></>
+  const data = usePreloadedQuery<FeedDetailsPageQuery>(
+    graphql`
+      query FeedDetailsPageQuery($id: ID!) {
+        feed(id: $id) {
+          ...FeedDetails_feed
+        }
+        viewer {
+          ...FeedDetails_user
+        }
+      }
+    `,
+    preloader.get(router.asPath)
+  )
+
+  if (!data?.viewer || !data?.feed) {
+    return null
   }
 
   return (
     <main className="container mx-auto my-8">
       <ErrorContainer>
-        <FeedDetails feed={subscribedFeed} user={viewer} />
+        <FeedDetails feed={data.feed} user={data.viewer} />
       </ErrorContainer>
     </main>
   )
 }
 
-FeedDetailsPage.getInitialProps = ({ query }) => {
-  return { id: query.id as string }
-}
-
-export default withData(withSecurePage(FeedDetailsPage), {
-  query: graphql`
-    query FeedDetailsPageQuery($id: ID!) {
-      subscribedFeed(id: $id) {
-        ...FeedDetails_feed
-      }
-      viewer {
-        ...FeedDetails_user
-      }
-    }
-  `,
-  getVariables({ id }) {
-    return { id }
-  },
-})
+export default withSecurePage(FeedDetailsPage)

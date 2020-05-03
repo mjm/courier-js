@@ -9,21 +9,21 @@ executors:
       project:
         description: Google Cloud Project ID
         type: string
+      bucket:
+        description: S3 bucket for Lambda deployment packages
+        type: string
     docker:
       - image: mmoriarity/circleci-bazel
-      - image: circleci/postgres:12-alpine-ram
-        environment:
-          POSTGRES_USER: circleci
-          POSTGRES_DB: courier_test
+      - image: circleci/dynamodb:15
     environment:
-      DATABASE_URL: postgresql://localhost/courier_test?sslmode=disable
       GOOGLE_PROJECT: << parameters.project >>
+      LAMBDA_BUCKET: << parameters.bucket >>
   terraform:
     parameters:
       workspace:
         type: string
     docker:
-      - image: hashicorp/terraform:0.12.20
+      - image: hashicorp/terraform:0.12.24
     environment:
       TF_INPUT: "false"
       TF_IN_AUTOMATION: "true"
@@ -36,11 +36,27 @@ jobs:
         type: string
       credentials:
         type: env_var_name
+      bucket:
+        type: string
+      aws_access_key_id:
+        description: Env var name for access key ID
+        type: env_var_name
+        default: AWS_ACCESS_KEY_ID
+      aws_secret_access_key:
+        description: Env var name of secret access key
+        type: env_var_name
+        default: AWS_SECRET_ACCESS_KEY
     executor:
       name: bazel
       project: << parameters.project >>
+      bucket: << parameters.bucket >>
     steps:
       - checkout
+      - run:
+          name: Set up env vars
+          command: |
+            echo 'export AWS_ACCESS_KEY_ID=$<< parameters.aws_access_key_id >>' >> $BASH_ENV
+            echo 'export AWS_SECRET_ACCESS_KEY=$<< parameters.aws_secret_access_key >>' >> $BASH_ENV
       - run:
           name: Set up GCP credentials
           command: |
@@ -52,27 +68,6 @@ jobs:
             # Use production credentials for build cache, regardless
             echo $PROD_GCLOUD_SERVICE_KEY > /tmp/gcp-credentials.json
       - run:
-          name: Install golang-migrate
-          command: |
-            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.8.0/migrate.linux-amd64.tar.gz | tar xvz
-            sudo mv migrate.linux-amd64 /usr/local/bin/migrate
-      - run:
-          name: Waiting for Postgres to be ready
-          command: |
-            for i in `seq 1 10`;
-            do
-              nc -z localhost 5432 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Postgres && exit 1
-      - run:
-          name: Enable pgcrypto extension
-          command: psql -c 'create extension pgcrypto;' $DATABASE_URL
-      - run:
-          name: Migrate test database
-          command: /usr/local/bin/migrate -database "$DATABASE_URL" -path migrations/ up
-      - run:
           name: Run unit tests
           command: bazel test --config=ci //...
       - run:
@@ -81,11 +76,8 @@ jobs:
       - store_test_results:
           path: /tmp/test-results
       - run:
-          name: Build container image
-          command: bazel build --config=ci //image:courier-functions
-      - run:
-          name: Push functions container image
-          command: bazel run --config=ci //image:courier-functions-push
+          name: Upload Lambda functions
+          command: bazel run --config=ci //:upload_functions
 
   deploy_frontend:
     parameters:
@@ -105,40 +97,23 @@ jobs:
     parameters:
       env:
         type: string
-    executor: node
-    steps:
-      - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-          name: Install NPM modules
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-      - run:
-          name: Update Auth0 configuration
-          command: npm run auth:import:<< parameters.env >>
-
-  migrate_database:
-    parameters:
-      database_url:
-        type: env_var_name
-    docker:
-      - image: cimg/base:2020.01
+    executor:
+      name: terraform
+      workspace: << parameters.env >>-auth0
     steps:
       - checkout
       - run:
-          name: Install golang-migrate
+          name: Configure Terraform
           command: |
-            curl -L https://github.com/golang-migrate/migrate/releases/download/v4.8.0/migrate.linux-amd64.tar.gz | tar xvz
-            sudo mv migrate.linux-amd64 /usr/local/bin/migrate
+            printf "credentials \"app.terraform.io\" {\n  token = \"%s\"\n}\n" "$TF_TOKEN" > ~/.terraformrc
       - run:
-          name: Migrate database
-          command: /usr/local/bin/migrate -database "$<< parameters.database_url >>" -path migrations/ up
+          name: terraform init
+          command: cd terraform/auth0 && terraform init
+      - run:
+          name: terraform apply
+          command: cd terraform/auth0 && terraform apply -auto-approve
 
-  deploy_backend:
+  deploy_backend_aws:
     parameters:
       workspace:
         type: string
@@ -152,16 +127,16 @@ jobs:
           command: |
             printf "credentials \"app.terraform.io\" {\n  token = \"%s\"\n}\n" "$TF_TOKEN" > ~/.terraformrc
 
-            cd terraform/gcp
+            cd terraform/aws
             echo "function_revision = \"$CIRCLE_SHA1\"" > revision.auto.tfvars
             echo "revision.auto.tfvars:"
             cat revision.auto.tfvars
       - run:
           name: terraform init
-          command: cd terraform/gcp && terraform init
+          command: cd terraform/aws && terraform init
       - run:
           name: terraform apply
-          command: cd terraform/gcp && terraform apply -auto-approve
+          command: cd terraform/aws && terraform apply -auto-approve
 
   mark_deploy:
     parameters:
@@ -186,11 +161,7 @@ workflows:
           name: build_and_test_backend_staging
           project: courier-staging-267902
           credentials: GCLOUD_SERVICE_KEY
-      - migrate_database:
-          name: migrate_database_staging
-          database_url: STAGING_DATABASE_URL
-          requires:
-            - build_and_test_backend_staging
+          bucket: courier-staging-handlers
       - update_auth0:
           name: update_auth0_staging
           env: staging
@@ -201,39 +172,34 @@ workflows:
           now_config_file: now.json
           requires:
             - build_and_test_backend_staging
-            - migrate_database_staging
-            - update_auth0_staging
-      - deploy_backend:
+      - deploy_backend_aws:
           name: deploy_backend_staging
-          workspace: staging-us-central1
+          workspace: staging-us-east-2
           requires:
             - build_and_test_backend_staging
-            - migrate_database_staging
-            - update_auth0_staging
       - mark_deploy:
           name: mark_deploy_staging
           dataset: courier-staging
           requires:
+            - update_auth0_staging
             - deploy_backend_staging
 
       - build_and_test_backend:
           name: build_and_test_backend_prod
           project: courier-prod-269822
           credentials: PROD_GCLOUD_SERVICE_KEY
+          bucket: courier-production-handlers
+          aws_access_key_id: PROD_AWS_ACCESS_KEY_ID
+          aws_secret_access_key: PROD_AWS_SECRET_ACCESS_KEY
           requires:
             # run the staging one first so we can rely on its build cache
             - build_and_test_backend_staging
           filters:
             branches:
               only: master
-      - migrate_database:
-          name: migrate_database_prod
-          database_url: PROD_DATABASE_URL
-          requires:
-            - build_and_test_backend_prod
       - update_auth0:
           name: update_auth0_prod
-          env: prod
+          env: production
           requires:
             - build_and_test_backend_prod
       - deploy_frontend:
@@ -241,17 +207,14 @@ workflows:
           now_config_file: now.prod.json
           requires:
             - build_and_test_backend_prod
-            - migrate_database_prod
-            - update_auth0_prod
-      - deploy_backend:
+      - deploy_backend_aws:
           name: deploy_backend_prod
-          workspace: production-us-central1
+          workspace: production-us-east-2
           requires:
             - build_and_test_backend_prod
-            - migrate_database_prod
-            - update_auth0_prod
       - mark_deploy:
           name: mark_deploy_prod
           dataset: courier
           requires:
+            - update_auth0_prod
             - deploy_backend_prod

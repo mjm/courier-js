@@ -1,8 +1,0 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "go_default_library",
-    srcs = ["qry.go"],
-    importpath = "github.com/mjm/courier-js/internal/write/tweets/queries",
-    visibility = ["//:__subpackages__"],
-)

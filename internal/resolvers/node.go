@@ -5,11 +5,10 @@ import (
 )
 
 const (
-	TweetNode          string = "twt"
-	PostNode           string = "post"
-	FeedNode           string = "feed"
-	SubscribedFeedNode string = "sub"
-	EventNode          string = "evt"
+	TweetNode string = "twt"
+	PostNode  string = "post"
+	FeedNode  string = "feed"
+	EventNode string = "evt"
 )
 
 type nodeResolver interface {
@@ -25,13 +24,8 @@ func (n *Node) ToFeed() (*Feed, bool) {
 	return f, ok
 }
 
-func (n *Node) ToSubscribedFeed() (*SubscribedFeed, bool) {
-	sf, ok := n.nodeResolver.(*SubscribedFeed)
-	return sf, ok
-}
-
-func (n *Node) ToTweet() (*Tweet, bool) {
-	t, ok := n.nodeResolver.(*Tweet)
+func (n *Node) ToTweetGroup() (*TweetGroup, bool) {
+	t, ok := n.nodeResolver.(*TweetGroup)
 	return t, ok
 }
 

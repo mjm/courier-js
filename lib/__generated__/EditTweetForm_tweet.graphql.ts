@@ -1,11 +1,14 @@
 /* tslint:disable */
+/* eslint-disable */
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type EditTweetForm_tweet = {
     readonly id: string;
-    readonly body: string;
-    readonly mediaURLs: ReadonlyArray<string>;
+    readonly tweets: ReadonlyArray<{
+        readonly body: string;
+        readonly mediaURLs: ReadonlyArray<string>;
+    }>;
     readonly " $refType": "EditTweetForm_tweet";
 };
 export type EditTweetForm_tweet$data = EditTweetForm_tweet;
@@ -17,34 +20,45 @@ export type EditTweetForm_tweet$key = {
 
 
 const node: ReaderFragment = {
-  "kind": "Fragment",
-  "name": "EditTweetForm_tweet",
-  "type": "Tweet",
-  "metadata": null,
   "argumentDefinitions": [],
+  "kind": "Fragment",
+  "metadata": null,
+  "name": "EditTweetForm_tweet",
   "selections": [
     {
-      "kind": "ScalarField",
       "alias": null,
+      "args": null,
+      "kind": "ScalarField",
       "name": "id",
-      "args": null,
       "storageKey": null
     },
     {
-      "kind": "ScalarField",
       "alias": null,
-      "name": "body",
       "args": null,
-      "storageKey": null
-    },
-    {
-      "kind": "ScalarField",
-      "alias": null,
-      "name": "mediaURLs",
-      "args": null,
+      "concreteType": "Tweet",
+      "kind": "LinkedField",
+      "name": "tweets",
+      "plural": true,
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "body",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "mediaURLs",
+          "storageKey": null
+        }
+      ],
       "storageKey": null
     }
-  ]
+  ],
+  "type": "TweetGroup"
 };
-(node as any).hash = '37d5a2593fd17e6e81dffb1d71d0c32b';
+(node as any).hash = '1c44bd76b098a5f26fdbfa25b45a00ce';
 export default node;

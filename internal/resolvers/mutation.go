@@ -7,6 +7,8 @@ import (
 	"github.com/mjm/graphql-go/relay"
 
 	"github.com/mjm/courier-js/internal/auth"
+	readfeeds "github.com/mjm/courier-js/internal/read/feeds"
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/write/billing"
 	"github.com/mjm/courier-js/internal/write/feeds"
 	"github.com/mjm/courier-js/internal/write/tweets"
@@ -18,8 +20,8 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 	Input struct{ URL string }
 }) (
 	payload struct {
-		Feed     *SubscribedFeed
-		FeedEdge *SubscribedFeedEdge
+		Feed     *Feed
+		FeedEdge *FeedEdge
 	},
 	err error,
 ) {
@@ -28,24 +30,24 @@ func (r *Root) AddFeed(ctx context.Context, args struct {
 		return
 	}
 
+	id := model.NewFeedID()
 	cmd := feeds.SubscribeCommand{
 		UserID: userID,
+		FeedID: id,
 		URL:    args.Input.URL,
 	}
-	v, err := r.commandBus.Run(ctx, cmd)
-	if err != nil {
-		return
-	}
-	subID := v.(feeds.SubscriptionID)
-
-	// load the edge so that Relay can update its store
-	edge, err := r.q.FeedSubscriptions.GetEdge(ctx, subID)
+	_, err = r.commandBus.Run(ctx, cmd)
 	if err != nil {
 		return
 	}
 
-	payload.Feed = NewSubscribedFeed(r.q, &edge.Subscription)
-	payload.FeedEdge = &SubscribedFeedEdge{q: r.q, edge: edge}
+	f, err := r.q.Feeds.Get(ctx, id)
+	if err != nil {
+		return
+	}
+
+	payload.Feed = NewFeed(r.q, f)
+	payload.FeedEdge = &FeedEdge{q: r.q, edge: readfeeds.FeedEdge(*f)}
 	return
 }
 
@@ -60,7 +62,7 @@ func (r *Root) RefreshFeed(ctx context.Context, args struct {
 		return
 	}
 
-	var id feeds.FeedID
+	var id model.FeedID
 	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
@@ -88,7 +90,7 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		Autopost *bool
 	}
 }) (
-	payload struct{ Feed *SubscribedFeed },
+	payload struct{ Feed *Feed },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -96,26 +98,26 @@ func (r *Root) SetFeedOptions(ctx context.Context, args struct {
 		return
 	}
 
-	var id feeds.SubscriptionID
+	var id model.FeedID
 	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
 
 	cmd := feeds.UpdateOptionsCommand{
-		UserID:         userID,
-		SubscriptionID: id,
-		Autopost:       *args.Input.Autopost,
+		UserID:   userID,
+		FeedID:   id,
+		Autopost: *args.Input.Autopost,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
 	}
 
-	sub, err := r.q.FeedSubscriptions.Get(ctx, id)
+	f, err := r.q.Feeds.Get(ctx, id)
 	if err != nil {
 		return
 	}
 
-	payload.Feed = NewSubscribedFeed(r.q, sub)
+	payload.Feed = NewFeed(r.q, f)
 	return
 }
 
@@ -130,14 +132,14 @@ func (r *Root) DeleteFeed(ctx context.Context, args struct {
 		return
 	}
 
-	var id feeds.SubscriptionID
+	var id model.FeedID
 	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
 		return
 	}
 
 	cmd := feeds.UnsubscribeCommand{
-		UserID:         userID,
-		SubscriptionID: id,
+		UserID: userID,
+		FeedID: id,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
@@ -151,7 +153,7 @@ func (r *Root) DeleteFeed(ctx context.Context, args struct {
 func (r *Root) CancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
-	payload struct{ Tweet *Tweet },
+	payload struct{ TweetGroup *TweetGroup },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -159,14 +161,18 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 		return
 	}
 
-	var id tweets.TweetID
-	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	var postID model.PostID
+	if err = relay.UnmarshalSpec(args.Input.ID, &postID); err != nil {
 		return
 	}
 
+	id := model.TweetGroupID{
+		UserID: userID,
+		PostID: postID,
+	}
+
 	cmd := tweets.CancelCommand{
-		UserID:  userID,
-		TweetID: id,
+		TweetGroupID: id,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
@@ -177,14 +183,14 @@ func (r *Root) CancelTweet(ctx context.Context, args struct {
 		return
 	}
 
-	payload.Tweet = NewTweet(r.q, t)
+	payload.TweetGroup = NewTweetGroup(r.q, t)
 	return
 }
 
 func (r *Root) UncancelTweet(ctx context.Context, args struct {
 	Input struct{ ID graphql.ID }
 }) (
-	payload struct{ Tweet *Tweet },
+	payload struct{ TweetGroup *TweetGroup },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -192,14 +198,18 @@ func (r *Root) UncancelTweet(ctx context.Context, args struct {
 		return
 	}
 
-	var id tweets.TweetID
-	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	var postID model.PostID
+	if err = relay.UnmarshalSpec(args.Input.ID, &postID); err != nil {
 		return
 	}
 
+	id := model.TweetGroupID{
+		UserID: userID,
+		PostID: postID,
+	}
+
 	cmd := tweets.UncancelCommand{
-		UserID:  userID,
-		TweetID: id,
+		TweetGroupID: id,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
@@ -210,18 +220,20 @@ func (r *Root) UncancelTweet(ctx context.Context, args struct {
 		return
 	}
 
-	payload.Tweet = NewTweet(r.q, t)
+	payload.TweetGroup = NewTweetGroup(r.q, t)
 	return
 }
 
 func (r *Root) EditTweet(ctx context.Context, args struct {
 	Input struct {
-		ID        graphql.ID
-		Body      string
-		MediaURLs *[]string
+		ID     graphql.ID
+		Tweets []struct {
+			Body      string
+			MediaURLs *[]string
+		}
 	}
 }) (
-	payload struct{ Tweet *Tweet },
+	payload struct{ TweetGroup *TweetGroup },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -229,18 +241,28 @@ func (r *Root) EditTweet(ctx context.Context, args struct {
 		return
 	}
 
-	var id tweets.TweetID
-	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	var postID model.PostID
+	if err = relay.UnmarshalSpec(args.Input.ID, &postID); err != nil {
 		return
 	}
 
-	cmd := tweets.UpdateCommand{
-		UserID:  userID,
-		TweetID: id,
-		Body:    args.Input.Body,
+	id := model.TweetGroupID{
+		UserID: userID,
+		PostID: postID,
 	}
-	if args.Input.MediaURLs != nil {
-		cmd.MediaURLs = *args.Input.MediaURLs
+
+	var ts []*model.Tweet
+	for _, inputTweet := range args.Input.Tweets {
+		t := &model.Tweet{Body: inputTweet.Body}
+		if inputTweet.MediaURLs != nil {
+			t.MediaURLs = *inputTweet.MediaURLs
+		}
+		ts = append(ts, t)
+	}
+
+	cmd := tweets.UpdateCommand{
+		TweetGroupID: id,
+		Tweets:       ts,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
@@ -251,7 +273,7 @@ func (r *Root) EditTweet(ctx context.Context, args struct {
 		return
 	}
 
-	payload.Tweet = NewTweet(r.q, t)
+	payload.TweetGroup = NewTweetGroup(r.q, t)
 	return
 }
 
@@ -262,7 +284,7 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 		MediaURLs *[]string
 	}
 }) (
-	payload struct{ Tweet *Tweet },
+	payload struct{ TweetGroup *TweetGroup },
 	err error,
 ) {
 	userID, err := auth.GetUser(ctx).ID()
@@ -270,14 +292,18 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 		return
 	}
 
-	var id tweets.TweetID
-	if err = relay.UnmarshalSpec(args.Input.ID, &id); err != nil {
+	var postID model.PostID
+	if err = relay.UnmarshalSpec(args.Input.ID, &postID); err != nil {
 		return
 	}
 
-	cmd := tweets.QueuePostCommand{
-		UserID:  userID,
-		TweetID: id,
+	id := model.TweetGroupID{
+		UserID: userID,
+		PostID: postID,
+	}
+
+	cmd := tweets.EnqueuePostCommand{
+		TweetGroupID: id,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return
@@ -288,14 +314,14 @@ func (r *Root) PostTweet(ctx context.Context, args struct {
 		return
 	}
 
-	payload.Tweet = NewTweet(r.q, t)
+	payload.TweetGroup = NewTweetGroup(r.q, t)
 	return
 }
 
 func (r *Root) Subscribe(ctx context.Context, args struct {
 	Input struct {
-		TokenID *string
-		Email   *string
+		PaymentMethodID *string
+		Email           *string
 	}
 }) (
 	payload struct {
@@ -309,18 +335,18 @@ func (r *Root) Subscribe(ctx context.Context, args struct {
 		return
 	}
 
-	var email, tokenID string
-	if args.Input.TokenID != nil {
-		tokenID = *args.Input.TokenID
+	var email, paymentMethodID string
+	if args.Input.PaymentMethodID != nil {
+		paymentMethodID = *args.Input.PaymentMethodID
 	}
 	if args.Input.Email != nil {
 		email = *args.Input.Email
 	}
 
 	cmd := billing.SubscribeCommand{
-		UserID:  userID,
-		TokenID: tokenID,
-		Email:   email,
+		UserID:          userID,
+		PaymentMethodID: paymentMethodID,
+		Email:           email,
 	}
 	if _, err = r.commandBus.Run(ctx, cmd); err != nil {
 		return

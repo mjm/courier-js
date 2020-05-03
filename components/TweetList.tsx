@@ -1,60 +1,23 @@
 import React from "react"
-import {
-  createPaginationContainer,
-  graphql,
-  RelayPaginationProp,
-} from "react-relay"
+import { graphql } from "react-relay"
+import { usePaginationFragment } from "react-relay/lib/hooks"
 
-import { TweetList_tweets } from "@generated/TweetList_tweets.graphql"
+import { TweetList_tweets$key } from "@generated/TweetList_tweets.graphql"
+import { TweetListPaginationQuery } from "@generated/TweetListPaginationQuery.graphql"
 import TweetCard from "components/TweetCard"
 
 const TweetList: React.FC<{
-  description: (count: number) => React.ReactNode
+  description: React.ReactNode
   emptyDescription: React.ReactNode
-  tweets: TweetList_tweets
-  relay: RelayPaginationProp
-}> = ({
-  description,
-  emptyDescription,
-  tweets,
-  relay: { hasMore, loadMore },
-}) => {
-  const [isLoading, setLoading] = React.useState(false)
-  const { edges, totalCount } = tweets.allTweets
-
-  return (
-    <div className="w-full lg:px-4 lg:w-1/2 mb-8">
-      <div className="pb-4 text-neutral-10">
-        {totalCount === 0 ? emptyDescription : description(totalCount)}
-      </div>
-      {edges.map(edge => (
-        <TweetCard key={edge.node.id} tweet={edge.node} />
-      ))}
-      {hasMore() && (
-        <div className="flex justify-center">
-          <button
-            className="btn btn-third btn-third-neutral"
-            disabled={isLoading}
-            onClick={() => {
-              setLoading(true)
-              loadMore(10, () => {
-                setLoading(false)
-              })
-            }}
-          >
-            Show more…
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
-
-export default createPaginationContainer(
-  TweetList,
-  {
-    tweets: graphql`
-      fragment TweetList_tweets on User
+  tweets: TweetList_tweets$key
+}> = ({ description, emptyDescription, tweets }) => {
+  const { data, loadNext, hasNext } = usePaginationFragment<
+    TweetListPaginationQuery,
+    TweetList_tweets$key
+  >(
+    graphql`
+      fragment TweetList_tweets on Viewer
+        @refetchable(queryName: "TweetListPaginationQuery")
         @argumentDefinitions(
           filter: { type: "TweetFilter" }
           count: { type: "Int", defaultValue: 10 }
@@ -68,34 +31,42 @@ export default createPaginationContainer(
               ...TweetCard_tweet
             }
           }
-          totalCount
         }
       }
     `,
-  },
-  {
-    direction: "forward",
-    getVariables(_props, { count, cursor }, fragmentVariables) {
-      return {
-        count,
-        cursor,
-        filter: fragmentVariables.filter,
-      }
-    },
-    getConnectionFromProps({ tweets }) {
-      return tweets.allTweets
-    },
-    query: graphql`
-      query TweetListPaginationQuery(
-        $filter: TweetFilter
-        $count: Int!
-        $cursor: Cursor
-      ) {
-        viewer {
-          ...TweetList_tweets
-            @arguments(filter: $filter, count: $count, cursor: $cursor)
-        }
-      }
-    `,
-  }
-)
+    tweets
+  )
+  const [isLoading, setLoading] = React.useState(false)
+  const { edges } = data.allTweets
+
+  return (
+    <div className="w-full lg:px-4 lg:w-1/2 mb-8">
+      <div className="pb-4 text-neutral-10">
+        {edges.length > 0 ? description : emptyDescription}
+      </div>
+      {edges.map(edge => (
+        <TweetCard key={edge.node.id} tweet={edge.node} />
+      ))}
+      {hasNext && (
+        <div className="flex justify-center">
+          <button
+            className="btn btn-third btn-third-neutral"
+            disabled={isLoading}
+            onClick={() => {
+              setLoading(true)
+              loadNext(10, {
+                onComplete() {
+                  setLoading(false)
+                },
+              })
+            }}
+          >
+            Show more…
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default TweetList

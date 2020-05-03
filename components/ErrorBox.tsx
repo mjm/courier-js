@@ -1,6 +1,6 @@
 import React from "react"
 
-import { useErrors } from "components/ErrorContainer"
+import { unwrapRelayError, useErrors } from "components/ErrorContainer"
 import Notice from "components/Notice"
 
 export const ErrorBox: React.FC<{
@@ -46,20 +46,4 @@ export const ErrorBox: React.FC<{
       )}
     </Notice>
   )
-}
-
-interface RelayError extends Error {
-  name: "RelayNetwork"
-  source: {
-    errors: { message: string }[]
-  }
-}
-
-function unwrapRelayError(error: Error): Error[] {
-  if (error.name === "RelayNetwork") {
-    return (error as RelayError).source.errors.map(
-      ({ message }) => new Error(message)
-    )
-  }
-  return [error]
 }

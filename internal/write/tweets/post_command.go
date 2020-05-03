@@ -8,8 +8,10 @@ import (
 	"go.opentelemetry.io/otel/api/trace"
 	"google.golang.org/grpc/status"
 
+	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace/keys"
+	"github.com/mjm/courier-js/internal/write/shared"
 )
 
 var (
@@ -21,20 +23,17 @@ var (
 )
 
 type PostCommand struct {
-	UserID   string
-	TweetID  TweetID
-	Autopost bool
-	TaskName string
+	TweetGroupID model.TweetGroupID
+	Autopost     bool
+	TaskName     string
 }
 
 func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error {
 	span := trace.SpanFromContext(ctx)
-	span.SetAttributes(
-		keys.UserID(cmd.UserID),
-		keys.TweetID(cmd.TweetID),
-		keys.TaskName(cmd.TaskName))
+	span.SetAttributes(keys.TweetGroupID(cmd.TweetGroupID)...)
+	span.SetAttributes(keys.TaskName(cmd.TaskName))
 
-	isSubscribed, err := h.userRepo.IsSubscribed(ctx, cmd.UserID)
+	isSubscribed, err := h.userRepo.IsSubscribed(ctx, cmd.TweetGroupID.UserID)
 	if err != nil {
 		return err
 	}
@@ -43,46 +42,39 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 		return nil
 	}
 
-	tweet, err := h.tweetRepo.Get(ctx, cmd.UserID, cmd.TweetID)
+	tg, err := h.tweetRepo.Get(ctx, cmd.TweetGroupID)
 	if err != nil {
 		return err
 	}
 
 	span.SetAttributes(
-		key.String("tweet.expected_task_name", tweet.PostTaskName),
-		keys.TweetStatus(string(tweet.Status)))
+		key.String("tweet.expected_task_name", tg.PostTaskName),
+		keys.TweetStatus(string(tg.Status)))
 
-	if tweet.PostTaskName == "" || (cmd.TaskName != "" && tweet.PostTaskName != cmd.TaskName) {
+	if cmd.TaskName != "" && tg.PostTaskName != cmd.TaskName {
 		span.SetAttributes(skippedKey(true))
 		return nil
 	}
 
-	if tweet.Status != Draft {
+	if tg.Status != model.Draft {
 		span.SetAttributes(skippedKey(true))
-		span.RecordError(ctx, ErrNotDraft, trace.WithErrorStatus(status.Code(ErrNotDraft)))
+		span.RecordError(ctx, shared.ErrCannotCancelOrPost, trace.WithErrorStatus(status.Code(shared.ErrCannotCancelOrPost)))
 		return nil
 	}
 
 	span.SetAttributes(skippedKey(false))
 
-	sub, err := h.subRepo.Get(ctx, tweet.FeedSubscriptionID)
-	if err != nil {
-		return err
-	}
-
-	span.SetAttributes(keys.FeedSubscriptionID(sub.ID))
-
 	sendCmd := SendTweetCommand{
-		Tweet:        tweet,
-		Subscription: sub,
+		TweetGroup: tg,
 	}
 	if _, err := h.bus.Run(ctx, sendCmd); err != nil {
 		return err
 	}
 
 	h.events.Fire(ctx, tweets.TweetPosted{
-		UserId:     cmd.UserID,
-		TweetId:    cmd.TweetID.String(),
+		UserId:     tg.UserID(),
+		FeedId:     string(tg.FeedID()),
+		ItemId:     tg.ItemID(),
 		Autoposted: cmd.Autopost,
 	})
 

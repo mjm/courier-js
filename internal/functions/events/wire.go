@@ -11,33 +11,35 @@ import (
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
 	"github.com/mjm/courier-js/internal/notifications"
-	"github.com/mjm/courier-js/internal/read/tweets"
-	"github.com/mjm/courier-js/internal/read/user"
 	"github.com/mjm/courier-js/internal/secret"
 	"github.com/mjm/courier-js/internal/tasks"
 	"github.com/mjm/courier-js/internal/write"
-	tweets2 "github.com/mjm/courier-js/internal/write/tweets"
-	user2 "github.com/mjm/courier-js/internal/write/user"
+	"github.com/mjm/courier-js/internal/write/feeds"
+	"github.com/mjm/courier-js/internal/write/shared"
+	"github.com/mjm/courier-js/internal/write/tweets"
+	"github.com/mjm/courier-js/internal/write/user"
 )
 
-func InitializeHandler(gcpConfig secret.GCPConfig) (*Handler, error) {
+func InitializeLambda() (*Handler, error) {
 	panic(wire.Build(
 		NewHandler,
 		NewPusher,
+		NewTaskHandler,
 		config.DefaultSet,
-		secret.GCPSet,
+		secret.AWSSet,
 		notifications.NewNotifier,
 		event.PusherSet,
 		event.SourceSet,
-		event.PublishingSet,
+		event.AWSPublishingSet,
 		write.NewCommandBus,
 		db.DefaultSet,
 		auth.DefaultSet,
 		billing.DefaultSet,
 		tasks.DefaultSet,
-		tweets.NewTweetQueries,
-		tweets2.EventHandlerSet,
+		shared.DefaultSet,
+		feeds.DefaultSet,
+		tweets.EventHandlerSet,
 		user.NewEventRecorder,
-		user2.EventHandlerSet,
+		user.EventHandlerSet,
 	))
 }
