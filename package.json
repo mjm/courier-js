@@ -40,7 +40,7 @@
     "autoprefixer": "^9.7.3",
     "cookie": "^0.4.0",
     "formik": "^2.1.1",
-    "graphql-playground-react": "^1.7.20",
+    "graphql-playground-react": "^1.7.22",
     "graphql-tag": "^2.10.1",
     "http-proxy": "^1.18.0",
     "isomorphic-unfetch": "^3.0.0",
