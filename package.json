@@ -36,7 +36,7 @@
     "@types/react-redux": "^7.1.7",
     "@types/uuid": "^3.4.6",
     "@types/yup": "^0.26.13",
-    "auth0-js": "^9.10.2",
+    "auth0-js": "^9.13.2",
     "autoprefixer": "^9.7.3",
     "cookie": "^0.4.0",
     "formik": "^2.1.1",
