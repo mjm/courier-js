@@ -40,6 +40,7 @@ jobs:
         default: AWS_SECRET_ACCESS_KEY
     executor:
       name: bazel
+      bucket: << parameters.bucket >>
     steps:
       - checkout
       - run:
