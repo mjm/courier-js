@@ -27,6 +27,7 @@ end
 
 def generate_feeds
   $feeds = []
+  $feed_urls = []
   $feed_sub_ids = {}
   $feed_ids = {}
 
@@ -81,6 +82,12 @@ def generate_feeds
     end
 
     $feeds << new_feed
+
+    $feed_urls << {
+      "PK" => "USER##{sub['user_id']}",
+      "SK" => "FEEDURL##{feed['url']}",
+      "FeedID" => id,
+    }
   end
 end
 
@@ -217,5 +224,5 @@ generate_feeds
 generate_posts
 generate_tweets
 
-all_items = $feeds + $posts + $tweets
+all_items = $feeds + $feed_urls + $posts + $tweets
 File.write(File.join($dir, 'dynamo_items.json'), JSON.pretty_generate(all_items))

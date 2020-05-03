@@ -3,7 +3,7 @@
 require 'json'
 require 'aws-sdk-dynamodb'
 
-TABLE_NAME = 'courier-staging'
+TABLE_NAME = 'courier-production'
 
 Aws.config.update({
   region: 'us-east-2'
