@@ -130,9 +130,13 @@ private class CurrentUserLoader: ObservableObject {
 
     func login() {
         state = .loggingIn
-        Endpoint.current.webAuth.logging(enabled: true).start { result in
-            DispatchQueue.main.async { self.handleLoginResult(result) }
-        }
+        Endpoint.current.webAuth
+            .logging(enabled: true)
+            .scope("offline_access openid profile email https://courier.blog/customer_id https://courier.blog/subscription_id")
+            .audience(Endpoint.current.apiIdentifier)
+            .start { result in
+                DispatchQueue.main.async { self.handleLoginResult(result) }
+            }
     }
 
     func handleLoginResult(_ result: Auth0.Result<Auth0.Credentials>) {

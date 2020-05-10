@@ -46,6 +46,11 @@
 		C95AD8802468827D00691417 /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A749B02378AFB40046E924 /* SimpleKeychain.framework */; };
 		C95AD884246886BB00691417 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD883246886BB00691417 /* Endpoint.swift */; };
 		C95AD88624688BF500691417 /* CredentialsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88524688BF500691417 /* CredentialsManager.swift */; };
+		C95AD88824688E3D00691417 /* TweetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88724688E3D00691417 /* TweetsList.swift */; };
+		C95AD88C24688EC900691417 /* TweetsListPaginationQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88A24688EC900691417 /* TweetsListPaginationQuery.graphql.swift */; };
+		C95AD88D24688EC900691417 /* TweetsList_tweets.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88B24688EC900691417 /* TweetsList_tweets.graphql.swift */; };
+		C95AD88F246893D900691417 /* TweetsScreenQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88E246893D900691417 /* TweetsScreenQuery.graphql.swift */; };
+		C95AD891246895BE00691417 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD890246895BE00691417 /* Environment.swift */; };
 		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
 		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
 		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
@@ -151,6 +156,11 @@
 		C95AD87B2468810C00691417 /* CurrentUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
 		C95AD883246886BB00691417 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		C95AD88524688BF500691417 /* CredentialsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManager.swift; sourceTree = "<group>"; };
+		C95AD88724688E3D00691417 /* TweetsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetsList.swift; sourceTree = "<group>"; };
+		C95AD88A24688EC900691417 /* TweetsListPaginationQuery.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetsListPaginationQuery.graphql.swift; sourceTree = "<group>"; };
+		C95AD88B24688EC900691417 /* TweetsList_tweets.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetsList_tweets.graphql.swift; sourceTree = "<group>"; };
+		C95AD88E246893D900691417 /* TweetsScreenQuery.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetsScreenQuery.graphql.swift; sourceTree = "<group>"; };
+		C95AD890246895BE00691417 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		C95C6F6423808190006063A2 /* Courier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier.entitlements; sourceTree = "<group>"; };
 		C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterDeviceAction.swift; sourceTree = "<group>"; };
 		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
@@ -298,13 +308,16 @@
 		C95AD85024687B2C00691417 /* CourierNext */ = {
 			isa = PBXGroup;
 			children = (
+				C95AD88924688EC900691417 /* __generated__ */,
 				C95AD883246886BB00691417 /* Endpoint.swift */,
 				C95AD88524688BF500691417 /* CredentialsManager.swift */,
+				C95AD890246895BE00691417 /* Environment.swift */,
 				C95AD85124687B2C00691417 /* AppDelegate.swift */,
 				C95AD85324687B2C00691417 /* SceneDelegate.swift */,
 				C95AD85524687B2C00691417 /* ContentView.swift */,
 				C95AD87B2468810C00691417 /* CurrentUser.swift */,
 				C95AD87924687DD700691417 /* TweetsScreen.swift */,
+				C95AD88724688E3D00691417 /* TweetsList.swift */,
 				C95AD85724687B2D00691417 /* Assets.xcassets */,
 				C95AD85C24687B2D00691417 /* LaunchScreen.storyboard */,
 				C95AD85F24687B2D00691417 /* Info.plist */,
@@ -336,6 +349,16 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C95AD88924688EC900691417 /* __generated__ */ = {
+			isa = PBXGroup;
+			children = (
+				C95AD88E246893D900691417 /* TweetsScreenQuery.graphql.swift */,
+				C95AD88A24688EC900691417 /* TweetsListPaginationQuery.graphql.swift */,
+				C95AD88B24688EC900691417 /* TweetsList_tweets.graphql.swift */,
+			);
+			path = __generated__;
 			sourceTree = "<group>";
 		};
 		C95C6F6E2383BC9B006063A2 /* Notifications */ = {
@@ -802,11 +825,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				C95AD87C2468810C00691417 /* CurrentUser.swift in Sources */,
+				C95AD891246895BE00691417 /* Environment.swift in Sources */,
 				C95AD85224687B2C00691417 /* AppDelegate.swift in Sources */,
 				C95AD87A24687DD700691417 /* TweetsScreen.swift in Sources */,
+				C95AD88F246893D900691417 /* TweetsScreenQuery.graphql.swift in Sources */,
+				C95AD88824688E3D00691417 /* TweetsList.swift in Sources */,
+				C95AD88C24688EC900691417 /* TweetsListPaginationQuery.graphql.swift in Sources */,
 				C95AD85424687B2C00691417 /* SceneDelegate.swift in Sources */,
 				C95AD884246886BB00691417 /* Endpoint.swift in Sources */,
 				C95AD85624687B2C00691417 /* ContentView.swift in Sources */,
+				C95AD88D24688EC900691417 /* TweetsList_tweets.graphql.swift in Sources */,
 				C95AD88624688BF500691417 /* CredentialsManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

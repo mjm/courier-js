@@ -18,7 +18,7 @@ struct Endpoint {
     }
 
     static let staging = Endpoint(
-        url: "https://graphql-346j6nvz2q-uc.a.run.app/",
+        url: "https://al8c1ew7lc.execute-api.us-east-2.amazonaws.com/staging/graphql",
         apiIdentifier: "https://courier.mjm.now.sh/api/",
         clientId: "8c0TcS4ucF3PIPiqDY7FNYx1DE2jx9hL",
         domain: "courier-staging.auth0.com",

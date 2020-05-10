@@ -1,12 +1,13 @@
-//
-//  TweetsScreen.swift
-//  CourierNext
-//
-//  Created by Matt Moriarity on 5/10/20.
-//  Copyright © 2020 Matt Moriarity. All rights reserved.
-//
-
 import SwiftUI
+import RelaySwiftUI
+
+private let query = graphql("""
+query TweetsScreenQuery($filter: TweetFilter!) {
+  viewer {
+    ...TweetsList_tweets @arguments(filter: $filter)
+  }
+}
+""")
 
 struct TweetsScreen: View {
     @State private var selectedTag = 0
@@ -23,15 +24,21 @@ struct TweetsScreen: View {
 
                 Divider()
 
-                if selectedTag == 0 {
-                    List {
-                        Text("abc")
+                RelayQuery(
+                    op: TweetsScreenQuery(),
+                    variables: .init(filter: selectedTag == 0 ? .upcoming : .past),
+                    loadingContent: Text("Loading…"),
+                    errorContent: { Text($0.localizedDescription) },
+                    dataContent: { data in
+                        Group {
+                            if data == nil {
+                                EmptyView()
+                            } else {
+                                TweetsList(tweets: data!.viewer!)
+                            }
+                        }
                     }
-                } else {
-                    List {
-                        Text("def")
-                    }
-                }
+                ).frame(maxHeight: .infinity)
             }.navigationBarTitle("Tweets", displayMode: .inline)
         }
     }
