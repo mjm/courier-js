@@ -123,12 +123,12 @@ fragment TweetsList_tweets_Vt7Yj on Viewer {
         )
     }
 
-    struct Variables: Relay.Variables {
+    struct Variables: VariableDataConvertible {
         var filter: TweetFilter?
 
-        var asDictionary: [String: Any] {
+        var variableData: VariableData {
             [
-                "filter": filter as Any,
+                "filter": filter,
             ]
         }
     }
@@ -148,5 +148,14 @@ fragment TweetsList_tweets_Vt7Yj on Viewer {
             }
 
         }
+    }
+}
+
+enum TweetFilter: String, Hashable, VariableValueConvertible, CustomStringConvertible {
+    case upcoming = "UPCOMING"
+    case past = "PAST"
+
+    var description: String {
+        rawValue
     }
 }

@@ -129,18 +129,16 @@ fragment TweetsList_tweets_3KQYpM on Viewer {
         )
     }
 
-    struct Variables: Relay.Variables {
+    struct Variables: VariableDataConvertible {
         var filter: TweetFilter?
-
         var count: Int?
-
         var cursor: Cursor?
 
-        var asDictionary: [String: Any] {
+        var variableData: VariableData {
             [
-                "filter": filter as Any,
-                "count": count as Any,
-                "cursor": cursor as Any,
+                "filter": filter,
+                "count": count,
+                "cursor": cursor,
             ]
         }
     }

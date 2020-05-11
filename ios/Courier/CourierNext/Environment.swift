@@ -39,7 +39,7 @@ class MyNetwork: Network {
         self.endpoint = endpoint
     }
 
-    func execute(request: RequestParameters, variables: AnyVariables, cacheConfig: CacheConfig) -> AnyPublisher<Data, Error> {
+    func execute(request: RequestParameters, variables: VariableData, cacheConfig: CacheConfig) -> AnyPublisher<Data, Error> {
         var req = URLRequest(url: endpoint.url)
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
@@ -60,8 +60,8 @@ class MyNetwork: Network {
     }
 }
 
-struct RequestPayload<Vars: Encodable>: Encodable {
+struct RequestPayload: Encodable {
     var query: String
     var operationName: String
-    var variables: Vars
+    var variables: VariableData
 }
