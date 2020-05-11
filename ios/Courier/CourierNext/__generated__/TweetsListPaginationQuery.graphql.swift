@@ -55,6 +55,25 @@ struct TweetsListPaginationQuery: Operation {
                                                         name: "id"
                                                     )),
                                                     .field(NormalizationScalarField(
+                                                        name: "status"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "postedAt"
+                                                    )),
+                                                    .field(NormalizationLinkedField(
+                                                        name: "tweets",
+                                                        concreteType: "Tweet",
+                                                        plural: true,
+                                                        selections: [
+                                                            .field(NormalizationScalarField(
+                                                                name: "body"
+                                                            )),
+                                                            .field(NormalizationScalarField(
+                                                                name: "mediaURLs"
+                                                            )),
+                                                        ]
+                                                    )),
+                                                    .field(NormalizationScalarField(
                                                         name: "__typename"
                                                     )),
                                                 ]
@@ -109,11 +128,21 @@ query TweetsListPaginationQuery(
   }
 }
 
+fragment TweetRow_tweetGroup on TweetGroup {
+  status
+  postedAt
+  tweets {
+    body
+    mediaURLs
+  }
+}
+
 fragment TweetsList_tweets_3KQYpM on Viewer {
   allTweets(filter: $filter, first: $count, after: $cursor) {
     edges {
       node {
         id
+        ...TweetRow_tweetGroup
         __typename
       }
       cursor

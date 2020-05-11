@@ -30,6 +30,9 @@ struct TweetsList_tweets: Fragment {
                                         .field(ReaderScalarField(
                                             name: "__typename"
                                         )),
+                                        .fragmentSpread(ReaderFragmentSpread(
+                                            name: "TweetRow_tweetGroup"
+                                        )),
                                     ]
                                 )),
                                 .field(ReaderScalarField(
@@ -85,13 +88,15 @@ struct TweetsList_tweets: Fragment {
                     cursor = data.get(Cursor.self, "cursor")
                 }
 
-                struct TweetGroup_node: Readable {
+                struct TweetGroup_node: Readable, TweetRow_tweetGroup_Key {
                     var id: String
                     var __typename: String
+                    var fragment_TweetRow_tweetGroup: FragmentPointer
 
                     init(from data: SelectorData) {
                         id = data.get(String.self, "id")
                         __typename = data.get(String.self, "__typename")
+                        fragment_TweetRow_tweetGroup = data.get(fragment: "TweetRow_tweetGroup")
                     }
 
                 }

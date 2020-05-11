@@ -14,7 +14,7 @@ struct TweetsScreen: View {
 
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
                 Picker(selection: $selectedTag, label: EmptyView()) {
                     Text("Upcoming").tag(0)
                     Text("Past").tag(1)

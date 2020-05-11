@@ -52,6 +52,25 @@ struct TweetsScreenQuery: Operation {
                                                         name: "id"
                                                     )),
                                                     .field(NormalizationScalarField(
+                                                        name: "status"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "postedAt"
+                                                    )),
+                                                    .field(NormalizationLinkedField(
+                                                        name: "tweets",
+                                                        concreteType: "Tweet",
+                                                        plural: true,
+                                                        selections: [
+                                                            .field(NormalizationScalarField(
+                                                                name: "body"
+                                                            )),
+                                                            .field(NormalizationScalarField(
+                                                                name: "mediaURLs"
+                                                            )),
+                                                        ]
+                                                    )),
+                                                    .field(NormalizationScalarField(
                                                         name: "__typename"
                                                     )),
                                                 ]
@@ -103,11 +122,21 @@ query TweetsScreenQuery(
   }
 }
 
+fragment TweetRow_tweetGroup on TweetGroup {
+  status
+  postedAt
+  tweets {
+    body
+    mediaURLs
+  }
+}
+
 fragment TweetsList_tweets_Vt7Yj on Viewer {
   allTweets(filter: $filter, first: 10) {
     edges {
       node {
         id
+        ...TweetRow_tweetGroup
         __typename
       }
       cursor
@@ -151,7 +180,7 @@ fragment TweetsList_tweets_Vt7Yj on Viewer {
     }
 }
 
-enum TweetFilter: String, Hashable, VariableValueConvertible, CustomStringConvertible {
+enum TweetFilter: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
     case upcoming = "UPCOMING"
     case past = "PAST"
 
@@ -159,3 +188,6 @@ enum TweetFilter: String, Hashable, VariableValueConvertible, CustomStringConver
         rawValue
     }
 }
+
+typealias Time = String
+typealias Cursor = String
