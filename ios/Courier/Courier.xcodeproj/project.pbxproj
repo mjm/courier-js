@@ -67,6 +67,10 @@
 		C96F4CCB246A588D0096B5ED /* AsyncImageGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CCA246A588D0096B5ED /* AsyncImageGrid.swift */; };
 		C96F4CCD246A5AAF0096B5ED /* ImagePlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CCC246A5AAF0096B5ED /* ImagePlaceholder.swift */; };
 		C96F4CCF246A5CC90096B5ED /* LinkedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CCE246A5CC90096B5ED /* LinkedText.swift */; };
+		C96F4CD2246A635B0096B5ED /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD1246A635B0096B5ED /* SettingsScreen.swift */; };
+		C96F4CD4246A63DA0096B5ED /* SettingsScreenQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD3246A63D90096B5ED /* SettingsScreenQuery.graphql.swift */; };
+		C96F4CD6246A67CC0096B5ED /* UserProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD5246A67CC0096B5ED /* UserProfileSection.swift */; };
+		C96F4CD8246A68270096B5ED /* UserProfileSection_user.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD7246A68260096B5ED /* UserProfileSection_user.graphql.swift */; };
 		C972326A2401ED6100C400EA /* PushNotifications in Frameworks */ = {isa = PBXBuildFile; productRef = C97232692401ED6100C400EA /* PushNotifications */; };
 		C972326C2401EEA800C400EA /* Beams.swift in Sources */ = {isa = PBXBuildFile; fileRef = C972326B2401EEA800C400EA /* Beams.swift */; };
 		C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B6E237BAED30069EED1 /* Endpoint.swift */; };
@@ -194,6 +198,10 @@
 		C96F4CCA246A588D0096B5ED /* AsyncImageGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageGrid.swift; sourceTree = "<group>"; };
 		C96F4CCC246A5AAF0096B5ED /* ImagePlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePlaceholder.swift; sourceTree = "<group>"; };
 		C96F4CCE246A5CC90096B5ED /* LinkedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedText.swift; sourceTree = "<group>"; };
+		C96F4CD1246A635B0096B5ED /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+		C96F4CD3246A63D90096B5ED /* SettingsScreenQuery.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsScreenQuery.graphql.swift; sourceTree = "<group>"; };
+		C96F4CD5246A67CC0096B5ED /* UserProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileSection.swift; sourceTree = "<group>"; };
+		C96F4CD7246A68260096B5ED /* UserProfileSection_user.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileSection_user.graphql.swift; sourceTree = "<group>"; };
 		C972326B2401EEA800C400EA /* Beams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Beams.swift; sourceTree = "<group>"; };
 		C9A36B6E237BAED30069EED1 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncancelTweetAction.swift; sourceTree = "<group>"; };
@@ -345,6 +353,7 @@
 				C95AD89C246A446500691417 /* Supporting Views */,
 				C95AD89D246A447000691417 /* Tweets Screen */,
 				C95AD89E246A447700691417 /* Tweet Detail Screen */,
+				C96F4CD0246A63410096B5ED /* Settings Screen */,
 				C95AD85724687B2D00691417 /* Assets.xcassets */,
 				C95AD85C24687B2D00691417 /* LaunchScreen.storyboard */,
 				C95AD85F24687B2D00691417 /* Info.plist */,
@@ -384,11 +393,13 @@
 			children = (
 				C95AD8A3246A458C00691417 /* DetailedTweetList_tweetGroup.graphql.swift */,
 				C95AD8A4246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift */,
+				C96F4CD3246A63D90096B5ED /* SettingsScreenQuery.graphql.swift */,
 				C95AD89A246A443600691417 /* TweetDetailScreenQuery.graphql.swift */,
 				C95AD8942468E9E300691417 /* TweetRow_tweetGroup.graphql.swift */,
 				C95AD88B24688EC900691417 /* TweetsList_tweets.graphql.swift */,
 				C95AD88A24688EC900691417 /* TweetsListPaginationQuery.graphql.swift */,
 				C95AD88E246893D900691417 /* TweetsScreenQuery.graphql.swift */,
+				C96F4CD7246A68260096B5ED /* UserProfileSection_user.graphql.swift */,
 			);
 			path = __generated__;
 			sourceTree = "<group>";
@@ -444,6 +455,15 @@
 				C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */,
 			);
 			path = Actions;
+			sourceTree = "<group>";
+		};
+		C96F4CD0246A63410096B5ED /* Settings Screen */ = {
+			isa = PBXGroup;
+			children = (
+				C96F4CD1246A635B0096B5ED /* SettingsScreen.swift */,
+				C96F4CD5246A67CC0096B5ED /* UserProfileSection.swift */,
+			);
+			path = "Settings Screen";
 			sourceTree = "<group>";
 		};
 		C9A36B72237BC2CF0069EED1 /* Tweet Detail */ = {
@@ -891,14 +911,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				C95AD8932468E97700691417 /* TweetRow.swift in Sources */,
+				C96F4CD2246A635B0096B5ED /* SettingsScreen.swift in Sources */,
 				C95AD8A6246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift in Sources */,
 				C96F4CC9246A573E0096B5ED /* AsyncImage.swift in Sources */,
+				C96F4CD4246A63DA0096B5ED /* SettingsScreenQuery.graphql.swift in Sources */,
 				C95AD87C2468810C00691417 /* CurrentUser.swift in Sources */,
 				C95AD8A2246A44EB00691417 /* DetailedTweetRow.swift in Sources */,
 				C95AD891246895BE00691417 /* Environment.swift in Sources */,
 				C96F4CCB246A588D0096B5ED /* AsyncImageGrid.swift in Sources */,
+				C96F4CD6246A67CC0096B5ED /* UserProfileSection.swift in Sources */,
 				C96F4CC5246A4CED0096B5ED /* LoadingView.swift in Sources */,
 				C95AD85224687B2C00691417 /* AppDelegate.swift in Sources */,
+				C96F4CD8246A68270096B5ED /* UserProfileSection_user.graphql.swift in Sources */,
 				C95AD87A24687DD700691417 /* TweetsScreen.swift in Sources */,
 				C95AD88F246893D900691417 /* TweetsScreenQuery.graphql.swift in Sources */,
 				C95AD88824688E3D00691417 /* TweetsList.swift in Sources */,

@@ -1,4 +1,5 @@
 import SwiftUI
+import Relay
 import RelaySwiftUI
 
 private let query = graphql("""
@@ -10,7 +11,10 @@ query TweetsScreenQuery($filter: TweetFilter!) {
 """)
 
 struct TweetsScreen: View {
+    @SwiftUI.Environment(\.relayEnvironment) var environment: Relay.Environment?
+
     @State private var selectedTag = 0
+    @State private var isSettingsPresented = false
 
     var body: some View {
         NavigationView {
@@ -40,7 +44,15 @@ struct TweetsScreen: View {
                         }
                     }
                 ).frame(maxHeight: .infinity)
-            }.navigationBarTitle("Tweets", displayMode: .inline)
+            }
+                .navigationBarTitle("Tweets", displayMode: .inline)
+                .navigationBarItems(leading: Button(
+                    action: { self.isSettingsPresented = true },
+                    label: { Image(systemName: "gear") }))
+                .sheet(isPresented: $isSettingsPresented) {
+                    SettingsScreen(isPresented: self.$isSettingsPresented)
+                        .environment(\.relayEnvironment, self.environment)
+                }
         }
     }
 }

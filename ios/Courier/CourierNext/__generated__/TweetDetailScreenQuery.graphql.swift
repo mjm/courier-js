@@ -176,6 +176,3 @@ enum TweetAction: String, Hashable, VariableValueConvertible, ReadableScalar, Cu
         rawValue
     }
 }
-
-typealias Time = String
-typealias Cursor = String
