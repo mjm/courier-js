@@ -71,6 +71,8 @@
 		C96F4CD4246A63DA0096B5ED /* SettingsScreenQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD3246A63D90096B5ED /* SettingsScreenQuery.graphql.swift */; };
 		C96F4CD6246A67CC0096B5ED /* UserProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD5246A67CC0096B5ED /* UserProfileSection.swift */; };
 		C96F4CD8246A68270096B5ED /* UserProfileSection_user.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD7246A68260096B5ED /* UserProfileSection_user.graphql.swift */; };
+		C96F4CDA246AEE160096B5ED /* SubscriptionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD9246AEE160096B5ED /* SubscriptionSection.swift */; };
+		C96F4CDC246AEE700096B5ED /* SubscriptionSection_user.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CDB246AEE6F0096B5ED /* SubscriptionSection_user.graphql.swift */; };
 		C972326A2401ED6100C400EA /* PushNotifications in Frameworks */ = {isa = PBXBuildFile; productRef = C97232692401ED6100C400EA /* PushNotifications */; };
 		C972326C2401EEA800C400EA /* Beams.swift in Sources */ = {isa = PBXBuildFile; fileRef = C972326B2401EEA800C400EA /* Beams.swift */; };
 		C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B6E237BAED30069EED1 /* Endpoint.swift */; };
@@ -202,6 +204,8 @@
 		C96F4CD3246A63D90096B5ED /* SettingsScreenQuery.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsScreenQuery.graphql.swift; sourceTree = "<group>"; };
 		C96F4CD5246A67CC0096B5ED /* UserProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileSection.swift; sourceTree = "<group>"; };
 		C96F4CD7246A68260096B5ED /* UserProfileSection_user.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileSection_user.graphql.swift; sourceTree = "<group>"; };
+		C96F4CD9246AEE160096B5ED /* SubscriptionSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionSection.swift; sourceTree = "<group>"; };
+		C96F4CDB246AEE6F0096B5ED /* SubscriptionSection_user.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionSection_user.graphql.swift; sourceTree = "<group>"; };
 		C972326B2401EEA800C400EA /* Beams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Beams.swift; sourceTree = "<group>"; };
 		C9A36B6E237BAED30069EED1 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncancelTweetAction.swift; sourceTree = "<group>"; };
@@ -394,6 +398,7 @@
 				C95AD8A3246A458C00691417 /* DetailedTweetList_tweetGroup.graphql.swift */,
 				C95AD8A4246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift */,
 				C96F4CD3246A63D90096B5ED /* SettingsScreenQuery.graphql.swift */,
+				C96F4CDB246AEE6F0096B5ED /* SubscriptionSection_user.graphql.swift */,
 				C95AD89A246A443600691417 /* TweetDetailScreenQuery.graphql.swift */,
 				C95AD8942468E9E300691417 /* TweetRow_tweetGroup.graphql.swift */,
 				C95AD88B24688EC900691417 /* TweetsList_tweets.graphql.swift */,
@@ -462,6 +467,7 @@
 			children = (
 				C96F4CD1246A635B0096B5ED /* SettingsScreen.swift */,
 				C96F4CD5246A67CC0096B5ED /* UserProfileSection.swift */,
+				C96F4CD9246AEE160096B5ED /* SubscriptionSection.swift */,
 			);
 			path = "Settings Screen";
 			sourceTree = "<group>";
@@ -931,6 +937,8 @@
 				C95AD897246A439F00691417 /* TweetDetailScreen.swift in Sources */,
 				C96F4CCF246A5CC90096B5ED /* LinkedText.swift in Sources */,
 				C95AD884246886BB00691417 /* Endpoint.swift in Sources */,
+				C96F4CDA246AEE160096B5ED /* SubscriptionSection.swift in Sources */,
+				C96F4CDC246AEE700096B5ED /* SubscriptionSection_user.graphql.swift in Sources */,
 				C95AD85624687B2C00691417 /* ContentView.swift in Sources */,
 				C95AD8952468E9E400691417 /* TweetRow_tweetGroup.graphql.swift in Sources */,
 				C95AD88D24688EC900691417 /* TweetsList_tweets.graphql.swift in Sources */,

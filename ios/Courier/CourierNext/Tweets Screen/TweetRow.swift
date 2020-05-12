@@ -23,12 +23,6 @@ struct TweetRow: View {
     struct Content: View {
         let data: TweetRow_tweetGroup.Data?
 
-        private let relativeTimeFormatter: RelativeDateTimeFormatter = {
-            let formatter = RelativeDateTimeFormatter()
-            formatter.dateTimeStyle = .named
-            return formatter
-        }()
-
         var body: some View {
             Group {
                 if data == nil {
@@ -64,7 +58,7 @@ struct TweetRow: View {
 
         private var postedAtTimeText: Text {
             Text("Posted ") + (data!.postedAt?.asDate.map { date in
-                Text(relativeTimeFormatter.localizedString(for: date, relativeTo: Date()))
+                Text(verbatim: "\(date, relativeTo: Date())")
             } ?? Text("some unknown time"))
         }
     }
@@ -79,5 +73,17 @@ extension Time {
 
     func reformatTime(formatter: DateFormatter) -> String? {
         asDate.map { formatter.string(from: $0) }
+    }
+}
+
+let defaultRelativeTimeFormatter: RelativeDateTimeFormatter = {
+    let formatter = RelativeDateTimeFormatter()
+    formatter.dateTimeStyle = .named
+    return formatter
+}()
+
+extension String.StringInterpolation {
+    mutating func appendInterpolation(_ value: Date, relativeTo other: Date, formatter: RelativeDateTimeFormatter = defaultRelativeTimeFormatter) {
+        appendLiteral(formatter.localizedString(for: value, relativeTo: other))
     }
 }

@@ -5,6 +5,7 @@ private let query = graphql("""
 query SettingsScreenQuery {
   viewer {
     ...UserProfileSection_user
+    ...SubscriptionSection_user
   }
 }
 """)
@@ -27,6 +28,7 @@ struct SettingsScreen: View {
                     } else {
                         List {
                             UserProfileSection(user: data!.viewer!)
+                            SubscriptionSection(user: data!.viewer!)
                         }
                             .listStyle(GroupedListStyle())
                     }

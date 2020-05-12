@@ -14,6 +14,9 @@ struct SettingsScreenQuery: Operation {
                             .fragmentSpread(ReaderFragmentSpread(
                                 name: "UserProfileSection_user"
                             )),
+                            .fragmentSpread(ReaderFragmentSpread(
+                                name: "SubscriptionSection_user"
+                            )),
                         ]
                     )),
                 ]
@@ -35,6 +38,42 @@ struct SettingsScreenQuery: Operation {
                             .field(NormalizationScalarField(
                                 name: "picture"
                             )),
+                            .field(NormalizationLinkedField(
+                                name: "customer",
+                                concreteType: "Customer",
+                                plural: false,
+                                selections: [
+                                    .field(NormalizationLinkedField(
+                                        name: "creditCard",
+                                        concreteType: "CreditCard",
+                                        plural: false,
+                                        selections: [
+                                            .field(NormalizationScalarField(
+                                                name: "brand"
+                                            )),
+                                            .field(NormalizationScalarField(
+                                                name: "lastFour"
+                                            )),
+                                        ]
+                                    )),
+                                ]
+                            )),
+                            .field(NormalizationLinkedField(
+                                name: "subscription",
+                                concreteType: "UserSubscription",
+                                plural: false,
+                                selections: [
+                                    .field(NormalizationScalarField(
+                                        name: "status"
+                                    )),
+                                    .field(NormalizationScalarField(
+                                        name: "periodEnd"
+                                    )),
+                                ]
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "subscriptionStatusOverride"
+                            )),
                         ]
                     )),
                 ]
@@ -46,7 +85,22 @@ struct SettingsScreenQuery: Operation {
 query SettingsScreenQuery {
   viewer {
     ...UserProfileSection_user
+    ...SubscriptionSection_user
   }
+}
+
+fragment SubscriptionSection_user on Viewer {
+  customer {
+    creditCard {
+      brand
+      lastFour
+    }
+  }
+  subscription {
+    status
+    periodEnd
+  }
+  subscriptionStatusOverride
 }
 
 fragment UserProfileSection_user on Viewer {
@@ -73,11 +127,13 @@ fragment UserProfileSection_user on Viewer {
             viewer = data.get(Viewer_viewer?.self, "viewer")
         }
 
-        struct Viewer_viewer: Readable, UserProfileSection_user_Key {
+        struct Viewer_viewer: Readable, UserProfileSection_user_Key, SubscriptionSection_user_Key {
             var fragment_UserProfileSection_user: FragmentPointer
+            var fragment_SubscriptionSection_user: FragmentPointer
 
             init(from data: SelectorData) {
                 fragment_UserProfileSection_user = data.get(fragment: "UserProfileSection_user")
+                fragment_SubscriptionSection_user = data.get(fragment: "SubscriptionSection_user")
             }
 
         }
