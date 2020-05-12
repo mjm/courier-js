@@ -66,6 +66,7 @@
 		C96F4CC9246A573E0096B5ED /* AsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CC8246A573E0096B5ED /* AsyncImage.swift */; };
 		C96F4CCB246A588D0096B5ED /* AsyncImageGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CCA246A588D0096B5ED /* AsyncImageGrid.swift */; };
 		C96F4CCD246A5AAF0096B5ED /* ImagePlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CCC246A5AAF0096B5ED /* ImagePlaceholder.swift */; };
+		C96F4CCF246A5CC90096B5ED /* LinkedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CCE246A5CC90096B5ED /* LinkedText.swift */; };
 		C972326A2401ED6100C400EA /* PushNotifications in Frameworks */ = {isa = PBXBuildFile; productRef = C97232692401ED6100C400EA /* PushNotifications */; };
 		C972326C2401EEA800C400EA /* Beams.swift in Sources */ = {isa = PBXBuildFile; fileRef = C972326B2401EEA800C400EA /* Beams.swift */; };
 		C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B6E237BAED30069EED1 /* Endpoint.swift */; };
@@ -192,6 +193,7 @@
 		C96F4CC8246A573E0096B5ED /* AsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImage.swift; sourceTree = "<group>"; };
 		C96F4CCA246A588D0096B5ED /* AsyncImageGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageGrid.swift; sourceTree = "<group>"; };
 		C96F4CCC246A5AAF0096B5ED /* ImagePlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePlaceholder.swift; sourceTree = "<group>"; };
+		C96F4CCE246A5CC90096B5ED /* LinkedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedText.swift; sourceTree = "<group>"; };
 		C972326B2401EEA800C400EA /* Beams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Beams.swift; sourceTree = "<group>"; };
 		C9A36B6E237BAED30069EED1 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncancelTweetAction.swift; sourceTree = "<group>"; };
@@ -401,6 +403,7 @@
 				C96F4CC8246A573E0096B5ED /* AsyncImage.swift */,
 				C96F4CCA246A588D0096B5ED /* AsyncImageGrid.swift */,
 				C96F4CCC246A5AAF0096B5ED /* ImagePlaceholder.swift */,
+				C96F4CCE246A5CC90096B5ED /* LinkedText.swift */,
 			);
 			path = "Supporting Views";
 			sourceTree = "<group>";
@@ -902,6 +905,7 @@
 				C95AD88C24688EC900691417 /* TweetsListPaginationQuery.graphql.swift in Sources */,
 				C95AD85424687B2C00691417 /* SceneDelegate.swift in Sources */,
 				C95AD897246A439F00691417 /* TweetDetailScreen.swift in Sources */,
+				C96F4CCF246A5CC90096B5ED /* LinkedText.swift in Sources */,
 				C95AD884246886BB00691417 /* Endpoint.swift in Sources */,
 				C95AD85624687B2C00691417 /* ContentView.swift in Sources */,
 				C95AD8952468E9E400691417 /* TweetRow_tweetGroup.graphql.swift in Sources */,

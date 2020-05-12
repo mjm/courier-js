@@ -38,7 +38,7 @@ struct TweetRow: View {
                         VStack(alignment: .leading, spacing: 12) {
                             ForEach(data!.tweets, id: \.body) { tweet in
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text(tweet.body)
+                                    LinkedText(tweet.body)
                                         .font(.body)
                                     AsyncImageGrid(
                                         urls: tweet.mediaURLs.compactMap { URL(string: $0) },
