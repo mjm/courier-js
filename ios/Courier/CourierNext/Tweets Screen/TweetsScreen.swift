@@ -28,7 +28,7 @@ struct TweetsScreen: View {
                     op: TweetsScreenQuery(),
                     variables: .init(filter: selectedTag == 0 ? .upcoming : .past),
                     fetchPolicy: .storeAndNetwork,
-                    loadingContent: Text("Loading…"),
+                    loadingContent: LoadingView(text: "Loading tweets…"),
                     errorContent: { Text($0.localizedDescription) },
                     dataContent: { data in
                         Group {

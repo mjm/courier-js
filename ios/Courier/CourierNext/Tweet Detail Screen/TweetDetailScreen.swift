@@ -22,7 +22,7 @@ struct TweetDetailScreen: View {
         RelayQuery(
             op: TweetDetailScreenQuery(),
             variables: .init(id: id),
-            loadingContent: Text("Loading…"),
+            loadingContent: LoadingView(text: "Loading tweet details…"),
             errorContent: { Text($0.localizedDescription) }
         ) { data in
             Group {
