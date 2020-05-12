@@ -27,12 +27,13 @@ struct TweetsScreen: View {
                 RelayQuery(
                     op: TweetsScreenQuery(),
                     variables: .init(filter: selectedTag == 0 ? .upcoming : .past),
+                    fetchPolicy: .storeAndNetwork,
                     loadingContent: Text("Loading…"),
                     errorContent: { Text($0.localizedDescription) },
                     dataContent: { data in
                         Group {
-                            if data == nil {
-                                EmptyView()
+                            if data?.viewer == nil {
+                                Spacer()
                             } else {
                                 TweetsList(tweets: data!.viewer!)
                             }

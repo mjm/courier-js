@@ -55,7 +55,7 @@ class MyNetwork: Network {
         return URLSession.shared.dataTaskPublisher(for: req)
             .map { $0.data }
             .mapError { $0 as Error }
-            .handleEvents(receiveOutput: { print(String(data: $0, encoding: .utf8)!) })
+//            .handleEvents(receiveOutput: { print(String(data: $0, encoding: .utf8)!) })
             .eraseToAnyPublisher()
     }
 }

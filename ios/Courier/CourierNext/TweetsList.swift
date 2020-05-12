@@ -30,12 +30,12 @@ struct TweetsList: View {
     }
 
     struct Content: View {
-        let data: TweetsList_tweets.Data
+        let data: TweetsList_tweets.Data?
         let paging: Paginating
 
         typealias Tweet = TweetsList_tweets.Data.TweetGroupConnection_allTweets.TweetGroupEdge_edges.TweetGroup_node
         var tweets: [Tweet] {
-            data.allTweets.edges.map { $0.node }
+            data?.allTweets.edges.map { $0.node } ?? []
         }
 
         var body: some View {

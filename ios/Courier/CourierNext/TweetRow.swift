@@ -20,7 +20,7 @@ struct TweetRow: View {
     }
 
     struct Content: View {
-        let data: TweetRow_tweetGroup.Data
+        let data: TweetRow_tweetGroup.Data?
 
         private let relativeTimeFormatter: RelativeDateTimeFormatter = {
             let formatter = RelativeDateTimeFormatter()
@@ -29,26 +29,32 @@ struct TweetRow: View {
         }()
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(data.tweets, id: \.body) { tweet in
-                    Text(tweet.body)
-                        .font(.body)
-                }
+            Group {
+                if data == nil {
+                    EmptyView()
+                } else {
+                    VStack(alignment: .leading, spacing: 12) {
+                        ForEach(data!.tweets, id: \.body) { tweet in
+                            Text(tweet.body)
+                                .font(.body)
+                        }
 
-                if data.status == .canceled {
-                    Text("Canceled")
-                        .font(Font.caption.italic())
-                        .foregroundColor(.secondary)
-                } else if data.status == .posted {
-                    postedAtTimeText
-                        .font(Font.caption.italic())
-                        .foregroundColor(.secondary)
+                        if data!.status == .canceled {
+                            Text("Canceled")
+                                .font(Font.caption.italic())
+                                .foregroundColor(.secondary)
+                        } else if data!.status == .posted {
+                            postedAtTimeText
+                                .font(Font.caption.italic())
+                                .foregroundColor(.secondary)
+                        }
+                    }.padding(.vertical, 4)
                 }
-            }.padding(.vertical, 4)
+            }
         }
 
         private var postedAtTimeText: Text {
-            Text("Posted ") + (data.postedAt?.asDate.map { date in
+            Text("Posted ") + (data!.postedAt?.asDate.map { date in
                 Text(relativeTimeFormatter.localizedString(for: date, relativeTo: Date()))
             } ?? Text("some unknown time"))
         }
