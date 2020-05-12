@@ -23,6 +23,16 @@ struct TweetDetailScreenQuery: Operation {
                             .field(ReaderScalarField(
                                 name: "action"
                             )),
+                            .field(ReaderLinkedField(
+                                name: "tweets",
+                                concreteType: "Tweet",
+                                plural: true,
+                                selections: [
+                                    .field(ReaderScalarField(
+                                        name: "__typename"
+                                    )),
+                                ]
+                            )),
                             .fragmentSpread(ReaderFragmentSpread(
                                 name: "DetailedTweetList_tweetGroup"
                             )),
@@ -56,6 +66,9 @@ struct TweetDetailScreenQuery: Operation {
                                 plural: true,
                                 selections: [
                                     .field(NormalizationScalarField(
+                                        name: "__typename"
+                                    )),
+                                    .field(NormalizationScalarField(
                                         name: "body"
                                     )),
                                     .field(NormalizationScalarField(
@@ -78,6 +91,9 @@ query TweetDetailScreenQuery(
     id
     status
     action
+    tweets {
+      __typename
+    }
     ...DetailedTweetList_tweetGroup
   }
 }
@@ -119,25 +135,26 @@ fragment DetailedTweetRow_tweet on Tweet {
             var id: String
             var status: TweetStatus
             var action: TweetAction
+            var tweets: [Tweet_tweets]
             var fragment_DetailedTweetList_tweetGroup: FragmentPointer
 
             init(from data: SelectorData) {
                 id = data.get(String.self, "id")
                 status = data.get(TweetStatus.self, "status")
                 action = data.get(TweetAction.self, "action")
+                tweets = data.get([Tweet_tweets].self, "tweets")
                 fragment_DetailedTweetList_tweetGroup = data.get(fragment: "DetailedTweetList_tweetGroup")
             }
 
+            struct Tweet_tweets: Readable {
+                var __typename: String
+
+                init(from data: SelectorData) {
+                    __typename = data.get(String.self, "__typename")
+                }
+
+            }
         }
-    }
-}
-
-enum TweetAction: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
-    case tweet = "TWEET"
-    case retweet = "RETWEET"
-
-    var description: String {
-        rawValue
     }
 }
 
@@ -145,6 +162,15 @@ enum TweetStatus: String, Hashable, VariableValueConvertible, ReadableScalar, Cu
     case draft = "DRAFT"
     case canceled = "CANCELED"
     case posted = "POSTED"
+
+    var description: String {
+        rawValue
+    }
+}
+
+enum TweetAction: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
+    case tweet = "TWEET"
+    case retweet = "RETWEET"
 
     var description: String {
         rawValue

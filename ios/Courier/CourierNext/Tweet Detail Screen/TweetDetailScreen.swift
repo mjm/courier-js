@@ -7,6 +7,9 @@ query TweetDetailScreenQuery($id: ID!) {
     id
     status
     action
+    tweets {
+      __typename
+    }
     ...DetailedTweetList_tweetGroup
   }
 }
@@ -25,12 +28,15 @@ struct TweetDetailScreen: View {
             Group {
                 if data?.tweetGroup == nil {
                     Spacer()
+                        .navigationBarTitle("Loading…")
                 } else {
                     List {
                         DetailedTweetList(tweetGroup: data!.tweetGroup!)
-                    }.listStyle(GroupedListStyle())
+                    }
+                        .listStyle(GroupedListStyle())
+                        .navigationBarTitle(data!.tweetGroup!.tweets.count > 1 ? "Tweet Thread" : "Tweet")
                 }
-            }.navigationBarTitle("Tweet Group")
+            }
         }
     }
 }
