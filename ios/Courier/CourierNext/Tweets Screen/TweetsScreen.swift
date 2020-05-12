@@ -29,7 +29,7 @@ struct TweetsScreen: View {
                     variables: .init(filter: selectedTag == 0 ? .upcoming : .past),
                     fetchPolicy: .storeAndNetwork,
                     loadingContent: LoadingView(text: "Loading tweets…"),
-                    errorContent: { Text($0.localizedDescription) },
+                    errorContent: ErrorView.init,
                     dataContent: { data in
                         Group {
                             if data?.viewer == nil {

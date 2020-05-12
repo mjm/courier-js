@@ -23,7 +23,7 @@ struct TweetDetailScreen: View {
             op: TweetDetailScreenQuery(),
             variables: .init(id: id),
             loadingContent: LoadingView(text: "Loading tweet details…"),
-            errorContent: { Text($0.localizedDescription) }
+            errorContent: ErrorView.init
         ) { data in
             Group {
                 if data?.tweetGroup == nil {
