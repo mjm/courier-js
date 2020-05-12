@@ -15,33 +15,51 @@ struct CurrentUser<Content: View>: View {
     var body: some View {
         Group {
             if userLoader.isLoggedIn {
-                content().environment(\.credentials, userLoader.credentials!)
+                content()
+                    .environment(\.credentials, userLoader.credentials!)
+                    .environment(\.authActions, userLoader.authActions)
             } else if userLoader.didLoginFail {
-                Text(userLoader.error!.localizedDescription)
+                ErrorView(error: userLoader.error!) {
+                    self.userLoader.login()
+                }
             } else if userLoader.isLoggingIn {
-                // TODO use a spinner
-                Text("Logging in…")
+                LoadingView(text: "Logging in…")
             } else if userLoader.isLoginNeeded {
-                VStack {
-                    Text("You are not logged in yet.")
-                    Button("Log In") { self.userLoader.login() }
+                VStack(spacing: 12) {
+                    Text("Welcome to Courier")
+                        .font(.title)
+                    Button(action: { self.userLoader.login() }) {
+                        Text("Log In")
+                            .fontWeight(.bold)
+                    }
                 }
             } else {
-                // TODO this should probably be a spinner
-                EmptyView()
+                LoadingView()
             }
         }.onAppear { self.userLoader.start() }
     }
+}
+
+struct AuthActions {
+    let logout: () -> Void
 }
 
 struct CredentialsEnvironmentKey: EnvironmentKey {
     static let defaultValue = Auth0.Credentials()
 }
 
+struct AuthActionsEnvironmentKey: EnvironmentKey {
+    static let defaultValue = AuthActions(logout: {})
+}
+
 extension EnvironmentValues {
     var credentials: Auth0.Credentials {
         get { self[CredentialsEnvironmentKey.self] }
         set { self[CredentialsEnvironmentKey.self] = newValue }
+    }
+    var authActions: AuthActions {
+        get { self[AuthActionsEnvironmentKey.self] }
+        set { self[AuthActionsEnvironmentKey.self] = newValue }
     }
 }
 
@@ -105,6 +123,22 @@ private class CurrentUserLoader: ObservableObject {
             return credentials
         }
         return nil
+    }
+
+    var authActions: AuthActions {
+        return AuthActions(logout: self.logout)
+    }
+
+    func logout() {
+        Endpoint.current.webAuth.clearSession(federated: false) { result in
+            DispatchQueue.main.async {
+                _ = CredentialsManager.shared.clear()
+                self.state = .loginNeeded
+            }
+//                Endpoint.current.pushNotifications.clearAllState {
+//                    promise(.success(()))
+//                }
+        }
     }
 
     func start() {

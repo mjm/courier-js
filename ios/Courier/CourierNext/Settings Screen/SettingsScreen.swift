@@ -11,6 +11,7 @@ query SettingsScreenQuery {
 """)
 
 struct SettingsScreen: View {
+    @Environment(\.authActions) var authActions
     @Binding var isPresented: Bool
 
     var body: some View {
@@ -20,14 +21,17 @@ struct SettingsScreen: View {
                 variables: .init(),
                 fetchPolicy: .storeAndNetwork,
                 loadingContent: LoadingView(text: "Loading profile…"),
-                errorContent: ErrorView.init
+                errorContent: { ErrorView(error: $0) }
             ) { data in
                 Group {
                     if data?.viewer == nil {
                         Spacer()
                     } else {
                         List {
-                            UserProfileSection(user: data!.viewer!)
+                            UserProfileSection(user: data!.viewer!, onLogout: {
+                                self.isPresented = false
+                                self.authActions.logout()
+                            })
                             SubscriptionSection(user: data!.viewer!)
                         }
                             .listStyle(GroupedListStyle())

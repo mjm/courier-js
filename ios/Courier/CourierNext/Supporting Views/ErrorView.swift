@@ -3,6 +3,12 @@ import SwiftUI
 
 struct ErrorView: View {
     let error: Error
+    let retry: (() -> Void)?
+
+    init(error: Error, retry: (() -> Void)? = nil) {
+        self.error = error
+        self.retry = retry
+    }
 
     var body: some View {
         VStack(spacing: 12) {
@@ -18,6 +24,13 @@ struct ErrorView: View {
                     Text((error as! LocalizedError).failureReason!)
                         .font(.body)
                         .foregroundColor(.red)
+                }
+            }
+
+            if retry != nil {
+                Button(action: { self.retry!() }) {
+                    Text("Try Again")
+                        .fontWeight(.bold)
                 }
             }
         }.padding(.bottom, 200)

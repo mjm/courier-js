@@ -1,5 +1,4 @@
 import SwiftUI
-import Relay
 import RelaySwiftUI
 
 private let query = graphql("""
@@ -11,7 +10,8 @@ query TweetsScreenQuery($filter: TweetFilter!) {
 """)
 
 struct TweetsScreen: View {
-    @SwiftUI.Environment(\.relayEnvironment) var environment: Relay.Environment?
+    @Environment(\.relayEnvironment) var environment
+    @Environment(\.authActions) var authActions
 
     @State private var selectedTag = 0
     @State private var isSettingsPresented = false
@@ -33,7 +33,7 @@ struct TweetsScreen: View {
                     variables: .init(filter: selectedTag == 0 ? .upcoming : .past),
                     fetchPolicy: .storeAndNetwork,
                     loadingContent: LoadingView(text: "Loading tweets…"),
-                    errorContent: ErrorView.init,
+                    errorContent: { ErrorView(error: $0) },
                     dataContent: { data in
                         Group {
                             if data?.viewer == nil {
@@ -52,6 +52,7 @@ struct TweetsScreen: View {
                 .sheet(isPresented: $isSettingsPresented) {
                     SettingsScreen(isPresented: self.$isSettingsPresented)
                         .environment(\.relayEnvironment, self.environment)
+                        .environment(\.authActions, self.authActions)
                 }
         }
     }

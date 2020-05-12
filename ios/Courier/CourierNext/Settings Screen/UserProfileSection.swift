@@ -11,13 +11,15 @@ fragment UserProfileSection_user on Viewer {
 
 struct UserProfileSection: View {
     let user: UserProfileSection_user_Key
+    let onLogout: () -> Void
 
     var body: some View {
-        RelayFragment(fragment: UserProfileSection_user(), key: user, content: Content.init)
+        RelayFragment(fragment: UserProfileSection_user(), key: user, content: { Content(data: $0, onLogout: self.onLogout) })
     }
 
     struct Content: View {
         let data: UserProfileSection_user.Data?
+        let onLogout: () -> Void
 
         var body: some View {
             Section(header: Text("YOUR PROFILE")) {
@@ -35,6 +37,15 @@ struct UserProfileSection: View {
                         }
                     }
                     .padding(.vertical, 8)
+
+                    Button(action: onLogout, label: {
+                        HStack {
+                            Spacer()
+                            Text("Sign Out")
+                                .foregroundColor(.red)
+                            Spacer()
+                        }
+                    })
                 }
             }
         }
