@@ -37,8 +37,14 @@ struct TweetRow: View {
                     NavigationLink(destination: TweetDetailScreen(id: data!.id)) {
                         VStack(alignment: .leading, spacing: 12) {
                             ForEach(data!.tweets, id: \.body) { tweet in
-                                Text(tweet.body)
-                                    .font(.body)
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text(tweet.body)
+                                        .font(.body)
+                                    AsyncImageGrid(
+                                        urls: tweet.mediaURLs.compactMap { URL(string: $0) },
+                                        placeholder: { ImagePlaceholder() }
+                                    )
+                                }
                             }
 
                             if data!.status == .canceled {
