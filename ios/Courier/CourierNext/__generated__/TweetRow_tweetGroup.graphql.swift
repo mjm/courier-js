@@ -6,6 +6,9 @@ struct TweetRow_tweetGroup: Fragment {
             name: "TweetRow_tweetGroup",
             selections: [
                 .field(ReaderScalarField(
+                    name: "id"
+                )),
+                .field(ReaderScalarField(
                     name: "status"
                 )),
                 .field(ReaderScalarField(
@@ -33,11 +36,13 @@ struct TweetRow_tweetGroup: Fragment {
     }
 
     struct Data: Readable {
+        var id: String
         var status: TweetStatus
         var postedAt: Time?
         var tweets: [Tweet_tweets]
 
         init(from data: SelectorData) {
+            id = data.get(String.self, "id")
             status = data.get(TweetStatus.self, "status")
             postedAt = data.get(Time?.self, "postedAt")
             tweets = data.get([Tweet_tweets].self, "tweets")
@@ -53,16 +58,6 @@ struct TweetRow_tweetGroup: Fragment {
             }
 
         }
-    }
-}
-
-enum TweetStatus: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
-    case draft = "DRAFT"
-    case canceled = "CANCELED"
-    case posted = "POSTED"
-
-    var description: String {
-        rawValue
     }
 }
 

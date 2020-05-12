@@ -123,6 +123,7 @@ query TweetsScreenQuery(
 }
 
 fragment TweetRow_tweetGroup on TweetGroup {
+  id
   status
   postedAt
   tweets {
@@ -188,6 +189,3 @@ enum TweetFilter: String, Hashable, VariableValueConvertible, ReadableScalar, Cu
         rawValue
     }
 }
-
-typealias Time = String
-typealias Cursor = String

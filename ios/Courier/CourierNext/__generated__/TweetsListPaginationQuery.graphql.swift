@@ -129,6 +129,7 @@ query TweetsListPaginationQuery(
 }
 
 fragment TweetRow_tweetGroup on TweetGroup {
+  id
   status
   postedAt
   tweets {

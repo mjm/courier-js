@@ -3,6 +3,7 @@ import RelaySwiftUI
 
 private let tweetGroupFragment = graphql("""
 fragment TweetRow_tweetGroup on TweetGroup {
+  id
   status
   postedAt
   tweets {
@@ -33,22 +34,24 @@ struct TweetRow: View {
                 if data == nil {
                     EmptyView()
                 } else {
-                    VStack(alignment: .leading, spacing: 12) {
-                        ForEach(data!.tweets, id: \.body) { tweet in
-                            Text(tweet.body)
-                                .font(.body)
-                        }
+                    NavigationLink(destination: TweetDetailScreen(id: data!.id)) {
+                        VStack(alignment: .leading, spacing: 12) {
+                            ForEach(data!.tweets, id: \.body) { tweet in
+                                Text(tweet.body)
+                                    .font(.body)
+                            }
 
-                        if data!.status == .canceled {
-                            Text("Canceled")
-                                .font(Font.caption.italic())
-                                .foregroundColor(.secondary)
-                        } else if data!.status == .posted {
-                            postedAtTimeText
-                                .font(Font.caption.italic())
-                                .foregroundColor(.secondary)
-                        }
-                    }.padding(.vertical, 4)
+                            if data!.status == .canceled {
+                                Text("Canceled")
+                                    .font(Font.caption.italic())
+                                    .foregroundColor(.secondary)
+                            } else if data!.status == .posted {
+                                postedAtTimeText
+                                    .font(Font.caption.italic())
+                                    .foregroundColor(.secondary)
+                            }
+                        }.padding(.vertical, 4)
+                    }
                 }
             }
         }
