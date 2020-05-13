@@ -1,5 +1,4 @@
 import SwiftUI
-import Relay
 import RelaySwiftUI
 
 private let tweetsFragment = graphql("""
@@ -23,24 +22,24 @@ fragment TweetsList_tweets on Viewer
 """)
 
 struct TweetsList: View {
-    let tweets: TweetsList_tweets_Key
+    @PaginationFragment(TweetsList_tweets.self) var tweets
 
-    var body: some View {
-        RelayPaginationFragment(fragment: TweetsList_tweets(), key: tweets, content: Content.init)
+    init(tweets: TweetsList_tweets_Key) {
+        self.tweets = tweets
     }
 
-    struct Content: View {
-        let data: TweetsList_tweets.Data?
-        let paging: Paginating
+    typealias Tweet = TweetsList_tweets.Data.TweetGroupConnection_allTweets.TweetGroupEdge_edges.TweetGroup_node
 
-        typealias Tweet = TweetsList_tweets.Data.TweetGroupConnection_allTweets.TweetGroupEdge_edges.TweetGroup_node
-        var tweets: [Tweet] {
-            data?.allTweets.edges.map { $0.node } ?? []
-        }
+    var tweetNodes: [Tweet] {
+        $tweets?.allTweets.edges.map { $0.node } ?? []
+    }
 
-        var body: some View {
-            List {
-                ForEach(tweets, id: \.id) { tweet in
+    var paging: Paginating { $tweets! }
+    
+    var body: some View {
+        List {
+            if $tweets != nil {
+                ForEach(tweetNodes, id: \.id) { tweet in
                     TweetRow(tweetGroup: tweet)
                         .padding(.vertical, 4)
                 }

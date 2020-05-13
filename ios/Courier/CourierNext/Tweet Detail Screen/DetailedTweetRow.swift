@@ -9,25 +9,21 @@ fragment DetailedTweetRow_tweet on Tweet {
 """)
 
 struct DetailedTweetRow: View {
-    let tweet: DetailedTweetRow_tweet_Key
+    @Fragment(DetailedTweetRow_tweet.self) var tweet
 
-    var body: some View {
-        RelayFragment(fragment: DetailedTweetRow_tweet(), key: tweet, content: Content.init)
+    init(tweet: DetailedTweetRow_tweet_Key) {
+        self.tweet = tweet
     }
 
-    struct Content: View {
-        let data: DetailedTweetRow_tweet.Data?
-
-        var body: some View {
-            Group {
-                if data == nil {
-                    EmptyView()
-                } else {
-                    VStack {
-                        Text(data!.body)
-                            .font(.body)
-                    }.padding(.vertical, 4)
-                }
+    var body: some View {
+        Group {
+            if $tweet == nil {
+                EmptyView()
+            } else {
+                VStack {
+                    Text($tweet!.body)
+                        .font(.body)
+                }.padding(.vertical, 4)
             }
         }
     }

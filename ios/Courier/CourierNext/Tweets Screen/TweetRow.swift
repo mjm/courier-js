@@ -14,53 +14,49 @@ fragment TweetRow_tweetGroup on TweetGroup {
 """)
 
 struct TweetRow: View {
-    let tweetGroup: TweetRow_tweetGroup_Key
+    @Fragment(TweetRow_tweetGroup.self) var tweetGroup
 
-    var body: some View {
-        RelayFragment(fragment: TweetRow_tweetGroup(), key: tweetGroup, content: Content.init)
+    init(tweetGroup: TweetRow_tweetGroup_Key) {
+        self.tweetGroup = tweetGroup
     }
 
-    struct Content: View {
-        let data: TweetRow_tweetGroup.Data?
-
-        var body: some View {
-            Group {
-                if data == nil {
-                    EmptyView()
-                } else {
-                    NavigationLink(destination: TweetDetailScreen(id: data!.id)) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            ForEach(data!.tweets, id: \.body) { tweet in
-                                VStack(alignment: .leading, spacing: 8) {
-                                    LinkedText(tweet.body)
-                                        .font(.body)
-                                    AsyncImageGrid(
-                                        urls: tweet.mediaURLs.compactMap { URL(string: $0) },
-                                        placeholder: { ImagePlaceholder() }
-                                    )
-                                }
+    var body: some View {
+        Group {
+            if $tweetGroup == nil {
+                EmptyView()
+            } else {
+                NavigationLink(destination: TweetDetailScreen(id: $tweetGroup!.id)) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        ForEach($tweetGroup!.tweets, id: \.body) { tweet in
+                            VStack(alignment: .leading, spacing: 8) {
+                                LinkedText(tweet.body)
+                                    .font(.body)
+                                AsyncImageGrid(
+                                    urls: tweet.mediaURLs.compactMap { URL(string: $0) },
+                                    placeholder: { ImagePlaceholder() }
+                                )
                             }
+                        }
 
-                            if data!.status == .canceled {
-                                Text("Canceled")
-                                    .font(Font.caption.italic())
-                                    .foregroundColor(.secondary)
-                            } else if data!.status == .posted {
-                                postedAtTimeText
-                                    .font(Font.caption.italic())
-                                    .foregroundColor(.secondary)
-                            }
-                        }.padding(.vertical, 4)
-                    }
+                        if $tweetGroup!.status == .canceled {
+                            Text("Canceled")
+                                .font(Font.caption.italic())
+                                .foregroundColor(.secondary)
+                        } else if $tweetGroup!.status == .posted {
+                            postedAtTimeText
+                                .font(Font.caption.italic())
+                                .foregroundColor(.secondary)
+                        }
+                    }.padding(.vertical, 4)
                 }
             }
         }
+    }
 
-        private var postedAtTimeText: Text {
-            Text("Posted ") + (data!.postedAt?.asDate.map { date in
-                Text(verbatim: "\(date, relativeTo: Date())")
-            } ?? Text("some unknown time"))
-        }
+    private var postedAtTimeText: Text {
+        Text("Posted ") + ($tweetGroup!.postedAt?.asDate.map { date in
+            Text(verbatim: "\(date, relativeTo: Date())")
+        } ?? Text("some unknown time"))
     }
 }
 

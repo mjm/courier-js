@@ -2,9 +2,10 @@ import Auth0
 import Combine
 import Relay
 import SwiftUI
+import struct SwiftUI.Environment
 
 struct EnvironmentProvider<Content: View>: View {
-    @SwiftUI.Environment(\.credentials) var credentials: Auth0.Credentials
+    @Environment(\.credentials) var credentials: Auth0.Credentials
 
     let content: () -> Content
 

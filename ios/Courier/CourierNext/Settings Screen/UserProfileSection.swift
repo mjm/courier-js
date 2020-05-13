@@ -10,43 +10,39 @@ fragment UserProfileSection_user on Viewer {
 """)
 
 struct UserProfileSection: View {
-    let user: UserProfileSection_user_Key
+    @Fragment(UserProfileSection_user.self) var user
     let onLogout: () -> Void
 
-    var body: some View {
-        RelayFragment(fragment: UserProfileSection_user(), key: user, content: { Content(data: $0, onLogout: self.onLogout) })
+    init(user: UserProfileSection_user_Key, onLogout: @escaping () -> Void) {
+        self.onLogout = onLogout
+        self.user = user
     }
 
-    struct Content: View {
-        let data: UserProfileSection_user.Data?
-        let onLogout: () -> Void
-
-        var body: some View {
-            Section(header: Text("YOUR PROFILE")) {
-                if data != nil {
-                    HStack(spacing: 16) {
-                        AsyncImage(url: URL(string: data!.picture)!, placeholder: Rectangle())
-                            .frame(width: 50, height: 50)
-                            .cornerRadius(8)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(data!.name)
-                                .font(.headline)
-                            Text("@" + data!.nickname)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
+    var body: some View {
+        Section(header: Text("YOUR PROFILE")) {
+            if $user != nil {
+                HStack(spacing: 16) {
+                    AsyncImage(url: URL(string: $user!.picture)!, placeholder: Rectangle())
+                        .frame(width: 50, height: 50)
+                        .cornerRadius(8)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text($user!.name)
+                            .font(.headline)
+                        Text("@" + $user!.nickname)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
                     }
-                    .padding(.vertical, 8)
-
-                    Button(action: onLogout, label: {
-                        HStack {
-                            Spacer()
-                            Text("Sign Out")
-                                .foregroundColor(.red)
-                            Spacer()
-                        }
-                    })
                 }
+                .padding(.vertical, 8)
+
+                Button(action: onLogout, label: {
+                    HStack {
+                        Spacer()
+                        Text("Sign Out")
+                            .foregroundColor(.red)
+                        Spacer()
+                    }
+                })
             }
         }
     }
