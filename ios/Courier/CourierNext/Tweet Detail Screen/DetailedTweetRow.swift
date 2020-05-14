@@ -17,12 +17,14 @@ struct DetailedTweetRow: View {
 
     var body: some View {
         Group {
-            if $tweet == nil {
-                EmptyView()
-            } else {
-                VStack {
+            if $tweet != nil {
+                VStack(alignment: .leading, spacing: 8) {
                     Text($tweet!.body)
                         .font(.body)
+                    AsyncImageGrid(
+                        urls: $tweet!.mediaURLs.compactMap { URL(string: $0) },
+                        placeholder: { ImagePlaceholder() }
+                    )
                 }.padding(.vertical, 4)
             }
         }
