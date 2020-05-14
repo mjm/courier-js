@@ -7,11 +7,30 @@ struct DetailedTweetActions_tweetGroup {
         ReaderFragment(
             name: "DetailedTweetActions_tweetGroup",
             selections: [
+                .field(ReaderLinkedField(
+                    name: "tweets",
+                    concreteType: "Tweet",
+                    plural: true,
+                    selections: [
+                        .field(ReaderScalarField(
+                            name: "postedTweetID"
+                        ))
+                    ]
+                )),
                 .field(ReaderScalarField(
                     name: "id"
                 )),
                 .field(ReaderScalarField(
                     name: "status"
+                )),
+                .field(ReaderScalarField(
+                    name: "postAfter"
+                )),
+                .field(ReaderScalarField(
+                    name: "postedAt"
+                )),
+                .field(ReaderScalarField(
+                    name: "postedRetweetID"
                 ))
             ])
     }
@@ -20,12 +39,28 @@ struct DetailedTweetActions_tweetGroup {
 
 extension DetailedTweetActions_tweetGroup {
     struct Data: Readable {
+        var tweets: [Tweet_tweets]
         var id: String
         var status: TweetStatus
+        var postAfter: String?
+        var postedAt: String?
+        var postedRetweetID: String?
 
         init(from data: SelectorData) {
+            tweets = data.get([Tweet_tweets].self, "tweets")
             id = data.get(String.self, "id")
             status = data.get(TweetStatus.self, "status")
+            postAfter = data.get(String?.self, "postAfter")
+            postedAt = data.get(String?.self, "postedAt")
+            postedRetweetID = data.get(String?.self, "postedRetweetID")
+        }
+
+        struct Tweet_tweets: Readable {
+            var postedTweetID: String?
+
+            init(from data: SelectorData) {
+                postedTweetID = data.get(String?.self, "postedTweetID")
+            }
         }
     }
 }

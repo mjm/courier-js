@@ -77,8 +77,20 @@ struct TweetDetailScreenQuery {
                                     )),
                                     .field(NormalizationScalarField(
                                         name: "mediaURLs"
+                                    )),
+                                    .field(NormalizationScalarField(
+                                        name: "postedTweetID"
                                     ))
                                 ]
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "postAfter"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "postedAt"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "postedRetweetID"
                             ))
                         ]
                     ))
@@ -103,8 +115,14 @@ query TweetDetailScreenQuery(
 }
 
 fragment DetailedTweetActions_tweetGroup on TweetGroup {
+  tweets {
+    postedTweetID
+  }
   id
   status
+  postAfter
+  postedAt
+  postedRetweetID
 }
 
 fragment DetailedTweetList_tweetGroup on TweetGroup {

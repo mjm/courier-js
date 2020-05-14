@@ -2,18 +2,18 @@
 
 import Relay
 
-struct CancelTweetMutation {
+struct UncancelTweetMutation {
     var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "CancelTweetMutation",
+                name: "UncancelTweetMutation",
                 selections: [
                     .field(ReaderLinkedField(
-                        name: "cancelTweet",
+                        name: "uncancelTweet",
                         args: [
                             VariableArgument(name: "input", variableName: "input")
                         ],
-                        concreteType: "CancelTweetPayload",
+                        concreteType: "UncancelTweetPayload",
                         plural: false,
                         selections: [
                             .field(ReaderLinkedField(
@@ -33,14 +33,14 @@ struct CancelTweetMutation {
                     ))
                 ]),
             operation: NormalizationOperation(
-                name: "CancelTweetMutation",
+                name: "UncancelTweetMutation",
                 selections: [
                     .field(NormalizationLinkedField(
-                        name: "cancelTweet",
+                        name: "uncancelTweet",
                         args: [
                             VariableArgument(name: "input", variableName: "input")
                         ],
-                        concreteType: "CancelTweetPayload",
+                        concreteType: "UncancelTweetPayload",
                         plural: false,
                         selections: [
                             .field(NormalizationLinkedField(
@@ -60,13 +60,13 @@ struct CancelTweetMutation {
                     ))
                 ]),
             params: RequestParameters(
-                name: "CancelTweetMutation",
+                name: "UncancelTweetMutation",
                 operationKind: .mutation,
                 text: """
-mutation CancelTweetMutation(
-  $input: CancelTweetInput!
+mutation UncancelTweetMutation(
+  $input: UncancelTweetInput!
 ) {
-  cancelTweet(input: $input) {
+  uncancelTweet(input: $input) {
     tweetGroup {
       id
       status
@@ -78,9 +78,9 @@ mutation CancelTweetMutation(
 }
 
 
-extension CancelTweetMutation {
+extension UncancelTweetMutation {
     struct Variables: VariableDataConvertible {
-        var input: CancelTweetInput
+        var input: UncancelTweetInput
 
         var variableData: VariableData {
             [
@@ -90,7 +90,7 @@ extension CancelTweetMutation {
     }
 }
 
-struct CancelTweetInput: VariableDataConvertible {
+struct UncancelTweetInput: VariableDataConvertible {
     var id: String
 
     var variableData: VariableData {
@@ -100,15 +100,15 @@ struct CancelTweetInput: VariableDataConvertible {
     }
 }
 
-extension CancelTweetMutation {
+extension UncancelTweetMutation {
     struct Data: Readable {
-        var cancelTweet: CancelTweetPayload_cancelTweet
+        var uncancelTweet: UncancelTweetPayload_uncancelTweet
 
         init(from data: SelectorData) {
-            cancelTweet = data.get(CancelTweetPayload_cancelTweet.self, "cancelTweet")
+            uncancelTweet = data.get(UncancelTweetPayload_uncancelTweet.self, "uncancelTweet")
         }
 
-        struct CancelTweetPayload_cancelTweet: Readable {
+        struct UncancelTweetPayload_uncancelTweet: Readable {
             var tweetGroup: TweetGroup_tweetGroup
 
             init(from data: SelectorData) {
@@ -128,4 +128,12 @@ extension CancelTweetMutation {
     }
 }
 
-extension CancelTweetMutation: Relay.Operation {}
+enum TweetStatus: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
+    case draft = "DRAFT"
+    case canceled = "CANCELED"
+    case posted = "POSTED"
+
+    var description: String { rawValue }
+}
+
+extension UncancelTweetMutation: Relay.Operation {}

@@ -3,8 +3,14 @@ import RelaySwiftUI
 
 private let tweetGroupFragment = graphql("""
 fragment DetailedTweetActions_tweetGroup on TweetGroup {
+  tweets {
+    postedTweetID
+  }
   id
   status
+  postAfter
+  postedAt
+  postedRetweetID
 }
 """)
 
@@ -12,46 +18,74 @@ struct DetailedTweetActions: View {
     @Fragment(DetailedTweetActions_tweetGroup.self) var tweetGroup
 
     @Mutation(CancelTweetMutation.self) var cancelTweet
+    @Mutation(UncancelTweetMutation.self) var uncancelTweet
+    @Mutation(PostTweetMutation.self) var postTweet
 
     init(tweetGroup: DetailedTweetActions_tweetGroup_Key) {
         self.tweetGroup = tweetGroup
     }
 
     var body: some View {
-        Section {
+        Section(footer: sectionFooter) {
             if $tweetGroup != nil {
                 if $tweetGroup!.status == .draft {
                     Button(action: {
-                        let input = CancelTweetInput(id: self.$tweetGroup!.id)
-                        self.cancelTweet.commit(variables: .init(input: input))
+                        self.cancelTweet.commit(id: self.$tweetGroup!.id)
                     }) {
                         HStack {
                             Spacer()
-                            Text("Don't Post")
+                            Text("Don't Post").foregroundColor(.red)
                             Spacer()
                         }
                     }.disabled(self.cancelTweet.isInFlight)
 
                     Button(action: {
-
+                        self.postTweet.commit(id: self.$tweetGroup!.id)
                     }) {
                         HStack {
                             Spacer()
                             Text("Post Now")
                             Spacer()
                         }
-                    }.disabled(true)
+                    }.disabled(self.postTweet.isInFlight)
                 } else if $tweetGroup!.status == .canceled {
                     Button(action: {
-
+                        self.uncancelTweet.commit(id: self.$tweetGroup!.id)
                     }) {
                         HStack {
                             Spacer()
                             Text("Restore Draft")
                             Spacer()
                         }
+                    }.disabled(self.uncancelTweet.isInFlight)
+                } else if $tweetGroup!.status == .posted {
+                    HStack {
+                        Text("Posted")
+                        Spacer()
+                        Text(verbatim: "\($tweetGroup!.postedAt!.asDate!, relativeTo: Date())")
+                            .foregroundColor(.secondary)
+                    }
+                    Button(action: {
+                        let postedID = self.$tweetGroup!.postedRetweetID ?? self.$tweetGroup!.tweets[0].postedTweetID!
+                        // TODO get the real screen name
+                        let url = URL(string: "https://twitter.com/CourierTest/status/\(postedID)")!
+                        UIApplication.shared.open(url, options: [:])
+                    }) {
+                        HStack {
+                            Spacer()
+                            Text("View on Twitter")
+                            Spacer()
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    var sectionFooter: some View {
+        Group {
+            if $tweetGroup != nil && $tweetGroup!.status == .draft && $tweetGroup!.postAfter != nil {
+                Text("This tweet will post automatically ") + Text(verbatim: "\($tweetGroup!.postAfter!.asDate!, relativeTo: Date())")
             }
         }
     }
