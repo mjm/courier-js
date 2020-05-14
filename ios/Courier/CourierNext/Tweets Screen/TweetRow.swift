@@ -60,11 +60,11 @@ struct TweetRow: View {
     }
 }
 
-extension Time {
+extension String {
     private static let isoFormatter = ISO8601DateFormatter()
 
     var asDate: Date? {
-        Time.isoFormatter.date(from: self)
+        String.isoFormatter.date(from: self)
     }
 
     func reformatTime(formatter: DateFormatter) -> String? {

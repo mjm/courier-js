@@ -18,7 +18,6 @@ struct SettingsScreen: View {
         NavigationView {
             RelayQuery(
                 op: SettingsScreenQuery(),
-                variables: .init(),
                 fetchPolicy: .storeAndNetwork,
                 loadingContent: LoadingView(text: "Loading profile…"),
                 errorContent: { ErrorView(error: $0) }
