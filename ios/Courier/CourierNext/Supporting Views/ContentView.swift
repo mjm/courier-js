@@ -14,7 +14,7 @@ struct ContentView: View {
             EnvironmentProvider {
                 TweetsScreen()
             }
-        }
+        }.accentColor(.purple)
     }
 }
 
