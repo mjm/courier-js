@@ -11,6 +11,7 @@ query TweetDetailScreenQuery($id: ID!) {
       __typename
     }
     ...DetailedTweetList_tweetGroup
+    ...DetailedTweetActions_tweetGroup
   }
 }
 """)
@@ -32,6 +33,7 @@ struct TweetDetailScreen: View {
                 } else {
                     List {
                         DetailedTweetList(tweetGroup: data!.tweetGroup!)
+                        DetailedTweetActions(tweetGroup: data!.tweetGroup!)
                     }
                         .listStyle(GroupedListStyle())
                         .navigationBarTitle(data!.tweetGroup!.tweets.count > 1 ? "Tweet Thread" : "Tweet")

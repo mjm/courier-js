@@ -73,6 +73,10 @@
 		C96F4CD8246A68270096B5ED /* UserProfileSection_user.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD7246A68260096B5ED /* UserProfileSection_user.graphql.swift */; };
 		C96F4CDA246AEE160096B5ED /* SubscriptionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD9246AEE160096B5ED /* SubscriptionSection.swift */; };
 		C96F4CDC246AEE700096B5ED /* SubscriptionSection_user.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CDB246AEE6F0096B5ED /* SubscriptionSection_user.graphql.swift */; };
+		C96F4CDF246B76400096B5ED /* CancelTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CDE246B76400096B5ED /* CancelTweet.swift */; };
+		C96F4CE1246B76860096B5ED /* CancelTweetMutation.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CE0246B76850096B5ED /* CancelTweetMutation.graphql.swift */; };
+		C96F4CE3246D07D60096B5ED /* DetailedTweetActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CE2246D07D60096B5ED /* DetailedTweetActions.swift */; };
+		C96F4CE5246D080B0096B5ED /* DetailedTweetActions_tweetGroup.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CE4246D080B0096B5ED /* DetailedTweetActions_tweetGroup.graphql.swift */; };
 		C972326A2401ED6100C400EA /* PushNotifications in Frameworks */ = {isa = PBXBuildFile; productRef = C97232692401ED6100C400EA /* PushNotifications */; };
 		C972326C2401EEA800C400EA /* Beams.swift in Sources */ = {isa = PBXBuildFile; fileRef = C972326B2401EEA800C400EA /* Beams.swift */; };
 		C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B6E237BAED30069EED1 /* Endpoint.swift */; };
@@ -206,6 +210,10 @@
 		C96F4CD7246A68260096B5ED /* UserProfileSection_user.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileSection_user.graphql.swift; sourceTree = "<group>"; };
 		C96F4CD9246AEE160096B5ED /* SubscriptionSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionSection.swift; sourceTree = "<group>"; };
 		C96F4CDB246AEE6F0096B5ED /* SubscriptionSection_user.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionSection_user.graphql.swift; sourceTree = "<group>"; };
+		C96F4CDE246B76400096B5ED /* CancelTweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelTweet.swift; sourceTree = "<group>"; };
+		C96F4CE0246B76850096B5ED /* CancelTweetMutation.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CancelTweetMutation.graphql.swift; sourceTree = "<group>"; };
+		C96F4CE2246D07D60096B5ED /* DetailedTweetActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedTweetActions.swift; sourceTree = "<group>"; };
+		C96F4CE4246D080B0096B5ED /* DetailedTweetActions_tweetGroup.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedTweetActions_tweetGroup.graphql.swift; sourceTree = "<group>"; };
 		C972326B2401EEA800C400EA /* Beams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Beams.swift; sourceTree = "<group>"; };
 		C9A36B6E237BAED30069EED1 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncancelTweetAction.swift; sourceTree = "<group>"; };
@@ -354,6 +362,7 @@
 				C95AD890246895BE00691417 /* Environment.swift */,
 				C95AD85124687B2C00691417 /* AppDelegate.swift */,
 				C95AD85324687B2C00691417 /* SceneDelegate.swift */,
+				C96F4CDD246B76220096B5ED /* Mutations */,
 				C95AD89C246A446500691417 /* Supporting Views */,
 				C95AD89D246A447000691417 /* Tweets Screen */,
 				C95AD89E246A447700691417 /* Tweet Detail Screen */,
@@ -395,6 +404,8 @@
 		C95AD88924688EC900691417 /* __generated__ */ = {
 			isa = PBXGroup;
 			children = (
+				C96F4CE4246D080B0096B5ED /* DetailedTweetActions_tweetGroup.graphql.swift */,
+				C96F4CE0246B76850096B5ED /* CancelTweetMutation.graphql.swift */,
 				C95AD8A3246A458C00691417 /* DetailedTweetList_tweetGroup.graphql.swift */,
 				C95AD8A4246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift */,
 				C96F4CD3246A63D90096B5ED /* SettingsScreenQuery.graphql.swift */,
@@ -440,6 +451,7 @@
 				C95AD896246A439F00691417 /* TweetDetailScreen.swift */,
 				C95AD89F246A44DE00691417 /* DetailedTweetList.swift */,
 				C95AD8A1246A44EB00691417 /* DetailedTweetRow.swift */,
+				C96F4CE2246D07D60096B5ED /* DetailedTweetActions.swift */,
 			);
 			path = "Tweet Detail Screen";
 			sourceTree = "<group>";
@@ -470,6 +482,14 @@
 				C96F4CD9246AEE160096B5ED /* SubscriptionSection.swift */,
 			);
 			path = "Settings Screen";
+			sourceTree = "<group>";
+		};
+		C96F4CDD246B76220096B5ED /* Mutations */ = {
+			isa = PBXGroup;
+			children = (
+				C96F4CDE246B76400096B5ED /* CancelTweet.swift */,
+			);
+			path = Mutations;
 			sourceTree = "<group>";
 		};
 		C9A36B72237BC2CF0069EED1 /* Tweet Detail */ = {
@@ -928,18 +948,22 @@
 				C96F4CD6246A67CC0096B5ED /* UserProfileSection.swift in Sources */,
 				C96F4CC5246A4CED0096B5ED /* LoadingView.swift in Sources */,
 				C95AD85224687B2C00691417 /* AppDelegate.swift in Sources */,
+				C96F4CE3246D07D60096B5ED /* DetailedTweetActions.swift in Sources */,
 				C96F4CD8246A68270096B5ED /* UserProfileSection_user.graphql.swift in Sources */,
 				C95AD87A24687DD700691417 /* TweetsScreen.swift in Sources */,
 				C95AD88F246893D900691417 /* TweetsScreenQuery.graphql.swift in Sources */,
 				C95AD88824688E3D00691417 /* TweetsList.swift in Sources */,
+				C96F4CDF246B76400096B5ED /* CancelTweet.swift in Sources */,
 				C95AD88C24688EC900691417 /* TweetsListPaginationQuery.graphql.swift in Sources */,
 				C95AD85424687B2C00691417 /* SceneDelegate.swift in Sources */,
 				C95AD897246A439F00691417 /* TweetDetailScreen.swift in Sources */,
 				C96F4CCF246A5CC90096B5ED /* LinkedText.swift in Sources */,
 				C95AD884246886BB00691417 /* Endpoint.swift in Sources */,
 				C96F4CDA246AEE160096B5ED /* SubscriptionSection.swift in Sources */,
+				C96F4CE5246D080B0096B5ED /* DetailedTweetActions_tweetGroup.graphql.swift in Sources */,
 				C96F4CDC246AEE700096B5ED /* SubscriptionSection_user.graphql.swift in Sources */,
 				C95AD85624687B2C00691417 /* ContentView.swift in Sources */,
+				C96F4CE1246B76860096B5ED /* CancelTweetMutation.graphql.swift in Sources */,
 				C95AD8952468E9E400691417 /* TweetRow_tweetGroup.graphql.swift in Sources */,
 				C95AD88D24688EC900691417 /* TweetsList_tweets.graphql.swift in Sources */,
 				C95AD8A5246A458C00691417 /* DetailedTweetList_tweetGroup.graphql.swift in Sources */,

@@ -37,6 +37,9 @@ struct TweetDetailScreenQuery {
                             )),
                             .fragmentSpread(ReaderFragmentSpread(
                                 name: "DetailedTweetList_tweetGroup"
+                            )),
+                            .fragmentSpread(ReaderFragmentSpread(
+                                name: "DetailedTweetActions_tweetGroup"
                             ))
                         ]
                     ))
@@ -95,7 +98,13 @@ query TweetDetailScreenQuery(
       __typename
     }
     ...DetailedTweetList_tweetGroup
+    ...DetailedTweetActions_tweetGroup
   }
+}
+
+fragment DetailedTweetActions_tweetGroup on TweetGroup {
+  id
+  status
 }
 
 fragment DetailedTweetList_tweetGroup on TweetGroup {
@@ -134,12 +143,13 @@ extension TweetDetailScreenQuery {
             tweetGroup = data.get(TweetGroup_tweetGroup?.self, "tweetGroup")
         }
 
-        struct TweetGroup_tweetGroup: Readable, DetailedTweetList_tweetGroup_Key {
+        struct TweetGroup_tweetGroup: Readable, DetailedTweetList_tweetGroup_Key, DetailedTweetActions_tweetGroup_Key {
             var id: String
             var status: TweetStatus
             var action: TweetAction
             var tweets: [Tweet_tweets]
             var fragment_DetailedTweetList_tweetGroup: FragmentPointer
+            var fragment_DetailedTweetActions_tweetGroup: FragmentPointer
 
             init(from data: SelectorData) {
                 id = data.get(String.self, "id")
@@ -147,6 +157,7 @@ extension TweetDetailScreenQuery {
                 action = data.get(TweetAction.self, "action")
                 tweets = data.get([Tweet_tweets].self, "tweets")
                 fragment_DetailedTweetList_tweetGroup = data.get(fragment: "DetailedTweetList_tweetGroup")
+                fragment_DetailedTweetActions_tweetGroup = data.get(fragment: "DetailedTweetActions_tweetGroup")
             }
 
             struct Tweet_tweets: Readable {
@@ -158,14 +169,6 @@ extension TweetDetailScreenQuery {
             }
         }
     }
-}
-
-enum TweetStatus: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
-    case draft = "DRAFT"
-    case canceled = "CANCELED"
-    case posted = "POSTED"
-
-    var description: String { rawValue }
 }
 
 enum TweetAction: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
