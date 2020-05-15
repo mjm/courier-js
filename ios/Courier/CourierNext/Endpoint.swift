@@ -3,13 +3,21 @@ import Foundation
 //import PushNotifications
 
 struct Endpoint {
+    var environment: String
     var url: URL
     var apiIdentifier: String
     var webAuth: WebAuth
     var authentication: Authentication
 //    var pushNotifications: PushNotifications
 
-    init(url: String, apiIdentifier: String, clientId: String, domain: String, beamInstanceId: String) {
+    init(environment: String,
+         url: String,
+         apiIdentifier: String,
+         clientId: String,
+         domain: String,
+         beamInstanceId: String
+    ) {
+        self.environment = environment
         self.url = URL(string: url)!
         self.apiIdentifier = apiIdentifier
         self.webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
@@ -18,6 +26,7 @@ struct Endpoint {
     }
 
     static let staging = Endpoint(
+        environment: "staging",
         url: "https://al8c1ew7lc.execute-api.us-east-2.amazonaws.com/staging/graphql",
         apiIdentifier: "https://courier.mjm.now.sh/api/",
         clientId: "8c0TcS4ucF3PIPiqDY7FNYx1DE2jx9hL",
@@ -26,7 +35,8 @@ struct Endpoint {
     )
 
     static let production = Endpoint(
-        url: "https://graphql-upnlzarjda-uc.a.run.app/",
+        environment: "production",
+        url: "https://coxrrpuv3e.execute-api.us-east-2.amazonaws.com/production/graphql",
         apiIdentifier: "https://courier.blog/api/",
         clientId: "zG8153IA65HklO6ctzcWSRJAg6xe3SlO",
         domain: "courier-prod.auth0.com",
@@ -35,13 +45,13 @@ struct Endpoint {
 
 //    @UserDefault(\.environment)
 //    static var environment: String
-    static let environment = "staging"
-
-    static let current: Endpoint = {
-        environment == "production" ? .production : .staging
-    }()
+//    static let environment = "staging"
+//
+//    static let current: Endpoint = {
+//        environment == "production" ? .production : .staging
+//    }()
 
     var pusherAuthURL: URL {
-        URL(string: url.absoluteString.replacingOccurrences(of: "graphql", with: "pusher-auth"))!
+        URL(string: url.absoluteString.replacingOccurrences(of: "graphql", with: "pusherauth"))!
     }
 }

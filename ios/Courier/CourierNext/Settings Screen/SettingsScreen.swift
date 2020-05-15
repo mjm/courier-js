@@ -26,14 +26,16 @@ struct SettingsScreen: View {
                     if data?.viewer == nil {
                         Spacer()
                     } else {
-                        List {
+                        Form {
+                            #if DEBUG
+                            EnvironmentSection(isPresented: self.$isPresented)
+                            #endif
                             UserProfileSection(user: data!.viewer!, onLogout: {
                                 self.isPresented = false
                                 self.authActions.logout()
                             })
                             SubscriptionSection(user: data!.viewer!)
                         }
-                            .listStyle(GroupedListStyle())
                     }
                 }
             }

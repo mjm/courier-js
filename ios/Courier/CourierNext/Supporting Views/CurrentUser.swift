@@ -3,19 +3,20 @@ import Combine
 import SwiftUI
 
 struct CurrentUser<Content: View>: View {
+    @Environment(\.endpoint) var endpoint
     @ObservedObject private var userLoader: CurrentUserLoader
+    let content: Content
 
-    let content: () -> Content
-
-    init(content: @escaping () -> Content) {
-        self.content = content
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
         self.userLoader = CurrentUserLoader()
     }
 
     var body: some View {
-        Group {
+        self.userLoader.startIfNeeded(endpoint: self.endpoint)
+        return Group {
             if userLoader.isLoggedIn {
-                content()
+                content
                     .environment(\.credentials, userLoader.credentials!)
                     .environment(\.authActions, userLoader.authActions)
             } else if userLoader.didLoginFail {
@@ -36,7 +37,7 @@ struct CurrentUser<Content: View>: View {
             } else {
                 LoadingView()
             }
-        }.onAppear { self.userLoader.start() }
+        }
     }
 }
 
@@ -81,7 +82,18 @@ private class CurrentUserLoader: ObservableObject {
         case loggedIn(Auth0.Credentials)
     }
 
-    @Published var state: AuthState = .unknown
+    var endpoint: Endpoint! {
+        didSet {
+            credentialsManager = CredentialsManager(authentication: endpoint.authentication, storeKey: endpoint.environment)
+        }
+    }
+    var credentialsManager: CredentialsManager!
+
+    var state: AuthState = .unknown {
+        willSet {
+            objectWillChange.send()
+        }
+    }
 
     var isLoggedIn: Bool {
         if case .loggedIn = state {
@@ -130,9 +142,9 @@ private class CurrentUserLoader: ObservableObject {
     }
 
     func logout() {
-        Endpoint.current.webAuth.clearSession(federated: false) { result in
+        endpoint.webAuth.clearSession(federated: false) { result in
             DispatchQueue.main.async {
-                _ = CredentialsManager.shared.clear()
+                _ = self.credentialsManager.clear()
                 self.state = .loginNeeded
             }
 //                Endpoint.current.pushNotifications.clearAllState {
@@ -141,14 +153,19 @@ private class CurrentUserLoader: ObservableObject {
         }
     }
 
-    func start() {
+    func startIfNeeded(endpoint: Endpoint) {
+        if let currentEndpoint = self.endpoint, endpoint.environment != currentEndpoint.environment {
+            state = .unknown
+        }
+
         if case .unknown = state {
+            self.endpoint = endpoint
             getExistingCredentials()
         }
     }
 
     func getExistingCredentials() {
-        CredentialsManager.shared.credentials { error, creds in
+        credentialsManager.credentials { error, creds in
             DispatchQueue.main.async {
                 if let error = error {
                     NSLog("Could not load existing credentials: \(error)")
@@ -164,10 +181,10 @@ private class CurrentUserLoader: ObservableObject {
 
     func login() {
         state = .loggingIn
-        Endpoint.current.webAuth
+        endpoint.webAuth
             .logging(enabled: true)
             .scope("offline_access openid profile email https://courier.blog/customer_id https://courier.blog/subscription_id")
-            .audience(Endpoint.current.apiIdentifier)
+            .audience(endpoint.apiIdentifier)
             .start { result in
                 DispatchQueue.main.async { self.handleLoginResult(result) }
             }
@@ -183,7 +200,7 @@ private class CurrentUserLoader: ObservableObject {
     }
 
     func process(credentials: Auth0.Credentials) {
-        guard CredentialsManager.shared.store(credentials: credentials) else {
+        guard credentialsManager.store(credentials: credentials) else {
             state = .loginFailed(AuthError.storeCredsFailed)
             return
         }

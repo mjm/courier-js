@@ -5,31 +5,27 @@ import SwiftUI
 import struct SwiftUI.Environment
 
 struct EnvironmentProvider<Content: View>: View {
-    @Environment(\.credentials) var credentials: Auth0.Credentials
+    @Environment(\.endpoint) var endpoint
+    @Environment(\.credentials) var credentials
 
-    let content: () -> Content
+    let content: Content
 
-    private let store = Store(source: DefaultRecordSource())
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
 
     var body: some View {
         Group {
             if credentials.accessToken != nil {
-                content().environment(\.relayEnvironment, Relay.Environment(
-                    network: MyNetwork(credentials: credentials, endpoint: Endpoint.current),
-                    store: store))
+                content.environment(\.relayEnvironment, Relay.Environment(
+                    network: MyNetwork(credentials: credentials, endpoint: endpoint),
+                    store: Store(source: DefaultRecordSource())))
             } else {
                 Text("Credentials aren't valid, they don't have an access token.")
             }
         }
     }
 }
-
-let store = Store(source: DefaultRecordSource())
-
-//let environment = Environment(
-//    network: MyNetwork(),
-//    store: store
-//)
 
 class MyNetwork: Network {
     let credentials: Auth0.Credentials
@@ -53,10 +49,13 @@ class MyNetwork: Network {
             return Fail(error: error).eraseToAnyPublisher()
         }
 
+        NSLog("Executing \(request.operationKind) \(request.name)")
         return URLSession.shared.dataTaskPublisher(for: req)
             .map { $0.data }
             .mapError { $0 as Error }
-//            .handleEvents(receiveOutput: { print(String(data: $0, encoding: .utf8)!) })
+            .handleEvents(receiveOutput: { _ in
+                NSLog("Received response for \(request.operationKind) \(request.name)")
+            })
             .eraseToAnyPublisher()
     }
 }

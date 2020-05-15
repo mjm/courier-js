@@ -10,9 +10,11 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        CurrentUser {
-            EnvironmentProvider {
-                TweetsScreen()
+        WithCurrentEndpoint {
+            CurrentUser {
+                EnvironmentProvider {
+                    TweetsScreen()
+                }
             }
         }.accentColor(.purple)
     }
