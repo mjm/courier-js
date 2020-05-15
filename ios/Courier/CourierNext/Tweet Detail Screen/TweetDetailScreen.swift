@@ -29,6 +29,9 @@ struct TweetDetailScreen: View {
         )
     }
 
+    // Inner view is important, if the editing @State is in the same view as the RelayQuery,
+    // weird things happen when we tap the button. The view reverts to the loading state
+    // permanently for some reason.
     struct Inner: View {
         let data: TweetDetailScreenQuery.Data?
 
