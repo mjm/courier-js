@@ -23,8 +23,10 @@ fragment TweetsList_tweets on Viewer
 
 struct TweetsList: View {
     @PaginationFragment(TweetsList_tweets.self) var tweets
+    let filter: TweetFilter
 
-    init(tweets: TweetsList_tweets_Key) {
+    init(tweets: TweetsList_tweets_Key, filter: TweetFilter) {
+        self.filter = filter
         self.tweets = tweets
     }
 
@@ -37,21 +39,39 @@ struct TweetsList: View {
     var paging: Paginating { $tweets! }
     
     var body: some View {
-        List {
-            if $tweets != nil {
-                ForEach(tweetNodes, id: \.id) { tweet in
-                    TweetRow(tweetGroup: tweet)
-                        .padding(.vertical, 4)
-                }
+        Group {
+            if tweetNodes.isEmpty {
+                emptyView
+            } else {
+                List {
+                    ForEach(tweetNodes, id: \.id) { tweet in
+                        TweetRow(tweetGroup: tweet)
+                            .padding(.vertical, 4)
+                    }
 
-                if paging.isLoadingNext {
-                    Text("Loading…").foregroundColor(.secondary)
-                } else if paging.hasNext {
-                    Button("Load more tweets…") {
-                        self.paging.loadNext(10)
-                    }.onAppear { self.paging.loadNext(10) }
+                    if paging.isLoadingNext {
+                        Text("Loading…").foregroundColor(.secondary)
+                    } else if paging.hasNext {
+                        Button("Load more tweets…") {
+                            self.paging.loadNext(10)
+                        }.onAppear { self.paging.loadNext(10) }
+                    }
                 }
             }
         }
+    }
+
+    var emptyView: some View {
+        VStack {
+            Image(systemName: "tray")
+                .font(.system(size: 40))
+                .padding(.bottom, 10)
+            Text(filter == .upcoming ? "You don't have any upcoming tweets to review." : "You haven't posted any tweets with Courier yet.")
+                .font(.body)
+                .multilineTextAlignment(.center)
+        }
+            .foregroundColor(.secondary)
+            .padding(.bottom, 150)
+            .padding(.horizontal, 30)
     }
 }

@@ -63,7 +63,7 @@ struct TweetsScreen: View {
             } else if tweets.data?.viewer == nil {
                 Spacer()
             } else {
-                TweetsList(tweets: tweets.data!.viewer!)
+                TweetsList(tweets: tweets.data!.viewer!, filter: $tweets.filter)
             }
         }.frame(maxHeight: .infinity)
     }
