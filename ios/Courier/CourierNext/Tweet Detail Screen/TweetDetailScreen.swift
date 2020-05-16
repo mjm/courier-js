@@ -5,18 +5,16 @@ private let query = graphql("""
 query TweetDetailScreenQuery($id: ID!) {
   tweetGroup(id: $id) {
     id
-    status
-    action
     tweets {
       __typename
     }
-    ...DetailedTweetList_tweetGroup
-    ...DetailedTweetActions_tweetGroup
+    ...ViewTweet_tweetGroup
+    ...EditTweetForm_tweetGroup
   }
 }
 """)
 
-struct TweetDetailScreen: View {
+struct TweetDetailScreen: View, Equatable {
     @Query(TweetDetailScreenQuery.self) var tweet
 
     @State private var isEditing = false
@@ -35,26 +33,19 @@ struct TweetDetailScreen: View {
                 Spacer()
                     .navigationBarTitle("Loading…")
             } else {
-                List {
+                Group {
                     if isEditing {
-                        Text("It's editing time!")
+                        EditTweetForm(tweetGroup: tweet.data!.tweetGroup!, isEditing: $isEditing)
                     } else {
-                        DetailedTweetList(tweetGroup: tweet.data!.tweetGroup!)
-                        DetailedTweetActions(tweetGroup: tweet.data!.tweetGroup!)
+                        ViewTweet(tweetGroup: tweet.data!.tweetGroup!, isEditing: $isEditing)
                     }
                 }
-                    .listStyle(GroupedListStyle())
                     .navigationBarTitle(tweet.data!.tweetGroup!.tweets.count > 1 ? "Tweet Thread" : "Tweet")
-                    .navigationBarItems(trailing: Group {
-                        if tweet.data!.tweetGroup!.status == .draft {
-                            Button(self.isEditing ? "Done" : "Edit") {
-                                self.isEditing.toggle()
-                            }
-                        } else {
-                            EmptyView()
-                        }
-                    })
-                }
+            }
         }
+    }
+
+    static func ==(lhs: TweetDetailScreen, rhs: TweetDetailScreen) -> Bool {
+        lhs.$tweet.id == rhs.$tweet.id
     }
 }

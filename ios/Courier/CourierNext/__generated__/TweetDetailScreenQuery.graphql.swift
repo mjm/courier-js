@@ -19,12 +19,6 @@ struct TweetDetailScreenQuery {
                             .field(ReaderScalarField(
                                 name: "id"
                             )),
-                            .field(ReaderScalarField(
-                                name: "status"
-                            )),
-                            .field(ReaderScalarField(
-                                name: "action"
-                            )),
                             .field(ReaderLinkedField(
                                 name: "tweets",
                                 concreteType: "Tweet",
@@ -36,10 +30,10 @@ struct TweetDetailScreenQuery {
                                 ]
                             )),
                             .fragmentSpread(ReaderFragmentSpread(
-                                name: "DetailedTweetList_tweetGroup"
+                                name: "ViewTweet_tweetGroup"
                             )),
                             .fragmentSpread(ReaderFragmentSpread(
-                                name: "DetailedTweetActions_tweetGroup"
+                                name: "EditTweetForm_tweetGroup"
                             ))
                         ]
                     ))
@@ -57,12 +51,6 @@ struct TweetDetailScreenQuery {
                         selections: [
                             .field(NormalizationScalarField(
                                 name: "id"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "status"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "action"
                             )),
                             .field(NormalizationLinkedField(
                                 name: "tweets",
@@ -82,6 +70,9 @@ struct TweetDetailScreenQuery {
                                         name: "postedTweetID"
                                     ))
                                 ]
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "status"
                             )),
                             .field(NormalizationScalarField(
                                 name: "postAfter"
@@ -104,13 +95,11 @@ query TweetDetailScreenQuery(
 ) {
   tweetGroup(id: $id) {
     id
-    status
-    action
     tweets {
       __typename
     }
-    ...DetailedTweetList_tweetGroup
-    ...DetailedTweetActions_tweetGroup
+    ...ViewTweet_tweetGroup
+    ...EditTweetForm_tweetGroup
   }
 }
 
@@ -135,6 +124,20 @@ fragment DetailedTweetList_tweetGroup on TweetGroup {
 fragment DetailedTweetRow_tweet on Tweet {
   body
   mediaURLs
+}
+
+fragment EditTweetForm_tweetGroup on TweetGroup {
+  id
+  tweets {
+    body
+    mediaURLs
+  }
+}
+
+fragment ViewTweet_tweetGroup on TweetGroup {
+  status
+  ...DetailedTweetList_tweetGroup
+  ...DetailedTweetActions_tweetGroup
 }
 """))
     }
@@ -161,21 +164,17 @@ extension TweetDetailScreenQuery {
             tweetGroup = data.get(TweetGroup_tweetGroup?.self, "tweetGroup")
         }
 
-        struct TweetGroup_tweetGroup: Readable, DetailedTweetList_tweetGroup_Key, DetailedTweetActions_tweetGroup_Key {
+        struct TweetGroup_tweetGroup: Readable, ViewTweet_tweetGroup_Key, EditTweetForm_tweetGroup_Key {
             var id: String
-            var status: TweetStatus
-            var action: TweetAction
             var tweets: [Tweet_tweets]
-            var fragment_DetailedTweetList_tweetGroup: FragmentPointer
-            var fragment_DetailedTweetActions_tweetGroup: FragmentPointer
+            var fragment_ViewTweet_tweetGroup: FragmentPointer
+            var fragment_EditTweetForm_tweetGroup: FragmentPointer
 
             init(from data: SelectorData) {
                 id = data.get(String.self, "id")
-                status = data.get(TweetStatus.self, "status")
-                action = data.get(TweetAction.self, "action")
                 tweets = data.get([Tweet_tweets].self, "tweets")
-                fragment_DetailedTweetList_tweetGroup = data.get(fragment: "DetailedTweetList_tweetGroup")
-                fragment_DetailedTweetActions_tweetGroup = data.get(fragment: "DetailedTweetActions_tweetGroup")
+                fragment_ViewTweet_tweetGroup = data.get(fragment: "ViewTweet_tweetGroup")
+                fragment_EditTweetForm_tweetGroup = data.get(fragment: "EditTweetForm_tweetGroup")
             }
 
             struct Tweet_tweets: Readable {
@@ -187,13 +186,6 @@ extension TweetDetailScreenQuery {
             }
         }
     }
-}
-
-enum TweetAction: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
-    case tweet = "TWEET"
-    case retweet = "RETWEET"
-
-    var description: String { rawValue }
 }
 
 extension TweetDetailScreenQuery: Relay.Operation {}
