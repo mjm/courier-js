@@ -17,53 +17,44 @@ query TweetDetailScreenQuery($id: ID!) {
 """)
 
 struct TweetDetailScreen: View {
-    let id: String
+    @Query(TweetDetailScreenQuery.self) var tweet
 
-    var body: some View {
-        RelayQuery(
-            op: TweetDetailScreenQuery(),
-            variables: .init(id: id),
-            loadingContent: LoadingView(text: "Loading tweet details…"),
-            errorContent: { ErrorView(error: $0) },
-            dataContent: Inner.init
-        )
+    @State private var isEditing = false
+
+    init(id: String) {
+        $tweet = .init(id: id)
     }
 
-    // Inner view is important, if the editing @State is in the same view as the RelayQuery,
-    // weird things happen when we tap the button. The view reverts to the loading state
-    // permanently for some reason.
-    struct Inner: View {
-        let data: TweetDetailScreenQuery.Data?
-
-        @State private var isEditing = false
-
-        var body: some View {
-            Group {
-                if data?.tweetGroup == nil {
-                    Spacer()
-                        .navigationBarTitle("Loading…")
-                } else {
-                    List {
-                        if isEditing {
-                            Text("It's editing time!")
-                        } else {
-                            DetailedTweetList(tweetGroup: data!.tweetGroup!)
-                            DetailedTweetActions(tweetGroup: data!.tweetGroup!)
-                        }
+    var body: some View {
+        Group {
+            if tweet.isLoading {
+                LoadingView(text: "Loading tweet details…")
+            } else if tweet.error != nil {
+                ErrorView(error: tweet.error!)
+            } else if tweet.data?.tweetGroup == nil {
+                Spacer()
+                    .navigationBarTitle("Loading…")
+            } else {
+                List {
+                    if isEditing {
+                        Text("It's editing time!")
+                    } else {
+                        DetailedTweetList(tweetGroup: tweet.data!.tweetGroup!)
+                        DetailedTweetActions(tweetGroup: tweet.data!.tweetGroup!)
                     }
-                        .listStyle(GroupedListStyle())
-                        .navigationBarTitle(data!.tweetGroup!.tweets.count > 1 ? "Tweet Thread" : "Tweet")
-                        .navigationBarItems(trailing: Group {
-                            if data!.tweetGroup!.status == .draft {
-                                Button(self.isEditing ? "Done" : "Edit") {
-                                    self.isEditing.toggle()
-                                }
-                            } else {
-                                EmptyView()
+                }
+                    .listStyle(GroupedListStyle())
+                    .navigationBarTitle(tweet.data!.tweetGroup!.tweets.count > 1 ? "Tweet Thread" : "Tweet")
+                    .navigationBarItems(trailing: Group {
+                        if tweet.data!.tweetGroup!.status == .draft {
+                            Button(self.isEditing ? "Done" : "Edit") {
+                                self.isEditing.toggle()
                             }
-                        })
-                    }
-            }
+                        } else {
+                            EmptyView()
+                        }
+                    })
+                }
         }
     }
 }

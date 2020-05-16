@@ -11,36 +11,35 @@ query SettingsScreenQuery {
 """)
 
 struct SettingsScreen: View {
+    @Query(SettingsScreenQuery.self, fetchPolicy: .storeAndNetwork) var query
+
     @Environment(\.authActions) var authActions
     @Binding var isPresented: Bool
 
     var body: some View {
         NavigationView {
-            RelayQuery(
-                op: SettingsScreenQuery(),
-                fetchPolicy: .storeAndNetwork,
-                loadingContent: LoadingView(text: "Loading profile…"),
-                errorContent: { ErrorView(error: $0) }
-            ) { data in
-                Group {
-                    if data?.viewer == nil {
-                        Spacer()
-                    } else {
-                        Form {
-                            #if DEBUG
-                            EnvironmentSection(isPresented: self.$isPresented)
-                            #endif
-                            UserProfileSection(user: data!.viewer!, onLogout: {
-                                self.isPresented = false
-                                self.authActions.logout()
-                            })
-                            SubscriptionSection(user: data!.viewer!)
-                        }
+            Group {
+                if query.isLoading {
+                    LoadingView(text: "Loading profile…")
+                } else if query.error != nil {
+                    ErrorView(error: query.error!)
+                } else if query.data?.viewer == nil {
+                    Spacer()
+                } else {
+                    Form {
+                        #if DEBUG
+                        EnvironmentSection(isPresented: self.$isPresented)
+                        #endif
+                        UserProfileSection(user: query.data!.viewer!, onLogout: {
+                            self.isPresented = false
+                            self.authActions.logout()
+                        })
+                        SubscriptionSection(user: query.data!.viewer!)
                     }
                 }
             }
-                .navigationBarTitle("Settings")
-                .navigationBarItems(trailing: Button("Close") { self.isPresented = false })
+            .navigationBarTitle("Settings")
+            .navigationBarItems(trailing: Button("Close") { self.isPresented = false })
         }
     }
 }
