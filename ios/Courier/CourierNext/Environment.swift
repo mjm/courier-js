@@ -17,7 +17,7 @@ struct EnvironmentProvider<Content: View>: View {
     var body: some View {
         Group {
             if credentials.accessToken != nil {
-                content.environment(\.relayEnvironment, Relay.Environment(
+                content.relayEnvironment(Relay.Environment(
                     network: MyNetwork(credentials: credentials, endpoint: endpoint),
                     store: Store(source: DefaultRecordSource())))
             } else {

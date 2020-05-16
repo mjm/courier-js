@@ -1,4 +1,6 @@
 import SwiftUI
+import struct SwiftUI.Environment
+import Relay
 import RelaySwiftUI
 
 private let query = graphql("""
@@ -16,8 +18,8 @@ struct TweetsScreen: View {
         Binding(get: { self.$tweets.filter }, set: { self.$tweets.filter = $0 })
     }
 
+    @RelayEnvironment var environment: Relay.Environment
     @Environment(\.endpoint) var endpoint
-    @Environment(\.relayEnvironment) var environment
     @Environment(\.authActions) var authActions
     @State private var isSettingsPresented = false
 
@@ -45,8 +47,8 @@ struct TweetsScreen: View {
                     label: { Image(systemName: "gear") }))
                 .sheet(isPresented: $isSettingsPresented) {
                     SettingsScreen(isPresented: self.$isSettingsPresented)
+                        .relayEnvironment(self.environment)
                         .environment(\.endpoint, self.endpoint)
-                        .environment(\.relayEnvironment, self.environment)
                         .environment(\.authActions, self.authActions)
                 }
         }
