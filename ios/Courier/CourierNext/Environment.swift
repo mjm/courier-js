@@ -17,13 +17,21 @@ struct EnvironmentProvider<Content: View>: View {
     var body: some View {
         Group {
             if credentials.accessToken != nil {
-                content.relayEnvironment(Relay.Environment(
-                    network: MyNetwork(credentials: credentials, endpoint: endpoint),
-                    store: Store(source: DefaultRecordSource())))
+                content.relayEnvironment(createEnvironment())
             } else {
                 Text("Credentials aren't valid, they don't have an access token.")
             }
         }
+    }
+
+    func createEnvironment() -> Relay.Environment {
+        let environment = Relay.Environment(
+            network: MyNetwork(credentials: credentials, endpoint: endpoint),
+            store: Store(source: DefaultRecordSource()))
+
+        NotificationHandler.shared.environment = environment
+
+        return environment
     }
 }
 

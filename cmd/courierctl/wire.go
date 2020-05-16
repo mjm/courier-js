@@ -11,6 +11,7 @@ import (
 	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/notifications"
 	feeds2 "github.com/mjm/courier-js/internal/read/feeds"
 	tweets2 "github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/secret"
@@ -33,7 +34,9 @@ func setupApp() (*cli.App, error) {
 			billing.DefaultSet,
 			write.NewCommandBus,
 			tasks.DefaultSet,
+			notifications.NewNotifier,
 			event.NewBus,
+			event.PusherSet,
 			event.NewSQSPublisherConfig,
 			wire.Bind(new(event.Sink), new(*event.Bus)),
 			wire.Bind(new(event.Source), new(*event.Bus)),

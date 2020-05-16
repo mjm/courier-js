@@ -6,12 +6,14 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/mjm/graphql-go/relay"
 	pushnotifications "github.com/pusher/push-notifications-go"
 	"go.opentelemetry.io/otel/api/global"
 	"go.opentelemetry.io/otel/api/key"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/resolvers"
 	"github.com/mjm/courier-js/internal/shared/model"
 	"github.com/mjm/courier-js/internal/shared/tweets"
 	"github.com/mjm/courier-js/internal/trace/keys"
@@ -98,8 +100,12 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 			alert["body"] = fmt.Sprintf("[%s] %s", os.Getenv("APP_ENV"), bodyText)
 		}
 
-		aps["thread-id"] = tg.ID.String()
-		payload["tweetId"] = tg.ID.String()
+		responseID := relay.MarshalID(resolvers.TweetNode, tg.PostID())
+
+		aps["thread-id"] = responseID
+		payload["data"] = map[string]interface{}{
+			"tweetId": responseID,
+		}
 	} else {
 		alert["title-loc-args"] = []string{strconv.Itoa(len(evt.CreatedItemIds))}
 		if evt.Autopost {
@@ -139,12 +145,10 @@ func (n *Notifier) handleTweetPosted(ctx context.Context, evt tweets.TweetPosted
 	}
 
 	payload := make(map[string]interface{})
-	payload["tweetId"] = id.String()
 	aps := make(map[string]interface{})
 	payload["aps"] = aps
 
 	aps["category"] = "POSTED_TWEET"
-	aps["thread-id"] = tg.ID.String()
 	alert := make(map[string]interface{})
 	aps["alert"] = alert
 
@@ -163,6 +167,13 @@ func (n *Notifier) handleTweetPosted(ctx context.Context, evt tweets.TweetPosted
 		alert["body"] = bodyText
 	} else {
 		alert["body"] = fmt.Sprintf("[%s] %s", os.Getenv("APP_ENV"), bodyText)
+	}
+
+	responseID := relay.MarshalID(resolvers.TweetNode, tg.PostID())
+
+	aps["thread-id"] = responseID
+	payload["data"] = map[string]interface{}{
+		"tweetId": responseID,
 	}
 
 	publishID, err := n.beams.PublishToUsers([]string{evt.UserId}, map[string]interface{}{

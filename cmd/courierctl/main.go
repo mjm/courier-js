@@ -11,6 +11,7 @@ import (
 	trace2 "go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/notifications"
 	feeds2 "github.com/mjm/courier-js/internal/read/feeds"
 	tweets2 "github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/trace"
@@ -54,7 +55,8 @@ func newApp(
 	_ *feeds.CommandHandler,
 	_ *tweets.CommandHandler,
 	_ *tweets.EventHandler,
-	_ *user.EventRecorder) *cli.App {
+	_ *user.EventRecorder,
+	_ *notifications.Notifier) *cli.App {
 	commandBus = bus
 	events = eventBus
 	feedQueries = feedQ
@@ -71,6 +73,7 @@ func newApp(
 		Commands: []*cli.Command{
 			feedCommand,
 			tweetCommand,
+			notifyCommand,
 		},
 		Before: func(c *cli.Context) error {
 			ctx, _ := tr.Start(c.Context, "courierctl")

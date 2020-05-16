@@ -12,6 +12,7 @@ import (
 	"github.com/mjm/courier-js/internal/config"
 	"github.com/mjm/courier-js/internal/db"
 	"github.com/mjm/courier-js/internal/event"
+	"github.com/mjm/courier-js/internal/notifications"
 	"github.com/mjm/courier-js/internal/read/feeds"
 	"github.com/mjm/courier-js/internal/read/tweets"
 	"github.com/mjm/courier-js/internal/secret"
@@ -84,6 +85,15 @@ func setupApp() (*cli.App, error) {
 	eventHandler := tweets2.NewEventHandler(writeCommandBus, bus, tweetsCommandHandler)
 	eventRepository := shared.NewEventRepository(dynamoDB, dynamoConfig, clock)
 	eventRecorder := user.NewEventRecorder(eventRepository, clock, bus)
-	app := newApp(writeCommandBus, bus, feedsFeedQueries, tweetsTweetQueries, commandHandler, tweetsCommandHandler, eventHandler, eventRecorder)
+	pusherConfig, err := event.NewPusherConfig(loader)
+	if err != nil {
+		return nil, err
+	}
+	pushNotifications, err := event.NewBeamsClient(pusherConfig)
+	if err != nil {
+		return nil, err
+	}
+	notifier := notifications.NewNotifier(bus, pushNotifications, tweetRepository)
+	app := newApp(writeCommandBus, bus, feedsFeedQueries, tweetsTweetQueries, commandHandler, tweetsCommandHandler, eventHandler, eventRecorder, notifier)
 	return app, nil
 }

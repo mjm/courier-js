@@ -134,6 +134,7 @@
 		C9C34776247081E6004027DE /* PushNotifications in Frameworks */ = {isa = PBXBuildFile; productRef = C9C34775247081E6004027DE /* PushNotifications */; };
 		C9C3477924708A68004027DE /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C9C3477824708A68004027DE /* Localizable.stringsdict */; };
 		C9C3477C24708B9B004027DE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C9C3477A24708B80004027DE /* Localizable.strings */; };
+		C9C3477E24708D88004027DE /* NotificationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477D24708D88004027DE /* NotificationHandler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -285,6 +286,7 @@
 		C9C3477724708684004027DE /* CourierNext.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CourierNext.entitlements; sourceTree = "<group>"; };
 		C9C3477824708A68004027DE /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		C9C3477B24708B80004027DE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		C9C3477D24708D88004027DE /* NotificationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHandler.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -393,6 +395,7 @@
 				C95AD890246895BE00691417 /* Environment.swift */,
 				C95AD85124687B2C00691417 /* AppDelegate.swift */,
 				C95AD85324687B2C00691417 /* SceneDelegate.swift */,
+				C9C3477D24708D88004027DE /* NotificationHandler.swift */,
 				C96F4CDD246B76220096B5ED /* Mutations */,
 				C95AD89C246A446500691417 /* Supporting Views */,
 				C95AD89D246A447000691417 /* Tweets Screen */,
@@ -1015,6 +1018,7 @@
 				C95AD85424687B2C00691417 /* SceneDelegate.swift in Sources */,
 				C95AD897246A439F00691417 /* TweetDetailScreen.swift in Sources */,
 				C9C34766246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift in Sources */,
+				C9C3477E24708D88004027DE /* NotificationHandler.swift in Sources */,
 				C96F4CCF246A5CC90096B5ED /* LinkedText.swift in Sources */,
 				C95AD884246886BB00691417 /* Endpoint.swift in Sources */,
 				C9C34768246FBCE3004027DE /* EditTweetForm.swift in Sources */,

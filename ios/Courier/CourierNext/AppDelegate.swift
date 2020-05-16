@@ -8,8 +8,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         try? Endpoint.current.pushNotifications.addDeviceInterest(interest: "debug-test")
 
         let userNotifications = UNUserNotificationCenter.current()
-        userNotifications.delegate = self
-//        userNotifications.setNotificationCategories(NotificationCategory.all)
+        userNotifications.delegate = NotificationHandler.shared
+        userNotifications.setNotificationCategories(NotificationCategory.all)
         userNotifications.requestAuthorization(options: [.alert, .badge, .sound]) { authorized, error in
             NSLog("requested notification permission, authorized=\(authorized) error=\(String(describing: error))")
             Endpoint.current.pushNotifications.registerForRemoteNotifications()
@@ -40,8 +40,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
     }
-}
-
-extension AppDelegate: UNUserNotificationCenterDelegate {
-
 }
