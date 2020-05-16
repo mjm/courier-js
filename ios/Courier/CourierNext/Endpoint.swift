@@ -1,6 +1,6 @@
 import Auth0
 import Foundation
-//import PushNotifications
+import PushNotifications
 
 struct Endpoint {
     var environment: String
@@ -8,7 +8,7 @@ struct Endpoint {
     var apiIdentifier: String
     var webAuth: WebAuth
     var authentication: Authentication
-//    var pushNotifications: PushNotifications
+    var pushNotifications: PushNotifications
 
     init(environment: String,
          url: String,
@@ -22,7 +22,7 @@ struct Endpoint {
         self.apiIdentifier = apiIdentifier
         self.webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
         self.authentication = Auth0.authentication(clientId: clientId, domain: domain)
-//        self.pushNotifications = PushNotifications(instanceId: beamInstanceId)
+        self.pushNotifications = PushNotifications(instanceId: beamInstanceId)
     }
 
     static let staging = Endpoint(
@@ -43,13 +43,9 @@ struct Endpoint {
         beamInstanceId: "b608001a-0722-48e3-a2b3-1b2a7b2d6fed"
     )
 
-//    @UserDefault(\.environment)
-//    static var environment: String
-//    static let environment = "staging"
-//
-//    static let current: Endpoint = {
-//        environment == "production" ? .production : .staging
-//    }()
+    static var current: Endpoint {
+        UserDefaults.standard.siteEnvironment == "staging" ? .staging : .production
+    }
 
     var pusherAuthURL: URL {
         URL(string: url.absoluteString.replacingOccurrences(of: "graphql", with: "pusherauth"))!

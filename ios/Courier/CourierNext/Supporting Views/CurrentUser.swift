@@ -1,5 +1,6 @@
 import Auth0
 import Combine
+import PushNotifications
 import SwiftUI
 
 struct CurrentUser<Content: View>: View {
@@ -66,9 +67,10 @@ extension EnvironmentValues {
 
 private class CurrentUserLoader: ObservableObject {
     enum AuthState {
+        case unstarted
         // Initial state: we haven't figured out if the user has credentials or not, so
         // we don't want to prompt them into a particular action yet.
-        case unknown
+        case started
         // We've checked for credentials and don't have any, so we want to prompt the user
         // to log in.
         case loginNeeded
@@ -85,11 +87,30 @@ private class CurrentUserLoader: ObservableObject {
     var endpoint: Endpoint! {
         didSet {
             credentialsManager = CredentialsManager(authentication: endpoint.authentication, storeKey: endpoint.environment)
+            beamsTokenProvider = BeamsTokenProvider(authURL: endpoint.pusherAuthURL.absoluteString) {
+                var token = ""
+                let sema = DispatchSemaphore(value: 0)
+
+                self.credentialsManager.credentials { error, creds in
+                    if let error = error {
+                        NSLog("failed to get credentials for push notifications: \(error)")
+                    } else if let creds = creds {
+                        token = creds.accessToken ?? ""
+                    }
+                    sema.signal()
+                }
+
+                sema.wait()
+
+                let headers = ["Authorization": "Bearer \(token)"]
+                return AuthData(headers: headers, queryParams: [:])
+            }
         }
     }
     var credentialsManager: CredentialsManager!
+    var beamsTokenProvider: BeamsTokenProvider!
 
-    var state: AuthState = .unknown {
+    var state: AuthState = .unstarted {
         willSet {
             objectWillChange.send()
         }
@@ -145,20 +166,19 @@ private class CurrentUserLoader: ObservableObject {
         endpoint.webAuth.clearSession(federated: false) { result in
             DispatchQueue.main.async {
                 _ = self.credentialsManager.clear()
+                self.endpoint.pushNotifications.clearAllState { }
                 self.state = .loginNeeded
             }
-//                Endpoint.current.pushNotifications.clearAllState {
-//                    promise(.success(()))
-//                }
         }
     }
 
     func startIfNeeded(endpoint: Endpoint) {
         if let currentEndpoint = self.endpoint, endpoint.environment != currentEndpoint.environment {
-            state = .unknown
+            state = .unstarted
         }
 
-        if case .unknown = state {
+        if case .unstarted = state {
+            self.state = .started
             self.endpoint = endpoint
             getExistingCredentials()
         }
@@ -171,7 +191,7 @@ private class CurrentUserLoader: ObservableObject {
                     NSLog("Could not load existing credentials: \(error)")
                     self.state = .loginNeeded
                 } else if let creds = creds {
-                    self.state = .loggedIn(creds)
+                    self.setLoggedIn(with: creds)
                 } else {
                     self.state = .loginNeeded
                 }
@@ -205,7 +225,27 @@ private class CurrentUserLoader: ObservableObject {
             return
         }
 
-        state = .loggedIn(credentials)
+        setLoggedIn(with: credentials)
+    }
+
+    func setLoggedIn(with credentials: Auth0.Credentials) {
+        endpoint.authentication.userInfo(withAccessToken: credentials.accessToken!).start { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .failure(error: let error):
+                    self.state = .loginFailed(error)
+                case .success(result: let userInfo):
+                    NSLog("user info: name=\(userInfo.name ?? "<none>") nickname=\(userInfo.nickname ?? "<none>")")
+                    self.endpoint.pushNotifications.setUserId(userInfo.sub, tokenProvider: self.beamsTokenProvider) { error in
+                        if let error = error {
+                            self.state = .loginFailed(error)
+                        } else {
+                            self.state = .loggedIn(credentials)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
