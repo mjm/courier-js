@@ -18,7 +18,7 @@ struct CurrentUser<Content: View>: View {
         return Group {
             if userLoader.isLoggedIn {
                 content
-                    .environment(\.credentials, userLoader.credentials!)
+                    .environment(\.credentialsManager, userLoader.credentialsManager)
                     .environment(\.authActions, userLoader.authActions)
             } else if userLoader.didLoginFail {
                 ErrorView(error: userLoader.error!) {
@@ -46,8 +46,8 @@ struct AuthActions {
     let logout: () -> Void
 }
 
-struct CredentialsEnvironmentKey: EnvironmentKey {
-    static let defaultValue = Auth0.Credentials()
+struct CredentialsManagerEnvironmentKey: EnvironmentKey {
+    static let defaultValue: CredentialsManager? = nil
 }
 
 struct AuthActionsEnvironmentKey: EnvironmentKey {
@@ -55,9 +55,9 @@ struct AuthActionsEnvironmentKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    var credentials: Auth0.Credentials {
-        get { self[CredentialsEnvironmentKey.self] }
-        set { self[CredentialsEnvironmentKey.self] = newValue }
+    var credentialsManager: CredentialsManager? {
+        get { self[CredentialsManagerEnvironmentKey.self] }
+        set { self[CredentialsManagerEnvironmentKey.self] = newValue }
     }
     var authActions: AuthActions {
         get { self[AuthActionsEnvironmentKey.self] }
@@ -238,11 +238,12 @@ private class CurrentUserLoader: ObservableObject {
                     NSLog("user info: name=\(userInfo.name ?? "<none>") nickname=\(userInfo.nickname ?? "<none>")")
                     self.endpoint.pushNotifications.setUserId(userInfo.sub, tokenProvider: self.beamsTokenProvider) { error in
                         if let error = error {
-                            self.state = .loginFailed(error)
+                            NSLog("failed to set user ID for push notifications: \(error)")
                         } else {
-                            self.state = .loggedIn(credentials)
+                            NSLog("set user ID for push notifications")
                         }
                     }
+                    self.state = .loggedIn(credentials)
                 }
             }
         }

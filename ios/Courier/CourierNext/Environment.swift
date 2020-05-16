@@ -6,7 +6,7 @@ import struct SwiftUI.Environment
 
 struct EnvironmentProvider<Content: View>: View {
     @Environment(\.endpoint) var endpoint
-    @Environment(\.credentials) var credentials
+    @Environment(\.credentialsManager) var credentialsManager
 
     let content: Content
 
@@ -15,18 +15,12 @@ struct EnvironmentProvider<Content: View>: View {
     }
 
     var body: some View {
-        Group {
-            if credentials.accessToken != nil {
-                content.relayEnvironment(createEnvironment())
-            } else {
-                Text("Credentials aren't valid, they don't have an access token.")
-            }
-        }
+        content.relayEnvironment(createEnvironment())
     }
 
     func createEnvironment() -> Relay.Environment {
         let environment = Relay.Environment(
-            network: MyNetwork(credentials: credentials, endpoint: endpoint),
+            network: MyNetwork(credentialsManager: credentialsManager!, endpoint: endpoint),
             store: Store(source: DefaultRecordSource()))
 
         NotificationHandler.shared.environment = environment
@@ -36,35 +30,45 @@ struct EnvironmentProvider<Content: View>: View {
 }
 
 class MyNetwork: Network {
-    let credentials: Auth0.Credentials
+    let credentialsManager: CredentialsManager
     let endpoint: Endpoint
 
-    init(credentials: Auth0.Credentials, endpoint: Endpoint) {
-        self.credentials = credentials
+    init(credentialsManager: CredentialsManager, endpoint: Endpoint) {
+        self.credentialsManager = credentialsManager
         self.endpoint = endpoint
     }
 
     func execute(request: RequestParameters, variables: VariableData, cacheConfig: CacheConfig) -> AnyPublisher<Data, Error> {
-        var req = URLRequest(url: endpoint.url)
-        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.httpMethod = "POST"
-        req.setValue("Bearer \(credentials.accessToken!)", forHTTPHeaderField: "Authorization")
+        return Future<Credentials, Swift.Error> { promise in
+            self.credentialsManager.credentials { error, creds in
+                if let error = error {
+                    promise(.failure(error as Error))
+                } else {
+                    promise(.success(creds!))
+                }
+            }
+        }.flatMap { credentials -> AnyPublisher<Data, Error> in
+            var req = URLRequest(url: self.endpoint.url)
+            req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            req.httpMethod = "POST"
+            req.setValue("Bearer \(credentials.accessToken!)", forHTTPHeaderField: "Authorization")
 
-        do {
-            let payload = RequestPayload(query: request.text ?? "", operationName: request.name, variables: variables)
-            req.httpBody = try JSONEncoder().encode(payload)
-        } catch {
-            return Fail(error: error).eraseToAnyPublisher()
-        }
+            do {
+                let payload = RequestPayload(query: request.text ?? "", operationName: request.name, variables: variables)
+                req.httpBody = try JSONEncoder().encode(payload)
+            } catch {
+                return Fail(error: error).eraseToAnyPublisher()
+            }
 
-        NSLog("Executing \(request.operationKind) \(request.name)")
-        return URLSession.shared.dataTaskPublisher(for: req)
-            .map { $0.data }
-            .mapError { $0 as Error }
-            .handleEvents(receiveOutput: { _ in
-                NSLog("Received response for \(request.operationKind) \(request.name)")
-            })
-            .eraseToAnyPublisher()
+            NSLog("Executing \(request.operationKind) \(request.name)")
+            return URLSession.shared.dataTaskPublisher(for: req)
+                .map { $0.data }
+                .mapError { $0 as Error }
+                .handleEvents(receiveOutput: { _ in
+                    NSLog("Received response for \(request.operationKind) \(request.name)")
+                })
+                .eraseToAnyPublisher()
+        }.eraseToAnyPublisher()
     }
 }
 
