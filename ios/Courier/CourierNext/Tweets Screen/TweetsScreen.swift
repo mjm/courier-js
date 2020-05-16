@@ -65,6 +65,6 @@ struct TweetsScreen: View {
             } else {
                 TweetsList(tweets: tweets.data!.viewer!)
             }
-        }
+        }.frame(maxHeight: .infinity)
     }
 }
