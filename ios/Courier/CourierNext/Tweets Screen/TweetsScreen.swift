@@ -10,52 +10,36 @@ query TweetsScreenQuery($filter: TweetFilter!) {
 """)
 
 struct TweetsScreen: View {
-    @State private var selectedTag = 0
+    @Query(TweetsScreenQuery.self, fetchPolicy: .storeAndNetwork) var tweets
+
+    private var filterBinding: Binding<TweetFilter> {
+        Binding(get: { self.$tweets.filter }, set: { self.$tweets.filter = $0 })
+    }
+
+    @Environment(\.endpoint) var endpoint
+    @Environment(\.relayEnvironment) var environment
+    @Environment(\.authActions) var authActions
+    @State private var isSettingsPresented = false
 
     init() {
-        print("creating new tweets screen")
+        self.$tweets = .init(filter: .upcoming)
     }
 
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                Picker(selection: $selectedTag, label: EmptyView()) {
-                    Text("Upcoming").tag(0)
-                    Text("Past").tag(1)
+                Picker(selection: filterBinding, label: EmptyView()) {
+                    Text("Upcoming").tag(TweetFilter.upcoming)
+                    Text("Past").tag(TweetFilter.past)
                 }
                     .pickerStyle(SegmentedPickerStyle())
                     .padding()
 
                 Divider()
 
-                RelayQuery(
-                    op: TweetsScreenQuery(),
-                    variables: .init(filter: selectedTag == 0 ? .upcoming : .past),
-                    fetchPolicy: .storeAndNetwork,
-                    loadingContent: LoadingView(text: "Loading tweets…"),
-                    errorContent: { ErrorView(error: $0) },
-                    dataContent: { Inner(data: $0) }
-                ).frame(maxHeight: .infinity)
-            }.navigationBarTitle("Tweets", displayMode: .inline)
-        }
-    }
-
-    struct Inner: View {
-        @Environment(\.endpoint) var endpoint
-        @Environment(\.relayEnvironment) var environment
-        @Environment(\.authActions) var authActions
-        @State private var isSettingsPresented = false
-
-        let data: TweetsScreenQuery.Data?
-
-        var body: some View {
-            Group {
-                if data?.viewer == nil {
-                    Spacer()
-                } else {
-                    TweetsList(tweets: data!.viewer!)
-                }
+                tweetsList
             }
+                .navigationBarTitle("Tweets", displayMode: .inline)
                 .navigationBarItems(leading: Button(
                     action: { self.isSettingsPresented = true },
                     label: { Image(systemName: "gear") }))
@@ -65,6 +49,20 @@ struct TweetsScreen: View {
                         .environment(\.relayEnvironment, self.environment)
                         .environment(\.authActions, self.authActions)
                 }
+        }
+    }
+
+    var tweetsList: some View {
+        Group {
+            if tweets.isLoading {
+                LoadingView(text: "Loading tweets…")
+            } else if tweets.error != nil {
+                ErrorView(error: tweets.error!)
+            } else if tweets.data?.viewer == nil {
+                Spacer()
+            } else {
+                TweetsList(tweets: tweets.data!.viewer!)
+            }
         }
     }
 }
