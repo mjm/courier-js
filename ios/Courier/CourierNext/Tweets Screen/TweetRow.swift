@@ -17,17 +17,17 @@ struct TweetRow: View {
     @Fragment(TweetRow_tweetGroup.self) var tweetGroup
 
     init(tweetGroup: TweetRow_tweetGroup_Key) {
-        self.tweetGroup = tweetGroup
+        self.$tweetGroup = tweetGroup
     }
 
     var body: some View {
         Group {
-            if $tweetGroup == nil {
+            if tweetGroup == nil {
                 EmptyView()
             } else {
-                NavigationLink(destination: TweetDetailScreen(id: $tweetGroup!.id)) {
+                NavigationLink(destination: TweetDetailScreen(id: tweetGroup!.id)) {
                     VStack(alignment: .leading, spacing: 12) {
-                        ForEach($tweetGroup!.tweets, id: \.body) { tweet in
+                        ForEach(tweetGroup!.tweets, id: \.body) { tweet in
                             VStack(alignment: .leading, spacing: 8) {
                                 LinkedText(tweet.body)
                                     .font(.body)
@@ -38,11 +38,11 @@ struct TweetRow: View {
                             }
                         }
 
-                        if $tweetGroup!.status == .canceled {
+                        if tweetGroup!.status == .canceled {
                             Text("Canceled")
                                 .font(Font.caption.italic())
                                 .foregroundColor(.secondary)
-                        } else if $tweetGroup!.status == .posted {
+                        } else if tweetGroup!.status == .posted {
                             postedAtTimeText
                                 .font(Font.caption.italic())
                                 .foregroundColor(.secondary)
@@ -54,7 +54,7 @@ struct TweetRow: View {
     }
 
     private var postedAtTimeText: Text {
-        Text("Posted ") + ($tweetGroup!.postedAt?.asDate.map { date in
+        Text("Posted ") + (tweetGroup!.postedAt?.asDate.map { date in
             Text(verbatim: "\(date, relativeTo: Date())")
         } ?? Text("some unknown time"))
     }

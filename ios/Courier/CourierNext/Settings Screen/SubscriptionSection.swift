@@ -21,15 +21,15 @@ struct SubscriptionSection: View {
     @Fragment(SubscriptionSection_user.self) var user
 
     init(user: SubscriptionSection_user.Key) {
-        self.user = user
+        self.$user = user
     }
 
     var body: some View {
         Group {
-            if $user == nil {
+            if user == nil {
                 EmptyView()
             } else {
-                if $user!.subscription == nil && $user!.subscriptionStatusOverride == nil {
+                if user!.subscription == nil && user!.subscriptionStatusOverride == nil {
                     Section(
                         footer: Text("Posting imported tweets to Twitter requires an active subscription.")
                     ) {
@@ -43,7 +43,7 @@ struct SubscriptionSection: View {
     }
 
     var subscriptionStatusView: some View {
-        let status = $user!.subscription?.status ?? $user!.subscriptionStatusOverride!
+        let status = user!.subscription?.status ?? user!.subscriptionStatusOverride!
         return Group {
             if status == .active {
                 activeSubscriptionView
@@ -53,7 +53,7 @@ struct SubscriptionSection: View {
 
     var activeSubscriptionView: some View {
         Group {
-            if $user!.subscription != nil {
+            if user!.subscription != nil {
                 Section(
                     header: Text("YOUR SUBSCRIPTION"),
                     footer: Text("If you cancel, you can keep using Courier until your existing subscription expires.")
@@ -67,7 +67,7 @@ struct SubscriptionSection: View {
                     HStack {
                         Text("Renews")
                         Spacer()
-                        Text(verbatim: "\($user!.subscription!.periodEnd.asDate!, relativeTo: Date())")
+                        Text(verbatim: "\(user!.subscription!.periodEnd.asDate!, relativeTo: Date())")
                             .foregroundColor(.secondary)
                     }
                     Button(action: {}, label: {

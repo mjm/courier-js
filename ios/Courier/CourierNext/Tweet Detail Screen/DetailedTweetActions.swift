@@ -24,17 +24,17 @@ struct DetailedTweetActions: View {
     @State private var isPresentingPostAlert = false
 
     init(tweetGroup: DetailedTweetActions_tweetGroup_Key) {
-        self.tweetGroup = tweetGroup
+        self.$tweetGroup = tweetGroup
     }
 
     var body: some View {
         Section(footer: sectionFooter) {
-            if $tweetGroup != nil {
-                if $tweetGroup!.status == .draft {
+            if tweetGroup != nil {
+                if tweetGroup!.status == .draft {
                     draftActions
-                } else if $tweetGroup!.status == .canceled {
+                } else if tweetGroup!.status == .canceled {
                     canceledActions
-                } else if $tweetGroup!.status == .posted {
+                } else if tweetGroup!.status == .posted {
                     postedActions
                 }
             }
@@ -44,7 +44,7 @@ struct DetailedTweetActions: View {
     var draftActions: some View {
         Group {
             Button(action: {
-                self.cancelTweet.commit(id: self.$tweetGroup!.id)
+                self.cancelTweet.commit(id: self.tweetGroup!.id)
             }) {
                 HStack {
                     Spacer()
@@ -68,7 +68,7 @@ struct DetailedTweetActions: View {
                         title: Text("Post Tweet Now?"),
                         message: Text("Do you want to post this tweet to Twitter?"),
                         primaryButton: .default(Text("Post Now")) {
-                            self.postTweet.commit(id: self.$tweetGroup!.id)
+                            self.postTweet.commit(id: self.tweetGroup!.id)
                         },
                         secondaryButton: .cancel())
                 }
@@ -77,7 +77,7 @@ struct DetailedTweetActions: View {
 
     var canceledActions: some View {
         Button(action: {
-            self.uncancelTweet.commit(id: self.$tweetGroup!.id)
+            self.uncancelTweet.commit(id: self.tweetGroup!.id)
         }) {
             HStack {
                 Spacer()
@@ -92,11 +92,11 @@ struct DetailedTweetActions: View {
             HStack {
                 Text("Posted")
                 Spacer()
-                Text(verbatim: "\($tweetGroup!.postedAt!.asDate!, relativeTo: Date())")
+                Text(verbatim: "\(tweetGroup!.postedAt!.asDate!, relativeTo: Date())")
                     .foregroundColor(.secondary)
             }
             Button(action: {
-                let postedID = self.$tweetGroup!.postedRetweetID ?? self.$tweetGroup!.tweets[0].postedTweetID!
+                let postedID = self.tweetGroup!.postedRetweetID ?? self.tweetGroup!.tweets[0].postedTweetID!
                 // TODO get the real screen name
                 let url = URL(string: "https://twitter.com/CourierTest/status/\(postedID)")!
                 UIApplication.shared.open(url, options: [:])
@@ -112,8 +112,8 @@ struct DetailedTweetActions: View {
 
     var sectionFooter: some View {
         Group {
-            if $tweetGroup != nil && $tweetGroup!.status == .draft && $tweetGroup!.postAfter != nil {
-                Text("This tweet will post automatically ") + Text(verbatim: "\($tweetGroup!.postAfter!.asDate!, relativeTo: Date())")
+            if tweetGroup != nil && tweetGroup!.status == .draft && tweetGroup!.postAfter != nil {
+                Text("This tweet will post automatically ") + Text(verbatim: "\(tweetGroup!.postAfter!.asDate!, relativeTo: Date())")
             }
         }
     }

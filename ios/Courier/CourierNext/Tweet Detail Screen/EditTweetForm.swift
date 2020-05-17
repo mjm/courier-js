@@ -17,13 +17,13 @@ struct EditTweetForm: View {
 
     init(tweetGroup: EditTweetForm_tweetGroup_Key, isEditing: Binding<Bool>) {
         self._isEditing = isEditing
-        self.tweetGroup = tweetGroup
+        self.$tweetGroup = tweetGroup
     }
 
     var body: some View {
         Group {
-            if $tweetGroup != nil {
-                EditTweetList(tweetGroup: $tweetGroup!, isEditing: $isEditing)
+            if tweetGroup != nil {
+                EditTweetList(tweetGroup: tweetGroup!, isEditing: $isEditing)
             }
         }
     }

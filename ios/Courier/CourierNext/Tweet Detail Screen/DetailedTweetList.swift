@@ -14,16 +14,16 @@ struct DetailedTweetList: View {
     @Fragment(DetailedTweetList_tweetGroup.self) var tweetGroup
 
     init(tweetGroup: DetailedTweetList_tweetGroup_Key) {
-        self.tweetGroup = tweetGroup
+        self.$tweetGroup = tweetGroup
     }
 
     var body: some View {
         Group {
-            if $tweetGroup == nil {
+            if tweetGroup == nil {
                 EmptyView()
             } else {
                 Section(header: headerView) {
-                    ForEach($tweetGroup!.tweets, id: \.body) { tweet in
+                    ForEach(tweetGroup!.tweets, id: \.body) { tweet in
                         DetailedTweetRow(tweet: tweet)
                     }
                 }
@@ -33,8 +33,8 @@ struct DetailedTweetList: View {
 
     var headerView: some View {
         Group {
-            if $tweetGroup!.tweets.count > 1 {
-                Text("Thread with \($tweetGroup!.tweets.count) tweets")
+            if tweetGroup!.tweets.count > 1 {
+                Text("Thread with \(tweetGroup!.tweets.count) tweets")
             } else {
                 EmptyView()
             }

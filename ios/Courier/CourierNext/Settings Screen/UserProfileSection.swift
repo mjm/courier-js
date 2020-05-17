@@ -15,20 +15,20 @@ struct UserProfileSection: View {
 
     init(user: UserProfileSection_user_Key, onLogout: @escaping () -> Void) {
         self.onLogout = onLogout
-        self.user = user
+        self.$user = user
     }
 
     var body: some View {
         Section(header: Text("YOUR PROFILE")) {
-            if $user != nil {
+            if user != nil {
                 HStack(spacing: 16) {
-                    AsyncImage(url: URL(string: $user!.picture)!, placeholder: Rectangle())
+                    AsyncImage(url: URL(string: user!.picture)!, placeholder: Rectangle())
                         .frame(width: 50, height: 50)
                         .cornerRadius(8)
                     VStack(alignment: .leading, spacing: 4) {
-                        Text($user!.name)
+                        Text(user!.name)
                             .font(.headline)
-                        Text("@" + $user!.nickname)
+                        Text("@" + user!.nickname)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }

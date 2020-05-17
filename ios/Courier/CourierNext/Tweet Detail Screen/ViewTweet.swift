@@ -15,18 +15,18 @@ struct ViewTweet: View {
 
     init(tweetGroup: ViewTweet_tweetGroup_Key, isEditing: Binding<Bool>) {
         self._isEditing = isEditing
-        self.tweetGroup = tweetGroup
+        self.$tweetGroup = tweetGroup
     }
 
     var body: some View {
         Group {
-            if $tweetGroup != nil {
+            if tweetGroup != nil {
                 Form {
-                    DetailedTweetList(tweetGroup: $tweetGroup!)
-                    DetailedTweetActions(tweetGroup: $tweetGroup!)
+                    DetailedTweetList(tweetGroup: tweetGroup!)
+                    DetailedTweetActions(tweetGroup: tweetGroup!)
                 }
                 .navigationBarItems(leading: EmptyView(), trailing: Group {
-                    if $tweetGroup!.status == .draft {
+                    if tweetGroup!.status == .draft {
                         Button("Edit") { self.isEditing = true }
                     }
                 })

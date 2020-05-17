@@ -27,16 +27,16 @@ struct TweetsList: View {
 
     init(tweets: TweetsList_tweets_Key, filter: TweetFilter) {
         self.filter = filter
-        self.tweets = tweets
+        self.$tweets = tweets
     }
 
     typealias Tweet = TweetsList_tweets.Data.TweetGroupConnection_allTweets.TweetGroupEdge_edges.TweetGroup_node
 
     var tweetNodes: [Tweet] {
-        $tweets?.allTweets.edges.map { $0.node } ?? []
+        tweets?.allTweets.edges.map { $0.node } ?? []
     }
 
-    var paging: Paginating { $tweets! }
+    var paging: Paginating { tweets! }
     
     var body: some View {
         Group {
