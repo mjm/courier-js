@@ -135,6 +135,7 @@
 		C9C3477924708A68004027DE /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C9C3477824708A68004027DE /* Localizable.stringsdict */; };
 		C9C3477C24708B9B004027DE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C9C3477A24708B80004027DE /* Localizable.strings */; };
 		C9C3477E24708D88004027DE /* NotificationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477D24708D88004027DE /* NotificationHandler.swift */; };
+		C9C34780247108EF004027DE /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477F247108EF004027DE /* TextView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -287,6 +288,7 @@
 		C9C3477824708A68004027DE /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		C9C3477B24708B80004027DE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C9C3477D24708D88004027DE /* NotificationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHandler.swift; sourceTree = "<group>"; };
+		C9C3477F247108EF004027DE /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -473,6 +475,7 @@
 				C96F4CCA246A588D0096B5ED /* AsyncImageGrid.swift */,
 				C96F4CCC246A5AAF0096B5ED /* ImagePlaceholder.swift */,
 				C96F4CCE246A5CC90096B5ED /* LinkedText.swift */,
+				C9C3477F247108EF004027DE /* TextView.swift */,
 			);
 			path = "Supporting Views";
 			sourceTree = "<group>";
@@ -1027,6 +1030,7 @@
 				C9C34764246FBB9D004027DE /* ViewTweet.swift in Sources */,
 				C96F4CDC246AEE700096B5ED /* SubscriptionSection_user.graphql.swift in Sources */,
 				C95AD85624687B2C00691417 /* ContentView.swift in Sources */,
+				C9C34780247108EF004027DE /* TextView.swift in Sources */,
 				C96F4CE1246B76860096B5ED /* CancelTweetMutation.graphql.swift in Sources */,
 				C96F4CED246D12CC0096B5ED /* PostTweetMutation.graphql.swift in Sources */,
 				C95AD8952468E9E400691417 /* TweetRow_tweetGroup.graphql.swift in Sources */,
