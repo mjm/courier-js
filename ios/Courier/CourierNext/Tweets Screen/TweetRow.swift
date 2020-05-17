@@ -17,14 +17,12 @@ struct TweetRow: View {
     @Fragment(TweetRow_tweetGroup.self) var tweetGroup
 
     init(tweetGroup: TweetRow_tweetGroup_Key) {
-        self.$tweetGroup = tweetGroup
+        $tweetGroup = tweetGroup
     }
 
     var body: some View {
         Group {
-            if tweetGroup == nil {
-                EmptyView()
-            } else {
+            if tweetGroup != nil {
                 NavigationLink(destination: TweetDetailScreen(id: tweetGroup!.id)) {
                     VStack(alignment: .leading, spacing: 12) {
                         ForEach(tweetGroup!.tweets, id: \.body) { tweet in

@@ -24,7 +24,7 @@ struct TweetsScreen: View {
     @State private var isSettingsPresented = false
 
     init() {
-        self.$tweets = .init(filter: .upcoming)
+        $tweets = .init(filter: .upcoming)
     }
 
     var body: some View {
