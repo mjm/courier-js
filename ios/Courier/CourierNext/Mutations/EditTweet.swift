@@ -17,6 +17,21 @@ mutation EditTweetMutation($input: EditTweetInput!) {
 
 extension Mutation.Mutator where O == EditTweetMutation {
     func commit(_ input: EditTweetInput) {
-        commit(variables: .init(input: input))
+        commit(
+            variables: .init(input: input),
+            optimisticResponse: [
+                "editTweet": [
+                    "tweetGroup": [
+                        "id": input.id,
+                        "tweets": input.tweets.map { tweet in
+                            [
+                                "body": tweet.body,
+                                "mediaURLs": tweet.mediaURLs ?? [],
+                            ]
+                        }
+                    ]
+                ]
+            ]
+        )
     }
 }

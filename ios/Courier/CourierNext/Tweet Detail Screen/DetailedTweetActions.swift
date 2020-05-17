@@ -48,7 +48,7 @@ struct DetailedTweetActions: View {
             }) {
                 HStack {
                     Spacer()
-                    Text("Don't Post").foregroundColor(.red)
+                    Text("Don't Post").foregroundColor(self.cancelTweet.isInFlight ? .secondary : .red)
                     Spacer()
                 }
             }.disabled(self.cancelTweet.isInFlight)

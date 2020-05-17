@@ -14,6 +14,16 @@ mutation CancelTweetMutation($input: CancelTweetInput!) {
 
 extension Mutation.Mutator where O == CancelTweetMutation {
     func commit(id: String) {
-        commit(variables: .init(input: CancelTweetInput(id: id)))
+        commit(
+            variables: .init(input: CancelTweetInput(id: id)),
+            optimisticResponse: [
+                "cancelTweet": [
+                    "tweetGroup": [
+                        "id": id,
+                        "status": "CANCELED",
+                    ]
+                ]
+            ]
+        )
     }
 }

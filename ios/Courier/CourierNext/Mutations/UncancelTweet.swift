@@ -14,6 +14,16 @@ mutation UncancelTweetMutation($input: UncancelTweetInput!) {
 
 extension Mutation.Mutator where O == UncancelTweetMutation {
     func commit(id: String) {
-        commit(variables: .init(input: UncancelTweetInput(id: id)))
+        commit(
+            variables: .init(input: UncancelTweetInput(id: id)),
+            optimisticResponse: [
+                "uncancelTweet": [
+                    "tweetGroup": [
+                        "id": id,
+                        "status": "DRAFT",
+                    ]
+                ]
+            ]
+        )
     }
 }
