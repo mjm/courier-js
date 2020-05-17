@@ -12,9 +12,8 @@ struct AsyncImage<Placeholder: View>: View {
     }
 
     var body: some View {
-        image
-            .onAppear(perform: { self.loader.load(cache: self.cache) })
-            .onDisappear(perform: loader.cancel)
+        loader.load(cache: cache)
+        return image
     }
 
     private var image: some View {
@@ -39,10 +38,14 @@ struct AsyncImage_Previews: PreviewProvider {
 }
 
 class ImageLoader: ObservableObject {
-    @Published var image: UIImage?
+    var image: UIImage? {
+        willSet {
+            objectWillChange.send()
+        }
+    }
     let url: URL
 
-    private(set) var isLoading = false
+    private(set) var isLoaded = false
     private var cancellable: AnyCancellable?
     private static let imageQueue = DispatchQueue(label: "image-loader")
 
@@ -51,7 +54,13 @@ class ImageLoader: ObservableObject {
     }
 
     func load(cache: ImageCache? = nil) {
-        guard !isLoading else { return }
+        guard !isLoaded else { return }
+
+        isLoaded = true
+
+        if image != nil {
+            return
+        }
 
         if let image = cache?[url] {
             self.image = image
@@ -63,19 +72,10 @@ class ImageLoader: ObservableObject {
             .map { UIImage(data: $0.data) }
             .replaceError(with: nil)
             .handleEvents(
-                receiveSubscription: { [weak self] _ in
-                    self?.isLoading = true
-                },
                 receiveOutput: { [url] image in
                     if let image = image {
                         cache?[url] = image
                     }
-                },
-                receiveCompletion: { [weak self] _ in
-                    self?.isLoading = false
-                },
-                receiveCancel: { [weak self] in
-                    self?.isLoading = false
                 }
             )
             .receive(on: DispatchQueue.main)
