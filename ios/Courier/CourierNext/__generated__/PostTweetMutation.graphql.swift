@@ -3,7 +3,13 @@
 import Relay
 
 struct PostTweetMutation {
-    var node: ConcreteRequest {
+    var variables: Variables
+
+    init(variables: Variables) {
+        self.variables = variables
+    }
+
+    static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "PostTweetMutation",

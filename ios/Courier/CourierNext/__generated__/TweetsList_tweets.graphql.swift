@@ -3,7 +3,13 @@
 import Relay
 
 struct TweetsList_tweets {
-    var node: ReaderFragment {
+    var fragmentPointer: FragmentPointer
+
+    init(key: TweetsList_tweets_Key) {
+        fragmentPointer = key.fragment_TweetsList_tweets
+    }
+
+    static var node: ReaderFragment {
         ReaderFragment(
             name: "TweetsList_tweets",
             selections: [
@@ -102,21 +108,15 @@ protocol TweetsList_tweets_Key {
     var fragment_TweetsList_tweets: FragmentPointer { get }
 }
 
-extension TweetsList_tweets {
-    func getFragmentPointer(_ key: TweetsList_tweets_Key) -> FragmentPointer {
-        key.fragment_TweetsList_tweets
-    }
-}
-
 extension TweetsList_tweets: Relay.Fragment {}
 
 extension TweetsList_tweets: Relay.PaginationFragment {
     typealias Operation = TweetsListPaginationQuery
 
-    var metadata: Metadata {
+    static var metadata: Metadata {
         RefetchMetadata(
             path: ["viewer"],
-            operation: .init(),
+            operation: Operation.self,
             connection: ConnectionMetadata(
                 path: ["allTweets"],
                 forward: ConnectionVariableConfig(count: "count", cursor: "cursor")))

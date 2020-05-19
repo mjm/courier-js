@@ -23,7 +23,7 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
             }
 
             let input = PostTweetInput(id: tweetId)
-            performMutation(PostTweetMutation(), variables: .init(input: input), completion: completionHandler)
+            performMutation(PostTweetMutation(variables: .init(input: input)), completion: completionHandler)
 
         case .editTweet:
 //            editTweet(id: tweetId)
@@ -37,7 +37,7 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
             }
 
             let input = CancelTweetInput(id: tweetId)
-            performMutation(CancelTweetMutation(), variables: .init(input: input), completion: completionHandler)
+            performMutation(CancelTweetMutation(variables: .init(input: input)), completion: completionHandler)
 
         default:
 //            if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
@@ -49,14 +49,14 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
-    private func performMutation<O: Relay.Operation>(_ mutation: O, variables: O.Variables, completion: @escaping () -> Void) {
+    private func performMutation<O: Relay.Operation>(_ mutation: O, completion: @escaping () -> Void) {
         guard let environment = environment else {
             NSLog("No saved Relay environment for handling notifications.")
             completion()
             return
         }
 
-        commitMutation(environment, mutation, variables: variables).sink(receiveCompletion: { result in
+        commitMutation(environment, mutation).sink(receiveCompletion: { result in
             switch result {
             case .failure(let error):
                 NSLog("Mutation \(type(of: mutation)) failed: \(error)")

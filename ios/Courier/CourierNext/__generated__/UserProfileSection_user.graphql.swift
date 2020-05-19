@@ -3,7 +3,13 @@
 import Relay
 
 struct UserProfileSection_user {
-    var node: ReaderFragment {
+    var fragmentPointer: FragmentPointer
+
+    init(key: UserProfileSection_user_Key) {
+        fragmentPointer = key.fragment_UserProfileSection_user
+    }
+
+    static var node: ReaderFragment {
         ReaderFragment(
             name: "UserProfileSection_user",
             selections: [
@@ -37,12 +43,6 @@ extension UserProfileSection_user {
 
 protocol UserProfileSection_user_Key {
     var fragment_UserProfileSection_user: FragmentPointer { get }
-}
-
-extension UserProfileSection_user {
-    func getFragmentPointer(_ key: UserProfileSection_user_Key) -> FragmentPointer {
-        key.fragment_UserProfileSection_user
-    }
 }
 
 extension UserProfileSection_user: Relay.Fragment {}

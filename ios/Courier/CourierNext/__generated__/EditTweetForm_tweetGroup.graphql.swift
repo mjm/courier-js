@@ -3,7 +3,13 @@
 import Relay
 
 struct EditTweetForm_tweetGroup {
-    var node: ReaderFragment {
+    var fragmentPointer: FragmentPointer
+
+    init(key: EditTweetForm_tweetGroup_Key) {
+        fragmentPointer = key.fragment_EditTweetForm_tweetGroup
+    }
+
+    static var node: ReaderFragment {
         ReaderFragment(
             name: "EditTweetForm_tweetGroup",
             selections: [
@@ -52,12 +58,6 @@ extension EditTweetForm_tweetGroup {
 
 protocol EditTweetForm_tweetGroup_Key {
     var fragment_EditTweetForm_tweetGroup: FragmentPointer { get }
-}
-
-extension EditTweetForm_tweetGroup {
-    func getFragmentPointer(_ key: EditTweetForm_tweetGroup_Key) -> FragmentPointer {
-        key.fragment_EditTweetForm_tweetGroup
-    }
 }
 
 extension EditTweetForm_tweetGroup: Relay.Fragment {}

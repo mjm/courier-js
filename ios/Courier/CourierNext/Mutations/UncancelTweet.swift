@@ -12,7 +12,7 @@ mutation UncancelTweetMutation($input: UncancelTweetInput!) {
 }
 """)
 
-extension Mutation.Mutator where O == UncancelTweetMutation {
+extension Mutation.Mutator where Operation == UncancelTweetMutation {
     func commit(id: String) {
         commit(
             variables: .init(input: UncancelTweetInput(id: id)),

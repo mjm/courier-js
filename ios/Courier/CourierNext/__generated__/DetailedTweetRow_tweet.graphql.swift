@@ -3,7 +3,13 @@
 import Relay
 
 struct DetailedTweetRow_tweet {
-    var node: ReaderFragment {
+    var fragmentPointer: FragmentPointer
+
+    init(key: DetailedTweetRow_tweet_Key) {
+        fragmentPointer = key.fragment_DetailedTweetRow_tweet
+    }
+
+    static var node: ReaderFragment {
         ReaderFragment(
             name: "DetailedTweetRow_tweet",
             selections: [
@@ -32,12 +38,6 @@ extension DetailedTweetRow_tweet {
 
 protocol DetailedTweetRow_tweet_Key {
     var fragment_DetailedTweetRow_tweet: FragmentPointer { get }
-}
-
-extension DetailedTweetRow_tweet {
-    func getFragmentPointer(_ key: DetailedTweetRow_tweet_Key) -> FragmentPointer {
-        key.fragment_DetailedTweetRow_tweet
-    }
 }
 
 extension DetailedTweetRow_tweet: Relay.Fragment {}

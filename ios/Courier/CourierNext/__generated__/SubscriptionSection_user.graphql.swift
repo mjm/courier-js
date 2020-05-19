@@ -3,7 +3,13 @@
 import Relay
 
 struct SubscriptionSection_user {
-    var node: ReaderFragment {
+    var fragmentPointer: FragmentPointer
+
+    init(key: SubscriptionSection_user_Key) {
+        fragmentPointer = key.fragment_SubscriptionSection_user
+    }
+
+    static var node: ReaderFragment {
         ReaderFragment(
             name: "SubscriptionSection_user",
             selections: [
@@ -92,12 +98,6 @@ extension SubscriptionSection_user {
 
 protocol SubscriptionSection_user_Key {
     var fragment_SubscriptionSection_user: FragmentPointer { get }
-}
-
-extension SubscriptionSection_user {
-    func getFragmentPointer(_ key: SubscriptionSection_user_Key) -> FragmentPointer {
-        key.fragment_SubscriptionSection_user
-    }
 }
 
 enum SubscriptionStatus: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {

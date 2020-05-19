@@ -15,7 +15,7 @@ mutation EditTweetMutation($input: EditTweetInput!) {
 }
 """)
 
-extension Mutation.Mutator where O == EditTweetMutation {
+extension Mutation.Mutator where Operation == EditTweetMutation {
     func commit(_ input: EditTweetInput) {
         commit(
             variables: .init(input: input),

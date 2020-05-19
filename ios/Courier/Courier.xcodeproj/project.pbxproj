@@ -37,8 +37,6 @@
 		C95AD85B24687B2D00691417 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C95AD85A24687B2D00691417 /* Preview Assets.xcassets */; };
 		C95AD85E24687B2D00691417 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C95AD85C24687B2D00691417 /* LaunchScreen.storyboard */; };
 		C95AD86924687B2D00691417 /* CourierNextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD86824687B2D00691417 /* CourierNextTests.swift */; };
-		C95AD87424687B9300691417 /* Relay in Frameworks */ = {isa = PBXBuildFile; productRef = C95AD87324687B9300691417 /* Relay */; };
-		C95AD87624687B9300691417 /* RelaySwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C95AD87524687B9300691417 /* RelaySwiftUI */; };
 		C95AD87A24687DD700691417 /* TweetsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD87924687DD700691417 /* TweetsScreen.swift */; };
 		C95AD87C2468810C00691417 /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD87B2468810C00691417 /* CurrentUser.swift */; };
 		C95AD87D2468826E00691417 /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A749AF2378AFB40046E924 /* Auth0.framework */; };
@@ -136,6 +134,8 @@
 		C9C3477C24708B9B004027DE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C9C3477A24708B80004027DE /* Localizable.strings */; };
 		C9C3477E24708D88004027DE /* NotificationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477D24708D88004027DE /* NotificationHandler.swift */; };
 		C9C34780247108EF004027DE /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477F247108EF004027DE /* TextView.swift */; };
+		C9C347832471FA9D004027DE /* Relay in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347822471FA9D004027DE /* Relay */; };
+		C9C347852471FA9D004027DE /* RelaySwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347842471FA9D004027DE /* RelaySwiftUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -156,6 +156,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C9159852247229AE00E7FE03 /* Relay.swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Relay.swift; path = ../../../Relay.swift; sourceTree = "<group>"; };
 		C95009C62384F5F100A36E64 /* LinkLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkLabel.swift; sourceTree = "<group>"; };
 		C95009C92385026100A36E64 /* ViewLinkAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewLinkAction.swift; sourceTree = "<group>"; };
 		C95009CB2385039700A36E64 /* TweetActionCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetActionCellViewModel.swift; sourceTree = "<group>"; };
@@ -190,7 +191,6 @@
 		C95AD86424687B2D00691417 /* CourierNextTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CourierNextTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C95AD86824687B2D00691417 /* CourierNextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourierNextTests.swift; sourceTree = "<group>"; };
 		C95AD86A24687B2D00691417 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C95AD87124687B4100691417 /* Relay */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Relay; path = ../../../Relay; sourceTree = "<group>"; };
 		C95AD87724687CB700691417 /* relay.config.js */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.javascript; path = relay.config.js; sourceTree = "<group>"; tabWidth = 2; };
 		C95AD87924687DD700691417 /* TweetsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetsScreen.swift; sourceTree = "<group>"; };
 		C95AD87B2468810C00691417 /* CurrentUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUser.swift; sourceTree = "<group>"; };
@@ -297,10 +297,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				C95AD87D2468826E00691417 /* Auth0.framework in Frameworks */,
+				C9C347852471FA9D004027DE /* RelaySwiftUI in Frameworks */,
 				C9C34776247081E6004027DE /* PushNotifications in Frameworks */,
-				C95AD87624687B9300691417 /* RelaySwiftUI in Frameworks */,
+				C9C347832471FA9D004027DE /* Relay in Frameworks */,
 				C95AD8802468827D00691417 /* SimpleKeychain.framework in Frameworks */,
-				C95AD87424687B9300691417 /* Relay in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -580,12 +580,12 @@
 		C9A74961237852430046E924 = {
 			isa = PBXGroup;
 			children = (
+				C9159852247229AE00E7FE03 /* Relay.swift */,
 				C9A7496C237852430046E924 /* Courier */,
 				C9A74985237852450046E924 /* CourierTests */,
 				C95AD85024687B2C00691417 /* CourierNext */,
 				C95AD86724687B2D00691417 /* CourierNextTests */,
 				C9A7496B237852430046E924 /* Products */,
-				C95AD87124687B4100691417 /* Relay */,
 				C95AD87224687B9300691417 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -750,9 +750,9 @@
 			);
 			name = CourierNext;
 			packageProductDependencies = (
-				C95AD87324687B9300691417 /* Relay */,
-				C95AD87524687B9300691417 /* RelaySwiftUI */,
 				C9C34775247081E6004027DE /* PushNotifications */,
+				C9C347822471FA9D004027DE /* Relay */,
+				C9C347842471FA9D004027DE /* RelaySwiftUI */,
 			);
 			productName = CourierNext;
 			productReference = C95AD84F24687B2C00691417 /* CourierNext.app */;
@@ -863,6 +863,7 @@
 				C9A74999237852BD0046E924 /* XCRemoteSwiftPackageReference "UserActions" */,
 				C9A7499C237853300046E924 /* XCRemoteSwiftPackageReference "apollo-ios" */,
 				C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */,
+				C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */,
 			);
 			productRefGroup = C9A7496B237852430046E924 /* Products */;
 			projectDirPath = "";
@@ -1563,17 +1564,17 @@
 				minimumVersion = 0.19.0;
 			};
 		};
+		C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mjm/Relay.swift.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C95AD87324687B9300691417 /* Relay */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Relay;
-		};
-		C95AD87524687B9300691417 /* RelaySwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = RelaySwiftUI;
-		};
 		C97232692401ED6100C400EA /* PushNotifications */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */;
@@ -1613,6 +1614,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */;
 			productName = PushNotifications;
+		};
+		C9C347822471FA9D004027DE /* Relay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */;
+			productName = Relay;
+		};
+		C9C347842471FA9D004027DE /* RelaySwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */;
+			productName = RelaySwiftUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -3,7 +3,13 @@
 import Relay
 
 struct TweetDetailScreenQuery {
-    var node: ConcreteRequest {
+    var variables: Variables
+
+    init(variables: Variables) {
+        self.variables = variables
+    }
+
+    static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "TweetDetailScreenQuery",

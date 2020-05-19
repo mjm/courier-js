@@ -19,7 +19,7 @@ mutation PostTweetMutation($input: PostTweetInput!) {
 }
 """)
 
-extension Mutation.Mutator where O == PostTweetMutation {
+extension Mutation.Mutator where Operation == PostTweetMutation {
     func commit(id: String) {
         commit(variables: .init(input: PostTweetInput(id: id)))
     }
