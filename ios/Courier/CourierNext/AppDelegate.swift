@@ -4,6 +4,8 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        UserDefaults.standard.register(defaults: ["siteEnvironment": "production"])
+
         Endpoint.current.pushNotifications.start()
         try? Endpoint.current.pushNotifications.addDeviceInterest(interest: "debug-test")
 

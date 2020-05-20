@@ -48,8 +48,6 @@ private class CurrentEndpointObserver: ObservableObject {
     var cancellable: AnyCancellable?
 
     init() {
-        UserDefaults.standard.register(defaults: ["siteEnvironment": "production"])
-
         cancellable = UserDefaults.standard.publisher(for: \.siteEnvironment)
             .sink { [weak self] _ in
                 self?.objectWillChange.send()

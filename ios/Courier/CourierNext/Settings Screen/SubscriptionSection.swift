@@ -35,9 +35,9 @@ struct SubscriptionSection: View {
                     ) {
                         Button("Subscribe to Courier") {}
                     }
+                } else {
+                    subscriptionStatusView
                 }
-
-                subscriptionStatusView
             }
         }
     }
