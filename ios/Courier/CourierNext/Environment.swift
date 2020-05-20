@@ -20,7 +20,7 @@ struct EnvironmentProvider<Content: View>: View {
 
     func createEnvironment() -> Relay.Environment {
         let environment = Relay.Environment(
-            network: MyNetwork(credentialsManager: credentialsManager!, endpoint: endpoint),
+            network: Network(credentialsManager: credentialsManager!, endpoint: endpoint),
             store: Store(source: DefaultRecordSource()))
 
         NotificationHandler.shared.environment = environment
@@ -29,7 +29,7 @@ struct EnvironmentProvider<Content: View>: View {
     }
 }
 
-class MyNetwork: Network {
+class Network: Relay.Network {
     let credentialsManager: CredentialsManager
     let endpoint: Endpoint
 
@@ -39,7 +39,7 @@ class MyNetwork: Network {
     }
 
     func execute(request: RequestParameters, variables: VariableData, cacheConfig: CacheConfig) -> AnyPublisher<Data, Error> {
-        return Future<Credentials, Swift.Error> { promise in
+        return Future<Credentials, Error> { promise in
             self.credentialsManager.credentials { error, creds in
                 if let error = error {
                     promise(.failure(error as Error))
