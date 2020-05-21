@@ -40,7 +40,9 @@ struct TweetsList: View {
     
     var body: some View {
         Group {
-            if tweetNodes.isEmpty {
+            if tweets == nil {
+                Spacer()
+            } else if tweetNodes.isEmpty {
                 emptyView
             } else {
                 List {
