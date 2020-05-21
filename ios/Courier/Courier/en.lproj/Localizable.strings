@@ -1,11 +1,3 @@
-/* 
-  Localizable.strings
-  Courier
-
-  Created by Matt Moriarity on 11/17/19.
-  Copyright © 2019 Matt Moriarity. All rights reserved.
-*/
-
 "POSTED_TWEET_TITLE" = "Your tweet was posted to Twitter";
 
 "IMPORTED_TWEET_TITLE_NO_AUTOPOST" = "A new tweet is ready to post";

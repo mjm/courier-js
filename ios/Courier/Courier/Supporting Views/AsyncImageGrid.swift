@@ -1,11 +1,3 @@
-//
-//  AsyncImageGrid.swift
-//  CourierNext
-//
-//  Created by Matt Moriarity on 5/11/20.
-//  Copyright © 2020 Matt Moriarity. All rights reserved.
-//
-
 import SwiftUI
 
 struct AsyncImageGrid<Placeholder: View>: View {

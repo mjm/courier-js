@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1120"
+   LastUpgradeVersion = "1140"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,35 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C9A74969237852430046E924"
+               BlueprintIdentifier = "Relay"
+               BuildableName = "Relay"
+               BlueprintName = "Relay"
+               ReferencedContainer = "container:../../../Relay.swift">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "RelaySwiftUI"
+               BuildableName = "RelaySwiftUI"
+               BlueprintName = "RelaySwiftUI"
+               ReferencedContainer = "container:../../../Relay.swift">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C95AD84E24687B2C00691417"
                BuildableName = "Courier.app"
                BlueprintName = "Courier"
                ReferencedContainer = "container:Courier.xcodeproj">
@@ -32,7 +60,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C9A74981237852450046E924"
+               BlueprintIdentifier = "C95AD86324687B2D00691417"
                BuildableName = "CourierTests.xctest"
                BlueprintName = "CourierTests"
                ReferencedContainer = "container:Courier.xcodeproj">
@@ -54,7 +82,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C9A74969237852430046E924"
+            BlueprintIdentifier = "C95AD84E24687B2C00691417"
             BuildableName = "Courier.app"
             BlueprintName = "Courier"
             ReferencedContainer = "container:Courier.xcodeproj">
@@ -71,7 +99,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C9A74969237852430046E924"
+            BlueprintIdentifier = "C95AD84E24687B2C00691417"
             BuildableName = "Courier.app"
             BlueprintName = "Courier"
             ReferencedContainer = "container:Courier.xcodeproj">

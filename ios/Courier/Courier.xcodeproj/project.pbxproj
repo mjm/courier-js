@@ -7,39 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C95009CA2385026100A36E64 /* ViewLinkAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009C92385026100A36E64 /* ViewLinkAction.swift */; };
-		C95009CC2385039700A36E64 /* TweetActionCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009CB2385039700A36E64 /* TweetActionCellViewModel.swift */; };
-		C95009CE238506F300A36E64 /* TweetActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009CD238506F300A36E64 /* TweetActionCell.swift */; };
-		C95009D22386188900A36E64 /* UserDefault.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009D12386188900A36E64 /* UserDefault.swift */; };
-		C95009D423861E0400A36E64 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009D323861E0400A36E64 /* SettingsViewModel.swift */; };
-		C95009D623861EA700A36E64 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009D523861EA700A36E64 /* SettingsViewController.swift */; };
-		C95009D92386204F00A36E64 /* EnvironmentCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009D82386204F00A36E64 /* EnvironmentCellViewModel.swift */; };
-		C95009DB2386229B00A36E64 /* EnvironmentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009DA2386229B00A36E64 /* EnvironmentCell.swift */; };
-		C95009DE2386287500A36E64 /* ShowSettingsAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009DD2386287500A36E64 /* ShowSettingsAction.swift */; };
-		C95009E02386651100A36E64 /* MutationUserAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009DF2386651100A36E64 /* MutationUserAction.swift */; };
-		C95009E2238793A400A36E64 /* ContentStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E1238793A400A36E64 /* ContentStateView.swift */; };
-		C95009E423879F7F00A36E64 /* TweetTimestampCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E323879F7F00A36E64 /* TweetTimestampCellViewModel.swift */; };
-		C95009E62387A2EA00A36E64 /* TweetTimestampCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E52387A2EA00A36E64 /* TweetTimestampCell.swift */; };
-		C95009E82388F52900A36E64 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009E72388F52900A36E64 /* Store.swift */; };
-		C95009EA2389925200A36E64 /* User.graphql in Resources */ = {isa = PBXBuildFile; fileRef = C95009E92389925200A36E64 /* User.graphql */; };
-		C95009EC2389A42300A36E64 /* UserCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009EB2389A42300A36E64 /* UserCellViewModel.swift */; };
-		C95009EE2389A9CB00A36E64 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009ED2389A9CB00A36E64 /* UserCell.swift */; };
-		C95009F02389AB5200A36E64 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009EF2389AB5200A36E64 /* UIView.swift */; };
-		C95009F22389AF4200A36E64 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009F12389AF4200A36E64 /* UIImage.swift */; };
-		C95009F62389B60000A36E64 /* SettingsActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009F52389B60000A36E64 /* SettingsActionCell.swift */; };
-		C95009F82389ECB100A36E64 /* All.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009F72389ECB100A36E64 /* All.swift */; };
-		C95009FA2389F7E100A36E64 /* ImageGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009F92389F7E100A36E64 /* ImageGridView.swift */; };
 		C95AD85224687B2C00691417 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD85124687B2C00691417 /* AppDelegate.swift */; };
 		C95AD85424687B2C00691417 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD85324687B2C00691417 /* SceneDelegate.swift */; };
 		C95AD85624687B2C00691417 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD85524687B2C00691417 /* ContentView.swift */; };
 		C95AD85824687B2D00691417 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C95AD85724687B2D00691417 /* Assets.xcassets */; };
 		C95AD85B24687B2D00691417 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C95AD85A24687B2D00691417 /* Preview Assets.xcassets */; };
 		C95AD85E24687B2D00691417 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C95AD85C24687B2D00691417 /* LaunchScreen.storyboard */; };
-		C95AD86924687B2D00691417 /* CourierNextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD86824687B2D00691417 /* CourierNextTests.swift */; };
+		C95AD86924687B2D00691417 /* CourierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD86824687B2D00691417 /* CourierTests.swift */; };
 		C95AD87A24687DD700691417 /* TweetsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD87924687DD700691417 /* TweetsScreen.swift */; };
 		C95AD87C2468810C00691417 /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD87B2468810C00691417 /* CurrentUser.swift */; };
-		C95AD87D2468826E00691417 /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A749AF2378AFB40046E924 /* Auth0.framework */; };
-		C95AD8802468827D00691417 /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A749B02378AFB40046E924 /* SimpleKeychain.framework */; };
 		C95AD884246886BB00691417 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD883246886BB00691417 /* Endpoint.swift */; };
 		C95AD88824688E3D00691417 /* TweetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88724688E3D00691417 /* TweetsList.swift */; };
 		C95AD88C24688EC900691417 /* TweetsListPaginationQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88A24688EC900691417 /* TweetsListPaginationQuery.graphql.swift */; };
@@ -54,9 +30,6 @@
 		C95AD8A2246A44EB00691417 /* DetailedTweetRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD8A1246A44EB00691417 /* DetailedTweetRow.swift */; };
 		C95AD8A5246A458C00691417 /* DetailedTweetList_tweetGroup.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD8A3246A458C00691417 /* DetailedTweetList_tweetGroup.graphql.swift */; };
 		C95AD8A6246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD8A4246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift */; };
-		C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */; };
-		C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C95C6F6D238243F7006063A2 /* Localizable.strings */; };
-		C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95C6F702383BCB9006063A2 /* NotificationCategories.swift */; };
 		C96F4CC5246A4CED0096B5ED /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CC4246A4CED0096B5ED /* LoadingView.swift */; };
 		C96F4CC7246A509E0096B5ED /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CC6246A509E0096B5ED /* ErrorView.swift */; };
 		C96F4CC9246A573E0096B5ED /* AsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CC8246A573E0096B5ED /* AsyncImage.swift */; };
@@ -78,48 +51,6 @@
 		C96F4CEB246D129F0096B5ED /* PostTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEA246D129F0096B5ED /* PostTweet.swift */; };
 		C96F4CED246D12CC0096B5ED /* PostTweetMutation.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEC246D12CC0096B5ED /* PostTweetMutation.graphql.swift */; };
 		C96F4CEF246E19F50096B5ED /* WithCurrentEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEE246E19F50096B5ED /* WithCurrentEndpoint.swift */; };
-		C972326A2401ED6100C400EA /* PushNotifications in Frameworks */ = {isa = PBXBuildFile; productRef = C97232692401ED6100C400EA /* PushNotifications */; };
-		C972326C2401EEA800C400EA /* Beams.swift in Sources */ = {isa = PBXBuildFile; fileRef = C972326B2401EEA800C400EA /* Beams.swift */; };
-		C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B6E237BAED30069EED1 /* Endpoint.swift */; };
-		C9A36B71237BC0380069EED1 /* UncancelTweetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */; };
-		C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B73237BC2DE0069EED1 /* TweetDetailViewModel.swift */; };
-		C9A36B76237BC4070069EED1 /* TweetDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B75237BC4070069EED1 /* TweetDetailViewController.swift */; };
-		C9A36B79237BC61C0069EED1 /* SplitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B78237BC61C0069EED1 /* SplitViewModel.swift */; };
-		C9A36B7B237BC6240069EED1 /* SplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A36B7A237BC6240069EED1 /* SplitViewController.swift */; };
-		C9A671B4237D1FDE00EEE913 /* TweetBodyCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A671B3237D1FDE00EEE913 /* TweetBodyCellViewModel.swift */; };
-		C9A671B6237D220900EEE913 /* TweetBodyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A671B5237D220900EEE913 /* TweetBodyCell.swift */; };
-		C9A671B8237E3EDB00EEE913 /* PostTweetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A671B7237E3EDB00EEE913 /* PostTweetAction.swift */; };
-		C9A671BA237E4EA100EEE913 /* ControlEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A671B9237E4EA100EEE913 /* ControlEvent.swift */; };
-		C9A671BC237E539200EEE913 /* SegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A671BB237E539200EEE913 /* SegmentedControl.swift */; };
-		C9A671BE237E564D00EEE913 /* SaveTweetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A671BD237E564D00EEE913 /* SaveTweetAction.swift */; };
-		C9A7496E237852430046E924 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A7496D237852430046E924 /* AppDelegate.swift */; };
-		C9A74970237852430046E924 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A7496F237852430046E924 /* SceneDelegate.swift */; };
-		C9A74979237852450046E924 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9A74978237852450046E924 /* Assets.xcassets */; };
-		C9A7497C237852450046E924 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9A7497A237852450046E924 /* LaunchScreen.storyboard */; };
-		C9A74987237852450046E924 /* CourierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A74986237852450046E924 /* CourierTests.swift */; };
-		C9A749932378528F0046E924 /* Events in Frameworks */ = {isa = PBXBuildFile; productRef = C9A749922378528F0046E924 /* Events */; };
-		C9A74996237852AB0046E924 /* CombinableUI in Frameworks */ = {isa = PBXBuildFile; productRef = C9A74995237852AB0046E924 /* CombinableUI */; };
-		C9A74998237852AB0046E924 /* Combinable in Frameworks */ = {isa = PBXBuildFile; productRef = C9A74997237852AB0046E924 /* Combinable */; };
-		C9A7499B237852BD0046E924 /* UserActions in Frameworks */ = {isa = PBXBuildFile; productRef = C9A7499A237852BD0046E924 /* UserActions */; };
-		C9A7499E237853300046E924 /* Apollo in Frameworks */ = {isa = PBXBuildFile; productRef = C9A7499D237853300046E924 /* Apollo */; };
-		C9A749A0237853300046E924 /* ApolloSQLite in Frameworks */ = {isa = PBXBuildFile; productRef = C9A7499F237853300046E924 /* ApolloSQLite */; };
-		C9A749A7237854F00046E924 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749A5237854F00046E924 /* API.swift */; };
-		C9A749AB237856D00046E924 /* ApolloClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749AA237856D00046E924 /* ApolloClient.swift */; };
-		C9A749B12378AFB40046E924 /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A749AF2378AFB40046E924 /* Auth0.framework */; };
-		C9A749B22378AFB40046E924 /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9A749B02378AFB40046E924 /* SimpleKeychain.framework */; };
-		C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */; };
-		C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */; };
-		C9A749C1237907DF0046E924 /* LoginAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749C0237907DF0046E924 /* LoginAction.swift */; };
-		C9A749C323790D710046E924 /* LogoutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749C223790D710046E924 /* LogoutAction.swift */; };
-		C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749C5237911810046E924 /* TweetsViewModel.swift */; };
-		C9A749C82379CEA90046E924 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749C72379CEA90046E924 /* ViewModel.swift */; };
-		C9A749CB2379D1260046E924 /* TweetCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749CA2379D1260046E924 /* TweetCellViewModel.swift */; };
-		C9A749CD2379D3450046E924 /* TweetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749CC2379D3450046E924 /* TweetsViewController.swift */; };
-		C9A749CF2379D7400046E924 /* TweetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749CE2379D7400046E924 /* TweetCell.swift */; };
-		C9A749D1237A02A60046E924 /* ApplyingChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749D0237A02A60046E924 /* ApplyingChanges.swift */; };
-		C9A749D3237A03CF0046E924 /* Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749D2237A03CF0046E924 /* Tweet.swift */; };
-		C9A749D6237A091E0046E924 /* CancelTweetAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749D5237A091E0046E924 /* CancelTweetAction.swift */; };
-		C9A749D8237A0B410046E924 /* EventKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A749D7237A0B410046E924 /* EventKeys.swift */; };
 		C9C34762246E2C48004027DE /* EnvironmentSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34761246E2C48004027DE /* EnvironmentSection.swift */; };
 		C9C34764246FBB9D004027DE /* ViewTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34763246FBB9D004027DE /* ViewTweet.swift */; };
 		C9C34766246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34765246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift */; };
@@ -135,7 +66,9 @@
 		C9C34780247108EF004027DE /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477F247108EF004027DE /* TextView.swift */; };
 		C9C347832471FA9D004027DE /* Relay in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347822471FA9D004027DE /* Relay */; };
 		C9C347852471FA9D004027DE /* RelaySwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347842471FA9D004027DE /* RelaySwiftUI */; };
-		C9DC5E78247617F100FF31BC /* LinkLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9DC5E77247617F100FF31BC /* LinkLabel.swift */; };
+		C9DC5E7C2476340700FF31BC /* JWTDecode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E792476340700FF31BC /* JWTDecode.framework */; };
+		C9DC5E7D2476340700FF31BC /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7A2476340700FF31BC /* Auth0.framework */; };
+		C9DC5E7E2476340700FF31BC /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -146,40 +79,11 @@
 			remoteGlobalIDString = C95AD84E24687B2C00691417;
 			remoteInfo = CourierNext;
 		};
-		C9A74983237852450046E924 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C9A74962237852430046E924 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C9A74969237852430046E924;
-			remoteInfo = Courier;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		C9159852247229AE00E7FE03 /* Relay.swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Relay.swift; path = ../../../Relay.swift; sourceTree = "<group>"; };
-		C95009C92385026100A36E64 /* ViewLinkAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewLinkAction.swift; sourceTree = "<group>"; };
-		C95009CB2385039700A36E64 /* TweetActionCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetActionCellViewModel.swift; sourceTree = "<group>"; };
-		C95009CD238506F300A36E64 /* TweetActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetActionCell.swift; sourceTree = "<group>"; };
-		C95009D12386188900A36E64 /* UserDefault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefault.swift; sourceTree = "<group>"; };
-		C95009D323861E0400A36E64 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
-		C95009D523861EA700A36E64 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		C95009D82386204F00A36E64 /* EnvironmentCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentCellViewModel.swift; sourceTree = "<group>"; };
-		C95009DA2386229B00A36E64 /* EnvironmentCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentCell.swift; sourceTree = "<group>"; };
-		C95009DD2386287500A36E64 /* ShowSettingsAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowSettingsAction.swift; sourceTree = "<group>"; };
-		C95009DF2386651100A36E64 /* MutationUserAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutationUserAction.swift; sourceTree = "<group>"; };
-		C95009E1238793A400A36E64 /* ContentStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentStateView.swift; sourceTree = "<group>"; };
-		C95009E323879F7F00A36E64 /* TweetTimestampCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTimestampCellViewModel.swift; sourceTree = "<group>"; };
-		C95009E52387A2EA00A36E64 /* TweetTimestampCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetTimestampCell.swift; sourceTree = "<group>"; };
-		C95009E72388F52900A36E64 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
-		C95009E92389925200A36E64 /* User.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = User.graphql; sourceTree = "<group>"; tabWidth = 2; };
-		C95009EB2389A42300A36E64 /* UserCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCellViewModel.swift; sourceTree = "<group>"; };
-		C95009ED2389A9CB00A36E64 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
-		C95009EF2389AB5200A36E64 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
-		C95009F12389AF4200A36E64 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
-		C95009F52389B60000A36E64 /* SettingsActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsActionCell.swift; sourceTree = "<group>"; };
-		C95009F72389ECB100A36E64 /* All.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = All.swift; sourceTree = "<group>"; };
-		C95009F92389F7E100A36E64 /* ImageGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGridView.swift; sourceTree = "<group>"; };
-		C95AD84F24687B2C00691417 /* CourierNext.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CourierNext.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C95AD84F24687B2C00691417 /* Courier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Courier.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C95AD85124687B2C00691417 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C95AD85324687B2C00691417 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		C95AD85524687B2C00691417 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -187,8 +91,8 @@
 		C95AD85A24687B2D00691417 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C95AD85D24687B2D00691417 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C95AD85F24687B2D00691417 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C95AD86424687B2D00691417 /* CourierNextTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CourierNextTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C95AD86824687B2D00691417 /* CourierNextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourierNextTests.swift; sourceTree = "<group>"; };
+		C95AD86424687B2D00691417 /* CourierTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CourierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C95AD86824687B2D00691417 /* CourierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourierTests.swift; sourceTree = "<group>"; };
 		C95AD86A24687B2D00691417 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C95AD87724687CB700691417 /* relay.config.js */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.javascript; path = relay.config.js; sourceTree = "<group>"; tabWidth = 2; };
 		C95AD87924687DD700691417 /* TweetsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetsScreen.swift; sourceTree = "<group>"; };
@@ -208,11 +112,6 @@
 		C95AD8A1246A44EB00691417 /* DetailedTweetRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedTweetRow.swift; sourceTree = "<group>"; };
 		C95AD8A3246A458C00691417 /* DetailedTweetList_tweetGroup.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedTweetList_tweetGroup.graphql.swift; sourceTree = "<group>"; };
 		C95AD8A4246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailedTweetRow_tweet.graphql.swift; sourceTree = "<group>"; };
-		C95C6F6423808190006063A2 /* Courier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier.entitlements; sourceTree = "<group>"; };
-		C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterDeviceAction.swift; sourceTree = "<group>"; };
-		C95C6F672381FD10006063A2 /* Notifications.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Notifications.graphql; sourceTree = "<group>"; tabWidth = 2; };
-		C95C6F6C238243F7006063A2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		C95C6F702383BCB9006063A2 /* NotificationCategories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCategories.swift; sourceTree = "<group>"; };
 		C96F4CC4246A4CED0096B5ED /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		C96F4CC6246A509E0096B5ED /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
 		C96F4CC8246A573E0096B5ED /* AsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImage.swift; sourceTree = "<group>"; };
@@ -234,47 +133,6 @@
 		C96F4CEA246D129F0096B5ED /* PostTweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTweet.swift; sourceTree = "<group>"; };
 		C96F4CEC246D12CC0096B5ED /* PostTweetMutation.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostTweetMutation.graphql.swift; sourceTree = "<group>"; };
 		C96F4CEE246E19F50096B5ED /* WithCurrentEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithCurrentEndpoint.swift; sourceTree = "<group>"; };
-		C972326B2401EEA800C400EA /* Beams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Beams.swift; sourceTree = "<group>"; };
-		C9A36B6E237BAED30069EED1 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
-		C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UncancelTweetAction.swift; sourceTree = "<group>"; };
-		C9A36B73237BC2DE0069EED1 /* TweetDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetDetailViewModel.swift; sourceTree = "<group>"; };
-		C9A36B75237BC4070069EED1 /* TweetDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetDetailViewController.swift; sourceTree = "<group>"; };
-		C9A36B78237BC61C0069EED1 /* SplitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewModel.swift; sourceTree = "<group>"; };
-		C9A36B7A237BC6240069EED1 /* SplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewController.swift; sourceTree = "<group>"; };
-		C9A671B3237D1FDE00EEE913 /* TweetBodyCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetBodyCellViewModel.swift; sourceTree = "<group>"; };
-		C9A671B5237D220900EEE913 /* TweetBodyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetBodyCell.swift; sourceTree = "<group>"; };
-		C9A671B7237E3EDB00EEE913 /* PostTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTweetAction.swift; sourceTree = "<group>"; };
-		C9A671B9237E4EA100EEE913 /* ControlEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlEvent.swift; sourceTree = "<group>"; };
-		C9A671BB237E539200EEE913 /* SegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControl.swift; sourceTree = "<group>"; };
-		C9A671BD237E564D00EEE913 /* SaveTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveTweetAction.swift; sourceTree = "<group>"; };
-		C9A7496A237852430046E924 /* Courier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Courier.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9A7496D237852430046E924 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		C9A7496F237852430046E924 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		C9A74978237852450046E924 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		C9A7497B237852450046E924 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		C9A7497D237852450046E924 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C9A74982237852450046E924 /* CourierTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CourierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C9A74986237852450046E924 /* CourierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CourierTests.swift; sourceTree = "<group>"; };
-		C9A74988237852450046E924 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C9A749A3237853D40046E924 /* Tweets.graphql */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = text; path = Tweets.graphql; sourceTree = "<group>"; tabWidth = 2; };
-		C9A749A5237854F00046E924 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
-		C9A749A6237854F00046E924 /* schema.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = schema.json; sourceTree = "<group>"; };
-		C9A749AA237856D00046E924 /* ApolloClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApolloClient.swift; sourceTree = "<group>"; };
-		C9A749AF2378AFB40046E924 /* Auth0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Auth0.framework; path = Carthage/Build/iOS/Auth0.framework; sourceTree = SOURCE_ROOT; };
-		C9A749B02378AFB40046E924 /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = SOURCE_ROOT; };
-		C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApolloClientDelegate.swift; sourceTree = "<group>"; };
-		C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManager.swift; sourceTree = "<group>"; };
-		C9A749C0237907DF0046E924 /* LoginAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginAction.swift; sourceTree = "<group>"; };
-		C9A749C223790D710046E924 /* LogoutAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutAction.swift; sourceTree = "<group>"; };
-		C9A749C5237911810046E924 /* TweetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetsViewModel.swift; sourceTree = "<group>"; };
-		C9A749C72379CEA90046E924 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
-		C9A749CA2379D1260046E924 /* TweetCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetCellViewModel.swift; sourceTree = "<group>"; };
-		C9A749CC2379D3450046E924 /* TweetsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetsViewController.swift; sourceTree = "<group>"; };
-		C9A749CE2379D7400046E924 /* TweetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetCell.swift; sourceTree = "<group>"; };
-		C9A749D0237A02A60046E924 /* ApplyingChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplyingChanges.swift; sourceTree = "<group>"; };
-		C9A749D2237A03CF0046E924 /* Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tweet.swift; sourceTree = "<group>"; };
-		C9A749D5237A091E0046E924 /* CancelTweetAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelTweetAction.swift; sourceTree = "<group>"; };
-		C9A749D7237A0B410046E924 /* EventKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventKeys.swift; sourceTree = "<group>"; };
 		C9C34761246E2C48004027DE /* EnvironmentSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentSection.swift; sourceTree = "<group>"; };
 		C9C34763246FBB9D004027DE /* ViewTweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewTweet.swift; sourceTree = "<group>"; };
 		C9C34765246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewTweet_tweetGroup.graphql.swift; sourceTree = "<group>"; };
@@ -283,12 +141,14 @@
 		C9C3476F24706E89004027DE /* EditTweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTweet.swift; sourceTree = "<group>"; };
 		C9C3477124706EC0004027DE /* EditTweetForm_tweetGroup.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditTweetForm_tweetGroup.graphql.swift; sourceTree = "<group>"; };
 		C9C3477324706F34004027DE /* EditTweetMutation.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditTweetMutation.graphql.swift; sourceTree = "<group>"; };
-		C9C3477724708684004027DE /* CourierNext.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CourierNext.entitlements; sourceTree = "<group>"; };
+		C9C3477724708684004027DE /* Courier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier.entitlements; sourceTree = "<group>"; };
 		C9C3477824708A68004027DE /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		C9C3477B24708B80004027DE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C9C3477D24708D88004027DE /* NotificationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHandler.swift; sourceTree = "<group>"; };
 		C9C3477F247108EF004027DE /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
-		C9DC5E77247617F100FF31BC /* LinkLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkLabel.swift; sourceTree = "<group>"; };
+		C9DC5E792476340700FF31BC /* JWTDecode.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JWTDecode.framework; path = Carthage/Build/iOS/JWTDecode.framework; sourceTree = "<group>"; };
+		C9DC5E7A2476340700FF31BC /* Auth0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Auth0.framework; path = Carthage/Build/iOS/Auth0.framework; sourceTree = "<group>"; };
+		C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -296,11 +156,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C95AD87D2468826E00691417 /* Auth0.framework in Frameworks */,
+				C9DC5E7C2476340700FF31BC /* JWTDecode.framework in Frameworks */,
 				C9C347852471FA9D004027DE /* RelaySwiftUI in Frameworks */,
+				C9DC5E7E2476340700FF31BC /* SimpleKeychain.framework in Frameworks */,
 				C9C34776247081E6004027DE /* PushNotifications in Frameworks */,
 				C9C347832471FA9D004027DE /* Relay in Frameworks */,
-				C95AD8802468827D00691417 /* SimpleKeychain.framework in Frameworks */,
+				C9DC5E7D2476340700FF31BC /* Auth0.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,87 +172,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C9A74967237852430046E924 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C9A7499E237853300046E924 /* Apollo in Frameworks */,
-				C972326A2401ED6100C400EA /* PushNotifications in Frameworks */,
-				C9A749B12378AFB40046E924 /* Auth0.framework in Frameworks */,
-				C9A749B22378AFB40046E924 /* SimpleKeychain.framework in Frameworks */,
-				C9A74996237852AB0046E924 /* CombinableUI in Frameworks */,
-				C9A74998237852AB0046E924 /* Combinable in Frameworks */,
-				C9A749932378528F0046E924 /* Events in Frameworks */,
-				C9A7499B237852BD0046E924 /* UserActions in Frameworks */,
-				C9A749A0237853300046E924 /* ApolloSQLite in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C9A7497F237852450046E924 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C95009C52384F5E400A36E64 /* UI */ = {
+		C95AD85024687B2C00691417 /* Courier */ = {
 			isa = PBXGroup;
 			children = (
-				C9DC5E77247617F100FF31BC /* LinkLabel.swift */,
-				C95009E1238793A400A36E64 /* ContentStateView.swift */,
-				C95009EF2389AB5200A36E64 /* UIView.swift */,
-				C95009F92389F7E100A36E64 /* ImageGridView.swift */,
-			);
-			path = UI;
-			sourceTree = "<group>";
-		};
-		C95009C82385025500A36E64 /* Actions */ = {
-			isa = PBXGroup;
-			children = (
-				C95009C92385026100A36E64 /* ViewLinkAction.swift */,
-			);
-			path = Actions;
-			sourceTree = "<group>";
-		};
-		C95009D02386187500A36E64 /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				C95009DC2386283E00A36E64 /* Actions */,
-				C95009D72386204100A36E64 /* Cells */,
-				C95009D12386188900A36E64 /* UserDefault.swift */,
-				C95009D323861E0400A36E64 /* SettingsViewModel.swift */,
-				C95009D523861EA700A36E64 /* SettingsViewController.swift */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
-		C95009D72386204100A36E64 /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				C95009D82386204F00A36E64 /* EnvironmentCellViewModel.swift */,
-				C95009DA2386229B00A36E64 /* EnvironmentCell.swift */,
-				C95009EB2389A42300A36E64 /* UserCellViewModel.swift */,
-				C95009ED2389A9CB00A36E64 /* UserCell.swift */,
-				C95009F52389B60000A36E64 /* SettingsActionCell.swift */,
-			);
-			path = Cells;
-			sourceTree = "<group>";
-		};
-		C95009DC2386283E00A36E64 /* Actions */ = {
-			isa = PBXGroup;
-			children = (
-				C95009DD2386287500A36E64 /* ShowSettingsAction.swift */,
-			);
-			path = Actions;
-			sourceTree = "<group>";
-		};
-		C95AD85024687B2C00691417 /* CourierNext */ = {
-			isa = PBXGroup;
-			children = (
-				C9C3477724708684004027DE /* CourierNext.entitlements */,
+				C9C3477724708684004027DE /* Courier.entitlements */,
 				C95AD88924688EC900691417 /* __generated__ */,
 				C95AD883246886BB00691417 /* Endpoint.swift */,
 				C95AD890246895BE00691417 /* Environment.swift */,
@@ -412,7 +199,7 @@
 				C95AD87724687CB700691417 /* relay.config.js */,
 				C95AD898246A43DA00691417 /* schema.graphql */,
 			);
-			path = CourierNext;
+			path = Courier;
 			sourceTree = "<group>";
 		};
 		C95AD85924687B2D00691417 /* Preview Content */ = {
@@ -423,18 +210,21 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		C95AD86724687B2D00691417 /* CourierNextTests */ = {
+		C95AD86724687B2D00691417 /* CourierTests */ = {
 			isa = PBXGroup;
 			children = (
-				C95AD86824687B2D00691417 /* CourierNextTests.swift */,
+				C95AD86824687B2D00691417 /* CourierTests.swift */,
 				C95AD86A24687B2D00691417 /* Info.plist */,
 			);
-			path = CourierNextTests;
+			path = CourierTests;
 			sourceTree = "<group>";
 		};
 		C95AD87224687B9300691417 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C9DC5E7A2476340700FF31BC /* Auth0.framework */,
+				C9DC5E792476340700FF31BC /* JWTDecode.framework */,
+				C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -504,24 +294,6 @@
 			path = "Tweet Detail Screen";
 			sourceTree = "<group>";
 		};
-		C95C6F6E2383BC9B006063A2 /* Notifications */ = {
-			isa = PBXGroup;
-			children = (
-				C95C6F6F2383BCA6006063A2 /* Actions */,
-				C95C6F702383BCB9006063A2 /* NotificationCategories.swift */,
-				C972326B2401EEA800C400EA /* Beams.swift */,
-			);
-			path = Notifications;
-			sourceTree = "<group>";
-		};
-		C95C6F6F2383BCA6006063A2 /* Actions */ = {
-			isa = PBXGroup;
-			children = (
-				C95C6F652381F65D006063A2 /* RegisterDeviceAction.swift */,
-			);
-			path = Actions;
-			sourceTree = "<group>";
-		};
 		C96F4CD0246A63410096B5ED /* Settings Screen */ = {
 			isa = PBXGroup;
 			children = (
@@ -544,47 +316,12 @@
 			path = Mutations;
 			sourceTree = "<group>";
 		};
-		C9A36B72237BC2CF0069EED1 /* Tweet Detail */ = {
-			isa = PBXGroup;
-			children = (
-				C95009C82385025500A36E64 /* Actions */,
-				C9A671B2237D1FB200EEE913 /* Cells */,
-				C9A36B73237BC2DE0069EED1 /* TweetDetailViewModel.swift */,
-				C9A36B75237BC4070069EED1 /* TweetDetailViewController.swift */,
-			);
-			path = "Tweet Detail";
-			sourceTree = "<group>";
-		};
-		C9A36B77237BC60D0069EED1 /* Split View */ = {
-			isa = PBXGroup;
-			children = (
-				C9A36B78237BC61C0069EED1 /* SplitViewModel.swift */,
-				C9A36B7A237BC6240069EED1 /* SplitViewController.swift */,
-			);
-			path = "Split View";
-			sourceTree = "<group>";
-		};
-		C9A671B2237D1FB200EEE913 /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				C95009CB2385039700A36E64 /* TweetActionCellViewModel.swift */,
-				C95009CD238506F300A36E64 /* TweetActionCell.swift */,
-				C9A671B3237D1FDE00EEE913 /* TweetBodyCellViewModel.swift */,
-				C9A671B5237D220900EEE913 /* TweetBodyCell.swift */,
-				C95009E323879F7F00A36E64 /* TweetTimestampCellViewModel.swift */,
-				C95009E52387A2EA00A36E64 /* TweetTimestampCell.swift */,
-			);
-			path = Cells;
-			sourceTree = "<group>";
-		};
 		C9A74961237852430046E924 = {
 			isa = PBXGroup;
 			children = (
 				C9159852247229AE00E7FE03 /* Relay.swift */,
-				C9A7496C237852430046E924 /* Courier */,
-				C9A74985237852450046E924 /* CourierTests */,
-				C95AD85024687B2C00691417 /* CourierNext */,
-				C95AD86724687B2D00691417 /* CourierNextTests */,
+				C95AD85024687B2C00691417 /* Courier */,
+				C95AD86724687B2D00691417 /* CourierTests */,
 				C9A7496B237852430046E924 /* Products */,
 				C95AD87224687B9300691417 /* Frameworks */,
 			);
@@ -593,151 +330,18 @@
 		C9A7496B237852430046E924 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C9A7496A237852430046E924 /* Courier.app */,
-				C9A74982237852450046E924 /* CourierTests.xctest */,
-				C95AD84F24687B2C00691417 /* CourierNext.app */,
-				C95AD86424687B2D00691417 /* CourierNextTests.xctest */,
+				C95AD84F24687B2C00691417 /* Courier.app */,
+				C95AD86424687B2D00691417 /* CourierTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		C9A7496C237852430046E924 /* Courier */ = {
-			isa = PBXGroup;
-			children = (
-				C95C6F6423808190006063A2 /* Courier.entitlements */,
-				C95009C52384F5E400A36E64 /* UI */,
-				C9A749B92378BB900046E924 /* API */,
-				C9A749A9237856C40046E924 /* Combine */,
-				C9A749A2237853B70046E924 /* Queries */,
-				C95C6F6E2383BC9B006063A2 /* Notifications */,
-				C9A749BE237907BC0046E924 /* Login */,
-				C9A36B77237BC60D0069EED1 /* Split View */,
-				C9A749C4237911670046E924 /* Tweets */,
-				C9A36B72237BC2CF0069EED1 /* Tweet Detail */,
-				C95009D02386187500A36E64 /* Settings */,
-				C9A7496D237852430046E924 /* AppDelegate.swift */,
-				C9A7496F237852430046E924 /* SceneDelegate.swift */,
-				C9A749C72379CEA90046E924 /* ViewModel.swift */,
-				C9A749D7237A0B410046E924 /* EventKeys.swift */,
-				C9A74978237852450046E924 /* Assets.xcassets */,
-				C9A7497A237852450046E924 /* LaunchScreen.storyboard */,
-				C9A7497D237852450046E924 /* Info.plist */,
-				C95C6F6D238243F7006063A2 /* Localizable.strings */,
-				C9A749A5237854F00046E924 /* API.swift */,
-				C9A749A6237854F00046E924 /* schema.json */,
-				C9A749AE2378AFA80046E924 /* Frameworks */,
-			);
-			path = Courier;
-			sourceTree = "<group>";
-		};
-		C9A74985237852450046E924 /* CourierTests */ = {
-			isa = PBXGroup;
-			children = (
-				C9A74986237852450046E924 /* CourierTests.swift */,
-				C9A74988237852450046E924 /* Info.plist */,
-			);
-			path = CourierTests;
-			sourceTree = "<group>";
-		};
-		C9A749A2237853B70046E924 /* Queries */ = {
-			isa = PBXGroup;
-			children = (
-				C95C6F672381FD10006063A2 /* Notifications.graphql */,
-				C9A749A3237853D40046E924 /* Tweets.graphql */,
-				C95009E92389925200A36E64 /* User.graphql */,
-			);
-			path = Queries;
-			sourceTree = "<group>";
-		};
-		C9A749A9237856C40046E924 /* Combine */ = {
-			isa = PBXGroup;
-			children = (
-				C9A749AA237856D00046E924 /* ApolloClient.swift */,
-				C9A749D0237A02A60046E924 /* ApplyingChanges.swift */,
-				C9A671B9237E4EA100EEE913 /* ControlEvent.swift */,
-				C9A671BB237E539200EEE913 /* SegmentedControl.swift */,
-				C95009F12389AF4200A36E64 /* UIImage.swift */,
-				C95009F72389ECB100A36E64 /* All.swift */,
-			);
-			path = Combine;
-			sourceTree = "<group>";
-		};
-		C9A749AE2378AFA80046E924 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				C9A749AF2378AFB40046E924 /* Auth0.framework */,
-				C9A749B02378AFB40046E924 /* SimpleKeychain.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		C9A749B92378BB900046E924 /* API */ = {
-			isa = PBXGroup;
-			children = (
-				C9A749BA2378BBFC0046E924 /* ApolloClientDelegate.swift */,
-				C9A749BC2378BF4A0046E924 /* CredentialsManager.swift */,
-				C9A36B6E237BAED30069EED1 /* Endpoint.swift */,
-				C9A749D2237A03CF0046E924 /* Tweet.swift */,
-				C95009E72388F52900A36E64 /* Store.swift */,
-				C95009DF2386651100A36E64 /* MutationUserAction.swift */,
-			);
-			path = API;
-			sourceTree = "<group>";
-		};
-		C9A749BE237907BC0046E924 /* Login */ = {
-			isa = PBXGroup;
-			children = (
-				C9A749BF237907CD0046E924 /* Actions */,
-			);
-			path = Login;
-			sourceTree = "<group>";
-		};
-		C9A749BF237907CD0046E924 /* Actions */ = {
-			isa = PBXGroup;
-			children = (
-				C9A749C0237907DF0046E924 /* LoginAction.swift */,
-				C9A749C223790D710046E924 /* LogoutAction.swift */,
-			);
-			path = Actions;
-			sourceTree = "<group>";
-		};
-		C9A749C4237911670046E924 /* Tweets */ = {
-			isa = PBXGroup;
-			children = (
-				C9A749D4237A08F50046E924 /* Actions */,
-				C9A749C92379D11A0046E924 /* Cells */,
-				C9A749C5237911810046E924 /* TweetsViewModel.swift */,
-				C9A749CC2379D3450046E924 /* TweetsViewController.swift */,
-			);
-			path = Tweets;
-			sourceTree = "<group>";
-		};
-		C9A749C92379D11A0046E924 /* Cells */ = {
-			isa = PBXGroup;
-			children = (
-				C9A749CA2379D1260046E924 /* TweetCellViewModel.swift */,
-				C9A749CE2379D7400046E924 /* TweetCell.swift */,
-			);
-			path = Cells;
-			sourceTree = "<group>";
-		};
-		C9A749D4237A08F50046E924 /* Actions */ = {
-			isa = PBXGroup;
-			children = (
-				C9A749D5237A091E0046E924 /* CancelTweetAction.swift */,
-				C9A671B7237E3EDB00EEE913 /* PostTweetAction.swift */,
-				C9A671BD237E564D00EEE913 /* SaveTweetAction.swift */,
-				C9A36B70237BC0380069EED1 /* UncancelTweetAction.swift */,
-			);
-			path = Actions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C95AD84E24687B2C00691417 /* CourierNext */ = {
+		C95AD84E24687B2C00691417 /* Courier */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C95AD86F24687B2D00691417 /* Build configuration list for PBXNativeTarget "CourierNext" */;
+			buildConfigurationList = C95AD86F24687B2D00691417 /* Build configuration list for PBXNativeTarget "Courier" */;
 			buildPhases = (
 				C95AD84B24687B2C00691417 /* Sources */,
 				C95AD84C24687B2C00691417 /* Frameworks */,
@@ -748,19 +352,19 @@
 			);
 			dependencies = (
 			);
-			name = CourierNext;
+			name = Courier;
 			packageProductDependencies = (
 				C9C34775247081E6004027DE /* PushNotifications */,
 				C9C347822471FA9D004027DE /* Relay */,
 				C9C347842471FA9D004027DE /* RelaySwiftUI */,
 			);
 			productName = CourierNext;
-			productReference = C95AD84F24687B2C00691417 /* CourierNext.app */;
+			productReference = C95AD84F24687B2C00691417 /* Courier.app */;
 			productType = "com.apple.product-type.application";
 		};
-		C95AD86324687B2D00691417 /* CourierNextTests */ = {
+		C95AD86324687B2D00691417 /* CourierTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C95AD87024687B2D00691417 /* Build configuration list for PBXNativeTarget "CourierNextTests" */;
+			buildConfigurationList = C95AD87024687B2D00691417 /* Build configuration list for PBXNativeTarget "CourierTests" */;
 			buildPhases = (
 				C95AD86024687B2D00691417 /* Sources */,
 				C95AD86124687B2D00691417 /* Frameworks */,
@@ -771,55 +375,9 @@
 			dependencies = (
 				C95AD86624687B2D00691417 /* PBXTargetDependency */,
 			);
-			name = CourierNextTests;
-			productName = CourierNextTests;
-			productReference = C95AD86424687B2D00691417 /* CourierNextTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		C9A74969237852430046E924 /* Courier */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C9A7498B237852450046E924 /* Build configuration list for PBXNativeTarget "Courier" */;
-			buildPhases = (
-				C9A749A12378538C0046E924 /* Generate Apollo GraphQL API */,
-				C9A74966237852430046E924 /* Sources */,
-				C9A74967237852430046E924 /* Frameworks */,
-				C9A74968237852430046E924 /* Resources */,
-				C9A749B32378B0060046E924 /* Copy Carthage Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = Courier;
-			packageProductDependencies = (
-				C9A749922378528F0046E924 /* Events */,
-				C9A74995237852AB0046E924 /* CombinableUI */,
-				C9A74997237852AB0046E924 /* Combinable */,
-				C9A7499A237852BD0046E924 /* UserActions */,
-				C9A7499D237853300046E924 /* Apollo */,
-				C9A7499F237853300046E924 /* ApolloSQLite */,
-				C97232692401ED6100C400EA /* PushNotifications */,
-			);
-			productName = Courier;
-			productReference = C9A7496A237852430046E924 /* Courier.app */;
-			productType = "com.apple.product-type.application";
-		};
-		C9A74981237852450046E924 /* CourierTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C9A7498E237852450046E924 /* Build configuration list for PBXNativeTarget "CourierTests" */;
-			buildPhases = (
-				C9A7497E237852450046E924 /* Sources */,
-				C9A7497F237852450046E924 /* Frameworks */,
-				C9A74980237852450046E924 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C9A74984237852450046E924 /* PBXTargetDependency */,
-			);
 			name = CourierTests;
-			productName = CourierTests;
-			productReference = C9A74982237852450046E924 /* CourierTests.xctest */;
+			productName = CourierNextTests;
+			productReference = C95AD86424687B2D00691417 /* CourierTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -839,13 +397,6 @@
 						CreatedOnToolsVersion = 11.4.1;
 						TestTargetID = C95AD84E24687B2C00691417;
 					};
-					C9A74969237852430046E924 = {
-						CreatedOnToolsVersion = 11.2;
-					};
-					C9A74981237852450046E924 = {
-						CreatedOnToolsVersion = 11.2;
-						TestTargetID = C9A74969237852430046E924;
-					};
 				};
 			};
 			buildConfigurationList = C9A74965237852430046E924 /* Build configuration list for PBXProject "Courier" */;
@@ -858,10 +409,6 @@
 			);
 			mainGroup = C9A74961237852430046E924;
 			packageReferences = (
-				C9A749912378528F0046E924 /* XCRemoteSwiftPackageReference "Events" */,
-				C9A74994237852AB0046E924 /* XCRemoteSwiftPackageReference "Combinable" */,
-				C9A74999237852BD0046E924 /* XCRemoteSwiftPackageReference "UserActions" */,
-				C9A7499C237853300046E924 /* XCRemoteSwiftPackageReference "apollo-ios" */,
 				C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */,
 				C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */,
 			);
@@ -869,10 +416,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C9A74969237852430046E924 /* Courier */,
-				C9A74981237852450046E924 /* CourierTests */,
-				C95AD84E24687B2C00691417 /* CourierNext */,
-				C95AD86324687B2D00691417 /* CourierNextTests */,
+				C95AD84E24687B2C00691417 /* Courier */,
+				C95AD86324687B2D00691417 /* CourierTests */,
 			);
 		};
 /* End PBXProject section */
@@ -891,24 +436,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C95AD86224687B2D00691417 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C9A74968237852430046E924 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C95009EA2389925200A36E64 /* User.graphql in Resources */,
-				C9A7497C237852450046E924 /* LaunchScreen.storyboard in Resources */,
-				C95C6F6B238243F7006063A2 /* Localizable.strings in Resources */,
-				C9A74979237852450046E924 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C9A74980237852450046E924 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -937,49 +464,6 @@
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Auth0.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SimpleKeychain.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/JWTDecode.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
-		C9A749A12378538C0046E924 /* Generate Apollo GraphQL API */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Courier/Queries/Tweets.graphql",
-				"$(SRCROOT)/Courier/Queries/Notifications.graphql",
-				"$(SRCROOT)/Courier/Queries/User.graphql",
-			);
-			name = "Generate Apollo GraphQL API";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(SRCROOT)/Courier/API.swift",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Go to the build root and search up the chain to find the Derived Data Path where the source packages are checked out.\nDERIVED_DATA_CANDIDATE=\"${BUILD_ROOT}\"\n\nwhile ! [ -d \"${DERIVED_DATA_CANDIDATE}/SourcePackages\" ]; do\n  if [ \"${DERIVED_DATA_CANDIDATE}\" = / ]; then\n    echo >&2 \"error: Unable to locate SourcePackages directory from BUILD_ROOT: '${BUILD_ROOT}'\"\n    exit 1\n  fi\n\n  DERIVED_DATA_CANDIDATE=\"$(dirname \"${DERIVED_DATA_CANDIDATE}\")\"\ndone\n\n# Grab a reference to the directory where scripts are checked out\nSCRIPT_PATH=\"${DERIVED_DATA_CANDIDATE}/SourcePackages/checkouts/apollo-ios/scripts\"\n\nif [ -z \"${SCRIPT_PATH}\" ]; then\n    echo >&2 \"error: Couldn't find the CLI script in your checked out SPM packages; make sure to add the framework to your project.\"\n    exit 1\nfi\n\ncd \"${SRCROOT}/${TARGET_NAME}\"\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh schema:download --endpoint=https://us-central1-courier-staging-267902.cloudfunctions.net/graphql schema.json\n\"${SCRIPT_PATH}\"/run-bundled-codegen.sh codegen:generate --target=swift --includes=./**/*.graphql --localSchemaFile=\"schema.json\" API.swift\n";
-		};
-		C9A749B32378B0060046E924 /* Copy Carthage Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Auth0.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/SimpleKeychain.framework",
-			);
-			name = "Copy Carthage Frameworks";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Alamofire.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1049,76 +533,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C95AD86924687B2D00691417 /* CourierNextTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C9A74966237852430046E924 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C95009CC2385039700A36E64 /* TweetActionCellViewModel.swift in Sources */,
-				C95009F22389AF4200A36E64 /* UIImage.swift in Sources */,
-				C9A36B76237BC4070069EED1 /* TweetDetailViewController.swift in Sources */,
-				C9A7496E237852430046E924 /* AppDelegate.swift in Sources */,
-				C95009F02389AB5200A36E64 /* UIView.swift in Sources */,
-				C9A671BC237E539200EEE913 /* SegmentedControl.swift in Sources */,
-				C9A36B71237BC0380069EED1 /* UncancelTweetAction.swift in Sources */,
-				C95009E82388F52900A36E64 /* Store.swift in Sources */,
-				C95009D623861EA700A36E64 /* SettingsViewController.swift in Sources */,
-				C9A749C323790D710046E924 /* LogoutAction.swift in Sources */,
-				C95009EE2389A9CB00A36E64 /* UserCell.swift in Sources */,
-				C9A749BB2378BBFC0046E924 /* ApolloClientDelegate.swift in Sources */,
-				C9A671B8237E3EDB00EEE913 /* PostTweetAction.swift in Sources */,
-				C9A671BA237E4EA100EEE913 /* ControlEvent.swift in Sources */,
-				C95009E62387A2EA00A36E64 /* TweetTimestampCell.swift in Sources */,
-				C9A749C1237907DF0046E924 /* LoginAction.swift in Sources */,
-				C9A749CD2379D3450046E924 /* TweetsViewController.swift in Sources */,
-				C95009CA2385026100A36E64 /* ViewLinkAction.swift in Sources */,
-				C9A749D3237A03CF0046E924 /* Tweet.swift in Sources */,
-				C95009D423861E0400A36E64 /* SettingsViewModel.swift in Sources */,
-				C9A74970237852430046E924 /* SceneDelegate.swift in Sources */,
-				C95009F82389ECB100A36E64 /* All.swift in Sources */,
-				C9A749D1237A02A60046E924 /* ApplyingChanges.swift in Sources */,
-				C9A36B7B237BC6240069EED1 /* SplitViewController.swift in Sources */,
-				C95009D92386204F00A36E64 /* EnvironmentCellViewModel.swift in Sources */,
-				C95009EC2389A42300A36E64 /* UserCellViewModel.swift in Sources */,
-				C95C6F662381F65D006063A2 /* RegisterDeviceAction.swift in Sources */,
-				C95009E2238793A400A36E64 /* ContentStateView.swift in Sources */,
-				C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */,
-				C95009DE2386287500A36E64 /* ShowSettingsAction.swift in Sources */,
-				C9DC5E78247617F100FF31BC /* LinkLabel.swift in Sources */,
-				C9A671B4237D1FDE00EEE913 /* TweetBodyCellViewModel.swift in Sources */,
-				C9A749D6237A091E0046E924 /* CancelTweetAction.swift in Sources */,
-				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
-				C95009F62389B60000A36E64 /* SettingsActionCell.swift in Sources */,
-				C95C6F712383BCB9006063A2 /* NotificationCategories.swift in Sources */,
-				C9A36B79237BC61C0069EED1 /* SplitViewModel.swift in Sources */,
-				C972326C2401EEA800C400EA /* Beams.swift in Sources */,
-				C9A749AB237856D00046E924 /* ApolloClient.swift in Sources */,
-				C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */,
-				C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */,
-				C95009DB2386229B00A36E64 /* EnvironmentCell.swift in Sources */,
-				C9A749CB2379D1260046E924 /* TweetCellViewModel.swift in Sources */,
-				C9A671B6237D220900EEE913 /* TweetBodyCell.swift in Sources */,
-				C9A749CF2379D7400046E924 /* TweetCell.swift in Sources */,
-				C95009E02386651100A36E64 /* MutationUserAction.swift in Sources */,
-				C9A749C82379CEA90046E924 /* ViewModel.swift in Sources */,
-				C95009CE238506F300A36E64 /* TweetActionCell.swift in Sources */,
-				C95009FA2389F7E100A36E64 /* ImageGridView.swift in Sources */,
-				C95009D22386188900A36E64 /* UserDefault.swift in Sources */,
-				C9A671BE237E564D00EEE913 /* SaveTweetAction.swift in Sources */,
-				C9A749A7237854F00046E924 /* API.swift in Sources */,
-				C9A749D8237A0B410046E924 /* EventKeys.swift in Sources */,
-				C95009E423879F7F00A36E64 /* TweetTimestampCellViewModel.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C9A7497E237852450046E924 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C9A74987237852450046E924 /* CourierTests.swift in Sources */,
+				C95AD86924687B2D00691417 /* CourierTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1127,13 +542,8 @@
 /* Begin PBXTargetDependency section */
 		C95AD86624687B2D00691417 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = C95AD84E24687B2C00691417 /* CourierNext */;
+			target = C95AD84E24687B2C00691417 /* Courier */;
 			targetProxy = C95AD86524687B2D00691417 /* PBXContainerItemProxy */;
-		};
-		C9A74984237852450046E924 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C9A74969237852430046E924 /* Courier */;
-			targetProxy = C9A74983237852450046E924 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1142,22 +552,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				C95AD85D24687B2D00691417 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-		C95C6F6D238243F7006063A2 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C95C6F6C238243F7006063A2 /* en */,
-			);
-			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		C9A7497A237852450046E924 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C9A7497B237852450046E924 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -1177,16 +571,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = CourierNext/CourierNext.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Courier/Courier.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"CourierNext/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Courier/Preview Content\"";
 				DEVELOPMENT_TEAM = PE8BN56Z28;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = CourierNext/Info.plist;
+				INFOPLIST_FILE = Courier/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1203,16 +597,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = CourierNext/CourierNext.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Courier/Courier.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"CourierNext/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Courier/Preview Content\"";
 				DEVELOPMENT_TEAM = PE8BN56Z28;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = CourierNext/Info.plist;
+				INFOPLIST_FILE = Courier/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1232,18 +626,18 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PE8BN56Z28;
-				INFOPLIST_FILE = CourierNextTests/Info.plist;
+				INFOPLIST_FILE = CourierTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.CourierNextTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.CourierTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CourierNext.app/CourierNext";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Courier.app/Courier";
 			};
 			name = Debug;
 		};
@@ -1254,18 +648,18 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PE8BN56Z28;
-				INFOPLIST_FILE = CourierNextTests/Info.plist;
+				INFOPLIST_FILE = CourierTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.CourierNextTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.CourierTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CourierNext.app/CourierNext";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Courier.app/Courier";
 			};
 			name = Release;
 		};
@@ -1383,100 +777,10 @@
 			};
 			name = Release;
 		};
-		C9A7498C237852450046E924 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Courier/Courier.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = PE8BN56Z28;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
-				INFOPLIST_FILE = Courier/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.Courier;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		C9A7498D237852450046E924 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Courier/Courier.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = PE8BN56Z28;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
-				);
-				INFOPLIST_FILE = Courier/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.Courier;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		C9A7498F237852450046E924 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = PE8BN56Z28;
-				INFOPLIST_FILE = CourierTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.CourierTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Courier.app/Courier";
-			};
-			name = Debug;
-		};
-		C9A74990237852450046E924 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = PE8BN56Z28;
-				INFOPLIST_FILE = CourierTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.CourierTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Courier.app/Courier";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C95AD86F24687B2D00691417 /* Build configuration list for PBXNativeTarget "CourierNext" */ = {
+		C95AD86F24687B2D00691417 /* Build configuration list for PBXNativeTarget "Courier" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C95AD86B24687B2D00691417 /* Debug */,
@@ -1485,7 +789,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C95AD87024687B2D00691417 /* Build configuration list for PBXNativeTarget "CourierNextTests" */ = {
+		C95AD87024687B2D00691417 /* Build configuration list for PBXNativeTarget "CourierTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C95AD86D24687B2D00691417 /* Debug */,
@@ -1503,24 +807,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C9A7498B237852450046E924 /* Build configuration list for PBXNativeTarget "Courier" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C9A7498C237852450046E924 /* Debug */,
-				C9A7498D237852450046E924 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		C9A7498E237852450046E924 /* Build configuration list for PBXNativeTarget "CourierTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C9A7498F237852450046E924 /* Debug */,
-				C9A74990237852450046E924 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -1530,38 +816,6 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 3.0.4;
-			};
-		};
-		C9A749912378528F0046E924 /* XCRemoteSwiftPackageReference "Events" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mjm/Events.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-		C9A74994237852AB0046E924 /* XCRemoteSwiftPackageReference "Combinable" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mjm/Combinable.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-		C9A74999237852BD0046E924 /* XCRemoteSwiftPackageReference "UserActions" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mjm/UserActions.git";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-		C9A7499C237853300046E924 /* XCRemoteSwiftPackageReference "apollo-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apollographql/apollo-ios.git";
-			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 0.19.0;
 			};
 		};
 		C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */ = {
@@ -1575,41 +829,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C97232692401ED6100C400EA /* PushNotifications */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */;
-			productName = PushNotifications;
-		};
-		C9A749922378528F0046E924 /* Events */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C9A749912378528F0046E924 /* XCRemoteSwiftPackageReference "Events" */;
-			productName = Events;
-		};
-		C9A74995237852AB0046E924 /* CombinableUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C9A74994237852AB0046E924 /* XCRemoteSwiftPackageReference "Combinable" */;
-			productName = CombinableUI;
-		};
-		C9A74997237852AB0046E924 /* Combinable */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C9A74994237852AB0046E924 /* XCRemoteSwiftPackageReference "Combinable" */;
-			productName = Combinable;
-		};
-		C9A7499A237852BD0046E924 /* UserActions */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C9A74999237852BD0046E924 /* XCRemoteSwiftPackageReference "UserActions" */;
-			productName = UserActions;
-		};
-		C9A7499D237853300046E924 /* Apollo */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C9A7499C237853300046E924 /* XCRemoteSwiftPackageReference "apollo-ios" */;
-			productName = Apollo;
-		};
-		C9A7499F237853300046E924 /* ApolloSQLite */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C9A7499C237853300046E924 /* XCRemoteSwiftPackageReference "apollo-ios" */;
-			productName = ApolloSQLite;
-		};
 		C9C34775247081E6004027DE /* PushNotifications */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */;

@@ -1,47 +1,23 @@
-//
-//  SceneDelegate.swift
-//  Courier
-//
-//  Created by Matt Moriarity on 11/10/19.
-//  Copyright © 2019 Matt Moriarity. All rights reserved.
-//
-
-import Apollo
-import Auth0
 import UIKit
-import UserActions
+import SwiftUI
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDelegate {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
-    let actionRunner = UserActions.Runner()
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let scene = scene as? UIWindowScene else { return }
+        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
+        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
+        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
 
-        let window = UIWindow(windowScene: scene)
+        // Create the SwiftUI view that provides the window contents.
+        let contentView = ContentView()
 
-        // create split view controller
-        let splitViewController = SplitViewController()
-        splitViewController.delegate = self
-
-        window.rootViewController = splitViewController
-        self.window = window
-        window.makeKeyAndVisible()
-        
-        actionRunner.perform(LoginAction())
-    }
-
-    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        for context in URLContexts {
-            if context.url.host?.contains("auth0.com") ?? false {
-                let options: [A0URLOptionsKey: Any] = [
-                    .sourceApplication: context.options.sourceApplication as Any,
-                    .annotation: context.options.annotation as Any,
-                    .openInPlace: context.options.openInPlace,
-                ]
-                _ = Auth0.resumeAuth(context.url, options: options)
-            }
+        // Use a UIHostingController as window root view controller.
+        if let windowScene = scene as? UIWindowScene {
+            let window = UIWindow(windowScene: windowScene)
+            window.rootViewController = UIHostingController(rootView: contentView)
+            self.window = window
+            window.makeKeyAndVisible()
         }
     }
 
@@ -73,17 +49,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDe
         // to restore the scene back to its current state.
     }
 
-    // MARK: - Split view
-
-    func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController:UIViewController) -> Bool {
-        guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
-        guard let topAsDetailController = secondaryAsNavController.topViewController as? TweetDetailViewController else { return false }
-        if case .loaded(nil) = topAsDetailController.viewModel.tweetState {
-            // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
-            return true
-        }
-        return false
-    }
 
 }
 
