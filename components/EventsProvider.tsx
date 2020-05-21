@@ -9,19 +9,22 @@ import { useAuth } from "components/AuthProvider"
 import { getToken } from "utils/auth0"
 
 const pusher = process.browser
-  ? new Pusher(process.env.PUSHER_KEY ?? "", {
-      cluster: process.env.PUSHER_CLUSTER,
+  ? new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY ?? "", {
+      cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
       forceTLS: true,
       authorizer(channel, _options) {
         async function authorize(socketId: string): Promise<AuthInfo> {
-          const response = await fetch(process.env.PUSHER_AUTH_URL ?? "", {
-            method: "POST",
-            body: `channel_name=${channel.name}&socket_id=${socketId}`,
-            headers: {
-              Authorization: `Bearer ${getToken(undefined, "accessToken")}`,
-              "Content-Type": "application/x-www-form-urlencoded",
-            },
-          })
+          const response = await fetch(
+            process.env.NEXT_PUBLIC_PUSHER_AUTH_URL ?? "",
+            {
+              method: "POST",
+              body: `channel_name=${channel.name}&socket_id=${socketId}`,
+              headers: {
+                Authorization: `Bearer ${getToken(undefined, "accessToken")}`,
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+            }
+          )
           return (await response.json()) as AuthData
         }
         return {

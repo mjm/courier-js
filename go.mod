@@ -15,7 +15,7 @@ require (
 	github.com/divan/gorilla-xmlrpc v0.0.0-20190926132722-f0686da74fda
 	github.com/dlclark/regexp2 v1.2.0
 	github.com/felixge/httpsnoop v1.0.1
-	github.com/golang/protobuf v1.3.5
+	github.com/golang/protobuf v1.4.0
 	github.com/google/go-containerregistry v0.0.0-20200425101607-48f605c3b60a // indirect
 	github.com/google/uuid v1.1.1
 	github.com/google/wire v0.4.0
@@ -46,6 +46,7 @@ require (
 	golang.org/x/text v0.3.2
 	google.golang.org/genproto v0.0.0-20200218151345-dad8c97a84f5 // indirect
 	google.golang.org/grpc v1.27.1
+	google.golang.org/protobuf v1.23.0
 	gopkg.in/auth0.v3 v3.0.3
 	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0
 	gopkg.in/yaml.v2 v2.2.8

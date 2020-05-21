@@ -23,7 +23,7 @@ const Graphql = dynamic<PlaygroundWrapperProps>(
 const PlaygroundPage: NextPage = () => {
   return (
     <Graphql
-      endpoint={process.env.GRAPHQL_URL}
+      endpoint={process.env.NEXT_PUBLIC_GRAPHQL_URL}
       settings={{
         "editor.cursorShape": "line", // possible values: 'line', 'block', 'underline'
         "editor.fontFamily": `'JetBrains Mono', 'Source Code Pro', 'Consolas', 'Inconsolata', 'Droid Sans Mono', 'Monaco', monospace`,

@@ -17,7 +17,7 @@ function makeFetchQuery(): FetchFunction {
     return () => new Promise(() => {})
   }
 
-  const url = apiUrl("/api/graphql")
+  const url = process.env.NEXT_PUBLIC_GRAPHQL_URL || ""
 
   return async (operation, variables) => {
     const token = getToken(undefined, "accessToken")
@@ -49,11 +49,4 @@ export function getEnvironment(): Environment {
     })
   }
   return relayEnvironment
-}
-
-function apiUrl(path: string): string {
-  if (process.env.GRAPHQL_URL) {
-    return process.env.GRAPHQL_URL
-  }
-  return path
 }

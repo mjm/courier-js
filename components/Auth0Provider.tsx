@@ -14,13 +14,13 @@ export const Auth0Provider = dynamic(
     if (process.browser) {
       const auth0 = await import("auth0-js")
       const client = new auth0.WebAuth({
-        clientID: process.env.CLIENT_ID || "",
-        domain: process.env.AUTH_DOMAIN || "",
+        clientID: process.env.NEXT_PUBLIC_CLIENT_ID || "",
+        domain: process.env.NEXT_PUBLIC_AUTH_DOMAIN || "",
         responseType: "token id_token",
         redirectUri: `${window.location.protocol}//${window.location.host}/logged-in`,
         scope:
           "openid profile email https://courier.blog/customer_id https://courier.blog/subscription_id",
-        audience: process.env.API_IDENTIFIER,
+        audience: process.env.NEXT_PUBLIC_API_IDENTIFIER,
       })
       return ({ children }) => (
         <Auth0Context.Provider value={new Auth0Helpers(client)}>

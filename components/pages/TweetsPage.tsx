@@ -52,7 +52,7 @@ const TweetsPage: NextPage = () => {
           {data?.upcoming && data?.past ? (
             <div className="flex flex-row flex-wrap -mx-4">
               <TweetList
-                description="You have some new tweets to review."
+                description="You do have some new tweets to review."
                 emptyDescription="You don't have any tweets to review."
                 tweets={data.upcoming}
               />

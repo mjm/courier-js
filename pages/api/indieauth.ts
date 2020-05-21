@@ -23,7 +23,7 @@ export default async (
   const data = req.cookies.indieauth
   const token = getToken(req, "accessToken")
 
-  const url = process.env.GRAPHQL_URL || ""
+  const url = process.env.NEXT_PUBLIC_GRAPHQL_URL || ""
   const response = await fetch(url, {
     method: "POST",
     headers: {
