@@ -1,14 +1,6 @@
-import {
-  Environment,
-  FetchFunction,
-  Network,
-  RecordSource,
-  Store,
-} from "relay-runtime"
+import {Environment, FetchFunction, Network, RecordSource, Store,} from "relay-runtime"
 
-import fetch from "isomorphic-unfetch"
-
-import { getToken } from "utils/auth0"
+import {getToken} from "utils/auth0"
 
 let relayEnvironment: Environment | null = null
 

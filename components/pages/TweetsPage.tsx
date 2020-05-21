@@ -1,26 +1,22 @@
 import React from "react"
-import { graphql } from "react-relay"
-import { usePreloadedQuery } from "react-relay/hooks"
-
-import { NextPage } from "next"
+import {graphql} from "react-relay"
+import {usePreloadedQuery} from "react-relay/hooks"
 import Link from "next/link"
 
-import { useTweetCanceledEvent } from "@events/TweetCanceledEvent"
-import { useTweetEditedEvent } from "@events/TweetEditedEvent"
-import { useTweetPostedEvent } from "@events/TweetPostedEvent"
-import { useTweetUncanceledEvent } from "@events/TweetUncanceledEvent"
-import { TweetsPageQuery } from "@generated/TweetsPageQuery.graphql"
+import {useTweetCanceledEvent} from "@events/TweetCanceledEvent"
+import {useTweetEditedEvent} from "@events/TweetEditedEvent"
+import {useTweetPostedEvent} from "@events/TweetPostedEvent"
+import {useTweetUncanceledEvent} from "@events/TweetUncanceledEvent"
+import {TweetsPageQuery} from "@generated/TweetsPageQuery.graphql"
 import Head from "components/Head"
 import Loading from "components/Loading"
 import Notice from "components/Notice"
-import SubscriptionProvider, {
-  useSubscription,
-} from "components/SubscriptionProvider"
+import SubscriptionProvider, {useSubscription,} from "components/SubscriptionProvider"
 import TweetList from "components/TweetList"
 import withSecurePage from "hocs/withSecurePage"
-import { preloader } from "utils/preloader"
+import {preloader} from "utils/preloader"
 
-const TweetsPage: NextPage = () => {
+function TweetsPage() {
   useTweetCanceledEvent()
   useTweetUncanceledEvent()
   useTweetEditedEvent()
@@ -52,7 +48,7 @@ const TweetsPage: NextPage = () => {
           {data?.upcoming && data?.past ? (
             <div className="flex flex-row flex-wrap -mx-4">
               <TweetList
-                description="You do have some new tweets to review."
+                description="You have some new tweets to review."
                 emptyDescription="You don't have any tweets to review."
                 tweets={data.upcoming}
               />

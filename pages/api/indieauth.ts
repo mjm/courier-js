@@ -1,8 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next"
+import {NextApiRequest, NextApiResponse} from "next"
 
-import fetch from "isomorphic-unfetch"
-
-import { getToken } from "utils/auth0"
+import {getToken} from "utils/auth0"
 
 // language=GraphQL
 const query = `

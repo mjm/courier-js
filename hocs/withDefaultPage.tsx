@@ -1,14 +1,14 @@
-import React, { Suspense } from "react"
+import React, {Suspense} from "react"
 
-import { NextPage } from "next"
+import {NextPage} from "next"
 
-import { AuthProvider } from "components/AuthProvider"
+import {AuthProvider} from "components/AuthProvider"
 import ErrorBoundary from "components/ErrorBoundary"
-import { EventsProvider } from "components/EventsProvider"
+import {EventsProvider} from "components/EventsProvider"
 import Head from "components/Head"
 import Loading from "components/Loading"
 import Nav from "components/Nav"
-import { getUser } from "utils/auth0"
+import {getUser} from "utils/auth0"
 
 export default function withDefaultPage<P, IP = P>(
   Page: NextPage<P, IP>
@@ -42,6 +42,8 @@ export default function withDefaultPage<P, IP = P>(
       </AuthProvider>
     )
   }
+
+  defaultPage.displayName = `withDefaultPage(${Page.displayName || Page.name})`
 
   if (Page.getInitialProps) {
     defaultPage.getInitialProps = Page.getInitialProps.bind(Page)
