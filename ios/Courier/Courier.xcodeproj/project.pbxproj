@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C95009C72384F5F100A36E64 /* LinkLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009C62384F5F100A36E64 /* LinkLabel.swift */; };
 		C95009CA2385026100A36E64 /* ViewLinkAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009C92385026100A36E64 /* ViewLinkAction.swift */; };
 		C95009CC2385039700A36E64 /* TweetActionCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009CB2385039700A36E64 /* TweetActionCellViewModel.swift */; };
 		C95009CE238506F300A36E64 /* TweetActionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95009CD238506F300A36E64 /* TweetActionCell.swift */; };
@@ -136,6 +135,7 @@
 		C9C34780247108EF004027DE /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477F247108EF004027DE /* TextView.swift */; };
 		C9C347832471FA9D004027DE /* Relay in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347822471FA9D004027DE /* Relay */; };
 		C9C347852471FA9D004027DE /* RelaySwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347842471FA9D004027DE /* RelaySwiftUI */; };
+		C9DC5E78247617F100FF31BC /* LinkLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9DC5E77247617F100FF31BC /* LinkLabel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,7 +157,6 @@
 
 /* Begin PBXFileReference section */
 		C9159852247229AE00E7FE03 /* Relay.swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Relay.swift; path = ../../../Relay.swift; sourceTree = "<group>"; };
-		C95009C62384F5F100A36E64 /* LinkLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkLabel.swift; sourceTree = "<group>"; };
 		C95009C92385026100A36E64 /* ViewLinkAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewLinkAction.swift; sourceTree = "<group>"; };
 		C95009CB2385039700A36E64 /* TweetActionCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetActionCellViewModel.swift; sourceTree = "<group>"; };
 		C95009CD238506F300A36E64 /* TweetActionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetActionCell.swift; sourceTree = "<group>"; };
@@ -289,6 +288,7 @@
 		C9C3477B24708B80004027DE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C9C3477D24708D88004027DE /* NotificationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHandler.swift; sourceTree = "<group>"; };
 		C9C3477F247108EF004027DE /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
+		C9DC5E77247617F100FF31BC /* LinkLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkLabel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -340,7 +340,7 @@
 		C95009C52384F5E400A36E64 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				C95009C62384F5F100A36E64 /* LinkLabel.swift */,
+				C9DC5E77247617F100FF31BC /* LinkLabel.swift */,
 				C95009E1238793A400A36E64 /* ContentStateView.swift */,
 				C95009EF2389AB5200A36E64 /* UIView.swift */,
 				C95009F92389F7E100A36E64 /* ImageGridView.swift */,
@@ -1087,6 +1087,7 @@
 				C95009E2238793A400A36E64 /* ContentStateView.swift in Sources */,
 				C9A36B74237BC2DE0069EED1 /* TweetDetailViewModel.swift in Sources */,
 				C95009DE2386287500A36E64 /* ShowSettingsAction.swift in Sources */,
+				C9DC5E78247617F100FF31BC /* LinkLabel.swift in Sources */,
 				C9A671B4237D1FDE00EEE913 /* TweetBodyCellViewModel.swift in Sources */,
 				C9A749D6237A091E0046E924 /* CancelTweetAction.swift in Sources */,
 				C9A749BD2378BF4A0046E924 /* CredentialsManager.swift in Sources */,
@@ -1098,7 +1099,6 @@
 				C9A749C6237911810046E924 /* TweetsViewModel.swift in Sources */,
 				C9A36B6F237BAED30069EED1 /* Endpoint.swift in Sources */,
 				C95009DB2386229B00A36E64 /* EnvironmentCell.swift in Sources */,
-				C95009C72384F5F100A36E64 /* LinkLabel.swift in Sources */,
 				C9A749CB2379D1260046E924 /* TweetCellViewModel.swift in Sources */,
 				C9A671B6237D220900EEE913 /* TweetBodyCell.swift in Sources */,
 				C9A749CF2379D7400046E924 /* TweetCell.swift in Sources */,
