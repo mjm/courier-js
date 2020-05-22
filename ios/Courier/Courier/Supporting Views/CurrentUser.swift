@@ -5,32 +5,30 @@ import SwiftUI
 
 struct CurrentUser<Content: View>: View {
     @Environment(\.endpoint) var endpoint
-    @ObservedObject private var userLoader: CurrentUserLoader
+    @ObservedObject private var authContext: AuthContext
     let content: Content
 
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
-        self.userLoader = CurrentUserLoader()
+        self.authContext = AuthContext()
     }
 
     var body: some View {
-        self.userLoader.startIfNeeded(endpoint: self.endpoint)
+        authContext.startIfNeeded(endpoint: self.endpoint)
         return Group {
-            if userLoader.isLoggedIn {
-                content
-                    .environment(\.credentialsManager, userLoader.credentialsManager)
-                    .environment(\.authActions, userLoader.authActions)
-            } else if userLoader.didLoginFail {
-                ErrorView(error: userLoader.error!) {
-                    self.userLoader.login()
+            if authContext.isLoggedIn {
+                content.environmentObject(authContext)
+            } else if authContext.didLoginFail {
+                ErrorView(error: authContext.error!) {
+                    self.authContext.login()
                 }
-            } else if userLoader.isLoggingIn {
+            } else if authContext.isLoggingIn {
                 LoadingView(text: "Logging in…")
-            } else if userLoader.isLoginNeeded {
+            } else if authContext.isLoginNeeded {
                 VStack(spacing: 12) {
                     Text("Welcome to Courier")
                         .font(.title)
-                    Button(action: { self.userLoader.login() }) {
+                    Button(action: { self.authContext.login() }) {
                         Text("Log In")
                             .fontWeight(.bold)
                     }
@@ -42,31 +40,8 @@ struct CurrentUser<Content: View>: View {
     }
 }
 
-struct AuthActions {
-    let logout: () -> Void
-}
-
-struct CredentialsManagerEnvironmentKey: EnvironmentKey {
-    static let defaultValue: CredentialsManager? = nil
-}
-
-struct AuthActionsEnvironmentKey: EnvironmentKey {
-    static let defaultValue = AuthActions(logout: {})
-}
-
-extension EnvironmentValues {
-    var credentialsManager: CredentialsManager? {
-        get { self[CredentialsManagerEnvironmentKey.self] }
-        set { self[CredentialsManagerEnvironmentKey.self] = newValue }
-    }
-    var authActions: AuthActions {
-        get { self[AuthActionsEnvironmentKey.self] }
-        set { self[AuthActionsEnvironmentKey.self] = newValue }
-    }
-}
-
-private class CurrentUserLoader: ObservableObject {
-    enum AuthState {
+class AuthContext: ObservableObject {
+    private enum AuthState {
         case unstarted
         // Initial state: we haven't figured out if the user has credentials or not, so
         // we don't want to prompt them into a particular action yet.
@@ -81,10 +56,10 @@ private class CurrentUserLoader: ObservableObject {
         case loginFailed(Error)
         // The user has successfully logged in and we've stored the credentials. The rest of
         // the app should be ready to use.
-        case loggedIn(Auth0.Credentials)
+        case loggedIn(Auth0.Credentials, Auth0.UserInfo)
     }
 
-    var endpoint: Endpoint! {
+    private var endpoint: Endpoint! {
         didSet {
             credentialsManager = CredentialsManager(authentication: endpoint.authentication, storeKey: endpoint.environment)
             beamsTokenProvider = BeamsTokenProvider(authURL: endpoint.pusherAuthURL.absoluteString) {
@@ -108,43 +83,43 @@ private class CurrentUserLoader: ObservableObject {
         }
     }
     var credentialsManager: CredentialsManager!
-    var beamsTokenProvider: BeamsTokenProvider!
+    private var beamsTokenProvider: BeamsTokenProvider!
 
-    var state: AuthState = .unstarted {
+    private var state: AuthState = .unstarted {
         willSet {
             objectWillChange.send()
         }
     }
 
-    var isLoggedIn: Bool {
+    fileprivate var isLoggedIn: Bool {
         if case .loggedIn = state {
             return true
         }
         return false
     }
 
-    var didLoginFail: Bool {
+    fileprivate var didLoginFail: Bool {
         if case .loginFailed = state {
             return true
         }
         return false
     }
 
-    var isLoginNeeded: Bool {
+    fileprivate var isLoginNeeded: Bool {
         if case .loginNeeded = state {
             return true
         }
         return false
     }
 
-    var isLoggingIn: Bool {
+    fileprivate var isLoggingIn: Bool {
         if case .loggingIn = state {
             return true
         }
         return false
     }
 
-    var error: Error? {
+    fileprivate var error: Error? {
         if case .loginFailed(let error) = state {
             return error
         }
@@ -152,14 +127,17 @@ private class CurrentUserLoader: ObservableObject {
     }
 
     var credentials: Auth0.Credentials? {
-        if case .loggedIn(let credentials) = state {
+        if case .loggedIn(let credentials, _) = state {
             return credentials
         }
         return nil
     }
 
-    var authActions: AuthActions {
-        return AuthActions(logout: self.logout)
+    var userInfo: Auth0.UserInfo? {
+        if case .loggedIn(_, let userInfo) = state {
+            return userInfo
+        }
+        return nil
     }
 
     func logout() {
@@ -172,7 +150,7 @@ private class CurrentUserLoader: ObservableObject {
         }
     }
 
-    func startIfNeeded(endpoint: Endpoint) {
+    fileprivate func startIfNeeded(endpoint: Endpoint) {
         if let currentEndpoint = self.endpoint, endpoint.environment != currentEndpoint.environment {
             state = .unstarted
         }
@@ -184,7 +162,7 @@ private class CurrentUserLoader: ObservableObject {
         }
     }
 
-    func getExistingCredentials() {
+    private func getExistingCredentials() {
         credentialsManager.credentials { error, creds in
             DispatchQueue.main.async {
                 if let error = error {
@@ -199,7 +177,7 @@ private class CurrentUserLoader: ObservableObject {
         }
     }
 
-    func login() {
+    fileprivate func login() {
         state = .loggingIn
         endpoint.webAuth
             .logging(enabled: true)
@@ -210,7 +188,7 @@ private class CurrentUserLoader: ObservableObject {
             }
     }
 
-    func handleLoginResult(_ result: Auth0.Result<Auth0.Credentials>) {
+    private func handleLoginResult(_ result: Auth0.Result<Auth0.Credentials>) {
         switch result {
         case .failure(error: let error):
             state = .loginFailed(error)
@@ -219,7 +197,7 @@ private class CurrentUserLoader: ObservableObject {
         }
     }
 
-    func process(credentials: Auth0.Credentials) {
+    private func process(credentials: Auth0.Credentials) {
         guard credentialsManager.store(credentials: credentials) else {
             state = .loginFailed(AuthError.storeCredsFailed)
             return
@@ -228,7 +206,7 @@ private class CurrentUserLoader: ObservableObject {
         setLoggedIn(with: credentials)
     }
 
-    func setLoggedIn(with credentials: Auth0.Credentials) {
+    private func setLoggedIn(with credentials: Auth0.Credentials) {
         endpoint.authentication.userInfo(withAccessToken: credentials.accessToken!).start { result in
             DispatchQueue.main.async {
                 switch result {
@@ -243,7 +221,7 @@ private class CurrentUserLoader: ObservableObject {
                             NSLog("set user ID for push notifications")
                         }
                     }
-                    self.state = .loggedIn(credentials)
+                    self.state = .loggedIn(credentials, userInfo)
                 }
             }
         }

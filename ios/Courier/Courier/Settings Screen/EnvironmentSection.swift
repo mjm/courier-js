@@ -18,8 +18,10 @@ struct EnvironmentSection: View {
         Binding(
             get: { self.endpoint.environment },
             set: { newValue in
+                DispatchQueue.main.async {
                 self.isPresented = false
                 UserDefaults.standard.siteEnvironment = newValue
+                }
             }
         )
     }

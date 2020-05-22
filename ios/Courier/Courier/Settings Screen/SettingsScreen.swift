@@ -13,7 +13,7 @@ query SettingsScreenQuery {
 struct SettingsScreen: View {
     @Query(SettingsScreenQuery.self, fetchPolicy: .storeAndNetwork) var query
 
-    @Environment(\.authActions) var authActions
+    @EnvironmentObject var authContext: AuthContext
     @Binding var isPresented: Bool
 
     var body: some View {
@@ -29,11 +29,11 @@ struct SettingsScreen: View {
                     Form {
                         UserProfileSection(user: query.data!.viewer!, onLogout: {
                             self.isPresented = false
-                            self.authActions.logout()
+                            self.authContext.logout()
                         })
                         SubscriptionSection(user: query.data!.viewer!)
                         #if DEBUG
-                        EnvironmentSection(isPresented: self.$isPresented)
+                        EnvironmentSection(isPresented: $isPresented)
                         #endif
                     }
                 }

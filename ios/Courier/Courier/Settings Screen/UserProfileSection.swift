@@ -4,13 +4,13 @@ import RelaySwiftUI
 private let userFragment = graphql("""
 fragment UserProfileSection_user on Viewer {
   name
-  nickname
   picture
 }
 """)
 
 struct UserProfileSection: View {
     @Fragment(UserProfileSection_user.self) var user
+    @EnvironmentObject var authContext: AuthContext
     let onLogout: () -> Void
 
     init(user: UserProfileSection_user_Key, onLogout: @escaping () -> Void) {
@@ -28,7 +28,7 @@ struct UserProfileSection: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(user!.name)
                             .font(.headline)
-                        Text("@" + user!.nickname)
+                        Text(authContext.userInfo?.nickname.map { "@" + $0 } ?? "Screen name unknown")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }

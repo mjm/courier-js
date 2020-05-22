@@ -3,14 +3,14 @@ import SwiftUI
 
 struct WithCurrentEndpoint<Content: View>: View {
     @ObservedObject private var observer = CurrentEndpointObserver()
-    let content: Content
+    let content: () -> Content
 
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
+    init(@ViewBuilder content: @escaping () -> Content) {
+        self.content = content
     }
 
     var body: some View {
-        content.environment(\.endpoint, observer.currentEndpoint)
+        content().environment(\.endpoint, observer.currentEndpoint)
     }
 }
 

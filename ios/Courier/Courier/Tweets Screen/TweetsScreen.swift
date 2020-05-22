@@ -20,7 +20,7 @@ struct TweetsScreen: View {
 
     @RelayEnvironment var environment: Relay.Environment
     @Environment(\.endpoint) var endpoint
-    @Environment(\.authActions) var authActions
+    @EnvironmentObject var authContext: AuthContext
     @State private var isSettingsPresented = false
 
     init() {
@@ -48,8 +48,8 @@ struct TweetsScreen: View {
             .sheet(isPresented: $isSettingsPresented) {
                 SettingsScreen(isPresented: self.$isSettingsPresented)
                     .relayEnvironment(self.environment)
+                    .environmentObject(self.authContext)
                     .environment(\.endpoint, self.endpoint)
-                    .environment(\.authActions, self.authActions)
             }
     }
 

@@ -6,7 +6,7 @@ import struct SwiftUI.Environment
 
 struct EnvironmentProvider<Content: View>: View {
     @Environment(\.endpoint) var endpoint
-    @Environment(\.credentialsManager) var credentialsManager
+    @EnvironmentObject var authContext: AuthContext
 
     let content: Content
 
@@ -20,7 +20,7 @@ struct EnvironmentProvider<Content: View>: View {
 
     func createEnvironment() -> Relay.Environment {
         let environment = Relay.Environment(
-            network: Network(credentialsManager: credentialsManager!, endpoint: endpoint),
+            network: Network(credentialsManager: authContext.credentialsManager, endpoint: endpoint),
             store: Store(source: DefaultRecordSource()))
 
         NotificationHandler.shared.environment = environment
