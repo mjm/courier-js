@@ -5,7 +5,10 @@ struct ContentView: View {
         WithCurrentEndpoint {
             CurrentUser {
                 EnvironmentProvider {
-                    TweetsScreen()
+                    NavigationView {
+                        TweetsScreen()
+                        Text("Choose a tweet to look at")
+                    }
                 }
             }
         }.accentColor(.purple)

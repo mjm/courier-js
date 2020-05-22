@@ -15,15 +15,17 @@ fragment TweetRow_tweetGroup on TweetGroup {
 
 struct TweetRow: View {
     @Fragment(TweetRow_tweetGroup.self) var tweetGroup
+    @Binding var selectedTweetID: String?
 
-    init(tweetGroup: TweetRow_tweetGroup_Key) {
+    init(tweetGroup: TweetRow_tweetGroup_Key, selectedTweetID: Binding<String?>) {
+        _selectedTweetID = selectedTweetID
         $tweetGroup = tweetGroup
     }
 
     var body: some View {
         Group {
             if tweetGroup != nil {
-                NavigationLink(destination: TweetDetailScreen(id: tweetGroup!.id)) {
+                Button(action: { self.selectedTweetID = self.tweetGroup!.id }) {
                     VStack(alignment: .leading, spacing: 12) {
                         ForEach(tweetGroup!.tweets, id: \.body) { tweet in
                             VStack(alignment: .leading, spacing: 8) {

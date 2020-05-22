@@ -28,30 +28,28 @@ struct TweetsScreen: View {
     }
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                Picker(selection: filterBinding, label: EmptyView()) {
-                    Text("Upcoming").tag(TweetFilter.upcoming)
-                    Text("Past").tag(TweetFilter.past)
-                }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .padding()
-
-                Divider()
-
-                tweetsList
+        VStack(spacing: 0) {
+            Picker(selection: filterBinding, label: EmptyView()) {
+                Text("Upcoming").tag(TweetFilter.upcoming)
+                Text("Past").tag(TweetFilter.past)
             }
-                .navigationBarTitle("Tweets", displayMode: .inline)
-                .navigationBarItems(leading: Button(
-                    action: { self.isSettingsPresented = true },
-                    label: { Image(systemName: "gear") }))
-                .sheet(isPresented: $isSettingsPresented) {
-                    SettingsScreen(isPresented: self.$isSettingsPresented)
-                        .relayEnvironment(self.environment)
-                        .environment(\.endpoint, self.endpoint)
-                        .environment(\.authActions, self.authActions)
-                }
+                .pickerStyle(SegmentedPickerStyle())
+                .padding()
+
+            Divider()
+
+            tweetsList
         }
+            .navigationBarTitle("Tweets", displayMode: .inline)
+            .navigationBarItems(leading: Button(
+                action: { self.isSettingsPresented = true },
+                label: { Image(systemName: "gear") }))
+            .sheet(isPresented: $isSettingsPresented) {
+                SettingsScreen(isPresented: self.$isSettingsPresented)
+                    .relayEnvironment(self.environment)
+                    .environment(\.endpoint, self.endpoint)
+                    .environment(\.authActions, self.authActions)
+            }
     }
 
     var tweetsList: some View {

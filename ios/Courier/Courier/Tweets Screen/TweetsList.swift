@@ -24,6 +24,7 @@ fragment TweetsList_tweets on Viewer
 struct TweetsList: View {
     @PaginationFragment(TweetsList_tweets.self) var tweets
     let filter: TweetFilter
+    @EnvironmentObject var screenCoordinator: ScreenCoordinator
 
     init(tweets: TweetsList_tweets_Key, filter: TweetFilter) {
         self.filter = filter
@@ -47,7 +48,7 @@ struct TweetsList: View {
             } else {
                 List {
                     ForEach(tweetNodes, id: \.id) { tweet in
-                        TweetRow(tweetGroup: tweet)
+                        TweetRow(tweetGroup: tweet, selectedTweetID: self.$screenCoordinator.selectedTweetID)
                             .padding(.vertical, 4)
                     }
 
@@ -58,9 +59,23 @@ struct TweetsList: View {
                             self.paging.loadNext(10)
                         }.onAppear { self.paging.loadNext(10) }
                     }
-                }
+                }.overlay(navigationOverlay)
             }
         }
+    }
+
+    var navigationOverlay: some View {
+        Group {
+            if screenCoordinator.selectedTweetID != nil {
+                NavigationLink(
+                    destination: TweetDetailScreen(id: screenCoordinator.selectedTweetID!),
+                    tag: screenCoordinator.selectedTweetID!,
+                    selection: $screenCoordinator.selectedTweetID
+                ) {
+                    EmptyView()
+                }
+            }
+        }.allowsHitTesting(false)
     }
 
     var emptyView: some View {

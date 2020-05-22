@@ -66,6 +66,7 @@
 		C9C34780247108EF004027DE /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477F247108EF004027DE /* TextView.swift */; };
 		C9C347832471FA9D004027DE /* Relay in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347822471FA9D004027DE /* Relay */; };
 		C9C347852471FA9D004027DE /* RelaySwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347842471FA9D004027DE /* RelaySwiftUI */; };
+		C9C61DB62477857700B344A3 /* ScreenCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */; };
 		C9DC5E7C2476340700FF31BC /* JWTDecode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E792476340700FF31BC /* JWTDecode.framework */; };
 		C9DC5E7D2476340700FF31BC /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7A2476340700FF31BC /* Auth0.framework */; };
 		C9DC5E7E2476340700FF31BC /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */; };
@@ -146,6 +147,7 @@
 		C9C3477B24708B80004027DE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C9C3477D24708D88004027DE /* NotificationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHandler.swift; sourceTree = "<group>"; };
 		C9C3477F247108EF004027DE /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
+		C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCoordinator.swift; sourceTree = "<group>"; };
 		C9DC5E792476340700FF31BC /* JWTDecode.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JWTDecode.framework; path = Carthage/Build/iOS/JWTDecode.framework; sourceTree = "<group>"; };
 		C9DC5E7A2476340700FF31BC /* Auth0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Auth0.framework; path = Carthage/Build/iOS/Auth0.framework; sourceTree = "<group>"; };
 		C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				C95AD85124687B2C00691417 /* AppDelegate.swift */,
 				C95AD85324687B2C00691417 /* SceneDelegate.swift */,
 				C9C3477D24708D88004027DE /* NotificationHandler.swift */,
+				C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */,
 				C96F4CDD246B76220096B5ED /* Mutations */,
 				C95AD89C246A446500691417 /* Supporting Views */,
 				C95AD89D246A447000691417 /* Tweets Screen */,
@@ -496,6 +499,7 @@
 				C95AD87A24687DD700691417 /* TweetsScreen.swift in Sources */,
 				C9C3477224706EC0004027DE /* EditTweetForm_tweetGroup.graphql.swift in Sources */,
 				C95AD88F246893D900691417 /* TweetsScreenQuery.graphql.swift in Sources */,
+				C9C61DB62477857700B344A3 /* ScreenCoordinator.swift in Sources */,
 				C96F4CE7246D0E4E0096B5ED /* UncancelTweet.swift in Sources */,
 				C95AD88824688E3D00691417 /* TweetsList.swift in Sources */,
 				C96F4CE9246D0E820096B5ED /* UncancelTweetMutation.graphql.swift in Sources */,
