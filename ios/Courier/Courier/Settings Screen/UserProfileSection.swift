@@ -19,7 +19,7 @@ struct UserProfileSection: View {
     }
 
     var body: some View {
-        Section(header: Text("YOUR PROFILE")) {
+        Section {
             if user != nil {
                 HStack(spacing: 16) {
                     AsyncImage(url: URL(string: user!.picture)!, placeholder: Rectangle())

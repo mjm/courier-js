@@ -7,7 +7,7 @@ struct EnvironmentSection: View {
     @Binding var isPresented: Bool
 
     var body: some View {
-        Section {
+        Section(header: Text("DEVELOPER SETTINGS").padding(.top, 44)) {
             Picker("Environment", selection: environmentBinding) {
                 ForEach(allEnvironments, id: \.self) { Text($0) }
             }

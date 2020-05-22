@@ -43,7 +43,8 @@ struct TweetsScreen: View {
             .navigationBarTitle("Tweets", displayMode: .inline)
             .navigationBarItems(leading: Button(
                 action: { self.isSettingsPresented = true },
-                label: { Image(systemName: "gear") }))
+                label: { Image(systemName: "person.crop.circle") }
+            ).padding(8))
             .sheet(isPresented: $isSettingsPresented) {
                 SettingsScreen(isPresented: self.$isSettingsPresented)
                     .relayEnvironment(self.environment)

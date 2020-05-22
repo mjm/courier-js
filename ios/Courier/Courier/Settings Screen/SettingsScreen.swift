@@ -27,19 +27,19 @@ struct SettingsScreen: View {
                     Spacer()
                 } else {
                     Form {
-                        #if DEBUG
-                        EnvironmentSection(isPresented: self.$isPresented)
-                        #endif
                         UserProfileSection(user: query.data!.viewer!, onLogout: {
                             self.isPresented = false
                             self.authActions.logout()
                         })
                         SubscriptionSection(user: query.data!.viewer!)
+                        #if DEBUG
+                        EnvironmentSection(isPresented: self.$isPresented)
+                        #endif
                     }
                 }
             }
-            .navigationBarTitle("Settings")
-            .navigationBarItems(trailing: Button("Close") { self.isPresented = false })
+                .navigationBarItems(trailing: Button("Close") { self.isPresented = false })
+                .navigationBarTitle(Text("Settings"), displayMode: .inline)
         }
     }
 }
