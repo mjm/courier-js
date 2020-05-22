@@ -6,43 +6,36 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationHandler()
 
     var environment: Relay.Environment?
+    var screenCoordinator: ScreenCoordinator?
 
     var cancellables = Set<AnyCancellable>()
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
         let data = userInfo["data"] as? [String: Any]
-        let tweetId = data?["tweetId"] as? String
+        guard let tweetId = data?["tweetId"] as? String else {
+            NSLog("No tweet ID present in notification.")
+            completionHandler()
+            return
+        }
 
         switch NotificationAction(rawValue: response.actionIdentifier) {
         case .postTweetNow:
-            guard let tweetId = tweetId else {
-                NSLog("No tweet ID present in notification.")
-                completionHandler()
-                return
-            }
-
             let input = PostTweetInput(id: tweetId)
             performMutation(PostTweetMutation(variables: .init(input: input)), completion: completionHandler)
 
         case .editTweet:
-//            editTweet(id: tweetId)
+            editTweet(id: tweetId)
             completionHandler()
 
         case .cancelTweet:
-            guard let tweetId = tweetId else {
-                NSLog("No tweet ID present in notification.")
-                completionHandler()
-                return
-            }
-
             let input = CancelTweetInput(id: tweetId)
             performMutation(CancelTweetMutation(variables: .init(input: input)), completion: completionHandler)
 
         default:
-//            if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-//                editTweet(id: tweetId)
-//            }
+            if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
+                editTweet(id: tweetId)
+            }
 
             completionHandler()
             return
@@ -66,6 +59,10 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
 
             completion()
         }, receiveValue: { _ in }).store(in: &cancellables)
+    }
+
+    private func editTweet(id: String) {
+        screenCoordinator?.selectedTweetID = id
     }
 }
 
