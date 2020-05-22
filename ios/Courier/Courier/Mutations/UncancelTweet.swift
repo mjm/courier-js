@@ -12,6 +12,14 @@ mutation UncancelTweetMutation($input: UncancelTweetInput!) {
 }
 """)
 
+private func updater(_ store: inout RecordSourceSelectorProxy, _ data: SelectorData?) {
+    guard let data = data.map(UncancelTweetMutation.Data.init) else {
+        return
+    }
+
+    moveTweetGroup(&store, id: data.uncancelTweet.tweetGroup.id, from: .past, to: .upcoming)
+}
+
 extension Mutation.Mutator where Operation == UncancelTweetMutation {
     func commit(id: String) {
         commit(
@@ -23,7 +31,9 @@ extension Mutation.Mutator where Operation == UncancelTweetMutation {
                         "status": "DRAFT",
                     ]
                 ]
-            ]
+            ],
+            optimisticUpdater: updater,
+            updater: updater
         )
     }
 }
