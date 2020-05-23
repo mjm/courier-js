@@ -59,31 +59,8 @@ class AuthContext: ObservableObject {
         case loggedIn(Auth0.Credentials, Auth0.UserInfo)
     }
 
-    private var endpoint: Endpoint! {
-        didSet {
-            credentialsManager = CredentialsManager(authentication: endpoint.authentication, storeKey: endpoint.environment)
-            beamsTokenProvider = BeamsTokenProvider(authURL: endpoint.pusherAuthURL.absoluteString) {
-                var token = ""
-                let sema = DispatchSemaphore(value: 0)
-
-                self.credentialsManager.credentials { error, creds in
-                    if let error = error {
-                        NSLog("failed to get credentials for push notifications: \(error)")
-                    } else if let creds = creds {
-                        token = creds.accessToken ?? ""
-                    }
-                    sema.signal()
-                }
-
-                sema.wait()
-
-                let headers = ["Authorization": "Bearer \(token)"]
-                return AuthData(headers: headers, queryParams: [:])
-            }
-        }
-    }
-    var credentialsManager: CredentialsManager!
-    private var beamsTokenProvider: BeamsTokenProvider!
+    private var endpoint: Endpoint!
+    var credentialsManager: CredentialsManager { endpoint.credentialsManager }
 
     private var state: AuthState = .unstarted {
         willSet {
@@ -214,7 +191,7 @@ class AuthContext: ObservableObject {
                     self.state = .loginFailed(error)
                 case .success(result: let userInfo):
                     NSLog("user info: name=\(userInfo.name ?? "<none>") nickname=\(userInfo.nickname ?? "<none>")")
-                    self.endpoint.pushNotifications.setUserId(userInfo.sub, tokenProvider: self.beamsTokenProvider) { error in
+                    self.endpoint.pushNotifications.setUserId(userInfo.sub, tokenProvider: self.endpoint.beamsTokenProvider) { error in
                         if let error = error {
                             NSLog("failed to set user ID for push notifications: \(error)")
                         } else {

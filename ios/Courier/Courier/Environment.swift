@@ -25,6 +25,10 @@ struct EnvironmentProvider<Content: View>: View {
 
         NotificationHandler.shared.environment = environment
 
+        EventListener.shared.endpoint = endpoint
+        EventListener.shared.userID = authContext.userInfo!.sub
+        EventListener.shared.environment = environment
+
         return environment
     }
 }
