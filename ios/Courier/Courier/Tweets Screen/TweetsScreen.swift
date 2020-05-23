@@ -22,6 +22,7 @@ struct TweetsScreen: View {
     @Environment(\.endpoint) var endpoint
     @EnvironmentObject var authContext: AuthContext
     @State private var isSettingsPresented = false
+    @State private var isInspectorPresented = false
 
     init() {
         $tweets = .init(filter: .upcoming)
@@ -44,7 +45,18 @@ struct TweetsScreen: View {
             .navigationBarItems(leading: Button(
                 action: { self.isSettingsPresented = true },
                 label: { Image(systemName: "person.crop.circle") }
-            ).padding(8))
+            ).padding(8), trailing: Group {
+                #if DEBUG
+                Button(action: { self.isInspectorPresented = true },
+                       label: { Image(systemName: "briefcase") })
+                    .sheet(isPresented: $isInspectorPresented) {
+                        NavigationView { RelaySwiftUI.Inspector() }
+                            .relayEnvironment(self.environment)
+                    }
+                #else
+                EmptyView()
+                #endif
+            })
             .sheet(isPresented: $isSettingsPresented) {
                 SettingsScreen(isPresented: self.$isSettingsPresented)
                     .relayEnvironment(self.environment)

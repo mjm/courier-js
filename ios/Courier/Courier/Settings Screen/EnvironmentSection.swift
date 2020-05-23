@@ -1,4 +1,5 @@
 import SwiftUI
+import RelaySwiftUI
 
 private let allEnvironments = ["production", "staging"]
 
@@ -11,6 +12,7 @@ struct EnvironmentSection: View {
             Picker("Environment", selection: environmentBinding) {
                 ForEach(allEnvironments, id: \.self) { Text($0) }
             }
+            NavigationLink("Inspect Relay Store", destination: RelaySwiftUI.Inspector())
         }
     }
 
@@ -19,8 +21,8 @@ struct EnvironmentSection: View {
             get: { self.endpoint.environment },
             set: { newValue in
                 DispatchQueue.main.async {
-                self.isPresented = false
-                UserDefaults.standard.siteEnvironment = newValue
+                    self.isPresented = false
+                    UserDefaults.standard.siteEnvironment = newValue
                 }
             }
         )
