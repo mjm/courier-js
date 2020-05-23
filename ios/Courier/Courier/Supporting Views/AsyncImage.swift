@@ -21,6 +21,7 @@ struct AsyncImage<Placeholder: View>: View {
             if loader.image != nil {
                 Image(uiImage: loader.image!)
                     .resizable()
+                    .renderingMode(.original)
             } else {
                 placeholder
             }
