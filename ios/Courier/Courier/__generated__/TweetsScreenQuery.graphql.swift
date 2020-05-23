@@ -64,6 +64,9 @@ struct TweetsScreenQuery {
                                                     .field(NormalizationScalarField(
                                                         name: "postedAt"
                                                     )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "postAfter"
+                                                    )),
                                                     .field(NormalizationLinkedField(
                                                         name: "tweets",
                                                         concreteType: "Tweet",
@@ -132,6 +135,7 @@ fragment TweetRow_tweetGroup on TweetGroup {
   id
   status
   postedAt
+  postAfter
   tweets {
     body
     mediaURLs

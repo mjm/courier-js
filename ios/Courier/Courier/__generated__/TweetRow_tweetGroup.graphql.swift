@@ -22,6 +22,9 @@ struct TweetRow_tweetGroup {
                 .field(ReaderScalarField(
                     name: "postedAt"
                 )),
+                .field(ReaderScalarField(
+                    name: "postAfter"
+                )),
                 .field(ReaderLinkedField(
                     name: "tweets",
                     concreteType: "Tweet",
@@ -45,12 +48,14 @@ extension TweetRow_tweetGroup {
         var id: String
         var status: TweetStatus
         var postedAt: String?
+        var postAfter: String?
         var tweets: [Tweet_tweets]
 
         init(from data: SelectorData) {
             id = data.get(String.self, "id")
             status = data.get(TweetStatus.self, "status")
             postedAt = data.get(String?.self, "postedAt")
+            postAfter = data.get(String?.self, "postAfter")
             tweets = data.get([Tweet_tweets].self, "tweets")
         }
 

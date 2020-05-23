@@ -6,6 +6,7 @@ fragment TweetRow_tweetGroup on TweetGroup {
   id
   status
   postedAt
+  postAfter
   tweets {
     body
     mediaURLs
@@ -38,15 +39,18 @@ struct TweetRow: View {
                             }
                         }
 
-                        if tweetGroup!.status == .canceled {
-                            Text("Canceled")
-                                .font(Font.caption.italic())
-                                .foregroundColor(.secondary)
-                        } else if tweetGroup!.status == .posted {
-                            postedAtTimeText
-                                .font(Font.caption.italic())
-                                .foregroundColor(.secondary)
+                        Group {
+                            if tweetGroup!.status == .canceled {
+                                Text("Canceled")
+                            } else if tweetGroup!.status == .posted {
+                                postedAtTimeText
+                            } else if tweetGroup!.postAfter != nil {
+                                Text("Will post automatically ") + Text(verbatim: "\(tweetGroup!.postAfter!.asDate!, relativeTo: Date())")
+                            }
                         }
+                            .font(Font.caption.italic())
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.leading)
                     }.padding(.vertical, 4)
                 }
             }

@@ -40,9 +40,6 @@ struct SettingsScreenQuery {
                                 name: "name"
                             )),
                             .field(NormalizationScalarField(
-                                name: "nickname"
-                            )),
-                            .field(NormalizationScalarField(
                                 name: "picture"
                             )),
                             .field(NormalizationLinkedField(
@@ -111,7 +108,6 @@ fragment SubscriptionSection_user on Viewer {
 
 fragment UserProfileSection_user on Viewer {
   name
-  nickname
   picture
 }
 """))
