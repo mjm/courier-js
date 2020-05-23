@@ -52,13 +52,7 @@ struct TweetsList: View {
                             .padding(.vertical, 4)
                     }
 
-                    if paging.isLoadingNext {
-                        Text("Loading…").foregroundColor(.secondary)
-                    } else if paging.hasNext {
-                        Button("Load more tweets…") {
-                            self.paging.loadNext(10)
-                        }.onAppear { self.paging.loadNext(10) }
-                    }
+                    pagingView
                 }.overlay(navigationOverlay)
             }
         }
@@ -90,5 +84,28 @@ struct TweetsList: View {
             .foregroundColor(.secondary)
             .padding(.bottom, 150)
             .padding(.horizontal, 30)
+    }
+
+    var pagingView: some View {
+        Group {
+            if paging.isLoadingNext {
+                Text("Loading…")
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.vertical, 20)
+            } else if paging.hasNext {
+                Button(action: {
+                    self.paging.loadNext(10)
+                }, label: {
+                    Text("Load more tweets…")
+                        .fontWeight(.bold)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, 20)
+                }).onAppear(delay: 0.3) {
+                    self.paging.loadNext(10)
+                }
+            }
+        }
     }
 }

@@ -68,6 +68,7 @@
 		C9C347852471FA9D004027DE /* RelaySwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347842471FA9D004027DE /* RelaySwiftUI */; };
 		C9C61DB62477857700B344A3 /* ScreenCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */; };
 		C9C61DB8247797A900B344A3 /* ConnectionHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB7247797A900B344A3 /* ConnectionHelpers.swift */; };
+		C9C61DBA2478D21B00B344A3 /* Delayed.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB92478D21B00B344A3 /* Delayed.swift */; };
 		C9DC5E7C2476340700FF31BC /* JWTDecode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E792476340700FF31BC /* JWTDecode.framework */; };
 		C9DC5E7D2476340700FF31BC /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7A2476340700FF31BC /* Auth0.framework */; };
 		C9DC5E7E2476340700FF31BC /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */; };
@@ -150,6 +151,7 @@
 		C9C3477F247108EF004027DE /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCoordinator.swift; sourceTree = "<group>"; };
 		C9C61DB7247797A900B344A3 /* ConnectionHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionHelpers.swift; sourceTree = "<group>"; };
+		C9C61DB92478D21B00B344A3 /* Delayed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delayed.swift; sourceTree = "<group>"; };
 		C9DC5E792476340700FF31BC /* JWTDecode.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JWTDecode.framework; path = Carthage/Build/iOS/JWTDecode.framework; sourceTree = "<group>"; };
 		C9DC5E7A2476340700FF31BC /* Auth0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Auth0.framework; path = Carthage/Build/iOS/Auth0.framework; sourceTree = "<group>"; };
 		C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				C96F4CCC246A5AAF0096B5ED /* ImagePlaceholder.swift */,
 				C96F4CCE246A5CC90096B5ED /* LinkedText.swift */,
 				C9C3477F247108EF004027DE /* TextView.swift */,
+				C9C61DB92478D21B00B344A3 /* Delayed.swift */,
 			);
 			path = "Supporting Views";
 			sourceTree = "<group>";
@@ -487,6 +490,7 @@
 				C96F4CD2246A635B0096B5ED /* SettingsScreen.swift in Sources */,
 				C95AD8A6246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift in Sources */,
 				C96F4CC9246A573E0096B5ED /* AsyncImage.swift in Sources */,
+				C9C61DBA2478D21B00B344A3 /* Delayed.swift in Sources */,
 				C96F4CD4246A63DA0096B5ED /* SettingsScreenQuery.graphql.swift in Sources */,
 				C95AD87C2468810C00691417 /* CurrentUser.swift in Sources */,
 				C95AD8A2246A44EB00691417 /* DetailedTweetRow.swift in Sources */,
