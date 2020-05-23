@@ -50,7 +50,7 @@ struct TweetRow: View {
                     }.padding(.vertical, 4)
                 }
             }
-        }
+        }.listRowBackground(selectedTweetID == tweetGroup?.id ? Color(.systemGray4) : nil)
     }
 
     private var postedAtTimeText: Text {

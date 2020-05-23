@@ -49,7 +49,6 @@ struct TweetsList: View {
                 List {
                     ForEach(tweetNodes, id: \.id) { tweet in
                         TweetRow(tweetGroup: tweet, selectedTweetID: self.$screenCoordinator.selectedTweetID)
-                            .padding(.vertical, 4)
                     }
 
                     pagingView
