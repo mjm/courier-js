@@ -16,15 +16,13 @@ func moveTweetGroup(
         return
     }
 
-    guard var fromTweets = handler.getConnection(viewer, key: "TweetsList_allTweets", filters: ["filter": fromFilter]) else {
-        return
+    if var fromTweets = handler.getConnection(viewer, key: "TweetsList_allTweets", filters: ["filter": fromFilter]) {
+        handler.delete(connection: &fromTweets, nodeID: tweetGroupID)
     }
-    handler.delete(connection: &fromTweets, nodeID: tweetGroupID)
 
-    guard var toTweets = handler.getConnection(viewer, key: "TweetsList_allTweets", filters: ["filter": toFilter]) else {
-        return
+    if var toTweets = handler.getConnection(viewer, key: "TweetsList_allTweets", filters: ["filter": toFilter]) {
+        var store2 = store as RecordSourceProxy
+        let edge = handler.createEdge(&store2, connection: &toTweets, node: tweetGroup, type: "TweetGroupEdge")
+        handler.insert(connection: &toTweets, edge: edge, before: nil)
     }
-    var store2 = store as RecordSourceProxy
-    let edge = handler.createEdge(&store2, connection: &toTweets, node: tweetGroup, type: "TweetGroupEdge")
-    handler.insert(connection: &toTweets, edge: edge, before: nil)
 }
