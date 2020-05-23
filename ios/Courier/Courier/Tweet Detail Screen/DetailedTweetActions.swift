@@ -21,6 +21,8 @@ struct DetailedTweetActions: View {
     @Mutation(UncancelTweetMutation.self) var uncancelTweet
     @Mutation(PostTweetMutation.self) var postTweet
 
+    @EnvironmentObject var authContext: AuthContext
+
     @State private var isPresentingPostAlert = false
 
     init(tweetGroup: DetailedTweetActions_tweetGroup_Key) {
@@ -97,8 +99,7 @@ struct DetailedTweetActions: View {
             }
             Button(action: {
                 let postedID = self.tweetGroup!.postedRetweetID ?? self.tweetGroup!.tweets[0].postedTweetID!
-                // TODO get the real screen name
-                let url = URL(string: "https://twitter.com/CourierTest/status/\(postedID)")!
+                let url = URL(string: "https://twitter.com/\(self.authContext.userInfo?.nickname ?? "unknown")/status/\(postedID)")!
                 UIApplication.shared.open(url, options: [:])
             }) {
                 HStack {
