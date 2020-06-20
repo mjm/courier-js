@@ -13,6 +13,7 @@ struct UncancelTweetMutation {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "UncancelTweetMutation",
+                type: "Mutation",
                 selections: [
                     .field(ReaderLinkedField(
                         name: "uncancelTweet",
@@ -107,34 +108,21 @@ struct UncancelTweetInput: VariableDataConvertible {
 }
 
 extension UncancelTweetMutation {
-    struct Data: Readable {
+    struct Data: Decodable {
         var uncancelTweet: UncancelTweetPayload_uncancelTweet
 
-        init(from data: SelectorData) {
-            uncancelTweet = data.get(UncancelTweetPayload_uncancelTweet.self, "uncancelTweet")
-        }
-
-        struct UncancelTweetPayload_uncancelTweet: Readable {
+        struct UncancelTweetPayload_uncancelTweet: Decodable {
             var tweetGroup: TweetGroup_tweetGroup
 
-            init(from data: SelectorData) {
-                tweetGroup = data.get(TweetGroup_tweetGroup.self, "tweetGroup")
-            }
-
-            struct TweetGroup_tweetGroup: Readable {
+            struct TweetGroup_tweetGroup: Decodable {
                 var id: String
                 var status: TweetStatus
-
-                init(from data: SelectorData) {
-                    id = data.get(String.self, "id")
-                    status = data.get(TweetStatus.self, "status")
-                }
             }
         }
     }
 }
 
-enum TweetStatus: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
+enum TweetStatus: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
     case draft = "DRAFT"
     case canceled = "CANCELED"
     case posted = "POSTED"

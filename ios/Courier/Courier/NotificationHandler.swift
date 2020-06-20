@@ -49,7 +49,7 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
             return
         }
 
-        commitMutation(environment, mutation).sink(receiveCompletion: { result in
+        environment.commitMutation(mutation).sink(receiveCompletion: { result in
             switch result {
             case .failure(let error):
                 NSLog("Mutation \(type(of: mutation)) failed: \(error)")

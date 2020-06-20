@@ -13,6 +13,7 @@ struct SettingsScreenQuery {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "SettingsScreenQuery",
+                type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
                         name: "viewer",
@@ -120,21 +121,12 @@ extension SettingsScreenQuery {
 }
 
 extension SettingsScreenQuery {
-    struct Data: Readable {
+    struct Data: Decodable {
         var viewer: Viewer_viewer?
 
-        init(from data: SelectorData) {
-            viewer = data.get(Viewer_viewer?.self, "viewer")
-        }
-
-        struct Viewer_viewer: Readable, UserProfileSection_user_Key, SubscriptionSection_user_Key {
+        struct Viewer_viewer: Decodable, UserProfileSection_user_Key, SubscriptionSection_user_Key {
             var fragment_UserProfileSection_user: FragmentPointer
             var fragment_SubscriptionSection_user: FragmentPointer
-
-            init(from data: SelectorData) {
-                fragment_UserProfileSection_user = data.get(fragment: "UserProfileSection_user")
-                fragment_SubscriptionSection_user = data.get(fragment: "SubscriptionSection_user")
-            }
         }
     }
 }

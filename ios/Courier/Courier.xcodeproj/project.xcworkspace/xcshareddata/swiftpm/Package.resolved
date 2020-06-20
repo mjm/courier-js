@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "Nimble",
+        "repositoryURL": "https://github.com/Quick/Nimble.git",
+        "state": {
+          "branch": null,
+          "revision": "2b1809051b4a65c1d7f5233331daa24572cd7fca",
+          "version": "8.1.1"
+        }
+      },
+      {
         "package": "PushNotifications",
         "repositoryURL": "https://github.com/pusher/push-notifications-swift",
         "state": {
@@ -44,6 +53,15 @@
           "branch": null,
           "revision": "37760e9a52030bb9011972c5213c3350fa9d41fd",
           "version": "1.0.0"
+        }
+      },
+      {
+        "package": "SnapshotTesting",
+        "repositoryURL": "https://github.com/pointfreeco/swift-snapshot-testing.git",
+        "state": {
+          "branch": null,
+          "revision": "2fd91357e90efe82bfa6845d1e7d5bc2f5025d35",
+          "version": "1.8.1"
         }
       },
       {

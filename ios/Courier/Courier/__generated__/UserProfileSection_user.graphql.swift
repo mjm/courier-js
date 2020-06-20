@@ -12,6 +12,7 @@ struct UserProfileSection_user {
     static var node: ReaderFragment {
         ReaderFragment(
             name: "UserProfileSection_user",
+            type: "Viewer",
             selections: [
                 .field(ReaderScalarField(
                     name: "name"
@@ -25,14 +26,9 @@ struct UserProfileSection_user {
 
 
 extension UserProfileSection_user {
-    struct Data: Readable {
+    struct Data: Decodable {
         var name: String
         var picture: String
-
-        init(from data: SelectorData) {
-            name = data.get(String.self, "name")
-            picture = data.get(String.self, "picture")
-        }
     }
 }
 

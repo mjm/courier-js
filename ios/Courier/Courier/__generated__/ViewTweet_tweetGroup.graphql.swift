@@ -12,6 +12,7 @@ struct ViewTweet_tweetGroup {
     static var node: ReaderFragment {
         ReaderFragment(
             name: "ViewTweet_tweetGroup",
+            type: "TweetGroup",
             selections: [
                 .field(ReaderScalarField(
                     name: "status"
@@ -28,16 +29,10 @@ struct ViewTweet_tweetGroup {
 
 
 extension ViewTweet_tweetGroup {
-    struct Data: Readable, DetailedTweetList_tweetGroup_Key, DetailedTweetActions_tweetGroup_Key {
+    struct Data: Decodable, DetailedTweetList_tweetGroup_Key, DetailedTweetActions_tweetGroup_Key {
         var status: TweetStatus
         var fragment_DetailedTweetList_tweetGroup: FragmentPointer
         var fragment_DetailedTweetActions_tweetGroup: FragmentPointer
-
-        init(from data: SelectorData) {
-            status = data.get(TweetStatus.self, "status")
-            fragment_DetailedTweetList_tweetGroup = data.get(fragment: "DetailedTweetList_tweetGroup")
-            fragment_DetailedTweetActions_tweetGroup = data.get(fragment: "DetailedTweetActions_tweetGroup")
-        }
     }
 }
 

@@ -12,6 +12,7 @@ struct DetailedTweetActions_tweetGroup {
     static var node: ReaderFragment {
         ReaderFragment(
             name: "DetailedTweetActions_tweetGroup",
+            type: "TweetGroup",
             selections: [
                 .field(ReaderLinkedField(
                     name: "tweets",
@@ -44,7 +45,7 @@ struct DetailedTweetActions_tweetGroup {
 
 
 extension DetailedTweetActions_tweetGroup {
-    struct Data: Readable {
+    struct Data: Decodable {
         var tweets: [Tweet_tweets]
         var id: String
         var status: TweetStatus
@@ -52,21 +53,8 @@ extension DetailedTweetActions_tweetGroup {
         var postedAt: String?
         var postedRetweetID: String?
 
-        init(from data: SelectorData) {
-            tweets = data.get([Tweet_tweets].self, "tweets")
-            id = data.get(String.self, "id")
-            status = data.get(TweetStatus.self, "status")
-            postAfter = data.get(String?.self, "postAfter")
-            postedAt = data.get(String?.self, "postedAt")
-            postedRetweetID = data.get(String?.self, "postedRetweetID")
-        }
-
-        struct Tweet_tweets: Readable {
+        struct Tweet_tweets: Decodable {
             var postedTweetID: String?
-
-            init(from data: SelectorData) {
-                postedTweetID = data.get(String?.self, "postedTweetID")
-            }
         }
     }
 }

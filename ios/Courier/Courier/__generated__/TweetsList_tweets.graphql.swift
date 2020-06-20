@@ -12,6 +12,7 @@ struct TweetsList_tweets {
     static var node: ReaderFragment {
         ReaderFragment(
             name: "TweetsList_tweets",
+            type: "Viewer",
             selections: [
                 .field(ReaderLinkedField(
                     name: "__TweetsList_allTweets_connection",
@@ -69,35 +70,18 @@ struct TweetsList_tweets {
 
 
 extension TweetsList_tweets {
-    struct Data: Readable {
+    struct Data: Decodable {
         var allTweets: TweetGroupConnection_allTweets
 
-        init(from data: SelectorData) {
-            allTweets = data.get(TweetGroupConnection_allTweets.self, "allTweets")
-        }
-
-        struct TweetGroupConnection_allTweets: Readable {
+        struct TweetGroupConnection_allTweets: Decodable {
             var edges: [TweetGroupEdge_edges]
 
-            init(from data: SelectorData) {
-                edges = data.get([TweetGroupEdge_edges].self, "edges")
-            }
-
-            struct TweetGroupEdge_edges: Readable {
+            struct TweetGroupEdge_edges: Decodable {
                 var node: TweetGroup_node
 
-                init(from data: SelectorData) {
-                    node = data.get(TweetGroup_node.self, "node")
-                }
-
-                struct TweetGroup_node: Readable, TweetRow_tweetGroup_Key {
+                struct TweetGroup_node: Decodable, TweetRow_tweetGroup_Key {
                     var id: String
                     var fragment_TweetRow_tweetGroup: FragmentPointer
-
-                    init(from data: SelectorData) {
-                        id = data.get(String.self, "id")
-                        fragment_TweetRow_tweetGroup = data.get(fragment: "TweetRow_tweetGroup")
-                    }
                 }
             }
         }

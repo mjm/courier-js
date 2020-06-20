@@ -20,9 +20,11 @@ mutation PostTweetMutation($input: PostTweetInput!) {
 """)
 
 private func updater(_ store: inout RecordSourceSelectorProxy, _ data: SelectorData?) {
-    guard let data = data.map(PostTweetMutation.Data.init) else {
+    guard let selectorData = data else {
         return
     }
+
+    let data = try! SelectorDataDecoder().decode(PostTweetMutation.Data.self, from: selectorData)
 
     // This isn't really right, is it? Posted tweets don't move right away because they
     // post in the background, but this is fine for now.

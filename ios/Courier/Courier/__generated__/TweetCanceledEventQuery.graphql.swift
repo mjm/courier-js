@@ -13,6 +13,7 @@ struct TweetCanceledEventQuery {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "TweetCanceledEventQuery",
+                type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
                         name: "tweetGroup",
@@ -81,21 +82,12 @@ extension TweetCanceledEventQuery {
 }
 
 extension TweetCanceledEventQuery {
-    struct Data: Readable {
+    struct Data: Decodable {
         var tweetGroup: TweetGroup_tweetGroup?
 
-        init(from data: SelectorData) {
-            tweetGroup = data.get(TweetGroup_tweetGroup?.self, "tweetGroup")
-        }
-
-        struct TweetGroup_tweetGroup: Readable {
+        struct TweetGroup_tweetGroup: Decodable {
             var id: String
             var status: TweetStatus
-
-            init(from data: SelectorData) {
-                id = data.get(String.self, "id")
-                status = data.get(TweetStatus.self, "status")
-            }
         }
     }
 }

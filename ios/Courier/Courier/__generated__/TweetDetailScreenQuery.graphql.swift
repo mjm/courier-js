@@ -13,6 +13,7 @@ struct TweetDetailScreenQuery {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "TweetDetailScreenQuery",
+                type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
                         name: "tweetGroup",
@@ -163,32 +164,17 @@ extension TweetDetailScreenQuery {
 }
 
 extension TweetDetailScreenQuery {
-    struct Data: Readable {
+    struct Data: Decodable {
         var tweetGroup: TweetGroup_tweetGroup?
 
-        init(from data: SelectorData) {
-            tweetGroup = data.get(TweetGroup_tweetGroup?.self, "tweetGroup")
-        }
-
-        struct TweetGroup_tweetGroup: Readable, ViewTweet_tweetGroup_Key, EditTweetForm_tweetGroup_Key {
+        struct TweetGroup_tweetGroup: Decodable, ViewTweet_tweetGroup_Key, EditTweetForm_tweetGroup_Key {
             var id: String
             var tweets: [Tweet_tweets]
             var fragment_ViewTweet_tweetGroup: FragmentPointer
             var fragment_EditTweetForm_tweetGroup: FragmentPointer
 
-            init(from data: SelectorData) {
-                id = data.get(String.self, "id")
-                tweets = data.get([Tweet_tweets].self, "tweets")
-                fragment_ViewTweet_tweetGroup = data.get(fragment: "ViewTweet_tweetGroup")
-                fragment_EditTweetForm_tweetGroup = data.get(fragment: "EditTweetForm_tweetGroup")
-            }
-
-            struct Tweet_tweets: Readable {
+            struct Tweet_tweets: Decodable {
                 var __typename: String
-
-                init(from data: SelectorData) {
-                    __typename = data.get(String.self, "__typename")
-                }
             }
         }
     }

@@ -13,6 +13,7 @@ struct TweetsListPaginationQuery {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "TweetsListPaginationQuery",
+                type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
                         name: "viewer",
@@ -186,19 +187,11 @@ extension TweetsListPaginationQuery {
 }
 
 extension TweetsListPaginationQuery {
-    struct Data: Readable {
+    struct Data: Decodable {
         var viewer: Viewer_viewer?
 
-        init(from data: SelectorData) {
-            viewer = data.get(Viewer_viewer?.self, "viewer")
-        }
-
-        struct Viewer_viewer: Readable, TweetsList_tweets_Key {
+        struct Viewer_viewer: Decodable, TweetsList_tweets_Key {
             var fragment_TweetsList_tweets: FragmentPointer
-
-            init(from data: SelectorData) {
-                fragment_TweetsList_tweets = data.get(fragment: "TweetsList_tweets")
-            }
         }
     }
 }

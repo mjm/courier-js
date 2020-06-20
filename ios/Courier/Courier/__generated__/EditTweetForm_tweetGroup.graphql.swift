@@ -12,6 +12,7 @@ struct EditTweetForm_tweetGroup {
     static var node: ReaderFragment {
         ReaderFragment(
             name: "EditTweetForm_tweetGroup",
+            type: "TweetGroup",
             selections: [
                 .field(ReaderScalarField(
                     name: "id"
@@ -35,23 +36,13 @@ struct EditTweetForm_tweetGroup {
 
 
 extension EditTweetForm_tweetGroup {
-    struct Data: Readable {
+    struct Data: Decodable {
         var id: String
         var tweets: [Tweet_tweets]
 
-        init(from data: SelectorData) {
-            id = data.get(String.self, "id")
-            tweets = data.get([Tweet_tweets].self, "tweets")
-        }
-
-        struct Tweet_tweets: Readable {
+        struct Tweet_tweets: Decodable {
             var body: String
             var mediaURLs: [String]
-
-            init(from data: SelectorData) {
-                body = data.get(String.self, "body")
-                mediaURLs = data.get([String].self, "mediaURLs")
-            }
         }
     }
 }

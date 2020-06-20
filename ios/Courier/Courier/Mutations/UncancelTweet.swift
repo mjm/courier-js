@@ -13,10 +13,11 @@ mutation UncancelTweetMutation($input: UncancelTweetInput!) {
 """)
 
 private func updater(_ store: inout RecordSourceSelectorProxy, _ data: SelectorData?) {
-    guard let data = data.map(UncancelTweetMutation.Data.init) else {
+    guard let selectorData = data else {
         return
     }
 
+    let data = try! SelectorDataDecoder().decode(UncancelTweetMutation.Data.self, from: selectorData)
     moveTweetGroup(&store, id: data.uncancelTweet.tweetGroup.id, from: .past, to: .upcoming)
 }
 

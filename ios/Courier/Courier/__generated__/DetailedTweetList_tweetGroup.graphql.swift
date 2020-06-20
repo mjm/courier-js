@@ -12,6 +12,7 @@ struct DetailedTweetList_tweetGroup {
     static var node: ReaderFragment {
         ReaderFragment(
             name: "DetailedTweetList_tweetGroup",
+            type: "TweetGroup",
             selections: [
                 .field(ReaderLinkedField(
                     name: "tweets",
@@ -32,21 +33,12 @@ struct DetailedTweetList_tweetGroup {
 
 
 extension DetailedTweetList_tweetGroup {
-    struct Data: Readable {
+    struct Data: Decodable {
         var tweets: [Tweet_tweets]
 
-        init(from data: SelectorData) {
-            tweets = data.get([Tweet_tweets].self, "tweets")
-        }
-
-        struct Tweet_tweets: Readable, DetailedTweetRow_tweet_Key {
+        struct Tweet_tweets: Decodable, DetailedTweetRow_tweet_Key {
             var body: String
             var fragment_DetailedTweetRow_tweet: FragmentPointer
-
-            init(from data: SelectorData) {
-                body = data.get(String.self, "body")
-                fragment_DetailedTweetRow_tweet = data.get(fragment: "DetailedTweetRow_tweet")
-            }
         }
     }
 }

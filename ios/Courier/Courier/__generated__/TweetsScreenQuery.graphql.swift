@@ -13,6 +13,7 @@ struct TweetsScreenQuery {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "TweetsScreenQuery",
+                type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
                         name: "viewer",
@@ -176,24 +177,16 @@ extension TweetsScreenQuery {
 }
 
 extension TweetsScreenQuery {
-    struct Data: Readable {
+    struct Data: Decodable {
         var viewer: Viewer_viewer?
 
-        init(from data: SelectorData) {
-            viewer = data.get(Viewer_viewer?.self, "viewer")
-        }
-
-        struct Viewer_viewer: Readable, TweetsList_tweets_Key {
+        struct Viewer_viewer: Decodable, TweetsList_tweets_Key {
             var fragment_TweetsList_tweets: FragmentPointer
-
-            init(from data: SelectorData) {
-                fragment_TweetsList_tweets = data.get(fragment: "TweetsList_tweets")
-            }
         }
     }
 }
 
-enum TweetFilter: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
+enum TweetFilter: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
     case upcoming = "UPCOMING"
     case past = "PAST"
 

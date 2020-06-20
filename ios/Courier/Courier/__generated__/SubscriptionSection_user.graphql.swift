@@ -12,6 +12,7 @@ struct SubscriptionSection_user {
     static var node: ReaderFragment {
         ReaderFragment(
             name: "SubscriptionSection_user",
+            type: "Viewer",
             selections: [
                 .field(ReaderLinkedField(
                     name: "customer",
@@ -55,43 +56,23 @@ struct SubscriptionSection_user {
 
 
 extension SubscriptionSection_user {
-    struct Data: Readable {
+    struct Data: Decodable {
         var customer: Customer_customer?
         var subscription: UserSubscription_subscription?
         var subscriptionStatusOverride: SubscriptionStatus?
 
-        init(from data: SelectorData) {
-            customer = data.get(Customer_customer?.self, "customer")
-            subscription = data.get(UserSubscription_subscription?.self, "subscription")
-            subscriptionStatusOverride = data.get(SubscriptionStatus?.self, "subscriptionStatusOverride")
-        }
-
-        struct Customer_customer: Readable {
+        struct Customer_customer: Decodable {
             var creditCard: CreditCard_creditCard?
 
-            init(from data: SelectorData) {
-                creditCard = data.get(CreditCard_creditCard?.self, "creditCard")
-            }
-
-            struct CreditCard_creditCard: Readable {
+            struct CreditCard_creditCard: Decodable {
                 var brand: String
                 var lastFour: String
-
-                init(from data: SelectorData) {
-                    brand = data.get(String.self, "brand")
-                    lastFour = data.get(String.self, "lastFour")
-                }
             }
         }
 
-        struct UserSubscription_subscription: Readable {
+        struct UserSubscription_subscription: Decodable {
             var status: SubscriptionStatus
             var periodEnd: String
-
-            init(from data: SelectorData) {
-                status = data.get(SubscriptionStatus.self, "status")
-                periodEnd = data.get(String.self, "periodEnd")
-            }
         }
     }
 }
@@ -100,7 +81,7 @@ protocol SubscriptionSection_user_Key {
     var fragment_SubscriptionSection_user: FragmentPointer { get }
 }
 
-enum SubscriptionStatus: String, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
+enum SubscriptionStatus: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
     case active = "ACTIVE"
     case canceled = "CANCELED"
     case expired = "EXPIRED"

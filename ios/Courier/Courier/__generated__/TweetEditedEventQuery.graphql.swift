@@ -13,6 +13,7 @@ struct TweetEditedEventQuery {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "TweetEditedEventQuery",
+                type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
                         name: "tweetGroup",
@@ -104,30 +105,16 @@ extension TweetEditedEventQuery {
 }
 
 extension TweetEditedEventQuery {
-    struct Data: Readable {
+    struct Data: Decodable {
         var tweetGroup: TweetGroup_tweetGroup?
 
-        init(from data: SelectorData) {
-            tweetGroup = data.get(TweetGroup_tweetGroup?.self, "tweetGroup")
-        }
-
-        struct TweetGroup_tweetGroup: Readable {
+        struct TweetGroup_tweetGroup: Decodable {
             var id: String
             var tweets: [Tweet_tweets]
 
-            init(from data: SelectorData) {
-                id = data.get(String.self, "id")
-                tweets = data.get([Tweet_tweets].self, "tweets")
-            }
-
-            struct Tweet_tweets: Readable {
+            struct Tweet_tweets: Decodable {
                 var body: String
                 var mediaURLs: [String]
-
-                init(from data: SelectorData) {
-                    body = data.get(String.self, "body")
-                    mediaURLs = data.get([String].self, "mediaURLs")
-                }
             }
         }
     }

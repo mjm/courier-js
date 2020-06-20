@@ -12,6 +12,7 @@ struct DetailedTweetRow_tweet {
     static var node: ReaderFragment {
         ReaderFragment(
             name: "DetailedTweetRow_tweet",
+            type: "Tweet",
             selections: [
                 .field(ReaderScalarField(
                     name: "body"
@@ -25,14 +26,9 @@ struct DetailedTweetRow_tweet {
 
 
 extension DetailedTweetRow_tweet {
-    struct Data: Readable {
+    struct Data: Decodable {
         var body: String
         var mediaURLs: [String]
-
-        init(from data: SelectorData) {
-            body = data.get(String.self, "body")
-            mediaURLs = data.get([String].self, "mediaURLs")
-        }
     }
 }
 

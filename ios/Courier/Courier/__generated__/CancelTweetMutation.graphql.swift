@@ -13,6 +13,7 @@ struct CancelTweetMutation {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "CancelTweetMutation",
+                type: "Mutation",
                 selections: [
                     .field(ReaderLinkedField(
                         name: "cancelTweet",
@@ -107,28 +108,15 @@ struct CancelTweetInput: VariableDataConvertible {
 }
 
 extension CancelTweetMutation {
-    struct Data: Readable {
+    struct Data: Decodable {
         var cancelTweet: CancelTweetPayload_cancelTweet
 
-        init(from data: SelectorData) {
-            cancelTweet = data.get(CancelTweetPayload_cancelTweet.self, "cancelTweet")
-        }
-
-        struct CancelTweetPayload_cancelTweet: Readable {
+        struct CancelTweetPayload_cancelTweet: Decodable {
             var tweetGroup: TweetGroup_tweetGroup
 
-            init(from data: SelectorData) {
-                tweetGroup = data.get(TweetGroup_tweetGroup.self, "tweetGroup")
-            }
-
-            struct TweetGroup_tweetGroup: Readable {
+            struct TweetGroup_tweetGroup: Decodable {
                 var id: String
                 var status: TweetStatus
-
-                init(from data: SelectorData) {
-                    id = data.get(String.self, "id")
-                    status = data.get(TweetStatus.self, "status")
-                }
             }
         }
     }
