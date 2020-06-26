@@ -79,6 +79,7 @@
 		C9C61DCE2479E4D100B344A3 /* TweetEditedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DCD2479E4D100B344A3 /* TweetEditedEvent.swift */; };
 		C9C61DD02479E55500B344A3 /* TweetEditedEventQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DCF2479E55500B344A3 /* TweetEditedEventQuery.graphql.swift */; };
 		C9C9C01C24A46EE2005BF960 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C9C01B24A46EE2005BF960 /* App.swift */; };
+		C9C9C01E24A59B4F005BF960 /* RelaySwiftUINext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C9C01D24A59B4F005BF960 /* RelaySwiftUINext.swift */; };
 		C9DC5E7C2476340700FF31BC /* JWTDecode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E792476340700FF31BC /* JWTDecode.framework */; };
 		C9DC5E7D2476340700FF31BC /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7A2476340700FF31BC /* Auth0.framework */; };
 		C9DC5E7E2476340700FF31BC /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */; };
@@ -171,6 +172,7 @@
 		C9C61DCD2479E4D100B344A3 /* TweetEditedEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetEditedEvent.swift; sourceTree = "<group>"; };
 		C9C61DCF2479E55500B344A3 /* TweetEditedEventQuery.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetEditedEventQuery.graphql.swift; sourceTree = "<group>"; };
 		C9C9C01B24A46EE2005BF960 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		C9C9C01D24A59B4F005BF960 /* RelaySwiftUINext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaySwiftUINext.swift; sourceTree = "<group>"; };
 		C9DC5E792476340700FF31BC /* JWTDecode.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JWTDecode.framework; path = Carthage/Build/iOS/JWTDecode.framework; sourceTree = "<group>"; };
 		C9DC5E7A2476340700FF31BC /* Auth0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Auth0.framework; path = Carthage/Build/iOS/Auth0.framework; sourceTree = "<group>"; };
 		C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 				C9C3477D24708D88004027DE /* NotificationHandler.swift */,
 				C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */,
 				C9C61DBE2479C4CD00B344A3 /* EventListener.swift */,
+				C9C9C01D24A59B4F005BF960 /* RelaySwiftUINext.swift */,
 				C9C61DC02479CF6C00B344A3 /* Events */,
 				C96F4CDD246B76220096B5ED /* Mutations */,
 				C95AD89C246A446500691417 /* Supporting Views */,
@@ -525,6 +528,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C95AD8932468E97700691417 /* TweetRow.swift in Sources */,
+				C9C9C01E24A59B4F005BF960 /* RelaySwiftUINext.swift in Sources */,
 				C9C61DB8247797A900B344A3 /* ConnectionHelpers.swift in Sources */,
 				C96F4CD2246A635B0096B5ED /* SettingsScreen.swift in Sources */,
 				C95AD8A6246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift in Sources */,

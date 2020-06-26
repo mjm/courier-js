@@ -19,27 +19,30 @@ struct SettingsScreen: View {
     var body: some View {
         NavigationView {
             Group {
-                if query.isLoading {
+                switch query.get() {
+                case .loading:
                     LoadingView(text: "Loading profile…")
-                } else if query.error != nil {
-                    ErrorView(error: query.error!)
-                } else if query.data?.viewer == nil {
-                    Spacer()
-                } else {
-                    Form {
-                        UserProfileSection(user: query.data!.viewer!, onLogout: {
-                            self.isPresented = false
-                            self.authContext.logout()
-                        })
-                        SubscriptionSection(user: query.data!.viewer!)
-                        #if DEBUG
-                        EnvironmentSection(isPresented: $isPresented)
-                        #endif
+                case .failure(let error):
+                    ErrorView(error: error)
+                case .success(let data):
+                    if let viewer = data?.viewer {
+                        Form {
+                            UserProfileSection(user: viewer, onLogout: {
+                                isPresented = false
+                                authContext.logout()
+                            })
+                            SubscriptionSection(user: viewer)
+                            #if DEBUG
+                            EnvironmentSection(isPresented: $isPresented)
+                            #endif
+                        }
+                    } else {
+                        Spacer()
                     }
                 }
             }
-                .navigationBarItems(trailing: Button("Close") { self.isPresented = false })
-                .navigationBarTitle(Text("Settings"), displayMode: .inline)
+            .navigationBarItems(trailing: Button("Close") { isPresented = false })
+            .navigationBarTitle(Text("Settings"), displayMode: .inline)
         }
     }
 }

@@ -15,37 +15,37 @@ query TweetDetailScreenQuery($id: ID!) {
 """)
 
 struct TweetDetailScreen: View, Equatable {
+    let id: String
+
     @Query(TweetDetailScreenQuery.self) var tweet
-
     @State private var isEditing = false
-
-    init(id: String) {
-        $tweet = .init(id: id)
-    }
 
     var body: some View {
         Group {
-            if tweet.isLoading {
+            switch tweet.get(.init(id: id)) {
+            case .loading:
                 LoadingView(text: "Loading tweet details…")
-            } else if tweet.error != nil {
-                ErrorView(error: tweet.error!)
-            } else if tweet.data?.tweetGroup == nil {
-                Spacer()
-                    .navigationBarTitle("Loading…")
-            } else {
-                Group {
-                    if isEditing {
-                        EditTweetForm(tweetGroup: tweet.data!.tweetGroup!, isEditing: $isEditing)
-                    } else {
-                        ViewTweet(tweetGroup: tweet.data!.tweetGroup!, isEditing: $isEditing)
+            case .failure(let error):
+                ErrorView(error: error)
+            case .success(let data):
+                if let tweetGroup = data?.tweetGroup {
+                    Group {
+                        if isEditing {
+                            EditTweetForm(tweetGroup: tweetGroup, isEditing: $isEditing)
+                        } else {
+                            ViewTweet(tweetGroup: tweetGroup, isEditing: $isEditing)
+                        }
                     }
+                    .navigationBarTitle(tweetGroup.tweets.count > 1 ? "Tweet Thread" : "Tweet")
+                } else {
+                    Spacer()
+                        .navigationBarTitle("Loading…")
                 }
-                    .navigationBarTitle(tweet.data!.tweetGroup!.tweets.count > 1 ? "Tweet Thread" : "Tweet")
             }
         }
     }
 
     static func ==(lhs: TweetDetailScreen, rhs: TweetDetailScreen) -> Bool {
-        lhs.$tweet.id == rhs.$tweet.id
+        lhs.id == rhs.id
     }
 }
