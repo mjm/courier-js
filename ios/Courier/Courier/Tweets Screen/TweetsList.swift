@@ -96,7 +96,7 @@ struct TweetsList: View {
                     .padding(.vertical, 20)
             } else if paging.hasNext {
                 Button(action: {
-                    self.paging.loadNext(10)
+                    tweets?.loadNext(10)
                 }, label: {
                     Text("Load more tweets…")
                         .fontWeight(.bold)
@@ -104,7 +104,7 @@ struct TweetsList: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.vertical, 20)
                 }).onAppear(delay: 0.3) {
-                    self.paging.loadNext(10)
+                    tweets?.loadNext(10)
                 }
             }
         }
