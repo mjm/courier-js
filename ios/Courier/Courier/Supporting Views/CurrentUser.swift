@@ -5,12 +5,11 @@ import SwiftUI
 
 struct CurrentUser<Content: View>: View {
     @Environment(\.endpoint) var endpoint
-    @ObservedObject private var authContext: AuthContext
+    @StateObject private var authContext = AuthContext()
     let content: Content
 
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
-        self.authContext = AuthContext()
     }
 
     var body: some View {

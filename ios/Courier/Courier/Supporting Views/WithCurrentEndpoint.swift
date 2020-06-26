@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 
 struct WithCurrentEndpoint<Content: View>: View {
-    @ObservedObject private var observer = CurrentEndpointObserver()
+    @StateObject private var observer = CurrentEndpointObserver()
     let content: () -> Content
 
     init(@ViewBuilder content: @escaping () -> Content) {
