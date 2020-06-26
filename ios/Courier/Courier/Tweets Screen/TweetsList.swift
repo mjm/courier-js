@@ -52,7 +52,9 @@ struct TweetsList: View {
                     }
 
                     pagingView
-                }.overlay(navigationOverlay)
+                }
+                .listStyle(PlainListStyle())
+                .overlay(navigationOverlay)
             }
         }
     }

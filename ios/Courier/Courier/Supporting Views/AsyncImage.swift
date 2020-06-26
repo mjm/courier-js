@@ -2,17 +2,18 @@ import SwiftUI
 import Combine
 
 struct AsyncImage<Placeholder: View>: View {
-    @ObservedObject private var loader: ImageLoader
+    let url: URL
+    @StateObject private var loader = ImageLoader()
     @Environment(\.imageCache) var cache: ImageCache
     private let placeholder: Placeholder?
 
     init(url: URL, placeholder: Placeholder? = nil) {
-        loader = ImageLoader(url: url)
+        self.url = url
         self.placeholder = placeholder
     }
 
     var body: some View {
-        loader.load(cache: cache)
+        loader.load(url: url, cache: cache)
         return image
     }
 
@@ -44,17 +45,14 @@ class ImageLoader: ObservableObject {
             objectWillChange.send()
         }
     }
-    let url: URL
 
     private(set) var isLoaded = false
-    private var cancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
     private static let imageQueue = DispatchQueue(label: "image-loader")
 
-    init(url: URL) {
-        self.url = url
-    }
+    init() {}
 
-    func load(cache: ImageCache? = nil) {
+    func load(url: URL, cache: ImageCache? = nil) {
         guard !isLoaded else { return }
 
         isLoaded = true
@@ -68,7 +66,7 @@ class ImageLoader: ObservableObject {
             return
         }
 
-        cancellable = URLSession.shared.dataTaskPublisher(for: url)
+        URLSession.shared.dataTaskPublisher(for: url)
             .subscribe(on: Self.imageQueue)
             .map { UIImage(data: $0.data) }
             .replaceError(with: nil)
@@ -80,11 +78,10 @@ class ImageLoader: ObservableObject {
                 }
             )
             .receive(on: DispatchQueue.main)
-            .assign(to: \.image, on: self)
-    }
-
-    func cancel() {
-        cancellable = nil
+            .sink { [weak self] newImage in
+                self?.image = newImage
+            }
+            .store(in: &cancellables)
     }
 }
 
