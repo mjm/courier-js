@@ -78,9 +78,9 @@ struct EditTweetSection: View {
     var body: some View {
         Group {
             VStack {
-                TextView(text: $tweet.body)
+                TextEditor(text: $tweet.body)
                     .padding(.all, -5)
-                    .frame(minWidth: 0, maxWidth: .infinity, minHeight: 200, maxHeight: .infinity)
+                    .frame(minHeight: 200)
             }
 
             ForEach(tweet.theMediaURLs.indices, id: \.self) { mediaIdx in

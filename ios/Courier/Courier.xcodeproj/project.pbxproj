@@ -62,7 +62,6 @@
 		C9C3477924708A68004027DE /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C9C3477824708A68004027DE /* Localizable.stringsdict */; };
 		C9C3477C24708B9B004027DE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C9C3477A24708B80004027DE /* Localizable.strings */; };
 		C9C3477E24708D88004027DE /* NotificationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477D24708D88004027DE /* NotificationHandler.swift */; };
-		C9C34780247108EF004027DE /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477F247108EF004027DE /* TextView.swift */; };
 		C9C347832471FA9D004027DE /* Relay in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347822471FA9D004027DE /* Relay */; };
 		C9C347852471FA9D004027DE /* RelaySwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347842471FA9D004027DE /* RelaySwiftUI */; };
 		C9C61DB62477857700B344A3 /* ScreenCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */; };
@@ -158,7 +157,6 @@
 		C9C3477824708A68004027DE /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		C9C3477B24708B80004027DE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C9C3477D24708D88004027DE /* NotificationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHandler.swift; sourceTree = "<group>"; };
-		C9C3477F247108EF004027DE /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
 		C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenCoordinator.swift; sourceTree = "<group>"; };
 		C9C61DB7247797A900B344A3 /* ConnectionHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionHelpers.swift; sourceTree = "<group>"; };
 		C9C61DB92478D21B00B344A3 /* Delayed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Delayed.swift; sourceTree = "<group>"; };
@@ -301,7 +299,6 @@
 				C96F4CCA246A588D0096B5ED /* AsyncImageGrid.swift */,
 				C96F4CCC246A5AAF0096B5ED /* ImagePlaceholder.swift */,
 				C96F4CCE246A5CC90096B5ED /* LinkedText.swift */,
-				C9C3477F247108EF004027DE /* TextView.swift */,
 				C9C61DB92478D21B00B344A3 /* Delayed.swift */,
 			);
 			path = "Supporting Views";
@@ -578,7 +575,6 @@
 				C9C34764246FBB9D004027DE /* ViewTweet.swift in Sources */,
 				C96F4CDC246AEE700096B5ED /* SubscriptionSection_user.graphql.swift in Sources */,
 				C95AD85624687B2C00691417 /* ContentView.swift in Sources */,
-				C9C34780247108EF004027DE /* TextView.swift in Sources */,
 				C96F4CE1246B76860096B5ED /* CancelTweetMutation.graphql.swift in Sources */,
 				C96F4CED246D12CC0096B5ED /* PostTweetMutation.graphql.swift in Sources */,
 				C9C9C01C24A46EE2005BF960 /* App.swift in Sources */,
