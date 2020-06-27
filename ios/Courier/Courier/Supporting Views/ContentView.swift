@@ -10,7 +10,6 @@ struct ContentView: View {
                 }
             }
         }
-        .accentColor(.purple)
     }
 }
 
