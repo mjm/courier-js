@@ -1,11 +1,3 @@
-//
-//  LoadingView.swift
-//  RelayStarWars
-//
-//  Created by Matt Moriarity on 5/8/20.
-//  Copyright © 2020 Matt Moriarity. All rights reserved.
-//
-
 import SwiftUI
 
 struct LoadingView: View {
@@ -17,18 +9,20 @@ struct LoadingView: View {
         Group {
             if isVisible {
                 VStack(spacing: 10.0) {
-                    ActivityIndicator(isAnimating: .constant(true), style: .large)
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(x: 2, y: 2, anchor: .center)
+                        .frame(width: 50, height: 50)
 
                     Text(text)
                         .font(.headline)
                         .foregroundColor(.secondary)
                 }
             } else {
-                Spacer().onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
+                Spacer()
+                    .onAppear(delay: 0.5) {
                         self.isVisible = true
                     }
-                }
             }
         }
     }
@@ -37,18 +31,5 @@ struct LoadingView: View {
 struct LoadingView_Previews: PreviewProvider {
     static var previews: some View {
         LoadingView()
-    }
-}
-
-private struct ActivityIndicator: UIViewRepresentable {
-    @Binding var isAnimating: Bool
-    let style: UIActivityIndicatorView.Style
-
-    func makeUIView(context: UIViewRepresentableContext<ActivityIndicator>) -> UIActivityIndicatorView {
-        return UIActivityIndicatorView(style: style)
-    }
-
-    func updateUIView(_ uiView: UIActivityIndicatorView, context: UIViewRepresentableContext<ActivityIndicator>) {
-        isAnimating ? uiView.startAnimating() : uiView.stopAnimating()
     }
 }
