@@ -15,7 +15,6 @@ struct TweetsScreen: View {
     @State private var filter: TweetFilter = .upcoming
     @Query(TweetsScreenQuery.self, fetchPolicy: .storeAndNetwork) var tweets
     @RelayEnvironment var environment: Relay.Environment
-    @Environment(\.endpoint) var endpoint
     @EnvironmentObject var authContext: AuthContext
     @State private var isSettingsPresented = false
     @State private var isInspectorPresented = false
@@ -58,7 +57,6 @@ struct TweetsScreen: View {
             SettingsScreen(isPresented: self.$isSettingsPresented)
                 .relayEnvironment(self.environment)
                 .environmentObject(self.authContext)
-                .environment(\.endpoint, self.endpoint)
         }
     }
 

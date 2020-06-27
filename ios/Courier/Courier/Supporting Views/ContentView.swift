@@ -2,16 +2,15 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        WithCurrentEndpoint {
-            CurrentUser {
-                EnvironmentProvider {
-                    NavigationView {
-                        TweetsScreen()
-                        Text("Choose a tweet to look at")
-                    }
+        CurrentUser {
+            EnvironmentProvider {
+                NavigationView {
+                    TweetsScreen()
+                    Text("Choose a tweet to look at")
                 }
             }
-        }.accentColor(.purple)
+        }
+        .accentColor(.purple)
     }
 }
 

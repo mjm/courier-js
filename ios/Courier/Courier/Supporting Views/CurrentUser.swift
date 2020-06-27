@@ -4,7 +4,7 @@ import PushNotifications
 import SwiftUI
 
 struct CurrentUser<Content: View>: View {
-    @Environment(\.endpoint) var endpoint
+    @CurrentEndpoint var endpoint
     @StateObject private var authContext = AuthContext()
     let content: Content
 
@@ -13,7 +13,7 @@ struct CurrentUser<Content: View>: View {
     }
 
     var body: some View {
-        authContext.startIfNeeded(endpoint: self.endpoint)
+        authContext.startIfNeeded(endpoint: endpoint)
         return Group {
             if authContext.isLoggedIn {
                 content.environmentObject(authContext)

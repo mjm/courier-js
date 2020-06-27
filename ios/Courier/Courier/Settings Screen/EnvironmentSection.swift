@@ -4,25 +4,29 @@ import RelaySwiftUI
 private let allEnvironments = ["production", "staging"]
 
 struct EnvironmentSection: View {
-    @Environment(\.endpoint) var endpoint
+    @CurrentEndpoint var endpoint
     @Binding var isPresented: Bool
 
     var body: some View {
-        Section(header: Text("DEVELOPER SETTINGS").padding(.top, 44)) {
+        Section(header: Text("Developer Settings").padding(.top, 44)) {
             Picker("Environment", selection: environmentBinding) {
                 ForEach(allEnvironments, id: \.self) { Text($0) }
             }
             NavigationLink("Inspect Relay Store", destination: RelaySwiftUI.Inspector())
+        }.onChange(of: endpoint.environment) { newValue in
+            if newValue != endpoint.environment {
+                isPresented = false
+            }
         }
     }
 
     var environmentBinding: Binding<String> {
         Binding(
-            get: { self.endpoint.environment },
+            get: { endpoint.environment },
             set: { newValue in
-                DispatchQueue.main.async {
-                    self.isPresented = false
-                    UserDefaults.standard.siteEnvironment = newValue
+                isPresented = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) {
+                    endpoint = newValue == "production" ? .production : .staging
                 }
             }
         )

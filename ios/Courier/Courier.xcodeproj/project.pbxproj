@@ -49,7 +49,7 @@
 		C96F4CE9246D0E820096B5ED /* UncancelTweetMutation.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CE8246D0E810096B5ED /* UncancelTweetMutation.graphql.swift */; };
 		C96F4CEB246D129F0096B5ED /* PostTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEA246D129F0096B5ED /* PostTweet.swift */; };
 		C96F4CED246D12CC0096B5ED /* PostTweetMutation.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEC246D12CC0096B5ED /* PostTweetMutation.graphql.swift */; };
-		C96F4CEF246E19F50096B5ED /* WithCurrentEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEE246E19F50096B5ED /* WithCurrentEndpoint.swift */; };
+		C96F4CEF246E19F50096B5ED /* CurrentEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEE246E19F50096B5ED /* CurrentEndpoint.swift */; };
 		C9C34762246E2C48004027DE /* EnvironmentSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34761246E2C48004027DE /* EnvironmentSection.swift */; };
 		C9C34764246FBB9D004027DE /* ViewTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34763246FBB9D004027DE /* ViewTweet.swift */; };
 		C9C34766246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34765246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift */; };
@@ -144,7 +144,7 @@
 		C96F4CE8246D0E810096B5ED /* UncancelTweetMutation.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UncancelTweetMutation.graphql.swift; sourceTree = "<group>"; };
 		C96F4CEA246D129F0096B5ED /* PostTweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTweet.swift; sourceTree = "<group>"; };
 		C96F4CEC246D12CC0096B5ED /* PostTweetMutation.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostTweetMutation.graphql.swift; sourceTree = "<group>"; };
-		C96F4CEE246E19F50096B5ED /* WithCurrentEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithCurrentEndpoint.swift; sourceTree = "<group>"; };
+		C96F4CEE246E19F50096B5ED /* CurrentEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentEndpoint.swift; sourceTree = "<group>"; };
 		C9C34761246E2C48004027DE /* EnvironmentSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentSection.swift; sourceTree = "<group>"; };
 		C9C34763246FBB9D004027DE /* ViewTweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewTweet.swift; sourceTree = "<group>"; };
 		C9C34765246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewTweet_tweetGroup.graphql.swift; sourceTree = "<group>"; };
@@ -291,7 +291,7 @@
 			children = (
 				C9C9C01B24A46EE2005BF960 /* App.swift */,
 				C95AD85524687B2C00691417 /* ContentView.swift */,
-				C96F4CEE246E19F50096B5ED /* WithCurrentEndpoint.swift */,
+				C96F4CEE246E19F50096B5ED /* CurrentEndpoint.swift */,
 				C95AD87B2468810C00691417 /* CurrentUser.swift */,
 				C96F4CC4246A4CED0096B5ED /* LoadingView.swift */,
 				C96F4CC6246A509E0096B5ED /* ErrorView.swift */,
@@ -561,7 +561,7 @@
 				C96F4CDF246B76400096B5ED /* CancelTweet.swift in Sources */,
 				C9C61DC22479CF7C00B344A3 /* TweetPostedEvent.swift in Sources */,
 				C95AD88C24688EC900691417 /* TweetsListPaginationQuery.graphql.swift in Sources */,
-				C96F4CEF246E19F50096B5ED /* WithCurrentEndpoint.swift in Sources */,
+				C96F4CEF246E19F50096B5ED /* CurrentEndpoint.swift in Sources */,
 				C9C61DCE2479E4D100B344A3 /* TweetEditedEvent.swift in Sources */,
 				C9C61DC82479E04E00B344A3 /* TweetCanceledEventQuery.graphql.swift in Sources */,
 				C95AD897246A439F00691417 /* TweetDetailScreen.swift in Sources */,

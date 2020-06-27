@@ -5,8 +5,9 @@ import SwiftUI
 import struct SwiftUI.Environment
 
 struct EnvironmentProvider<Content: View>: View {
-    @Environment(\.endpoint) var endpoint
+    @CurrentEndpoint var endpoint
     @EnvironmentObject var authContext: AuthContext
+    @State var relayEnvironment: Relay.Environment?
 
     let content: Content
 
@@ -15,7 +16,22 @@ struct EnvironmentProvider<Content: View>: View {
     }
 
     var body: some View {
-        content.relayEnvironment(createEnvironment())
+        Group {
+            if let relayEnvironment = relayEnvironment {
+                content
+                    .relayEnvironment(relayEnvironment)
+                    .onChange(of: endpoint.environment) { newEnvironment in
+                        if newEnvironment != endpoint.environment {
+                            self.relayEnvironment = createEnvironment()
+                        }
+                    }
+            } else {
+                Text("") // EmptyView doesn't trigger the onAppear
+                    .onAppear {
+                        relayEnvironment = createEnvironment()
+                    }
+            }
+        }
     }
 
     func createEnvironment() -> Relay.Environment {

@@ -75,7 +75,7 @@ struct Endpoint {
     )
 
     static var current: Endpoint {
-        UserDefaults.standard.siteEnvironment == "staging" ? .staging : .production
+        UserDefaults.standard.string(forKey: "siteEnvironment") == "staging" ? .staging : .production
     }
 
     var pusherAuthURL: URL {
