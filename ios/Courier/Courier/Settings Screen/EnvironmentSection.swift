@@ -12,7 +12,9 @@ struct EnvironmentSection: View {
             Picker("Environment", selection: environmentBinding) {
                 ForEach(allEnvironments, id: \.self) { Text($0) }
             }
+            #if os(iOS)
             NavigationLink("Inspect Relay Store", destination: RelaySwiftUI.Inspector())
+            #endif
         }.onChange(of: endpoint.environment) { newValue in
             if newValue != endpoint.environment {
                 isPresented = false

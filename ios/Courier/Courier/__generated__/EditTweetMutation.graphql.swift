@@ -118,7 +118,24 @@ extension EditTweetMutation {
             ]
         }
     }
+
+    init(input: EditTweetInput) {
+        self.init(variables: .init(input: input))
+    }
 }
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+extension RelaySwiftUI.QueryNext.WrappedValue where O == EditTweetMutation {
+    func get(input: EditTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<EditTweetMutation>.Result {
+        self.get(.init(input: input), fetchKey: fetchKey)
+    }
+}
+
+#endif
 
 struct EditTweetInput: VariableDataConvertible {
     var id: String
@@ -151,7 +168,7 @@ extension EditTweetMutation {
         struct EditTweetPayload_editTweet: Decodable {
             var tweetGroup: TweetGroup_tweetGroup
 
-            struct TweetGroup_tweetGroup: Decodable {
+            struct TweetGroup_tweetGroup: Decodable, Identifiable {
                 var id: String
                 var tweets: [Tweet_tweets]
 

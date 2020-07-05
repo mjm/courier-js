@@ -18,11 +18,11 @@ fragment SubscriptionSection_user on Viewer {
 """)
 
 struct SubscriptionSection: View {
-    @Fragment(SubscriptionSection_user.self) var user
+    @Fragment<SubscriptionSection_user> var user
 
-    init(user: SubscriptionSection_user.Key) {
-        self.$user = user
-    }
+//    init(user: SubscriptionSection_user.Key) {
+//        self.$user = user
+//    }
 
     var body: some View {
         Group {

@@ -9,13 +9,13 @@ fragment UserProfileSection_user on Viewer {
 """)
 
 struct UserProfileSection: View {
-    @Fragment(UserProfileSection_user.self) var user
+    @Fragment<UserProfileSection_user> var user
     @EnvironmentObject var authContext: AuthContext
     let onLogout: () -> Void
 
-    init(user: UserProfileSection_user_Key, onLogout: @escaping () -> Void) {
+    init(user: Fragment<UserProfileSection_user>, onLogout: @escaping () -> Void) {
         self.onLogout = onLogout
-        self.$user = user
+        self._user = user
     }
 
     var body: some View {

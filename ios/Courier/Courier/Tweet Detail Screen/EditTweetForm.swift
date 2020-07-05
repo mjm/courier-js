@@ -12,19 +12,17 @@ fragment EditTweetForm_tweetGroup on TweetGroup {
 """)
 
 struct EditTweetForm: View {
-    @Fragment(EditTweetForm_tweetGroup.self) var tweetGroup
+    @Fragment<EditTweetForm_tweetGroup> var tweetGroup
     @Binding var isEditing: Bool
 
-    init(tweetGroup: EditTweetForm_tweetGroup_Key, isEditing: Binding<Bool>) {
+    init(tweetGroup: Fragment<EditTweetForm_tweetGroup>, isEditing: Binding<Bool>) {
+        self._tweetGroup = tweetGroup
         self._isEditing = isEditing
-        self.$tweetGroup = tweetGroup
     }
 
-    var body: some View {
-        Group {
-            if tweetGroup != nil {
-                EditTweetList(tweetGroup: tweetGroup!, isEditing: $isEditing)
-            }
+    @ViewBuilder var body: some View {
+        if let tweetGroup = tweetGroup {
+            EditTweetList(tweetGroup: tweetGroup, isEditing: $isEditing)
         }
     }
 }

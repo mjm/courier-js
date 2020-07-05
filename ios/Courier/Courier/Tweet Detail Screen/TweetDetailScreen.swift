@@ -17,10 +17,10 @@ query TweetDetailScreenQuery($id: ID!) {
 struct TweetDetailScreen: View, Equatable {
     let id: String
 
-    @Query(TweetDetailScreenQuery.self) var tweet
+    @Query<TweetDetailScreenQuery> var tweet
     @State private var isEditing = false
 
-    var body: some View {
+    @ViewBuilder var body: some View {
         Group {
             switch tweet.get(.init(id: id)) {
             case .loading:
@@ -31,18 +31,19 @@ struct TweetDetailScreen: View, Equatable {
                 if let tweetGroup = data?.tweetGroup {
                     Group {
                         if isEditing {
-                            EditTweetForm(tweetGroup: tweetGroup, isEditing: $isEditing)
+                            EditTweetForm(tweetGroup: tweetGroup.asFragment(), isEditing: $isEditing)
                         } else {
-                            ViewTweet(tweetGroup: tweetGroup, isEditing: $isEditing)
+                            ViewTweet(tweetGroup: tweetGroup.asFragment(), isEditing: $isEditing)
                         }
                     }
-                    .navigationBarTitle(tweetGroup.tweets.count > 1 ? "Tweet Thread" : "Tweet")
+//                    .navigationTitle(tweetGroup.tweets.count > 1 ? "Tweet Thread" : "Tweet")
                 } else {
                     Spacer()
-                        .navigationBarTitle("Loading…")
+//                        .navigationTitle("Loading…")
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     static func ==(lhs: TweetDetailScreen, rhs: TweetDetailScreen) -> Bool {

@@ -40,7 +40,8 @@ struct EditTweetList: View {
         draftTweetGroup != nil
     }
 
-    var body: some View {
+    @ViewBuilder var body: some View {
+        #if os(iOS)
         Form {
             ForEach(draft.tweets.indices, id: \.self) { idx in
                 Section(header: Text("TWEET #\(idx + 1)")) {
@@ -48,17 +49,26 @@ struct EditTweetList: View {
                 }
             }
         }
-            .navigationBarBackButtonHidden(true)
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    self.isEditing = false
-                },
-                trailing: Button("Done") {
-                    self.editTweet.commit(self.draft)
-                    self.isEditing = false
-                }.disabled(!hasChanges || editTweet.isInFlight)
-            )
-            .overlay(savingOverlay)
+        .navigationBarBackButtonHidden(true)
+        .navigationBarItems(
+            leading: Button("Cancel") {
+                self.isEditing = false
+            },
+            trailing: Button("Done") {
+                self.editTweet.commit(self.draft)
+                self.isEditing = false
+            }.disabled(!hasChanges || editTweet.isInFlight)
+        )
+        #else
+        Form {
+            ForEach(draft.tweets.indices, id: \.self) { idx in
+                Section(header: Text("TWEET #\(idx + 1)")) {
+                    EditTweetSection(tweet: self.draftBinding.tweets[idx])
+                }
+            }
+        }
+        .overlay(savingOverlay)
+        #endif
     }
 
     var savingOverlay: some View {

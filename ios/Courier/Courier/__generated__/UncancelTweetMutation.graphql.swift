@@ -95,7 +95,24 @@ extension UncancelTweetMutation {
             ]
         }
     }
+
+    init(input: UncancelTweetInput) {
+        self.init(variables: .init(input: input))
+    }
 }
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+extension RelaySwiftUI.QueryNext.WrappedValue where O == UncancelTweetMutation {
+    func get(input: UncancelTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<UncancelTweetMutation>.Result {
+        self.get(.init(input: input), fetchKey: fetchKey)
+    }
+}
+
+#endif
 
 struct UncancelTweetInput: VariableDataConvertible {
     var id: String
@@ -114,7 +131,7 @@ extension UncancelTweetMutation {
         struct UncancelTweetPayload_uncancelTweet: Decodable {
             var tweetGroup: TweetGroup_tweetGroup
 
-            struct TweetGroup_tweetGroup: Decodable {
+            struct TweetGroup_tweetGroup: Decodable, Identifiable {
                 var id: String
                 var status: TweetStatus
             }

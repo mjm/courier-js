@@ -15,46 +15,46 @@ fragment TweetRow_tweetGroup on TweetGroup {
 """)
 
 struct TweetRow: View {
-    @Fragment(TweetRow_tweetGroup.self) var tweetGroup
+    @Fragment<TweetRow_tweetGroup> var tweetGroup
     @Binding var selectedTweetID: String?
 
-    init(tweetGroup: TweetRow_tweetGroup_Key, selectedTweetID: Binding<String?>) {
+    init(tweetGroup: Fragment<TweetRow_tweetGroup>, selectedTweetID: Binding<String?>) {
+        _tweetGroup = tweetGroup
         _selectedTweetID = selectedTweetID
-        $tweetGroup = tweetGroup
     }
 
     var body: some View {
         Group {
-            if tweetGroup != nil {
-                Button(action: { self.selectedTweetID = self.tweetGroup!.id }) {
-                    VStack(alignment: .leading, spacing: 12) {
-                        ForEach(tweetGroup!.tweets, id: \.body) { tweet in
-                            VStack(alignment: .leading, spacing: 8) {
-                                LinkedText(tweet.body)
-                                    .font(.body)
-                                AsyncImageGrid(
-                                    urls: tweet.mediaURLs.compactMap { URL(string: $0) },
-                                    placeholder: { ImagePlaceholder() }
-                                )
-                            }
-                        }
+            if let tweetGroup = tweetGroup {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(tweetGroup.tweets, id: \.body) { tweet in
+                        VStack(alignment: .leading, spacing: 8) {
+                            LinkedText(tweet.body)
+                                .font(.body)
 
-                        Group {
-                            if tweetGroup!.status == .canceled {
-                                Text("Canceled")
-                            } else if tweetGroup!.status == .posted {
-                                postedAtTimeText
-                            } else if tweetGroup!.postAfter != nil {
-                                Text("Will post automatically ") + Text(verbatim: "\(tweetGroup!.postAfter!.asDate!, relativeTo: Date())")
-                            }
+                            AsyncImageGrid(
+                                urls: tweet.mediaURLs.compactMap { URL(string: $0) },
+                                placeholder: { ImagePlaceholder() }
+                            )
                         }
-                            .font(Font.caption.italic())
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.leading)
-                    }.padding(.vertical, 4)
+                    }
+                    
+                    Group {
+                        if tweetGroup.status == .canceled {
+                            Text("Canceled")
+                        } else if tweetGroup.status == .posted {
+                            postedAtTimeText
+                        } else if tweetGroup.postAfter != nil {
+                            Text("Will post automatically ") + Text(verbatim: "\(tweetGroup.postAfter!.asDate!, relativeTo: Date())")
+                        }
+                    }
+                    .font(Font.caption.italic())
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.leading)
                 }
+                .padding(.vertical, 4)
             }
-        }.listRowBackground(selectedTweetID == tweetGroup?.id ? Color(.systemGray4) : nil)
+        }//.listRowBackground(selectedTweetID == tweetGroup?.id ? Color(.systemGray4) : nil)
     }
 
     private var postedAtTimeText: Text {

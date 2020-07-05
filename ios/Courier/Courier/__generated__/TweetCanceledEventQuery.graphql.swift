@@ -79,13 +79,30 @@ extension TweetCanceledEventQuery {
             ]
         }
     }
+
+    init(id: String) {
+        self.init(variables: .init(id: id))
+    }
 }
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetCanceledEventQuery {
+    func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetCanceledEventQuery>.Result {
+        self.get(.init(id: id), fetchKey: fetchKey)
+    }
+}
+
+#endif
 
 extension TweetCanceledEventQuery {
     struct Data: Decodable {
         var tweetGroup: TweetGroup_tweetGroup?
 
-        struct TweetGroup_tweetGroup: Decodable {
+        struct TweetGroup_tweetGroup: Decodable, Identifiable {
             var id: String
             var status: TweetStatus
         }

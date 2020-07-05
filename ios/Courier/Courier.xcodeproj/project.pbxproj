@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C9172F2424B10ADE00C453B6 /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9172F2224B10ADE00C453B6 /* Sidebar.swift */; };
+		C9172F2724B1108000C453B6 /* TweetsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9172F2524B1108000C453B6 /* TweetsScreen.swift */; };
 		C95AD85224687B2C00691417 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD85124687B2C00691417 /* AppDelegate.swift */; };
 		C95AD85624687B2C00691417 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD85524687B2C00691417 /* ContentView.swift */; };
 		C95AD85824687B2D00691417 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C95AD85724687B2D00691417 /* Assets.xcassets */; };
@@ -62,7 +64,6 @@
 		C9C3477924708A68004027DE /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = C9C3477824708A68004027DE /* Localizable.stringsdict */; };
 		C9C3477C24708B9B004027DE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = C9C3477A24708B80004027DE /* Localizable.strings */; };
 		C9C3477E24708D88004027DE /* NotificationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477D24708D88004027DE /* NotificationHandler.swift */; };
-		C9C347832471FA9D004027DE /* Relay in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347822471FA9D004027DE /* Relay */; };
 		C9C347852471FA9D004027DE /* RelaySwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C9C347842471FA9D004027DE /* RelaySwiftUI */; };
 		C9C61DB62477857700B344A3 /* ScreenCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */; };
 		C9C61DB8247797A900B344A3 /* ConnectionHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB7247797A900B344A3 /* ConnectionHelpers.swift */; };
@@ -82,6 +83,73 @@
 		C9DC5E7C2476340700FF31BC /* JWTDecode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E792476340700FF31BC /* JWTDecode.framework */; };
 		C9DC5E7D2476340700FF31BC /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7A2476340700FF31BC /* Auth0.framework */; };
 		C9DC5E7E2476340700FF31BC /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */; };
+		C9FE85D024B0CD0200B4CB45 /* Courier_macOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FE85CF24B0CD0200B4CB45 /* Courier_macOSApp.swift */; };
+		C9FE85D224B0CD0200B4CB45 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FE85D124B0CD0200B4CB45 /* ContentView.swift */; };
+		C9FE85D424B0CD0300B4CB45 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9FE85D324B0CD0300B4CB45 /* Assets.xcassets */; };
+		C9FE85D724B0CD0300B4CB45 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9FE85D624B0CD0300B4CB45 /* Preview Assets.xcassets */; };
+		C9FE85E624B0D2A600B4CB45 /* RelaySwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = C9FE85E524B0D2A600B4CB45 /* RelaySwiftUI */; };
+		C9FE85E724B0D31A00B4CB45 /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FE85E124B0D28400B4CB45 /* Auth0.framework */; };
+		C9FE85E824B0D31A00B4CB45 /* Auth0.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C9FE85E124B0D28400B4CB45 /* Auth0.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C9FE85EA24B0D32000B4CB45 /* JWTDecode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FE85DF24B0D28300B4CB45 /* JWTDecode.framework */; };
+		C9FE85EB24B0D32000B4CB45 /* JWTDecode.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C9FE85DF24B0D28300B4CB45 /* JWTDecode.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C9FE85EC24B0D32200B4CB45 /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9FE85E024B0D28300B4CB45 /* SimpleKeychain.framework */; };
+		C9FE85ED24B0D32200B4CB45 /* SimpleKeychain.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C9FE85E024B0D28300B4CB45 /* SimpleKeychain.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C9FE85EE24B0D4D900B4CB45 /* CurrentUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD87B2468810C00691417 /* CurrentUser.swift */; };
+		C9FE85EF24B0D4F200B4CB45 /* CurrentEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEE246E19F50096B5ED /* CurrentEndpoint.swift */; };
+		C9FE85F024B0D4FA00B4CB45 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD890246895BE00691417 /* Environment.swift */; };
+		C9FE85F224B0D52000B4CB45 /* TweetsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88724688E3D00691417 /* TweetsList.swift */; };
+		C9FE85F324B0D52300B4CB45 /* TweetRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD8922468E97600691417 /* TweetRow.swift */; };
+		C9FE85F424B0D52B00B4CB45 /* DetailedTweetList_tweetGroup.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD8A3246A458C00691417 /* DetailedTweetList_tweetGroup.graphql.swift */; };
+		C9FE85F524B0D52B00B4CB45 /* EditTweetForm_tweetGroup.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477124706EC0004027DE /* EditTweetForm_tweetGroup.graphql.swift */; };
+		C9FE85F624B0D52B00B4CB45 /* TweetsListPaginationQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88A24688EC900691417 /* TweetsListPaginationQuery.graphql.swift */; };
+		C9FE85F724B0D52B00B4CB45 /* DetailedTweetRow_tweet.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD8A4246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift */; };
+		C9FE85F824B0D52B00B4CB45 /* SubscriptionSection_user.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CDB246AEE6F0096B5ED /* SubscriptionSection_user.graphql.swift */; };
+		C9FE85F924B0D52B00B4CB45 /* TweetCanceledEventQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DC72479E04E00B344A3 /* TweetCanceledEventQuery.graphql.swift */; };
+		C9FE85FA24B0D52B00B4CB45 /* TweetPostedEventQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DC32479D12700B344A3 /* TweetPostedEventQuery.graphql.swift */; };
+		C9FE85FB24B0D52B00B4CB45 /* TweetUncanceledEventQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DCB2479E39400B344A3 /* TweetUncanceledEventQuery.graphql.swift */; };
+		C9FE85FC24B0D52B00B4CB45 /* ViewTweet_tweetGroup.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34765246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift */; };
+		C9FE85FD24B0D52B00B4CB45 /* TweetsList_tweets.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88B24688EC900691417 /* TweetsList_tweets.graphql.swift */; };
+		C9FE85FE24B0D52B00B4CB45 /* UserProfileSection_user.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD7246A68260096B5ED /* UserProfileSection_user.graphql.swift */; };
+		C9FE85FF24B0D52B00B4CB45 /* CancelTweetMutation.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CE0246B76850096B5ED /* CancelTweetMutation.graphql.swift */; };
+		C9FE860024B0D52B00B4CB45 /* TweetRow_tweetGroup.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD8942468E9E300691417 /* TweetRow_tweetGroup.graphql.swift */; };
+		C9FE860124B0D52B00B4CB45 /* UncancelTweetMutation.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CE8246D0E810096B5ED /* UncancelTweetMutation.graphql.swift */; };
+		C9FE860224B0D52B00B4CB45 /* EditTweetMutation.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3477324706F34004027DE /* EditTweetMutation.graphql.swift */; };
+		C9FE860324B0D52B00B4CB45 /* SettingsScreenQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD3246A63D90096B5ED /* SettingsScreenQuery.graphql.swift */; };
+		C9FE860424B0D52B00B4CB45 /* TweetEditedEventQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DCF2479E55500B344A3 /* TweetEditedEventQuery.graphql.swift */; };
+		C9FE860524B0D52B00B4CB45 /* DetailedTweetActions_tweetGroup.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CE4246D080B0096B5ED /* DetailedTweetActions_tweetGroup.graphql.swift */; };
+		C9FE860624B0D52B00B4CB45 /* TweetDetailScreenQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD89A246A443600691417 /* TweetDetailScreenQuery.graphql.swift */; };
+		C9FE860724B0D52B00B4CB45 /* PostTweetMutation.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEC246D12CC0096B5ED /* PostTweetMutation.graphql.swift */; };
+		C9FE860824B0D52B00B4CB45 /* TweetsScreenQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD88E246893D900691417 /* TweetsScreenQuery.graphql.swift */; };
+		C9FE860924B0D56100B4CB45 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD883246886BB00691417 /* Endpoint.swift */; };
+		C9FE860A24B0D58E00B4CB45 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CC4246A4CED0096B5ED /* LoadingView.swift */; };
+		C9FE860B24B0D59000B4CB45 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CC6246A509E0096B5ED /* ErrorView.swift */; };
+		C9FE860C24B0D59400B4CB45 /* LinkedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CCE246A5CC90096B5ED /* LinkedText.swift */; };
+		C9FE860D24B0D59400B4CB45 /* Delayed.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB92478D21B00B344A3 /* Delayed.swift */; };
+		C9FE860F24B0D59400B4CB45 /* AsyncImageGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CCA246A588D0096B5ED /* AsyncImageGrid.swift */; };
+		C9FE861024B0D59400B4CB45 /* ImagePlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CCC246A5AAF0096B5ED /* ImagePlaceholder.swift */; };
+		C9FE861124B0D59F00B4CB45 /* CancelTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CDE246B76400096B5ED /* CancelTweet.swift */; };
+		C9FE861224B0D59F00B4CB45 /* EditTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3476F24706E89004027DE /* EditTweet.swift */; };
+		C9FE861324B0D59F00B4CB45 /* ConnectionHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB7247797A900B344A3 /* ConnectionHelpers.swift */; };
+		C9FE861424B0D59F00B4CB45 /* UncancelTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CE6246D0E4E0096B5ED /* UncancelTweet.swift */; };
+		C9FE861524B0D59F00B4CB45 /* PostTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEA246D129F0096B5ED /* PostTweet.swift */; };
+		C9FE861624B0D5A300B4CB45 /* TweetCanceledEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DC52479E00000B344A3 /* TweetCanceledEvent.swift */; };
+		C9FE861724B0D5A300B4CB45 /* TweetPostedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DC12479CF7C00B344A3 /* TweetPostedEvent.swift */; };
+		C9FE861824B0D5A300B4CB45 /* TweetUncanceledEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DC92479E37500B344A3 /* TweetUncanceledEvent.swift */; };
+		C9FE861924B0D5A300B4CB45 /* TweetEditedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DCD2479E4D100B344A3 /* TweetEditedEvent.swift */; };
+		C9FE861A24B0D5A600B4CB45 /* RelaySwiftUINext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C9C01D24A59B4F005BF960 /* RelaySwiftUINext.swift */; };
+		C9FE861B24B0D5AB00B4CB45 /* ScreenCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */; };
+		C9FE861D24B0D5D700B4CB45 /* AsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FE861C24B0D5D700B4CB45 /* AsyncImage.swift */; };
+		C9FE861E24B0D68300B4CB45 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD1246A635B0096B5ED /* SettingsScreen.swift */; };
+		C9FE861F24B0D68700B4CB45 /* UserProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD5246A67CC0096B5ED /* UserProfileSection.swift */; };
+		C9FE862024B0D68700B4CB45 /* EnvironmentSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34761246E2C48004027DE /* EnvironmentSection.swift */; };
+		C9FE862124B0D68700B4CB45 /* SubscriptionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD9246AEE160096B5ED /* SubscriptionSection.swift */; };
+		C9FE862224B0D9E800B4CB45 /* EditTweetList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C3476B246FBE65004027DE /* EditTweetList.swift */; };
+		C9FE862324B0D9E800B4CB45 /* ViewTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34763246FBB9D004027DE /* ViewTweet.swift */; };
+		C9FE862424B0D9E800B4CB45 /* DetailedTweetActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CE2246D07D60096B5ED /* DetailedTweetActions.swift */; };
+		C9FE862524B0D9E800B4CB45 /* DetailedTweetRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD8A1246A44EB00691417 /* DetailedTweetRow.swift */; };
+		C9FE862624B0D9E800B4CB45 /* DetailedTweetList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD89F246A44DE00691417 /* DetailedTweetList.swift */; };
+		C9FE862724B0D9E800B4CB45 /* EditTweetForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34767246FBCE3004027DE /* EditTweetForm.swift */; };
+		C9FE862824B0D9E800B4CB45 /* TweetDetailScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD896246A439F00691417 /* TweetDetailScreen.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,8 +162,26 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		C9FE85E924B0D31A00B4CB45 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C9FE85EB24B0D32000B4CB45 /* JWTDecode.framework in Embed Frameworks */,
+				C9FE85E824B0D31A00B4CB45 /* Auth0.framework in Embed Frameworks */,
+				C9FE85ED24B0D32200B4CB45 /* SimpleKeychain.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		C9159852247229AE00E7FE03 /* Relay.swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Relay.swift; path = ../../../Relay.swift; sourceTree = "<group>"; };
+		C9172F2224B10ADE00C453B6 /* Sidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sidebar.swift; sourceTree = "<group>"; };
+		C9172F2524B1108000C453B6 /* TweetsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetsScreen.swift; sourceTree = "<group>"; };
 		C95AD84F24687B2C00691417 /* Courier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Courier.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C95AD85124687B2C00691417 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C95AD85524687B2C00691417 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -174,6 +260,17 @@
 		C9DC5E792476340700FF31BC /* JWTDecode.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JWTDecode.framework; path = Carthage/Build/iOS/JWTDecode.framework; sourceTree = "<group>"; };
 		C9DC5E7A2476340700FF31BC /* Auth0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Auth0.framework; path = Carthage/Build/iOS/Auth0.framework; sourceTree = "<group>"; };
 		C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/iOS/SimpleKeychain.framework; sourceTree = "<group>"; };
+		C9FE85CD24B0CD0200B4CB45 /* Courier macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Courier macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C9FE85CF24B0CD0200B4CB45 /* Courier_macOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Courier_macOSApp.swift; sourceTree = "<group>"; };
+		C9FE85D124B0CD0200B4CB45 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		C9FE85D324B0CD0300B4CB45 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C9FE85D624B0CD0300B4CB45 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		C9FE85D824B0CD0300B4CB45 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C9FE85D924B0CD0300B4CB45 /* Courier_macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Courier_macOS.entitlements; sourceTree = "<group>"; };
+		C9FE85DF24B0D28300B4CB45 /* JWTDecode.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JWTDecode.framework; path = Carthage/Build/Mac/JWTDecode.framework; sourceTree = "<group>"; };
+		C9FE85E024B0D28300B4CB45 /* SimpleKeychain.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SimpleKeychain.framework; path = Carthage/Build/Mac/SimpleKeychain.framework; sourceTree = "<group>"; };
+		C9FE85E124B0D28400B4CB45 /* Auth0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Auth0.framework; path = Carthage/Build/Mac/Auth0.framework; sourceTree = "<group>"; };
+		C9FE861C24B0D5D700B4CB45 /* AsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -185,7 +282,6 @@
 				C9C347852471FA9D004027DE /* RelaySwiftUI in Frameworks */,
 				C9DC5E7E2476340700FF31BC /* SimpleKeychain.framework in Frameworks */,
 				C9C34776247081E6004027DE /* PushNotifications in Frameworks */,
-				C9C347832471FA9D004027DE /* Relay in Frameworks */,
 				C9C61DBD2479C43500B344A3 /* PusherSwift in Frameworks */,
 				C9DC5E7D2476340700FF31BC /* Auth0.framework in Frameworks */,
 			);
@@ -195,6 +291,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9FE85CA24B0CD0200B4CB45 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9FE85EA24B0D32000B4CB45 /* JWTDecode.framework in Frameworks */,
+				C9FE85E624B0D2A600B4CB45 /* RelaySwiftUI in Frameworks */,
+				C9FE85EC24B0D32200B4CB45 /* SimpleKeychain.framework in Frameworks */,
+				C9FE85E724B0D31A00B4CB45 /* Auth0.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,9 +358,8 @@
 		C95AD87224687B9300691417 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C9DC5E7A2476340700FF31BC /* Auth0.framework */,
-				C9DC5E792476340700FF31BC /* JWTDecode.framework */,
-				C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */,
+				C9FE85DD24B0D25000B4CB45 /* iOS */,
+				C9FE85DE24B0D25A00B4CB45 /* macOS */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -291,6 +397,7 @@
 			children = (
 				C9C9C01B24A46EE2005BF960 /* App.swift */,
 				C95AD85524687B2C00691417 /* ContentView.swift */,
+				C9172F2224B10ADE00C453B6 /* Sidebar.swift */,
 				C96F4CEE246E19F50096B5ED /* CurrentEndpoint.swift */,
 				C95AD87B2468810C00691417 /* CurrentUser.swift */,
 				C96F4CC4246A4CED0096B5ED /* LoadingView.swift */,
@@ -357,6 +464,7 @@
 				C9159852247229AE00E7FE03 /* Relay.swift */,
 				C95AD85024687B2C00691417 /* Courier */,
 				C95AD86724687B2D00691417 /* CourierTests */,
+				C9FE85CE24B0CD0200B4CB45 /* Courier macOS */,
 				C9A7496B237852430046E924 /* Products */,
 				C95AD87224687B9300691417 /* Frameworks */,
 			);
@@ -367,6 +475,7 @@
 			children = (
 				C95AD84F24687B2C00691417 /* Courier.app */,
 				C95AD86424687B2D00691417 /* CourierTests.xctest */,
+				C9FE85CD24B0CD0200B4CB45 /* Courier macOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -380,6 +489,49 @@
 				C9C61DCD2479E4D100B344A3 /* TweetEditedEvent.swift */,
 			);
 			path = Events;
+			sourceTree = "<group>";
+		};
+		C9FE85CE24B0CD0200B4CB45 /* Courier macOS */ = {
+			isa = PBXGroup;
+			children = (
+				C9FE85CF24B0CD0200B4CB45 /* Courier_macOSApp.swift */,
+				C9FE85D124B0CD0200B4CB45 /* ContentView.swift */,
+				C9FE861C24B0D5D700B4CB45 /* AsyncImage.swift */,
+				C9172F2524B1108000C453B6 /* TweetsScreen.swift */,
+				C9FE85D324B0CD0300B4CB45 /* Assets.xcassets */,
+				C9FE85D824B0CD0300B4CB45 /* Info.plist */,
+				C9FE85D924B0CD0300B4CB45 /* Courier_macOS.entitlements */,
+				C9FE85D524B0CD0300B4CB45 /* Preview Content */,
+			);
+			path = "Courier macOS";
+			sourceTree = "<group>";
+		};
+		C9FE85D524B0CD0300B4CB45 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				C9FE85D624B0CD0300B4CB45 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		C9FE85DD24B0D25000B4CB45 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				C9DC5E7A2476340700FF31BC /* Auth0.framework */,
+				C9DC5E792476340700FF31BC /* JWTDecode.framework */,
+				C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		C9FE85DE24B0D25A00B4CB45 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				C9FE85E124B0D28400B4CB45 /* Auth0.framework */,
+				C9FE85DF24B0D28300B4CB45 /* JWTDecode.framework */,
+				C9FE85E024B0D28300B4CB45 /* SimpleKeychain.framework */,
+			);
+			name = macOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -401,7 +553,6 @@
 			name = Courier;
 			packageProductDependencies = (
 				C9C34775247081E6004027DE /* PushNotifications */,
-				C9C347822471FA9D004027DE /* Relay */,
 				C9C347842471FA9D004027DE /* RelaySwiftUI */,
 				C9C61DBC2479C43500B344A3 /* PusherSwift */,
 			);
@@ -427,13 +578,34 @@
 			productReference = C95AD86424687B2D00691417 /* CourierTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		C9FE85CC24B0CD0200B4CB45 /* Courier macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C9FE85DC24B0CD0300B4CB45 /* Build configuration list for PBXNativeTarget "Courier macOS" */;
+			buildPhases = (
+				C9FE85C924B0CD0200B4CB45 /* Sources */,
+				C9FE85CA24B0CD0200B4CB45 /* Frameworks */,
+				C9FE85CB24B0CD0200B4CB45 /* Resources */,
+				C9FE85E924B0D31A00B4CB45 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Courier macOS";
+			packageProductDependencies = (
+				C9FE85E524B0D2A600B4CB45 /* RelaySwiftUI */,
+			);
+			productName = "Courier macOS";
+			productReference = C9FE85CD24B0CD0200B4CB45 /* Courier macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		C9A74962237852430046E924 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1140;
+				LastSwiftUpdateCheck = 1200;
 				LastUpgradeCheck = 1120;
 				ORGANIZATIONNAME = "Matt Moriarity";
 				TargetAttributes = {
@@ -443,6 +615,9 @@
 					C95AD86324687B2D00691417 = {
 						CreatedOnToolsVersion = 11.4.1;
 						TestTargetID = C95AD84E24687B2C00691417;
+					};
+					C9FE85CC24B0CD0200B4CB45 = {
+						CreatedOnToolsVersion = 12.0;
 					};
 				};
 			};
@@ -466,6 +641,7 @@
 			targets = (
 				C95AD84E24687B2C00691417 /* Courier */,
 				C95AD86324687B2D00691417 /* CourierTests */,
+				C9FE85CC24B0CD0200B4CB45 /* Courier macOS */,
 			);
 		};
 /* End PBXProject section */
@@ -487,6 +663,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9FE85CB24B0CD0200B4CB45 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9FE85D724B0CD0300B4CB45 /* Preview Assets.xcassets in Resources */,
+				C9FE85D424B0CD0300B4CB45 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -594,6 +779,73 @@
 			buildActionMask = 2147483647;
 			files = (
 				C95AD86924687B2D00691417 /* CourierTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C9FE85C924B0CD0200B4CB45 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9FE860324B0D52B00B4CB45 /* SettingsScreenQuery.graphql.swift in Sources */,
+				C9FE85FA24B0D52B00B4CB45 /* TweetPostedEventQuery.graphql.swift in Sources */,
+				C9FE862424B0D9E800B4CB45 /* DetailedTweetActions.swift in Sources */,
+				C9FE862624B0D9E800B4CB45 /* DetailedTweetList.swift in Sources */,
+				C9172F2724B1108000C453B6 /* TweetsScreen.swift in Sources */,
+				C9FE85F824B0D52B00B4CB45 /* SubscriptionSection_user.graphql.swift in Sources */,
+				C9FE860C24B0D59400B4CB45 /* LinkedText.swift in Sources */,
+				C9FE861824B0D5A300B4CB45 /* TweetUncanceledEvent.swift in Sources */,
+				C9FE862724B0D9E800B4CB45 /* EditTweetForm.swift in Sources */,
+				C9FE85FB24B0D52B00B4CB45 /* TweetUncanceledEventQuery.graphql.swift in Sources */,
+				C9FE860924B0D56100B4CB45 /* Endpoint.swift in Sources */,
+				C9172F2424B10ADE00C453B6 /* Sidebar.swift in Sources */,
+				C9FE861724B0D5A300B4CB45 /* TweetPostedEvent.swift in Sources */,
+				C9FE85FF24B0D52B00B4CB45 /* CancelTweetMutation.graphql.swift in Sources */,
+				C9FE860024B0D52B00B4CB45 /* TweetRow_tweetGroup.graphql.swift in Sources */,
+				C9FE862124B0D68700B4CB45 /* SubscriptionSection.swift in Sources */,
+				C9FE861224B0D59F00B4CB45 /* EditTweet.swift in Sources */,
+				C9FE862024B0D68700B4CB45 /* EnvironmentSection.swift in Sources */,
+				C9FE861124B0D59F00B4CB45 /* CancelTweet.swift in Sources */,
+				C9FE85F524B0D52B00B4CB45 /* EditTweetForm_tweetGroup.graphql.swift in Sources */,
+				C9FE85EF24B0D4F200B4CB45 /* CurrentEndpoint.swift in Sources */,
+				C9FE860424B0D52B00B4CB45 /* TweetEditedEventQuery.graphql.swift in Sources */,
+				C9FE861E24B0D68300B4CB45 /* SettingsScreen.swift in Sources */,
+				C9FE85D224B0CD0200B4CB45 /* ContentView.swift in Sources */,
+				C9FE85F324B0D52300B4CB45 /* TweetRow.swift in Sources */,
+				C9FE860724B0D52B00B4CB45 /* PostTweetMutation.graphql.swift in Sources */,
+				C9FE85EE24B0D4D900B4CB45 /* CurrentUser.swift in Sources */,
+				C9FE860524B0D52B00B4CB45 /* DetailedTweetActions_tweetGroup.graphql.swift in Sources */,
+				C9FE860B24B0D59000B4CB45 /* ErrorView.swift in Sources */,
+				C9FE85FE24B0D52B00B4CB45 /* UserProfileSection_user.graphql.swift in Sources */,
+				C9FE861A24B0D5A600B4CB45 /* RelaySwiftUINext.swift in Sources */,
+				C9FE861F24B0D68700B4CB45 /* UserProfileSection.swift in Sources */,
+				C9FE861924B0D5A300B4CB45 /* TweetEditedEvent.swift in Sources */,
+				C9FE861424B0D59F00B4CB45 /* UncancelTweet.swift in Sources */,
+				C9FE862324B0D9E800B4CB45 /* ViewTweet.swift in Sources */,
+				C9FE860824B0D52B00B4CB45 /* TweetsScreenQuery.graphql.swift in Sources */,
+				C9FE861624B0D5A300B4CB45 /* TweetCanceledEvent.swift in Sources */,
+				C9FE861D24B0D5D700B4CB45 /* AsyncImage.swift in Sources */,
+				C9FE85F424B0D52B00B4CB45 /* DetailedTweetList_tweetGroup.graphql.swift in Sources */,
+				C9FE85F224B0D52000B4CB45 /* TweetsList.swift in Sources */,
+				C9FE860224B0D52B00B4CB45 /* EditTweetMutation.graphql.swift in Sources */,
+				C9FE861524B0D59F00B4CB45 /* PostTweet.swift in Sources */,
+				C9FE85F924B0D52B00B4CB45 /* TweetCanceledEventQuery.graphql.swift in Sources */,
+				C9FE85F624B0D52B00B4CB45 /* TweetsListPaginationQuery.graphql.swift in Sources */,
+				C9FE85F724B0D52B00B4CB45 /* DetailedTweetRow_tweet.graphql.swift in Sources */,
+				C9FE861324B0D59F00B4CB45 /* ConnectionHelpers.swift in Sources */,
+				C9FE860624B0D52B00B4CB45 /* TweetDetailScreenQuery.graphql.swift in Sources */,
+				C9FE861B24B0D5AB00B4CB45 /* ScreenCoordinator.swift in Sources */,
+				C9FE85FD24B0D52B00B4CB45 /* TweetsList_tweets.graphql.swift in Sources */,
+				C9FE860124B0D52B00B4CB45 /* UncancelTweetMutation.graphql.swift in Sources */,
+				C9FE860F24B0D59400B4CB45 /* AsyncImageGrid.swift in Sources */,
+				C9FE85D024B0CD0200B4CB45 /* Courier_macOSApp.swift in Sources */,
+				C9FE85FC24B0D52B00B4CB45 /* ViewTweet_tweetGroup.graphql.swift in Sources */,
+				C9FE860A24B0D58E00B4CB45 /* LoadingView.swift in Sources */,
+				C9FE862824B0D9E800B4CB45 /* TweetDetailScreen.swift in Sources */,
+				C9FE860D24B0D59400B4CB45 /* Delayed.swift in Sources */,
+				C9FE861024B0D59400B4CB45 /* ImagePlaceholder.swift in Sources */,
+				C9FE85F024B0D4FA00B4CB45 /* Environment.swift in Sources */,
+				C9FE862524B0D9E800B4CB45 /* DetailedTweetRow.swift in Sources */,
+				C9FE862224B0D9E800B4CB45 /* EditTweetList.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -839,6 +1091,60 @@
 			};
 			name = Release;
 		};
+		C9FE85DA24B0CD0300B4CB45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = "Courier macOS/Courier_macOS.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"Courier macOS/Preview Content\"";
+				DEVELOPMENT_TEAM = PE8BN56Z28;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/Carthage/Build/Mac";
+				INFOPLIST_FILE = "Courier macOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.16;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.Courier;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C9FE85DB24B0CD0300B4CB45 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CODE_SIGN_ENTITLEMENTS = "Courier macOS/Courier_macOS.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_ASSET_PATHS = "\"Courier macOS/Preview Content\"";
+				DEVELOPMENT_TEAM = PE8BN56Z28;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/Carthage/Build/Mac";
+				INFOPLIST_FILE = "Courier macOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.16;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.Courier;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -865,6 +1171,15 @@
 			buildConfigurations = (
 				C9A74989237852450046E924 /* Debug */,
 				C9A7498A237852450046E924 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C9FE85DC24B0CD0300B4CB45 /* Build configuration list for PBXNativeTarget "Courier macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C9FE85DA24B0CD0300B4CB45 /* Debug */,
+				C9FE85DB24B0CD0300B4CB45 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -904,11 +1219,6 @@
 			package = C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */;
 			productName = PushNotifications;
 		};
-		C9C347822471FA9D004027DE /* Relay */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */;
-			productName = Relay;
-		};
 		C9C347842471FA9D004027DE /* RelaySwiftUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */;
@@ -918,6 +1228,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C9C61DBB2479C43500B344A3 /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */;
 			productName = PusherSwift;
+		};
+		C9FE85E524B0D2A600B4CB45 /* RelaySwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = RelaySwiftUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

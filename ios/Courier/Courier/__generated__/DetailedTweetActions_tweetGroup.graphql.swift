@@ -45,7 +45,7 @@ struct DetailedTweetActions_tweetGroup {
 
 
 extension DetailedTweetActions_tweetGroup {
-    struct Data: Decodable {
+    struct Data: Decodable, Identifiable {
         var tweets: [Tweet_tweets]
         var id: String
         var status: TweetStatus
@@ -64,3 +64,16 @@ protocol DetailedTweetActions_tweetGroup_Key {
 }
 
 extension DetailedTweetActions_tweetGroup: Relay.Fragment {}
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+extension DetailedTweetActions_tweetGroup_Key {
+    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+    func asFragment() -> RelaySwiftUI.FragmentNext<DetailedTweetActions_tweetGroup> {
+        RelaySwiftUI.FragmentNext<DetailedTweetActions_tweetGroup>(self)
+    }
+}
+
+#endif

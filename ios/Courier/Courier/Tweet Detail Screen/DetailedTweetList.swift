@@ -11,33 +11,21 @@ fragment DetailedTweetList_tweetGroup on TweetGroup {
 """)
 
 struct DetailedTweetList: View {
-    @Fragment(DetailedTweetList_tweetGroup.self) var tweetGroup
+    @Fragment<DetailedTweetList_tweetGroup> var tweetGroup
 
-    init(tweetGroup: DetailedTweetList_tweetGroup_Key) {
-        self.$tweetGroup = tweetGroup
-    }
-
-    var body: some View {
-        Group {
-            if tweetGroup == nil {
-                EmptyView()
-            } else {
-                Section(header: headerView) {
-                    ForEach(tweetGroup!.tweets, id: \.body) { tweet in
-                        DetailedTweetRow(tweet: tweet)
-                    }
+    @ViewBuilder var body: some View {
+        if let tweetGroup = tweetGroup {
+            Section(header: headerView) {
+                ForEach(tweetGroup.tweets, id: \.body) { tweet in
+                    DetailedTweetRow(tweet: tweet.asFragment())
                 }
             }
         }
     }
 
-    var headerView: some View {
-        Group {
-            if tweetGroup!.tweets.count > 1 {
-                Text("Thread with \(tweetGroup!.tweets.count) tweets")
-            } else {
-                EmptyView()
-            }
+    @ViewBuilder var headerView: some View {
+        if tweetGroup!.tweets.count > 1 {
+            Text("Thread with \(tweetGroup!.tweets.count) tweets")
         }
     }
 }

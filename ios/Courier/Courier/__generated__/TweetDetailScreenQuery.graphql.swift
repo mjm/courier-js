@@ -161,13 +161,30 @@ extension TweetDetailScreenQuery {
             ]
         }
     }
+
+    init(id: String) {
+        self.init(variables: .init(id: id))
+    }
 }
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetDetailScreenQuery {
+    func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetDetailScreenQuery>.Result {
+        self.get(.init(id: id), fetchKey: fetchKey)
+    }
+}
+
+#endif
 
 extension TweetDetailScreenQuery {
     struct Data: Decodable {
         var tweetGroup: TweetGroup_tweetGroup?
 
-        struct TweetGroup_tweetGroup: Decodable, ViewTweet_tweetGroup_Key, EditTweetForm_tweetGroup_Key {
+        struct TweetGroup_tweetGroup: Decodable, Identifiable, ViewTweet_tweetGroup_Key, EditTweetForm_tweetGroup_Key {
             var id: String
             var tweets: [Tweet_tweets]
             var fragment_ViewTweet_tweetGroup: FragmentPointer

@@ -39,11 +39,13 @@ struct EnvironmentProvider<Content: View>: View {
             network: Network(credentialsManager: authContext.credentialsManager, endpoint: endpoint),
             store: Store(source: DefaultRecordSource()))
 
+        #if os(iOS)
         NotificationHandler.shared.environment = environment
 
         EventListener.shared.endpoint = endpoint
         EventListener.shared.userID = authContext.userInfo!.sub
         EventListener.shared.environment = environment
+        #endif
 
         return environment
     }

@@ -146,7 +146,24 @@ extension PostTweetMutation {
             ]
         }
     }
+
+    init(input: PostTweetInput) {
+        self.init(variables: .init(input: input))
+    }
 }
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+extension RelaySwiftUI.QueryNext.WrappedValue where O == PostTweetMutation {
+    func get(input: PostTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<PostTweetMutation>.Result {
+        self.get(.init(input: input), fetchKey: fetchKey)
+    }
+}
+
+#endif
 
 struct PostTweetInput: VariableDataConvertible {
     var id: String
@@ -169,7 +186,7 @@ extension PostTweetMutation {
         struct PostTweetPayload_postTweet: Decodable {
             var tweetGroup: TweetGroup_tweetGroup
 
-            struct TweetGroup_tweetGroup: Decodable {
+            struct TweetGroup_tweetGroup: Decodable, Identifiable {
                 var id: String
                 var tweets: [Tweet_tweets]
                 var status: TweetStatus

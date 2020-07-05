@@ -22,40 +22,44 @@ fragment TweetsList_tweets on Viewer
 """)
 
 struct TweetsList: View {
-    @PaginationFragment(TweetsList_tweets.self) var tweets
+    @PaginationFragment<TweetsList_tweets> var tweets
     let filter: TweetFilter
     @EnvironmentObject var screenCoordinator: ScreenCoordinator
 
-    init(tweets: TweetsList_tweets_Key, filter: TweetFilter) {
+    init(tweets: PaginationFragment<TweetsList_tweets>, filter: TweetFilter) {
+        self._tweets = tweets
         self.filter = filter
-        self.$tweets = tweets
-    }
-
-    typealias Tweet = TweetsList_tweets.Data.TweetGroupConnection_allTweets.TweetGroupEdge_edges.TweetGroup_node
-
-    var tweetNodes: [Tweet] {
-        tweets?.allTweets.edges.map { $0.node } ?? []
     }
 
     var paging: Paginating { tweets! }
     
-    var body: some View {
-        Group {
-            if tweets == nil {
-                Spacer()
-            } else if tweetNodes.isEmpty {
+    @ViewBuilder var body: some View {
+        if let tweets = tweets {
+            if tweets.allTweets.isEmpty {
                 emptyView
             } else {
                 List {
-                    ForEach(tweetNodes, id: \.id) { tweet in
-                        TweetRow(tweetGroup: tweet, selectedTweetID: self.$screenCoordinator.selectedTweetID)
+                    ForEach(tweets.allTweets) { tweet in
+                        NavigationLink(
+                            destination: TweetDetailScreen(id: tweet.id),
+                            tag: tweet.id,
+                            selection: $screenCoordinator.selectedTweetID
+                        ) {
+                            TweetRow(tweetGroup: tweet.asFragment(), selectedTweetID: $screenCoordinator.selectedTweetID)
+                        }
+                        .tag(tweet.id)
                     }
 
                     pagingView
                 }
                 .listStyle(PlainListStyle())
-                .overlay(navigationOverlay)
+//                .onReceive(screenCoordinator.$selectedTweetID) { tweetID in
+//                    selection = tweetID
+//                }
+//                .overlay(navigationOverlay)
             }
+        } else {
+            Spacer()
         }
     }
 
@@ -78,13 +82,14 @@ struct TweetsList: View {
             Image(systemName: "tray")
                 .font(.system(size: 40))
                 .padding(.bottom, 10)
+            
             Text(filter == .upcoming ? "You don't have any upcoming tweets to review." : "You haven't posted any tweets with Courier yet.")
                 .font(.body)
                 .multilineTextAlignment(.center)
         }
-            .foregroundColor(.secondary)
-            .padding(.bottom, 150)
-            .padding(.horizontal, 30)
+        .foregroundColor(.secondary)
+        .padding(.bottom, 150)
+        .padding(.horizontal, 30)
     }
 
     var pagingView: some View {
@@ -95,17 +100,18 @@ struct TweetsList: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 20)
             } else if paging.hasNext {
-                Button(action: {
+                Button {
                     tweets?.loadNext(10)
-                }, label: {
+                } label: {
                     Text("Load more tweets…")
                         .fontWeight(.bold)
                         .foregroundColor(.secondary)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.vertical, 20)
-                }).onAppear(delay: 0.3) {
-                    tweets?.loadNext(10)
                 }
+//                .onAppear(delay: 0.3) {
+//                    tweets?.loadNext(10)
+//                }
             }
         }
     }

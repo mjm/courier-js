@@ -61,10 +61,13 @@ struct LinkedText: View {
     var body: some View {
         LinkColoredText(text: text, links: links)
             .font(.body) // enforce here because the link tapping won't be right if it's different
+            .lineLimit(nil)
+            .multilineTextAlignment(.leading)
             .overlay(LinkTapOverlay(text: text, links: links))
     }
 }
 
+#if os(iOS)
 private struct LinkTapOverlay: UIViewRepresentable {
     let text: String
     let links: [NSTextCheckingResult]
@@ -153,6 +156,19 @@ private class LinkTapOverlayView: UIView {
         textContainer.size = newSize
     }
 }
+
+#else
+
+private struct LinkTapOverlay: View {
+    let text: String
+    let links: [NSTextCheckingResult]
+    
+    var body: some View {
+        EmptyView()
+    }
+}
+
+#endif
 
 struct LinkedText_Previews: PreviewProvider {
     static var previews: some View {

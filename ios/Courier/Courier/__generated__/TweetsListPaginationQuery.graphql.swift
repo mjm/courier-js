@@ -184,7 +184,24 @@ extension TweetsListPaginationQuery {
             ]
         }
     }
+
+    init(filter: TweetFilter? = nil, count: Int? = nil, cursor: String? = nil) {
+        self.init(variables: .init(filter: filter, count: count, cursor: cursor))
+    }
 }
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetsListPaginationQuery {
+    func get(filter: TweetFilter? = nil, count: Int? = nil, cursor: String? = nil, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetsListPaginationQuery>.Result {
+        self.get(.init(filter: filter, count: count, cursor: cursor), fetchKey: fetchKey)
+    }
+}
+
+#endif
 
 extension TweetsListPaginationQuery {
     struct Data: Decodable {

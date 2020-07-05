@@ -10,27 +10,32 @@ fragment ViewTweet_tweetGroup on TweetGroup {
 """)
 
 struct ViewTweet: View {
-    @Fragment(ViewTweet_tweetGroup.self) var tweetGroup
+    @Fragment<ViewTweet_tweetGroup> var tweetGroup
     @Binding var isEditing: Bool
 
-    init(tweetGroup: ViewTweet_tweetGroup_Key, isEditing: Binding<Bool>) {
+    init(tweetGroup: Fragment<ViewTweet_tweetGroup>, isEditing: Binding<Bool>) {
+        self._tweetGroup = tweetGroup
         self._isEditing = isEditing
-        self.$tweetGroup = tweetGroup
     }
 
-    var body: some View {
-        Group {
-            if let tweetGroup = tweetGroup {
-                Form {
-                    DetailedTweetList(tweetGroup: tweetGroup)
-                    DetailedTweetActions(tweetGroup: tweetGroup)
-                }
-                .navigationBarItems(leading: EmptyView(), trailing: Group {
-                    if tweetGroup.status == .draft {
-                        Button("Edit") { isEditing = true }
-                    }
-                })
+    @ViewBuilder var body: some View {
+        if let tweetGroup = tweetGroup {
+            #if os(iOS)
+            Form {
+                DetailedTweetList(tweetGroup: tweetGroup.asFragment())
+                DetailedTweetActions(tweetGroup: tweetGroup.asFragment())
             }
+            .navigationBarItems(leading: EmptyView(), trailing: Group {
+                if tweetGroup.status == .draft {
+                    Button("Edit") { isEditing = true }
+                }
+            })
+            #else
+            Form {
+                DetailedTweetList(tweetGroup: tweetGroup.asFragment())
+                DetailedTweetActions(tweetGroup: tweetGroup.asFragment())
+            }
+            #endif
         }
     }
 }

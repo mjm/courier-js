@@ -18,6 +18,7 @@ struct SettingsScreen: View {
 
     var body: some View {
         NavigationView {
+            #if os(iOS)
             Group {
                 switch query.get() {
                 case .loading:
@@ -27,11 +28,11 @@ struct SettingsScreen: View {
                 case .success(let data):
                     if let viewer = data?.viewer {
                         Form {
-                            UserProfileSection(user: viewer, onLogout: {
+                            UserProfileSection(user: viewer.asFragment(), onLogout: {
                                 isPresented = false
                                 authContext.logout()
                             })
-                            SubscriptionSection(user: viewer)
+                            SubscriptionSection(user: viewer.asFragment())
                             #if DEBUG
                             EnvironmentSection(isPresented: $isPresented)
                             #endif
@@ -43,6 +44,9 @@ struct SettingsScreen: View {
             }
             .navigationBarItems(trailing: Button("Close") { isPresented = false })
             .navigationBarTitle(Text("Settings"), displayMode: .inline)
+            #else
+            EmptyView()
+            #endif
         }
     }
 }

@@ -1,6 +1,8 @@
 import Auth0
 import Combine
+#if os(iOS)
 import PushNotifications
+#endif
 import SwiftUI
 
 struct CurrentUser<Content: View>: View {
@@ -120,7 +122,9 @@ class AuthContext: ObservableObject {
         endpoint.webAuth.clearSession(federated: false) { result in
             DispatchQueue.main.async {
                 _ = self.credentialsManager.clear()
+                #if os(iOS)
                 self.endpoint.pushNotifications.clearAllState { }
+                #endif
                 self.state = .loginNeeded
             }
         }
@@ -190,6 +194,7 @@ class AuthContext: ObservableObject {
                     self.state = .loginFailed(error)
                 case .success(result: let userInfo):
                     NSLog("user info: name=\(userInfo.name ?? "<none>") nickname=\(userInfo.nickname ?? "<none>")")
+                    #if os(iOS)
                     self.endpoint.pushNotifications.setUserId(userInfo.sub, tokenProvider: self.endpoint.beamsTokenProvider) { error in
                         if let error = error {
                             NSLog("failed to set user ID for push notifications: \(error)")
@@ -197,6 +202,7 @@ class AuthContext: ObservableObject {
                             NSLog("set user ID for push notifications")
                         }
                     }
+                    #endif
                     self.state = .loggedIn(credentials, userInfo)
                 }
             }

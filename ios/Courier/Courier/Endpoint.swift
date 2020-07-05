@@ -1,6 +1,8 @@
 import Auth0
 import Foundation
+#if os(iOS)
 import PushNotifications
+#endif
 
 struct Endpoint {
     var environment: String
@@ -9,9 +11,11 @@ struct Endpoint {
     var pusherAppKey: String
     var webAuth: WebAuth
     var authentication: Authentication
-    var pushNotifications: PushNotifications
     var credentialsManager: CredentialsManager
+    #if os(iOS)
+    var pushNotifications: PushNotifications
     var beamsTokenProvider: BeamsTokenProvider!
+    #endif
 
     init(
         environment: String,
@@ -31,9 +35,10 @@ struct Endpoint {
         let authentication = Auth0.authentication(clientId: clientId, domain: domain)
         self.authentication = authentication
         let credentialsManager = CredentialsManager(authentication: authentication, storeKey: environment)
-
-        self.pushNotifications = PushNotifications(instanceId: beamInstanceId)
+        
         self.credentialsManager = credentialsManager
+        #if os(iOS)
+        self.pushNotifications = PushNotifications(instanceId: beamInstanceId)
         self.beamsTokenProvider = BeamsTokenProvider(authURL: pusherAuthURL.absoluteString) {
             var token = ""
             let sema = DispatchSemaphore(value: 0)
@@ -52,6 +57,7 @@ struct Endpoint {
             let headers = ["Authorization": "Bearer \(token)"]
             return AuthData(headers: headers, queryParams: [:])
         }
+        #endif
     }
 
     static let staging = Endpoint(

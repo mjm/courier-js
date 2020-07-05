@@ -37,3 +37,16 @@ protocol UserProfileSection_user_Key {
 }
 
 extension UserProfileSection_user: Relay.Fragment {}
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+extension UserProfileSection_user_Key {
+    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+    func asFragment() -> RelaySwiftUI.FragmentNext<UserProfileSection_user> {
+        RelaySwiftUI.FragmentNext<UserProfileSection_user>(self)
+    }
+}
+
+#endif

@@ -45,7 +45,7 @@ struct TweetRow_tweetGroup {
 
 
 extension TweetRow_tweetGroup {
-    struct Data: Decodable {
+    struct Data: Decodable, Identifiable {
         var id: String
         var status: TweetStatus
         var postedAt: String?
@@ -64,3 +64,16 @@ protocol TweetRow_tweetGroup_Key {
 }
 
 extension TweetRow_tweetGroup: Relay.Fragment {}
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+extension TweetRow_tweetGroup_Key {
+    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+    func asFragment() -> RelaySwiftUI.FragmentNext<TweetRow_tweetGroup> {
+        RelaySwiftUI.FragmentNext<TweetRow_tweetGroup>(self)
+    }
+}
+
+#endif

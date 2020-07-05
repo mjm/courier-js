@@ -13,13 +13,13 @@ query TweetsScreenQuery($filter: TweetFilter!) {
 
 struct TweetsScreen: View {
     @State private var filter: TweetFilter = .upcoming
-    @Query(TweetsScreenQuery.self, fetchPolicy: .storeAndNetwork) var tweets
+    @Query<TweetsScreenQuery>(fetchPolicy: .storeAndNetwork) var tweets
     @RelayEnvironment var environment: Relay.Environment
     @EnvironmentObject var authContext: AuthContext
     @State private var isSettingsPresented = false
     @State private var isInspectorPresented = false
 
-    var body: some View {
+    @ViewBuilder var body: some View {
         VStack(spacing: 0) {
             Picker(selection: $filter, label: EmptyView()) {
                 Text("Upcoming").tag(TweetFilter.upcoming)
@@ -62,18 +62,19 @@ struct TweetsScreen: View {
 
     var tweetsList: some View {
         Group {
-            switch tweets.get(.init(filter: filter)) {
+            switch tweets.get(filter: filter) {
             case .loading:
                 LoadingView(text: "Loading tweets…")
             case .failure(let error):
                 ErrorView(error: error)
             case .success(let data):
                 if let viewer = data?.viewer {
-                    TweetsList(tweets: viewer, filter: filter)
+                    TweetsList(tweets: viewer.asFragment(), filter: filter)
                 } else {
                     Spacer()
                 }
             }
-        }.frame(maxHeight: .infinity)
+        }
+        .frame(maxHeight: .infinity)
     }
 }

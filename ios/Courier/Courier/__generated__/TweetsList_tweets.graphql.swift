@@ -73,13 +73,13 @@ extension TweetsList_tweets {
     struct Data: Decodable {
         var allTweets: TweetGroupConnection_allTweets
 
-        struct TweetGroupConnection_allTweets: Decodable {
+        struct TweetGroupConnection_allTweets: Decodable, ConnectionCollection {
             var edges: [TweetGroupEdge_edges]
 
-            struct TweetGroupEdge_edges: Decodable {
+            struct TweetGroupEdge_edges: Decodable, ConnectionEdge {
                 var node: TweetGroup_node
 
-                struct TweetGroup_node: Decodable, TweetRow_tweetGroup_Key {
+                struct TweetGroup_node: Decodable, Identifiable, TweetRow_tweetGroup_Key, ConnectionNode {
                     var id: String
                     var fragment_TweetRow_tweetGroup: FragmentPointer
                 }
@@ -106,3 +106,21 @@ extension TweetsList_tweets: Relay.PaginationFragment {
                 forward: ConnectionVariableConfig(count: "count", cursor: "cursor")))
     }
 }
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+extension TweetsList_tweets_Key {
+    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+    func asFragment() -> RelaySwiftUI.FragmentNext<TweetsList_tweets> {
+        RelaySwiftUI.FragmentNext<TweetsList_tweets>(self)
+    }
+
+    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+    func asFragment() -> RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets> {
+        RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets>(self)
+    }
+}
+
+#endif

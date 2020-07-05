@@ -174,7 +174,24 @@ extension TweetsScreenQuery {
             ]
         }
     }
+
+    init(filter: TweetFilter) {
+        self.init(variables: .init(filter: filter))
+    }
 }
+
+#if canImport(RelaySwiftUI)
+
+import RelaySwiftUI
+
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetsScreenQuery {
+    func get(filter: TweetFilter, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetsScreenQuery>.Result {
+        self.get(.init(filter: filter), fetchKey: fetchKey)
+    }
+}
+
+#endif
 
 extension TweetsScreenQuery {
     struct Data: Decodable {

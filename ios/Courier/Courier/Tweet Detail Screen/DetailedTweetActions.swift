@@ -15,28 +15,27 @@ fragment DetailedTweetActions_tweetGroup on TweetGroup {
 """)
 
 struct DetailedTweetActions: View {
-    @Fragment(DetailedTweetActions_tweetGroup.self) var tweetGroup
+    @Fragment<DetailedTweetActions_tweetGroup> var tweetGroup
 
     @Mutation(CancelTweetMutation.self) var cancelTweet
     @Mutation(UncancelTweetMutation.self) var uncancelTweet
     @Mutation(PostTweetMutation.self) var postTweet
 
     @EnvironmentObject var authContext: AuthContext
+    
+    @Environment(\.openURL) var openURL
 
     @State private var isPresentingPostAlert = false
 
-    init(tweetGroup: DetailedTweetActions_tweetGroup_Key) {
-        self.$tweetGroup = tweetGroup
-    }
-
     var body: some View {
         Section(footer: sectionFooter) {
-            if tweetGroup != nil {
-                if tweetGroup!.status == .draft {
+            if let tweetGroup = tweetGroup {
+                switch tweetGroup.status {
+                case .draft:
                     draftActions
-                } else if tweetGroup!.status == .canceled {
+                case .canceled:
                     canceledActions
-                } else if tweetGroup!.status == .posted {
+                case .posted:
                     postedActions
                 }
             }
@@ -100,7 +99,7 @@ struct DetailedTweetActions: View {
             Button(action: {
                 let postedID = self.tweetGroup!.postedRetweetID ?? self.tweetGroup!.tweets[0].postedTweetID!
                 let url = URL(string: "https://twitter.com/\(self.authContext.userInfo?.nickname ?? "unknown")/status/\(postedID)")!
-                UIApplication.shared.open(url, options: [:])
+                openURL(url)
             }) {
                 HStack {
                     Spacer()
