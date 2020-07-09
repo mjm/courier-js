@@ -17,12 +17,16 @@ query TweetDetailScreenQuery($id: ID!) {
 struct TweetDetailScreen: View, Equatable {
     let id: String
 
-    @Query<TweetDetailScreenQuery> var tweet
+    @Query<TweetDetailScreenQuery>(fetchPolicy: .storeAndNetwork) var tweet
     @State private var isEditing = false
+
+    init(id: String) {
+        self.id = id
+    }
 
     @ViewBuilder var body: some View {
         Group {
-            switch tweet.get(.init(id: id)) {
+            switch tweet.get(id: id) {
             case .loading:
                 LoadingView(text: "Loading tweet details…")
             case .failure(let error):
