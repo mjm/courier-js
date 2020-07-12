@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -52,6 +52,9 @@
 		C96F4CEB246D129F0096B5ED /* PostTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEA246D129F0096B5ED /* PostTweet.swift */; };
 		C96F4CED246D12CC0096B5ED /* PostTweetMutation.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEC246D12CC0096B5ED /* PostTweetMutation.graphql.swift */; };
 		C96F4CEF246E19F50096B5ED /* CurrentEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEE246E19F50096B5ED /* CurrentEndpoint.swift */; };
+		C9A151BA24BB838B0032E550 /* Badge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A151B924BB838B0032E550 /* Badge.swift */; };
+		C9A151BE24BB8BE60032E550 /* TweetRowPreviewQuery.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A151BD24BB8BE60032E550 /* TweetRowPreviewQuery.graphql.swift */; };
+		C9A151C024BB8C8B0032E550 /* TweetRowPreview.json in Resources */ = {isa = PBXBuildFile; fileRef = C9A151BF24BB8C8B0032E550 /* TweetRowPreview.json */; };
 		C9C34762246E2C48004027DE /* EnvironmentSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34761246E2C48004027DE /* EnvironmentSection.swift */; };
 		C9C34764246FBB9D004027DE /* ViewTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34763246FBB9D004027DE /* ViewTweet.swift */; };
 		C9C34766246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34765246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift */; };
@@ -231,6 +234,9 @@
 		C96F4CEA246D129F0096B5ED /* PostTweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTweet.swift; sourceTree = "<group>"; };
 		C96F4CEC246D12CC0096B5ED /* PostTweetMutation.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PostTweetMutation.graphql.swift; sourceTree = "<group>"; };
 		C96F4CEE246E19F50096B5ED /* CurrentEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentEndpoint.swift; sourceTree = "<group>"; };
+		C9A151B924BB838B0032E550 /* Badge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Badge.swift; sourceTree = "<group>"; };
+		C9A151BD24BB8BE60032E550 /* TweetRowPreviewQuery.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TweetRowPreviewQuery.graphql.swift; sourceTree = "<group>"; };
+		C9A151BF24BB8C8B0032E550 /* TweetRowPreview.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = TweetRowPreview.json; sourceTree = "<group>"; };
 		C9C34761246E2C48004027DE /* EnvironmentSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentSection.swift; sourceTree = "<group>"; };
 		C9C34763246FBB9D004027DE /* ViewTweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewTweet.swift; sourceTree = "<group>"; };
 		C9C34765246FBC33004027DE /* ViewTweet_tweetGroup.graphql.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewTweet_tweetGroup.graphql.swift; sourceTree = "<group>"; };
@@ -342,6 +348,7 @@
 			isa = PBXGroup;
 			children = (
 				C95AD85A24687B2D00691417 /* Preview Assets.xcassets */,
+				C9A151BF24BB8C8B0032E550 /* TweetRowPreview.json */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -381,6 +388,7 @@
 				C9C61DCF2479E55500B344A3 /* TweetEditedEventQuery.graphql.swift */,
 				C9C61DC32479D12700B344A3 /* TweetPostedEventQuery.graphql.swift */,
 				C95AD8942468E9E300691417 /* TweetRow_tweetGroup.graphql.swift */,
+				C9A151BD24BB8BE60032E550 /* TweetRowPreviewQuery.graphql.swift */,
 				C95AD88B24688EC900691417 /* TweetsList_tweets.graphql.swift */,
 				C95AD88A24688EC900691417 /* TweetsListPaginationQuery.graphql.swift */,
 				C95AD88E246893D900691417 /* TweetsScreenQuery.graphql.swift */,
@@ -407,6 +415,7 @@
 				C96F4CCC246A5AAF0096B5ED /* ImagePlaceholder.swift */,
 				C96F4CCE246A5CC90096B5ED /* LinkedText.swift */,
 				C9C61DB92478D21B00B344A3 /* Delayed.swift */,
+				C9A151B924BB838B0032E550 /* Badge.swift */,
 			);
 			path = "Supporting Views";
 			sourceTree = "<group>";
@@ -541,6 +550,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C95AD86F24687B2D00691417 /* Build configuration list for PBXNativeTarget "Courier" */;
 			buildPhases = (
+				C9A151BC24BB8BC40032E550 /* Generate Relay sources */,
 				C95AD84B24687B2C00691417 /* Sources */,
 				C95AD84C24687B2C00691417 /* Frameworks */,
 				C95AD84D24687B2C00691417 /* Resources */,
@@ -582,6 +592,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C9FE85DC24B0CD0300B4CB45 /* Build configuration list for PBXNativeTarget "Courier macOS" */;
 			buildPhases = (
+				C9A151BB24BB8B780032E550 /* ShellScript */,
 				C9FE85C924B0CD0200B4CB45 /* Sources */,
 				C9FE85CA24B0CD0200B4CB45 /* Frameworks */,
 				C9FE85CB24B0CD0200B4CB45 /* Resources */,
@@ -652,6 +663,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9C3477C24708B9B004027DE /* Localizable.strings in Resources */,
+				C9A151C024BB8C8B0032E550 /* TweetRowPreview.json in Resources */,
 				C95AD85E24687B2D00691417 /* LaunchScreen.storyboard in Resources */,
 				C9C3477924708A68004027DE /* Localizable.stringsdict in Resources */,
 				C95AD85B24687B2D00691417 /* Preview Assets.xcassets in Resources */,
@@ -702,6 +714,43 @@
 			shellPath = /bin/sh;
 			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
 		};
+		C9A151BB24BB8B780032E550 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/zsh;
+			shellScript = "if [[ -d \"$HOME/.nodenv\" ]]; then\n    eval \"$(nodenv init -)\"\nfi\n\ncd Courier\nnpx relay-compiler\n";
+		};
+		C9A151BC24BB8BC40032E550 /* Generate Relay sources */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Relay sources";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/zsh;
+			shellScript = "if [[ -d \"$HOME/.nodenv\" ]]; then\n    eval \"$(nodenv init -)\"\nfi\n\ncd Courier\nnpx relay-compiler\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -716,6 +765,7 @@
 				C95AD8A6246A458C00691417 /* DetailedTweetRow_tweet.graphql.swift in Sources */,
 				C9C61DC62479E00000B344A3 /* TweetCanceledEvent.swift in Sources */,
 				C96F4CC9246A573E0096B5ED /* AsyncImage.swift in Sources */,
+				C9A151BA24BB838B0032E550 /* Badge.swift in Sources */,
 				C9C61DBA2478D21B00B344A3 /* Delayed.swift in Sources */,
 				C9C61DCA2479E37500B344A3 /* TweetUncanceledEvent.swift in Sources */,
 				C96F4CD4246A63DA0096B5ED /* SettingsScreenQuery.graphql.swift in Sources */,
@@ -739,6 +789,7 @@
 				C9C61DB62477857700B344A3 /* ScreenCoordinator.swift in Sources */,
 				C96F4CE7246D0E4E0096B5ED /* UncancelTweet.swift in Sources */,
 				C95AD88824688E3D00691417 /* TweetsList.swift in Sources */,
+				C9A151BE24BB8BE60032E550 /* TweetRowPreviewQuery.graphql.swift in Sources */,
 				C96F4CE9246D0E820096B5ED /* UncancelTweetMutation.graphql.swift in Sources */,
 				C9C61DC42479D12800B344A3 /* TweetPostedEventQuery.graphql.swift in Sources */,
 				C9C61DCC2479E39400B344A3 /* TweetUncanceledEventQuery.graphql.swift in Sources */,

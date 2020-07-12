@@ -1,0 +1,56 @@
+{
+    "data": {
+          "draftTweet": {
+            "id": "dHd0OnsiZmVlZElkIjoiMWIwYnZ5UHlGQkV5VHFOQmp1NmRRTWt3SXE0IiwiaXRlbUlkIjoiaHR0cHM6Ly93d3cubWF0dG1vcmlhcml0eS5jb20vMjAyMC0wNy0xMi1sb3ZlLXRvLXNlZS1hcHBsZXMtYnVncy1hbmQtbXktb3duLWJ1Z3MvIn0=",
+            "status": "DRAFT",
+            "postedAt": null,
+            "postAfter": null,
+            "tweets": [
+              {
+                "body": "Love to see Apple's bugs and my own bugs team up to make my app break is supremely weird ways.",
+                "mediaURLs": []
+              }
+            ],
+            "__typename": "TweetGroup"
+          },
+          "autopostingTweet": {
+            "id": "dHd0OnsiZmVlZElkIjoiMWIwYnZ5UHlGQkV5VHFOQmp1NmRRTWt3SXE0IiwiaXRlbUlkIjoiaHR0cHM6Ly93d3cubWF0dG1vcmlhcml0eS5jb20vMjAyMC0wNy0xMS1pLXRoaW5rLXRvZGF5cy1nb25uYS1zdGFydC13aXRoLWFub3RoZXIvIn0=",
+            "status": "DRAFT",
+            "postedAt": null,
+            "postAfter": "2001-01-01T00:05:00Z",
+            "tweets": [
+              {
+                "body": "I think today's gonna start with another Twitch stream. Probably in about an hour.\n\nI'm thinking Crypt of the Necrodancer and maybe also a little bit of Celeste too.",
+                "mediaURLs": []
+              }
+            ],
+            "__typename": "TweetGroup"
+          },
+          "canceledTweet": {
+            "id": "dHd0OnsiZmVlZElkIjoiMWIwYnZ5UHlGQkV5VHFOQmp1NmRRTWt3SXE0IiwiaXRlbUlkIjoiaHR0cHM6Ly93d3cubWF0dG1vcmlhcml0eS5jb20vMjAyMC0wNy0xMS10aG91Z2h0LWNlbGVzdGUtd2FzLWhhcmQtZW5vdWdoLWFuZC10aGVuLyJ9",
+            "status": "CANCELED",
+            "postedAt": null,
+            "postAfter": null,
+            "tweets": [
+              {
+                "body": "Thought Celeste was hard enough and then I tried to do Core and a B-Side and I'm realizing I didn't know how hard it could get.",
+                "mediaURLs": []
+              }
+            ],
+            "__typename": "TweetGroup"
+          },
+          "postedTweet": {
+            "id": "dHd0OnsiZmVlZElkIjoiMWIwYnZ5UHlGQkV5VHFOQmp1NmRRTWt3SXE0IiwiaXRlbUlkIjoiaHR0cHM6Ly93d3cubWF0dG1vcmlhcml0eS5jb20vMjAyMC0wNy0wOS1pLWZpbmlzaGVkLXRoZS1tYWluLXN0b3J5LW9mLWNlbGVzdGUvIn0=",
+            "status": "POSTED",
+            "postedAt": "2000-12-31T23:00:00Z",
+            "postAfter": null,
+            "tweets": [
+              {
+                "body": "I finished the main story of Celeste last night. I love Madeline and all I want in this world is for her to be okay.",
+                "mediaURLs": []
+              }
+            ],
+            "__typename": "TweetGroup"
+          }
+    }
+}

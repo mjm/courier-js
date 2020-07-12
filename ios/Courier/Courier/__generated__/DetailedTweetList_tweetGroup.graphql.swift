@@ -49,7 +49,7 @@ protocol DetailedTweetList_tweetGroup_Key {
 
 extension DetailedTweetList_tweetGroup: Relay.Fragment {}
 
-#if canImport(RelaySwiftUI)
+#if swift(>=5.3) && canImport(RelaySwiftUI)
 
 import RelaySwiftUI
 

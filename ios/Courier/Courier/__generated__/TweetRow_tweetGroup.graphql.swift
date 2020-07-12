@@ -65,7 +65,7 @@ protocol TweetRow_tweetGroup_Key {
 
 extension TweetRow_tweetGroup: Relay.Fragment {}
 
-#if canImport(RelaySwiftUI)
+#if swift(>=5.3) && canImport(RelaySwiftUI)
 
 import RelaySwiftUI
 

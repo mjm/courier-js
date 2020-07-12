@@ -167,7 +167,7 @@ extension TweetDetailScreenQuery {
     }
 }
 
-#if canImport(RelaySwiftUI)
+#if swift(>=5.3) && canImport(RelaySwiftUI)
 
 import RelaySwiftUI
 

@@ -26,13 +26,6 @@ struct TweetsList: View {
     let filter: TweetFilter
     @EnvironmentObject var screenCoordinator: ScreenCoordinator
 
-    init(tweets: PaginationFragment<TweetsList_tweets>, filter: TweetFilter) {
-        self._tweets = tweets
-        self.filter = filter
-    }
-
-    var paging: Paginating { tweets! }
-    
     @ViewBuilder var body: some View {
         if let tweets = tweets {
             if tweets.allTweets.isEmpty {
@@ -94,14 +87,14 @@ struct TweetsList: View {
 
     var pagingView: some View {
         Group {
-            if paging.isLoadingNext {
+            if tweets!.isLoadingNext {
                 Text("Loading…")
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 20)
-            } else if paging.hasNext {
+            } else if tweets!.hasNext {
                 Button {
-                    tweets?.loadNext(10)
+                    tweets!.loadNext(10)
                 } label: {
                     Text("Load more tweets…")
                         .fontWeight(.bold)

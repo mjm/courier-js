@@ -38,7 +38,7 @@ protocol DetailedTweetRow_tweet_Key {
 
 extension DetailedTweetRow_tweet: Relay.Fragment {}
 
-#if canImport(RelaySwiftUI)
+#if swift(>=5.3) && canImport(RelaySwiftUI)
 
 import RelaySwiftUI
 

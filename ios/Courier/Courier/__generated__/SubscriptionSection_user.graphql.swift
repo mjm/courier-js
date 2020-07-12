@@ -92,7 +92,7 @@ enum SubscriptionStatus: String, Decodable, Hashable, VariableValueConvertible, 
 
 extension SubscriptionSection_user: Relay.Fragment {}
 
-#if canImport(RelaySwiftUI)
+#if swift(>=5.3) && canImport(RelaySwiftUI)
 
 import RelaySwiftUI
 
