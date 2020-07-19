@@ -64,10 +64,10 @@ struct TweetsList_tweets {
                         ))
                     ]
                 ))
-            ])
+            ]
+        )
     }
 }
-
 
 extension TweetsList_tweets {
     struct Data: Decodable {
@@ -96,19 +96,19 @@ extension TweetsList_tweets: Relay.Fragment {}
 
 extension TweetsList_tweets: Relay.PaginationFragment {
     typealias Operation = TweetsListPaginationQuery
-
     static var metadata: Metadata {
         RefetchMetadata(
             path: ["viewer"],
             operation: Operation.self,
             connection: ConnectionMetadata(
                 path: ["allTweets"],
-                forward: ConnectionVariableConfig(count: "count", cursor: "cursor")))
+                forward: ConnectionVariableConfig(count: "count", cursor: "cursor")
+            )
+        )
     }
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 extension TweetsList_tweets_Key {
@@ -116,16 +116,13 @@ extension TweetsList_tweets_Key {
     func asFragment() -> RelaySwiftUI.FragmentNext<TweetsList_tweets> {
         RelaySwiftUI.FragmentNext<TweetsList_tweets>(self)
     }
-
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
     func asFragment() -> RelaySwiftUI.RefetchableFragment<TweetsList_tweets> {
         RelaySwiftUI.RefetchableFragment<TweetsList_tweets>(self)
     }
-
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
     func asFragment() -> RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets> {
         RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets>(self)
     }
 }
-
 #endif

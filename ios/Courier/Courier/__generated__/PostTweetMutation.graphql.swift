@@ -60,7 +60,8 @@ struct PostTweetMutation {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "PostTweetMutation",
                 selections: [
@@ -109,7 +110,8 @@ struct PostTweetMutation {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "PostTweetMutation",
                 operationKind: .mutation,
@@ -131,10 +133,11 @@ mutation PostTweetMutation(
     }
   }
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension PostTweetMutation {
     struct Variables: VariableDataConvertible {
@@ -142,7 +145,7 @@ extension PostTweetMutation {
 
         var variableData: VariableData {
             [
-                "input": input,
+                "input": input
             ]
         }
     }
@@ -153,7 +156,6 @@ extension PostTweetMutation {
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
@@ -162,7 +164,6 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == PostTweetMutation {
         self.get(.init(input: input), fetchKey: fetchKey)
     }
 }
-
 #endif
 
 struct PostTweetInput: VariableDataConvertible {
@@ -174,10 +175,11 @@ struct PostTweetInput: VariableDataConvertible {
         [
             "id": id,
             "body": body,
-            "mediaURLs": mediaURLs,
+            "mediaURLs": mediaURLs
         ]
     }
 }
+
 
 extension PostTweetMutation {
     struct Data: Decodable {

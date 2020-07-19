@@ -28,7 +28,8 @@ struct TweetsScreenQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "TweetsScreenQuery",
                 selections: [
@@ -119,7 +120,8 @@ struct TweetsScreenQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "TweetsScreenQuery",
                 operationKind: .query,
@@ -159,10 +161,11 @@ fragment TweetsList_tweets_Vt7Yj on Viewer {
     }
   }
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension TweetsScreenQuery {
     struct Variables: VariableDataConvertible {
@@ -170,7 +173,7 @@ extension TweetsScreenQuery {
 
         var variableData: VariableData {
             [
-                "filter": filter,
+                "filter": filter
             ]
         }
     }
@@ -181,7 +184,6 @@ extension TweetsScreenQuery {
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
@@ -190,7 +192,6 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetsScreenQuery {
         self.get(.init(filter: filter), fetchKey: fetchKey)
     }
 }
-
 #endif
 
 extension TweetsScreenQuery {
@@ -206,8 +207,9 @@ extension TweetsScreenQuery {
 enum TweetFilter: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
     case upcoming = "UPCOMING"
     case past = "PAST"
-
-    var description: String { rawValue }
+    var description: String {
+        rawValue
+    }
 }
 
 extension TweetsScreenQuery: Relay.Operation {}

@@ -31,7 +31,8 @@ struct TweetCanceledEventQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "TweetCanceledEventQuery",
                 selections: [
@@ -51,7 +52,8 @@ struct TweetCanceledEventQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "TweetCanceledEventQuery",
                 operationKind: .query,
@@ -64,10 +66,11 @@ query TweetCanceledEventQuery(
     status
   }
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension TweetCanceledEventQuery {
     struct Variables: VariableDataConvertible {
@@ -75,7 +78,7 @@ extension TweetCanceledEventQuery {
 
         var variableData: VariableData {
             [
-                "id": id,
+                "id": id
             ]
         }
     }
@@ -86,7 +89,6 @@ extension TweetCanceledEventQuery {
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
@@ -95,7 +97,6 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetCanceledEventQuery
         self.get(.init(id: id), fetchKey: fetchKey)
     }
 }
-
 #endif
 
 extension TweetCanceledEventQuery {

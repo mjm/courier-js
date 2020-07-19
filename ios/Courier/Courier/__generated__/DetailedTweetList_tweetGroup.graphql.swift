@@ -27,10 +27,10 @@ struct DetailedTweetList_tweetGroup {
                         ))
                     ]
                 ))
-            ])
+            ]
+        )
     }
 }
-
 
 extension DetailedTweetList_tweetGroup {
     struct Data: Decodable {
@@ -50,7 +50,6 @@ protocol DetailedTweetList_tweetGroup_Key {
 extension DetailedTweetList_tweetGroup: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 extension DetailedTweetList_tweetGroup_Key {
@@ -59,5 +58,4 @@ extension DetailedTweetList_tweetGroup_Key {
         RelaySwiftUI.FragmentNext<DetailedTweetList_tweetGroup>(self)
     }
 }
-
 #endif

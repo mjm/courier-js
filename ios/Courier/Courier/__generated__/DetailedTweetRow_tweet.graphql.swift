@@ -20,10 +20,10 @@ struct DetailedTweetRow_tweet {
                 .field(ReaderScalarField(
                     name: "mediaURLs"
                 ))
-            ])
+            ]
+        )
     }
 }
-
 
 extension DetailedTweetRow_tweet {
     struct Data: Decodable {
@@ -39,7 +39,6 @@ protocol DetailedTweetRow_tweet_Key {
 extension DetailedTweetRow_tweet: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 extension DetailedTweetRow_tweet_Key {
@@ -48,5 +47,4 @@ extension DetailedTweetRow_tweet_Key {
         RelaySwiftUI.FragmentNext<DetailedTweetRow_tweet>(self)
     }
 }
-
 #endif

@@ -30,10 +30,10 @@ struct EditTweetForm_tweetGroup {
                         ))
                     ]
                 ))
-            ])
+            ]
+        )
     }
 }
-
 
 extension EditTweetForm_tweetGroup {
     struct Data: Decodable, Identifiable {
@@ -54,7 +54,6 @@ protocol EditTweetForm_tweetGroup_Key {
 extension EditTweetForm_tweetGroup: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 extension EditTweetForm_tweetGroup_Key {
@@ -63,5 +62,4 @@ extension EditTweetForm_tweetGroup_Key {
         RelaySwiftUI.FragmentNext<EditTweetForm_tweetGroup>(self)
     }
 }
-
 #endif

@@ -41,7 +41,8 @@ struct TweetEditedEventQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "TweetEditedEventQuery",
                 selections: [
@@ -71,7 +72,8 @@ struct TweetEditedEventQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "TweetEditedEventQuery",
                 operationKind: .query,
@@ -87,10 +89,11 @@ query TweetEditedEventQuery(
     }
   }
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension TweetEditedEventQuery {
     struct Variables: VariableDataConvertible {
@@ -98,7 +101,7 @@ extension TweetEditedEventQuery {
 
         var variableData: VariableData {
             [
-                "id": id,
+                "id": id
             ]
         }
     }
@@ -109,7 +112,6 @@ extension TweetEditedEventQuery {
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
@@ -118,7 +120,6 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetEditedEventQuery {
         self.get(.init(id: id), fetchKey: fetchKey)
     }
 }
-
 #endif
 
 extension TweetEditedEventQuery {

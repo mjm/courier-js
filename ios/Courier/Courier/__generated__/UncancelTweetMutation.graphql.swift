@@ -38,7 +38,8 @@ struct UncancelTweetMutation {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "UncancelTweetMutation",
                 selections: [
@@ -65,7 +66,8 @@ struct UncancelTweetMutation {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "UncancelTweetMutation",
                 operationKind: .mutation,
@@ -80,10 +82,11 @@ mutation UncancelTweetMutation(
     }
   }
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension UncancelTweetMutation {
     struct Variables: VariableDataConvertible {
@@ -91,7 +94,7 @@ extension UncancelTweetMutation {
 
         var variableData: VariableData {
             [
-                "input": input,
+                "input": input
             ]
         }
     }
@@ -102,7 +105,6 @@ extension UncancelTweetMutation {
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
@@ -111,7 +113,6 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == UncancelTweetMutation {
         self.get(.init(input: input), fetchKey: fetchKey)
     }
 }
-
 #endif
 
 struct UncancelTweetInput: VariableDataConvertible {
@@ -119,10 +120,11 @@ struct UncancelTweetInput: VariableDataConvertible {
 
     var variableData: VariableData {
         [
-            "id": id,
+            "id": id
         ]
     }
 }
+
 
 extension UncancelTweetMutation {
     struct Data: Decodable {
@@ -143,8 +145,9 @@ enum TweetStatus: String, Decodable, Hashable, VariableValueConvertible, Readabl
     case draft = "DRAFT"
     case canceled = "CANCELED"
     case posted = "POSTED"
-
-    var description: String { rawValue }
+    var description: String {
+        rawValue
+    }
 }
 
 extension UncancelTweetMutation: Relay.Operation {}

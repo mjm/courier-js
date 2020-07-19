@@ -23,10 +23,10 @@ struct ViewTweet_tweetGroup {
                 .fragmentSpread(ReaderFragmentSpread(
                     name: "DetailedTweetActions_tweetGroup"
                 ))
-            ])
+            ]
+        )
     }
 }
-
 
 extension ViewTweet_tweetGroup {
     struct Data: Decodable, DetailedTweetList_tweetGroup_Key, DetailedTweetActions_tweetGroup_Key {
@@ -43,7 +43,6 @@ protocol ViewTweet_tweetGroup_Key {
 extension ViewTweet_tweetGroup: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 extension ViewTweet_tweetGroup_Key {
@@ -52,5 +51,4 @@ extension ViewTweet_tweetGroup_Key {
         RelaySwiftUI.FragmentNext<ViewTweet_tweetGroup>(self)
     }
 }
-
 #endif

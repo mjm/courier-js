@@ -28,7 +28,8 @@ struct SettingsScreenQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "SettingsScreenQuery",
                 selections: [
@@ -81,7 +82,8 @@ struct SettingsScreenQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "SettingsScreenQuery",
                 operationKind: .query,
@@ -111,14 +113,16 @@ fragment UserProfileSection_user on Viewer {
   name
   picture
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension SettingsScreenQuery {
     typealias Variables = EmptyVariables
 }
+
 
 extension SettingsScreenQuery {
     struct Data: Decodable {

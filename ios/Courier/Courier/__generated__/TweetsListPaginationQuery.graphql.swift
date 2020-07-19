@@ -30,7 +30,8 @@ struct TweetsListPaginationQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "TweetsListPaginationQuery",
                 selections: [
@@ -123,7 +124,8 @@ struct TweetsListPaginationQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "TweetsListPaginationQuery",
                 operationKind: .query,
@@ -165,10 +167,11 @@ fragment TweetsList_tweets_3KQYpM on Viewer {
     }
   }
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension TweetsListPaginationQuery {
     struct Variables: VariableDataConvertible {
@@ -180,7 +183,7 @@ extension TweetsListPaginationQuery {
             [
                 "filter": filter,
                 "count": count,
-                "cursor": cursor,
+                "cursor": cursor
             ]
         }
     }
@@ -191,7 +194,6 @@ extension TweetsListPaginationQuery {
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
@@ -200,7 +202,6 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetsListPaginationQue
         self.get(.init(filter: filter, count: count, cursor: cursor), fetchKey: fetchKey)
     }
 }
-
 #endif
 
 extension TweetsListPaginationQuery {

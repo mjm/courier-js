@@ -39,10 +39,10 @@ struct DetailedTweetActions_tweetGroup {
                 .field(ReaderScalarField(
                     name: "postedRetweetID"
                 ))
-            ])
+            ]
+        )
     }
 }
-
 
 extension DetailedTweetActions_tweetGroup {
     struct Data: Decodable, Identifiable {
@@ -66,7 +66,6 @@ protocol DetailedTweetActions_tweetGroup_Key {
 extension DetailedTweetActions_tweetGroup: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 extension DetailedTweetActions_tweetGroup_Key {
@@ -75,5 +74,4 @@ extension DetailedTweetActions_tweetGroup_Key {
         RelaySwiftUI.FragmentNext<DetailedTweetActions_tweetGroup>(self)
     }
 }
-
 #endif

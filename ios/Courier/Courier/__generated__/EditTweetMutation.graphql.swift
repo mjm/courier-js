@@ -48,7 +48,8 @@ struct EditTweetMutation {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "EditTweetMutation",
                 selections: [
@@ -85,7 +86,8 @@ struct EditTweetMutation {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "EditTweetMutation",
                 operationKind: .mutation,
@@ -103,10 +105,11 @@ mutation EditTweetMutation(
     }
   }
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension EditTweetMutation {
     struct Variables: VariableDataConvertible {
@@ -114,7 +117,7 @@ extension EditTweetMutation {
 
         var variableData: VariableData {
             [
-                "input": input,
+                "input": input
             ]
         }
     }
@@ -125,7 +128,6 @@ extension EditTweetMutation {
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
@@ -134,7 +136,6 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == EditTweetMutation {
         self.get(.init(input: input), fetchKey: fetchKey)
     }
 }
-
 #endif
 
 struct EditTweetInput: VariableDataConvertible {
@@ -144,10 +145,11 @@ struct EditTweetInput: VariableDataConvertible {
     var variableData: VariableData {
         [
             "id": id,
-            "tweets": tweets,
+            "tweets": tweets
         ]
     }
 }
+
 
 struct TweetEdit: VariableDataConvertible {
     var body: String
@@ -156,10 +158,11 @@ struct TweetEdit: VariableDataConvertible {
     var variableData: VariableData {
         [
             "body": body,
-            "mediaURLs": mediaURLs,
+            "mediaURLs": mediaURLs
         ]
     }
 }
+
 
 extension EditTweetMutation {
     struct Data: Decodable {

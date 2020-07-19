@@ -20,10 +20,10 @@ struct UserProfileSection_user {
                 .field(ReaderScalarField(
                     name: "picture"
                 ))
-            ])
+            ]
+        )
     }
 }
-
 
 extension UserProfileSection_user {
     struct Data: Decodable {
@@ -39,7 +39,6 @@ protocol UserProfileSection_user_Key {
 extension UserProfileSection_user: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 extension UserProfileSection_user_Key {
@@ -48,5 +47,4 @@ extension UserProfileSection_user_Key {
         RelaySwiftUI.FragmentNext<UserProfileSection_user>(self)
     }
 }
-
 #endif

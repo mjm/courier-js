@@ -38,7 +38,8 @@ struct CancelTweetMutation {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "CancelTweetMutation",
                 selections: [
@@ -65,7 +66,8 @@ struct CancelTweetMutation {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "CancelTweetMutation",
                 operationKind: .mutation,
@@ -80,10 +82,11 @@ mutation CancelTweetMutation(
     }
   }
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension CancelTweetMutation {
     struct Variables: VariableDataConvertible {
@@ -91,7 +94,7 @@ extension CancelTweetMutation {
 
         var variableData: VariableData {
             [
-                "input": input,
+                "input": input
             ]
         }
     }
@@ -102,7 +105,6 @@ extension CancelTweetMutation {
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
@@ -111,7 +113,6 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == CancelTweetMutation {
         self.get(.init(input: input), fetchKey: fetchKey)
     }
 }
-
 #endif
 
 struct CancelTweetInput: VariableDataConvertible {
@@ -119,10 +120,11 @@ struct CancelTweetInput: VariableDataConvertible {
 
     var variableData: VariableData {
         [
-            "id": id,
+            "id": id
         ]
     }
 }
+
 
 extension CancelTweetMutation {
     struct Data: Decodable {

@@ -50,10 +50,10 @@ struct SubscriptionSection_user {
                 .field(ReaderScalarField(
                     name: "subscriptionStatusOverride"
                 ))
-            ])
+            ]
+        )
     }
 }
-
 
 extension SubscriptionSection_user {
     struct Data: Decodable {
@@ -86,14 +86,14 @@ enum SubscriptionStatus: String, Decodable, Hashable, VariableValueConvertible, 
     case canceled = "CANCELED"
     case expired = "EXPIRED"
     case inactive = "INACTIVE"
-
-    var description: String { rawValue }
+    var description: String {
+        rawValue
+    }
 }
 
 extension SubscriptionSection_user: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 extension SubscriptionSection_user_Key {
@@ -102,5 +102,4 @@ extension SubscriptionSection_user_Key {
         RelaySwiftUI.FragmentNext<SubscriptionSection_user>(self)
     }
 }
-
 #endif

@@ -18,6 +18,7 @@ struct TweetRowPreviewQuery {
                     .field(ReaderLinkedField(
                         name: "tweetGroup",
                         alias: "draftTweet",
+                        storageKey: "tweetGroup(id:\"draft_tweet_id\")",
                         args: [
                             LiteralArgument(name: "id", value: "draft_tweet_id")
                         ],
@@ -32,6 +33,7 @@ struct TweetRowPreviewQuery {
                     .field(ReaderLinkedField(
                         name: "tweetGroup",
                         alias: "autopostingTweet",
+                        storageKey: "tweetGroup(id:\"autoposting_tweet_id\")",
                         args: [
                             LiteralArgument(name: "id", value: "autoposting_tweet_id")
                         ],
@@ -46,6 +48,7 @@ struct TweetRowPreviewQuery {
                     .field(ReaderLinkedField(
                         name: "tweetGroup",
                         alias: "canceledTweet",
+                        storageKey: "tweetGroup(id:\"canceled_tweet_id\")",
                         args: [
                             LiteralArgument(name: "id", value: "canceled_tweet_id")
                         ],
@@ -60,6 +63,7 @@ struct TweetRowPreviewQuery {
                     .field(ReaderLinkedField(
                         name: "tweetGroup",
                         alias: "postedTweet",
+                        storageKey: "tweetGroup(id:\"posted_tweet_id\")",
                         args: [
                             LiteralArgument(name: "id", value: "posted_tweet_id")
                         ],
@@ -71,7 +75,8 @@ struct TweetRowPreviewQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "TweetRowPreviewQuery",
                 selections: [
@@ -223,7 +228,8 @@ struct TweetRowPreviewQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "TweetRowPreviewQuery",
                 operationKind: .query,
@@ -257,14 +263,16 @@ fragment TweetRow_tweetGroup on TweetGroup {
     mediaURLs
   }
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension TweetRowPreviewQuery {
     typealias Variables = EmptyVariables
 }
+
 
 extension TweetRowPreviewQuery {
     struct Data: Decodable {

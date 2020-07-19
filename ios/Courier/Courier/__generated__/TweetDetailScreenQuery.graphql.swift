@@ -44,7 +44,8 @@ struct TweetDetailScreenQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             operation: NormalizationOperation(
                 name: "TweetDetailScreenQuery",
                 selections: [
@@ -92,7 +93,8 @@ struct TweetDetailScreenQuery {
                             ))
                         ]
                     ))
-                ]),
+                ]
+            ),
             params: RequestParameters(
                 name: "TweetDetailScreenQuery",
                 operationKind: .query,
@@ -146,10 +148,11 @@ fragment ViewTweet_tweetGroup on TweetGroup {
   ...DetailedTweetList_tweetGroup
   ...DetailedTweetActions_tweetGroup
 }
-"""))
+"""
+            )
+        )
     }
 }
-
 
 extension TweetDetailScreenQuery {
     struct Variables: VariableDataConvertible {
@@ -157,7 +160,7 @@ extension TweetDetailScreenQuery {
 
         var variableData: VariableData {
             [
-                "id": id,
+                "id": id
             ]
         }
     }
@@ -168,7 +171,6 @@ extension TweetDetailScreenQuery {
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
-
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
@@ -177,7 +179,6 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetDetailScreenQuery 
         self.get(.init(id: id), fetchKey: fetchKey)
     }
 }
-
 #endif
 
 extension TweetDetailScreenQuery {
