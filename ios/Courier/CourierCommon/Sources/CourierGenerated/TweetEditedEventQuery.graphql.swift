@@ -2,17 +2,17 @@
 
 import Relay
 
-struct TweetPostedEventQuery {
-    var variables: Variables
+public struct TweetEditedEventQuery {
+    public var variables: Variables
 
-    init(variables: Variables) {
+    public init(variables: Variables) {
         self.variables = variables
     }
 
-    static var node: ConcreteRequest {
+    public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "TweetPostedEventQuery",
+                name: "TweetEditedEventQuery",
                 type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
@@ -36,27 +36,15 @@ struct TweetPostedEventQuery {
                                     )),
                                     .field(ReaderScalarField(
                                         name: "mediaURLs"
-                                    )),
-                                    .field(ReaderScalarField(
-                                        name: "postedTweetID"
                                     ))
                                 ]
-                            )),
-                            .field(ReaderScalarField(
-                                name: "status"
-                            )),
-                            .field(ReaderScalarField(
-                                name: "postedAt"
-                            )),
-                            .field(ReaderScalarField(
-                                name: "postAfter"
                             ))
                         ]
                     ))
                 ]
             ),
             operation: NormalizationOperation(
-                name: "TweetPostedEventQuery",
+                name: "TweetEditedEventQuery",
                 selections: [
                     .field(NormalizationLinkedField(
                         name: "tweetGroup",
@@ -79,30 +67,18 @@ struct TweetPostedEventQuery {
                                     )),
                                     .field(NormalizationScalarField(
                                         name: "mediaURLs"
-                                    )),
-                                    .field(NormalizationScalarField(
-                                        name: "postedTweetID"
                                     ))
                                 ]
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "status"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "postedAt"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "postAfter"
                             ))
                         ]
                     ))
                 ]
             ),
             params: RequestParameters(
-                name: "TweetPostedEventQuery",
+                name: "TweetEditedEventQuery",
                 operationKind: .query,
                 text: """
-query TweetPostedEventQuery(
+query TweetEditedEventQuery(
   $id: ID!
 ) {
   tweetGroup(id: $id) {
@@ -110,11 +86,7 @@ query TweetPostedEventQuery(
     tweets {
       body
       mediaURLs
-      postedTweetID
     }
-    status
-    postedAt
-    postAfter
   }
 }
 """
@@ -123,18 +95,22 @@ query TweetPostedEventQuery(
     }
 }
 
-extension TweetPostedEventQuery {
-    struct Variables: VariableDataConvertible {
-        var id: String
+extension TweetEditedEventQuery {
+    public struct Variables: VariableDataConvertible {
+        public var id: String
 
-        var variableData: VariableData {
+        public init(id: String) {
+            self.id = id
+        }
+
+        public var variableData: VariableData {
             [
                 "id": id
             ]
         }
     }
 
-    init(id: String) {
+    public init(id: String) {
         self.init(variables: .init(id: id))
     }
 }
@@ -142,32 +118,25 @@ extension TweetPostedEventQuery {
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetPostedEventQuery {
-    func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetPostedEventQuery>.Result {
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetEditedEventQuery {
+    public func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetEditedEventQuery>.Result {
         self.get(.init(id: id), fetchKey: fetchKey)
     }
 }
 #endif
+extension TweetEditedEventQuery {
+    public struct Data: Decodable {
+        public var tweetGroup: TweetGroup_tweetGroup?
 
-extension TweetPostedEventQuery {
-    struct Data: Decodable {
-        var tweetGroup: TweetGroup_tweetGroup?
+        public struct TweetGroup_tweetGroup: Decodable, Identifiable {
+            public var id: String
+            public var tweets: [Tweet_tweets]
 
-        struct TweetGroup_tweetGroup: Decodable, Identifiable {
-            var id: String
-            var tweets: [Tweet_tweets]
-            var status: TweetStatus
-            var postedAt: String?
-            var postAfter: String?
-
-            struct Tweet_tweets: Decodable {
-                var body: String
-                var mediaURLs: [String]
-                var postedTweetID: String?
+            public struct Tweet_tweets: Decodable {
+                public var body: String
+                public var mediaURLs: [String]
             }
         }
     }
 }
-
-extension TweetPostedEventQuery: Relay.Operation {}
+extension TweetEditedEventQuery: Relay.Operation {}

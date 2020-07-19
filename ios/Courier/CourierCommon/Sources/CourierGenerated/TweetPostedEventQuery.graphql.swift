@@ -2,17 +2,17 @@
 
 import Relay
 
-struct TweetDetailScreenQuery {
-    var variables: Variables
+public struct TweetPostedEventQuery {
+    public var variables: Variables
 
-    init(variables: Variables) {
+    public init(variables: Variables) {
         self.variables = variables
     }
 
-    static var node: ConcreteRequest {
+    public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "TweetDetailScreenQuery",
+                name: "TweetPostedEventQuery",
                 type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
@@ -32,22 +32,31 @@ struct TweetDetailScreenQuery {
                                 plural: true,
                                 selections: [
                                     .field(ReaderScalarField(
-                                        name: "__typename"
+                                        name: "body"
+                                    )),
+                                    .field(ReaderScalarField(
+                                        name: "mediaURLs"
+                                    )),
+                                    .field(ReaderScalarField(
+                                        name: "postedTweetID"
                                     ))
                                 ]
                             )),
-                            .fragmentSpread(ReaderFragmentSpread(
-                                name: "ViewTweet_tweetGroup"
+                            .field(ReaderScalarField(
+                                name: "status"
                             )),
-                            .fragmentSpread(ReaderFragmentSpread(
-                                name: "EditTweetForm_tweetGroup"
+                            .field(ReaderScalarField(
+                                name: "postedAt"
+                            )),
+                            .field(ReaderScalarField(
+                                name: "postAfter"
                             ))
                         ]
                     ))
                 ]
             ),
             operation: NormalizationOperation(
-                name: "TweetDetailScreenQuery",
+                name: "TweetPostedEventQuery",
                 selections: [
                     .field(NormalizationLinkedField(
                         name: "tweetGroup",
@@ -66,9 +75,6 @@ struct TweetDetailScreenQuery {
                                 plural: true,
                                 selections: [
                                     .field(NormalizationScalarField(
-                                        name: "__typename"
-                                    )),
-                                    .field(NormalizationScalarField(
                                         name: "body"
                                     )),
                                     .field(NormalizationScalarField(
@@ -83,70 +89,33 @@ struct TweetDetailScreenQuery {
                                 name: "status"
                             )),
                             .field(NormalizationScalarField(
-                                name: "postAfter"
-                            )),
-                            .field(NormalizationScalarField(
                                 name: "postedAt"
                             )),
                             .field(NormalizationScalarField(
-                                name: "postedRetweetID"
+                                name: "postAfter"
                             ))
                         ]
                     ))
                 ]
             ),
             params: RequestParameters(
-                name: "TweetDetailScreenQuery",
+                name: "TweetPostedEventQuery",
                 operationKind: .query,
                 text: """
-query TweetDetailScreenQuery(
+query TweetPostedEventQuery(
   $id: ID!
 ) {
   tweetGroup(id: $id) {
     id
     tweets {
-      __typename
+      body
+      mediaURLs
+      postedTweetID
     }
-    ...ViewTweet_tweetGroup
-    ...EditTweetForm_tweetGroup
+    status
+    postedAt
+    postAfter
   }
-}
-
-fragment DetailedTweetActions_tweetGroup on TweetGroup {
-  tweets {
-    postedTweetID
-  }
-  id
-  status
-  postAfter
-  postedAt
-  postedRetweetID
-}
-
-fragment DetailedTweetList_tweetGroup on TweetGroup {
-  tweets {
-    body
-    ...DetailedTweetRow_tweet
-  }
-}
-
-fragment DetailedTweetRow_tweet on Tweet {
-  body
-  mediaURLs
-}
-
-fragment EditTweetForm_tweetGroup on TweetGroup {
-  id
-  tweets {
-    body
-    mediaURLs
-  }
-}
-
-fragment ViewTweet_tweetGroup on TweetGroup {
-  status
-  ...DetailedTweetList_tweetGroup
-  ...DetailedTweetActions_tweetGroup
 }
 """
             )
@@ -154,18 +123,22 @@ fragment ViewTweet_tweetGroup on TweetGroup {
     }
 }
 
-extension TweetDetailScreenQuery {
-    struct Variables: VariableDataConvertible {
-        var id: String
+extension TweetPostedEventQuery {
+    public struct Variables: VariableDataConvertible {
+        public var id: String
 
-        var variableData: VariableData {
+        public init(id: String) {
+            self.id = id
+        }
+
+        public var variableData: VariableData {
             [
                 "id": id
             ]
         }
     }
 
-    init(id: String) {
+    public init(id: String) {
         self.init(variables: .init(id: id))
     }
 }
@@ -173,29 +146,29 @@ extension TweetDetailScreenQuery {
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetDetailScreenQuery {
-    func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetDetailScreenQuery>.Result {
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetPostedEventQuery {
+    public func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetPostedEventQuery>.Result {
         self.get(.init(id: id), fetchKey: fetchKey)
     }
 }
 #endif
+extension TweetPostedEventQuery {
+    public struct Data: Decodable {
+        public var tweetGroup: TweetGroup_tweetGroup?
 
-extension TweetDetailScreenQuery {
-    struct Data: Decodable {
-        var tweetGroup: TweetGroup_tweetGroup?
+        public struct TweetGroup_tweetGroup: Decodable, Identifiable {
+            public var id: String
+            public var tweets: [Tweet_tweets]
+            public var status: TweetStatus
+            public var postedAt: String?
+            public var postAfter: String?
 
-        struct TweetGroup_tweetGroup: Decodable, Identifiable, ViewTweet_tweetGroup_Key, EditTweetForm_tweetGroup_Key {
-            var id: String
-            var tweets: [Tweet_tweets]
-            var fragment_ViewTweet_tweetGroup: FragmentPointer
-            var fragment_EditTweetForm_tweetGroup: FragmentPointer
-
-            struct Tweet_tweets: Decodable {
-                var __typename: String
+            public struct Tweet_tweets: Decodable {
+                public var body: String
+                public var mediaURLs: [String]
+                public var postedTweetID: String?
             }
         }
     }
 }
-
-extension TweetDetailScreenQuery: Relay.Operation {}
+extension TweetPostedEventQuery: Relay.Operation {}

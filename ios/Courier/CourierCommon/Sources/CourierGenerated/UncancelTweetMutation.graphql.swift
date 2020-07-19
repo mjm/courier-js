@@ -2,25 +2,25 @@
 
 import Relay
 
-struct CancelTweetMutation {
-    var variables: Variables
+public struct UncancelTweetMutation {
+    public var variables: Variables
 
-    init(variables: Variables) {
+    public init(variables: Variables) {
         self.variables = variables
     }
 
-    static var node: ConcreteRequest {
+    public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "CancelTweetMutation",
+                name: "UncancelTweetMutation",
                 type: "Mutation",
                 selections: [
                     .field(ReaderLinkedField(
-                        name: "cancelTweet",
+                        name: "uncancelTweet",
                         args: [
                             VariableArgument(name: "input", variableName: "input")
                         ],
-                        concreteType: "CancelTweetPayload",
+                        concreteType: "UncancelTweetPayload",
                         plural: false,
                         selections: [
                             .field(ReaderLinkedField(
@@ -41,14 +41,14 @@ struct CancelTweetMutation {
                 ]
             ),
             operation: NormalizationOperation(
-                name: "CancelTweetMutation",
+                name: "UncancelTweetMutation",
                 selections: [
                     .field(NormalizationLinkedField(
-                        name: "cancelTweet",
+                        name: "uncancelTweet",
                         args: [
                             VariableArgument(name: "input", variableName: "input")
                         ],
-                        concreteType: "CancelTweetPayload",
+                        concreteType: "UncancelTweetPayload",
                         plural: false,
                         selections: [
                             .field(NormalizationLinkedField(
@@ -69,13 +69,13 @@ struct CancelTweetMutation {
                 ]
             ),
             params: RequestParameters(
-                name: "CancelTweetMutation",
+                name: "UncancelTweetMutation",
                 operationKind: .mutation,
                 text: """
-mutation CancelTweetMutation(
-  $input: CancelTweetInput!
+mutation UncancelTweetMutation(
+  $input: UncancelTweetInput!
 ) {
-  cancelTweet(input: $input) {
+  uncancelTweet(input: $input) {
     tweetGroup {
       id
       status
@@ -88,18 +88,22 @@ mutation CancelTweetMutation(
     }
 }
 
-extension CancelTweetMutation {
-    struct Variables: VariableDataConvertible {
-        var input: CancelTweetInput
+extension UncancelTweetMutation {
+    public struct Variables: VariableDataConvertible {
+        public var input: UncancelTweetInput
 
-        var variableData: VariableData {
+        public init(input: UncancelTweetInput) {
+            self.input = input
+        }
+
+        public var variableData: VariableData {
             [
                 "input": input
             ]
         }
     }
 
-    init(input: CancelTweetInput) {
+    public init(input: UncancelTweetInput) {
         self.init(variables: .init(input: input))
     }
 }
@@ -107,38 +111,48 @@ extension CancelTweetMutation {
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == CancelTweetMutation {
-    func get(input: CancelTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<CancelTweetMutation>.Result {
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)extension RelaySwiftUI.QueryNext.WrappedValue where O == UncancelTweetMutation {
+    public func get(input: UncancelTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<UncancelTweetMutation>.Result {
         self.get(.init(input: input), fetchKey: fetchKey)
     }
 }
 #endif
 
-struct CancelTweetInput: VariableDataConvertible {
-    var id: String
+public struct UncancelTweetInput: VariableDataConvertible {
+    public var id: String
 
-    var variableData: VariableData {
+    public init(id: String) {
+        self.id = id
+    }
+
+    public var variableData: VariableData {
         [
             "id": id
         ]
     }
 }
 
+extension UncancelTweetMutation {
+    public struct Data: Decodable {
+        public var uncancelTweet: UncancelTweetPayload_uncancelTweet
 
-extension CancelTweetMutation {
-    struct Data: Decodable {
-        var cancelTweet: CancelTweetPayload_cancelTweet
+        public struct UncancelTweetPayload_uncancelTweet: Decodable {
+            public var tweetGroup: TweetGroup_tweetGroup
 
-        struct CancelTweetPayload_cancelTweet: Decodable {
-            var tweetGroup: TweetGroup_tweetGroup
-
-            struct TweetGroup_tweetGroup: Decodable, Identifiable {
-                var id: String
-                var status: TweetStatus
+            public struct TweetGroup_tweetGroup: Decodable, Identifiable {
+                public var id: String
+                public var status: TweetStatus
             }
         }
     }
 }
 
-extension CancelTweetMutation: Relay.Operation {}
+public enum TweetStatus: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
+    case draft = "DRAFT"
+    case canceled = "CANCELED"
+    case posted = "POSTED"
+    public var description: String {
+        rawValue
+    }
+}
+extension UncancelTweetMutation: Relay.Operation {}

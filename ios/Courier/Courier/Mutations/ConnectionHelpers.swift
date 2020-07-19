@@ -1,4 +1,5 @@
 import Relay
+import CourierGenerated
 
 func moveTweetGroup(
     _ store: inout RecordSourceSelectorProxy,

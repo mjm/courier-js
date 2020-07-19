@@ -2,14 +2,14 @@
 
 import Relay
 
-struct UserProfileSection_user {
-    var fragmentPointer: FragmentPointer
+public struct UserProfileSection_user {
+    public var fragmentPointer: FragmentPointer
 
-    init(key: UserProfileSection_user_Key) {
+    public init(key: UserProfileSection_user_Key) {
         fragmentPointer = key.fragment_UserProfileSection_user
     }
 
-    static var node: ReaderFragment {
+    public static var node: ReaderFragment {
         ReaderFragment(
             name: "UserProfileSection_user",
             type: "Viewer",
@@ -26,24 +26,22 @@ struct UserProfileSection_user {
 }
 
 extension UserProfileSection_user {
-    struct Data: Decodable {
-        var name: String
-        var picture: String
+    public struct Data: Decodable {
+        public var name: String
+        public var picture: String
     }
 }
 
-protocol UserProfileSection_user_Key {
+public protocol UserProfileSection_user_Key {
     var fragment_UserProfileSection_user: FragmentPointer { get }
 }
-
 extension UserProfileSection_user: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
-
 extension UserProfileSection_user_Key {
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    func asFragment() -> RelaySwiftUI.FragmentNext<UserProfileSection_user> {
+    public func asFragment() -> RelaySwiftUI.FragmentNext<UserProfileSection_user> {
         RelaySwiftUI.FragmentNext<UserProfileSection_user>(self)
     }
 }

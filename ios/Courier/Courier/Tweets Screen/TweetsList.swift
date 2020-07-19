@@ -1,5 +1,6 @@
 import SwiftUI
 import RelaySwiftUI
+import CourierGenerated
 
 private let tweetsFragment = graphql("""
 fragment TweetsList_tweets on Viewer

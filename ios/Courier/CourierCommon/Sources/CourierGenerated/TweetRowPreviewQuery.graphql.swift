@@ -2,14 +2,14 @@
 
 import Relay
 
-struct TweetRowPreviewQuery {
-    var variables: Variables
+public struct TweetRowPreviewQuery {
+    public var variables: Variables
 
-    init(variables: Variables) {
+    public init(variables: Variables) {
         self.variables = variables
     }
 
-    static var node: ConcreteRequest {
+    public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "TweetRowPreviewQuery",
@@ -270,33 +270,31 @@ fragment TweetRow_tweetGroup on TweetGroup {
 }
 
 extension TweetRowPreviewQuery {
-    typealias Variables = EmptyVariables
+    public typealias Variables = EmptyVariables
 }
 
-
 extension TweetRowPreviewQuery {
-    struct Data: Decodable {
-        var draftTweet: TweetGroup_draftTweet?
-        var autopostingTweet: TweetGroup_autopostingTweet?
-        var canceledTweet: TweetGroup_canceledTweet?
-        var postedTweet: TweetGroup_postedTweet?
+    public struct Data: Decodable {
+        public var draftTweet: TweetGroup_draftTweet?
+        public var autopostingTweet: TweetGroup_autopostingTweet?
+        public var canceledTweet: TweetGroup_canceledTweet?
+        public var postedTweet: TweetGroup_postedTweet?
 
-        struct TweetGroup_draftTweet: Decodable, TweetRow_tweetGroup_Key {
-            var fragment_TweetRow_tweetGroup: FragmentPointer
+        public struct TweetGroup_draftTweet: Decodable, TweetRow_tweetGroup_Key {
+            public var fragment_TweetRow_tweetGroup: FragmentPointer
         }
 
-        struct TweetGroup_autopostingTweet: Decodable, TweetRow_tweetGroup_Key {
-            var fragment_TweetRow_tweetGroup: FragmentPointer
+        public struct TweetGroup_autopostingTweet: Decodable, TweetRow_tweetGroup_Key {
+            public var fragment_TweetRow_tweetGroup: FragmentPointer
         }
 
-        struct TweetGroup_canceledTweet: Decodable, TweetRow_tweetGroup_Key {
-            var fragment_TweetRow_tweetGroup: FragmentPointer
+        public struct TweetGroup_canceledTweet: Decodable, TweetRow_tweetGroup_Key {
+            public var fragment_TweetRow_tweetGroup: FragmentPointer
         }
 
-        struct TweetGroup_postedTweet: Decodable, TweetRow_tweetGroup_Key {
-            var fragment_TweetRow_tweetGroup: FragmentPointer
+        public struct TweetGroup_postedTweet: Decodable, TweetRow_tweetGroup_Key {
+            public var fragment_TweetRow_tweetGroup: FragmentPointer
         }
     }
 }
-
 extension TweetRowPreviewQuery: Relay.Operation {}

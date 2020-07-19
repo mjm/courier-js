@@ -2,14 +2,14 @@
 
 import Relay
 
-struct DetailedTweetRow_tweet {
-    var fragmentPointer: FragmentPointer
+public struct DetailedTweetRow_tweet {
+    public var fragmentPointer: FragmentPointer
 
-    init(key: DetailedTweetRow_tweet_Key) {
+    public init(key: DetailedTweetRow_tweet_Key) {
         fragmentPointer = key.fragment_DetailedTweetRow_tweet
     }
 
-    static var node: ReaderFragment {
+    public static var node: ReaderFragment {
         ReaderFragment(
             name: "DetailedTweetRow_tweet",
             type: "Tweet",
@@ -26,24 +26,22 @@ struct DetailedTweetRow_tweet {
 }
 
 extension DetailedTweetRow_tweet {
-    struct Data: Decodable {
-        var body: String
-        var mediaURLs: [String]
+    public struct Data: Decodable {
+        public var body: String
+        public var mediaURLs: [String]
     }
 }
 
-protocol DetailedTweetRow_tweet_Key {
+public protocol DetailedTweetRow_tweet_Key {
     var fragment_DetailedTweetRow_tweet: FragmentPointer { get }
 }
-
 extension DetailedTweetRow_tweet: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
-
 extension DetailedTweetRow_tweet_Key {
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    func asFragment() -> RelaySwiftUI.FragmentNext<DetailedTweetRow_tweet> {
+    public func asFragment() -> RelaySwiftUI.FragmentNext<DetailedTweetRow_tweet> {
         RelaySwiftUI.FragmentNext<DetailedTweetRow_tweet>(self)
     }
 }

@@ -1,5 +1,6 @@
 import Relay
 import RelaySwiftUI
+import CourierGenerated
 
 private let mutation = graphql("""
 mutation UncancelTweetMutation($input: UncancelTweetInput!) {

@@ -1,5 +1,6 @@
 import Combine
 import Relay
+import CourierGenerated
 
 struct TweetCanceledEvent: Decodable {
     var userID: String

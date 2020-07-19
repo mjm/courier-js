@@ -1,5 +1,6 @@
 import Combine
 import Relay
+import CourierGenerated
 
 struct TweetUncanceledEvent: Decodable {
     var userID: String
@@ -21,7 +22,7 @@ query TweetUncanceledEventQuery($id: ID!) {
 """)
 
 func handleTweetUncanceled(_ environment: Environment, _ event: TweetUncanceledEvent) -> AnyPublisher<Never, Error> {
-    environment.fetchQuery(TweetUncanceledEventQuery(variables: .init(id: event.itemID)))
+    environment.fetchQuery(TweetUncanceledEventQuery(id: event.itemID))
         .ignoreOutput()
         .eraseToAnyPublisher()
 }

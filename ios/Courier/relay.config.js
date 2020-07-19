@@ -1,8 +1,8 @@
 module.exports = {
   src: ".",
-  schema: "../../../schema.graphql",
+  schema: "../../schema.graphql",
   language: "swift",
-  artifactDirectory: "./__generated__",
+  artifactDirectory: "./CourierCommon/Sources/CourierGenerated",
   customScalars: {
     Time: "String",
     Cursor: "String",

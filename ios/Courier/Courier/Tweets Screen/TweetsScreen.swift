@@ -2,6 +2,7 @@ import SwiftUI
 import struct SwiftUI.Environment
 import Relay
 import RelaySwiftUI
+import CourierGenerated
 
 private let query = graphql("""
 query TweetsScreenQuery($filter: TweetFilter!) {

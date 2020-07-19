@@ -1,5 +1,6 @@
 import SwiftUI
 import RelaySwiftUI
+import CourierGenerated
 
 private let tweetGroupFragment = graphql("""
 fragment EditTweetForm_tweetGroup on TweetGroup {

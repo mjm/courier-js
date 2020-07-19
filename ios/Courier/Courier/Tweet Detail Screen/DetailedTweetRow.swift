@@ -1,5 +1,6 @@
 import SwiftUI
 import RelaySwiftUI
+import CourierGenerated
 
 private let tweetFragment = graphql("""
 fragment DetailedTweetRow_tweet on Tweet {

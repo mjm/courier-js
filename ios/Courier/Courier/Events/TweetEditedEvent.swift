@@ -1,5 +1,6 @@
 import Combine
 import Relay
+import CourierGenerated
 
 struct TweetEditedEvent: Decodable {
     var userID: String
@@ -24,7 +25,7 @@ query TweetEditedEventQuery($id: ID!) {
 """)
 
 func handleTweetEdited(_ environment: Environment, _ event: TweetEditedEvent) -> AnyPublisher<Never, Error> {
-    environment.fetchQuery(TweetEditedEventQuery(variables: .init(id: event.itemID)))
+    environment.fetchQuery(TweetEditedEventQuery(id: event.itemID))
         .ignoreOutput()
         .eraseToAnyPublisher()
 }

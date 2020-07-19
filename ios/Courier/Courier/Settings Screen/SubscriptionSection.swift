@@ -1,5 +1,6 @@
 import SwiftUI
 import RelaySwiftUI
+import CourierGenerated
 
 private let userFragment = graphql("""
 fragment SubscriptionSection_user on Viewer {
@@ -19,10 +20,6 @@ fragment SubscriptionSection_user on Viewer {
 
 struct SubscriptionSection: View {
     @Fragment<SubscriptionSection_user> var user
-
-//    init(user: SubscriptionSection_user.Key) {
-//        self.$user = user
-//    }
 
     var body: some View {
         Group {

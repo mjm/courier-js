@@ -2,14 +2,14 @@
 
 import Relay
 
-struct SubscriptionSection_user {
-    var fragmentPointer: FragmentPointer
+public struct SubscriptionSection_user {
+    public var fragmentPointer: FragmentPointer
 
-    init(key: SubscriptionSection_user_Key) {
+    public init(key: SubscriptionSection_user_Key) {
         fragmentPointer = key.fragment_SubscriptionSection_user
     }
 
-    static var node: ReaderFragment {
+    public static var node: ReaderFragment {
         ReaderFragment(
             name: "SubscriptionSection_user",
             type: "Viewer",
@@ -56,49 +56,47 @@ struct SubscriptionSection_user {
 }
 
 extension SubscriptionSection_user {
-    struct Data: Decodable {
-        var customer: Customer_customer?
-        var subscription: UserSubscription_subscription?
-        var subscriptionStatusOverride: SubscriptionStatus?
+    public struct Data: Decodable {
+        public var customer: Customer_customer?
+        public var subscription: UserSubscription_subscription?
+        public var subscriptionStatusOverride: SubscriptionStatus?
 
-        struct Customer_customer: Decodable {
-            var creditCard: CreditCard_creditCard?
+        public struct Customer_customer: Decodable {
+            public var creditCard: CreditCard_creditCard?
 
-            struct CreditCard_creditCard: Decodable {
-                var brand: String
-                var lastFour: String
+            public struct CreditCard_creditCard: Decodable {
+                public var brand: String
+                public var lastFour: String
             }
         }
 
-        struct UserSubscription_subscription: Decodable {
-            var status: SubscriptionStatus
-            var periodEnd: String
+        public struct UserSubscription_subscription: Decodable {
+            public var status: SubscriptionStatus
+            public var periodEnd: String
         }
     }
 }
 
-protocol SubscriptionSection_user_Key {
+public protocol SubscriptionSection_user_Key {
     var fragment_SubscriptionSection_user: FragmentPointer { get }
 }
 
-enum SubscriptionStatus: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
+public enum SubscriptionStatus: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
     case active = "ACTIVE"
     case canceled = "CANCELED"
     case expired = "EXPIRED"
     case inactive = "INACTIVE"
-    var description: String {
+    public var description: String {
         rawValue
     }
 }
-
 extension SubscriptionSection_user: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
-
 extension SubscriptionSection_user_Key {
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    func asFragment() -> RelaySwiftUI.FragmentNext<SubscriptionSection_user> {
+    public func asFragment() -> RelaySwiftUI.FragmentNext<SubscriptionSection_user> {
         RelaySwiftUI.FragmentNext<SubscriptionSection_user>(self)
     }
 }

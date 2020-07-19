@@ -1,5 +1,6 @@
 import SwiftUI
 import RelaySwiftUI
+import CourierGenerated
 
 struct EditTweetList: View {
     let original: EditTweetInput
@@ -118,19 +119,23 @@ struct EditTweetSection: View {
 
 extension EditTweetInput: Equatable {
     init(existingData data: EditTweetForm_tweetGroup.Data) {
-        id = data.id
-        tweets = data.tweets.map { TweetEdit(existingData: $0) }
+        self.init(
+            id: data.id,
+            tweets: data.tweets.map { TweetEdit(existingData: $0) }
+        )
     }
 
-    static func ==(lhs: EditTweetInput, rhs: EditTweetInput) -> Bool {
+    public static func ==(lhs: EditTweetInput, rhs: EditTweetInput) -> Bool {
         lhs.id == rhs.id && lhs.tweets == rhs.tweets
     }
 }
 
 extension TweetEdit: Equatable {
     init(existingData data: EditTweetForm_tweetGroup.Data.Tweet_tweets) {
-        body = data.body
-        mediaURLs = data.mediaURLs
+        self.init(
+            body: data.body,
+            mediaURLs: data.mediaURLs
+        )
     }
 
     var theMediaURLs: [String] {
@@ -138,7 +143,7 @@ extension TweetEdit: Equatable {
         set { mediaURLs = newValue }
     }
 
-    static func ==(lhs: TweetEdit, rhs: TweetEdit) -> Bool {
+    public static func ==(lhs: TweetEdit, rhs: TweetEdit) -> Bool {
         lhs.body == rhs.body && lhs.mediaURLs == rhs.mediaURLs
     }
 }

@@ -1,6 +1,7 @@
 import Combine
 import Relay
 import UserNotifications
+import CourierGenerated
 
 class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationHandler()

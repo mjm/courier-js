@@ -2,14 +2,14 @@
 
 import Relay
 
-struct SettingsScreenQuery {
-    var variables: Variables
+public struct SettingsScreenQuery {
+    public var variables: Variables
 
-    init(variables: Variables) {
+    public init(variables: Variables) {
         self.variables = variables
     }
 
-    static var node: ConcreteRequest {
+    public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
                 name: "SettingsScreenQuery",
@@ -120,19 +120,17 @@ fragment UserProfileSection_user on Viewer {
 }
 
 extension SettingsScreenQuery {
-    typealias Variables = EmptyVariables
+    public typealias Variables = EmptyVariables
 }
 
-
 extension SettingsScreenQuery {
-    struct Data: Decodable {
-        var viewer: Viewer_viewer?
+    public struct Data: Decodable {
+        public var viewer: Viewer_viewer?
 
-        struct Viewer_viewer: Decodable, UserProfileSection_user_Key, SubscriptionSection_user_Key {
-            var fragment_UserProfileSection_user: FragmentPointer
-            var fragment_SubscriptionSection_user: FragmentPointer
+        public struct Viewer_viewer: Decodable, UserProfileSection_user_Key, SubscriptionSection_user_Key {
+            public var fragment_UserProfileSection_user: FragmentPointer
+            public var fragment_SubscriptionSection_user: FragmentPointer
         }
     }
 }
-
 extension SettingsScreenQuery: Relay.Operation {}

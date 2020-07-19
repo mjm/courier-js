@@ -2,14 +2,14 @@
 
 import Relay
 
-struct TweetsList_tweets {
-    var fragmentPointer: FragmentPointer
+public struct TweetsList_tweets {
+    public var fragmentPointer: FragmentPointer
 
-    init(key: TweetsList_tweets_Key) {
+    public init(key: TweetsList_tweets_Key) {
         fragmentPointer = key.fragment_TweetsList_tweets
     }
 
-    static var node: ReaderFragment {
+    public static var node: ReaderFragment {
         ReaderFragment(
             name: "TweetsList_tweets",
             type: "Viewer",
@@ -70,33 +70,31 @@ struct TweetsList_tweets {
 }
 
 extension TweetsList_tweets {
-    struct Data: Decodable {
-        var allTweets: TweetGroupConnection_allTweets
+    public struct Data: Decodable {
+        public var allTweets: TweetGroupConnection_allTweets
 
-        struct TweetGroupConnection_allTweets: Decodable, ConnectionCollection {
-            var edges: [TweetGroupEdge_edges]
+        public struct TweetGroupConnection_allTweets: Decodable, ConnectionCollection {
+            public var edges: [TweetGroupEdge_edges]
 
-            struct TweetGroupEdge_edges: Decodable, ConnectionEdge {
-                var node: TweetGroup_node
+            public struct TweetGroupEdge_edges: Decodable, ConnectionEdge {
+                public var node: TweetGroup_node
 
-                struct TweetGroup_node: Decodable, Identifiable, TweetRow_tweetGroup_Key, ConnectionNode {
-                    var id: String
-                    var fragment_TweetRow_tweetGroup: FragmentPointer
+                public struct TweetGroup_node: Decodable, Identifiable, TweetRow_tweetGroup_Key, ConnectionNode {
+                    public var id: String
+                    public var fragment_TweetRow_tweetGroup: FragmentPointer
                 }
             }
         }
     }
 }
 
-protocol TweetsList_tweets_Key {
+public protocol TweetsList_tweets_Key {
     var fragment_TweetsList_tweets: FragmentPointer { get }
 }
-
 extension TweetsList_tweets: Relay.Fragment {}
-
 extension TweetsList_tweets: Relay.PaginationFragment {
-    typealias Operation = TweetsListPaginationQuery
-    static var metadata: Metadata {
+    public typealias Operation = TweetsListPaginationQuery
+    public static var metadata: Metadata {
         RefetchMetadata(
             path: ["viewer"],
             operation: Operation.self,
@@ -110,18 +108,17 @@ extension TweetsList_tweets: Relay.PaginationFragment {
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
-
 extension TweetsList_tweets_Key {
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    func asFragment() -> RelaySwiftUI.FragmentNext<TweetsList_tweets> {
+    public func asFragment() -> RelaySwiftUI.FragmentNext<TweetsList_tweets> {
         RelaySwiftUI.FragmentNext<TweetsList_tweets>(self)
     }
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    func asFragment() -> RelaySwiftUI.RefetchableFragment<TweetsList_tweets> {
+    public func asFragment() -> RelaySwiftUI.RefetchableFragment<TweetsList_tweets> {
         RelaySwiftUI.RefetchableFragment<TweetsList_tweets>(self)
     }
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    func asFragment() -> RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets> {
+    public func asFragment() -> RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets> {
         RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets>(self)
     }
 }

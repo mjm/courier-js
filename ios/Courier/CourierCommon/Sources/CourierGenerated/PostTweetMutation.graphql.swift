@@ -2,25 +2,25 @@
 
 import Relay
 
-struct EditTweetMutation {
-    var variables: Variables
+public struct PostTweetMutation {
+    public var variables: Variables
 
-    init(variables: Variables) {
+    public init(variables: Variables) {
         self.variables = variables
     }
 
-    static var node: ConcreteRequest {
+    public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "EditTweetMutation",
+                name: "PostTweetMutation",
                 type: "Mutation",
                 selections: [
                     .field(ReaderLinkedField(
-                        name: "editTweet",
+                        name: "postTweet",
                         args: [
                             VariableArgument(name: "input", variableName: "input")
                         ],
-                        concreteType: "EditTweetPayload",
+                        concreteType: "PostTweetPayload",
                         plural: false,
                         selections: [
                             .field(ReaderLinkedField(
@@ -41,8 +41,20 @@ struct EditTweetMutation {
                                             )),
                                             .field(ReaderScalarField(
                                                 name: "mediaURLs"
+                                            )),
+                                            .field(ReaderScalarField(
+                                                name: "postedTweetID"
                                             ))
                                         ]
+                                    )),
+                                    .field(ReaderScalarField(
+                                        name: "status"
+                                    )),
+                                    .field(ReaderScalarField(
+                                        name: "postedAt"
+                                    )),
+                                    .field(ReaderScalarField(
+                                        name: "postAfter"
                                     ))
                                 ]
                             ))
@@ -51,14 +63,14 @@ struct EditTweetMutation {
                 ]
             ),
             operation: NormalizationOperation(
-                name: "EditTweetMutation",
+                name: "PostTweetMutation",
                 selections: [
                     .field(NormalizationLinkedField(
-                        name: "editTweet",
+                        name: "postTweet",
                         args: [
                             VariableArgument(name: "input", variableName: "input")
                         ],
-                        concreteType: "EditTweetPayload",
+                        concreteType: "PostTweetPayload",
                         plural: false,
                         selections: [
                             .field(NormalizationLinkedField(
@@ -79,8 +91,20 @@ struct EditTweetMutation {
                                             )),
                                             .field(NormalizationScalarField(
                                                 name: "mediaURLs"
+                                            )),
+                                            .field(NormalizationScalarField(
+                                                name: "postedTweetID"
                                             ))
                                         ]
+                                    )),
+                                    .field(NormalizationScalarField(
+                                        name: "status"
+                                    )),
+                                    .field(NormalizationScalarField(
+                                        name: "postedAt"
+                                    )),
+                                    .field(NormalizationScalarField(
+                                        name: "postAfter"
                                     ))
                                 ]
                             ))
@@ -89,19 +113,23 @@ struct EditTweetMutation {
                 ]
             ),
             params: RequestParameters(
-                name: "EditTweetMutation",
+                name: "PostTweetMutation",
                 operationKind: .mutation,
                 text: """
-mutation EditTweetMutation(
-  $input: EditTweetInput!
+mutation PostTweetMutation(
+  $input: PostTweetInput!
 ) {
-  editTweet(input: $input) {
+  postTweet(input: $input) {
     tweetGroup {
       id
       tweets {
         body
         mediaURLs
+        postedTweetID
       }
+      status
+      postedAt
+      postAfter
     }
   }
 }
@@ -111,18 +139,22 @@ mutation EditTweetMutation(
     }
 }
 
-extension EditTweetMutation {
-    struct Variables: VariableDataConvertible {
-        var input: EditTweetInput
+extension PostTweetMutation {
+    public struct Variables: VariableDataConvertible {
+        public var input: PostTweetInput
 
-        var variableData: VariableData {
+        public init(input: PostTweetInput) {
+            self.input = input
+        }
+
+        public var variableData: VariableData {
             [
                 "input": input
             ]
         }
     }
 
-    init(input: EditTweetInput) {
+    public init(input: PostTweetInput) {
         self.init(variables: .init(input: input))
     }
 }
@@ -130,58 +162,54 @@ extension EditTweetMutation {
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == EditTweetMutation {
-    func get(input: EditTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<EditTweetMutation>.Result {
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)extension RelaySwiftUI.QueryNext.WrappedValue where O == PostTweetMutation {
+    public func get(input: PostTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<PostTweetMutation>.Result {
         self.get(.init(input: input), fetchKey: fetchKey)
     }
 }
 #endif
 
-struct EditTweetInput: VariableDataConvertible {
-    var id: String
-    var tweets: [TweetEdit]
+public struct PostTweetInput: VariableDataConvertible {
+    public var id: String
+    public var body: String?
+    public var mediaURLs: [String]?
 
-    var variableData: VariableData {
+    public init(id: String, body: String? = nil, mediaURLs: [String]? = nil) {
+        self.id = id
+        self.body = body
+        self.mediaURLs = mediaURLs
+    }
+
+    public var variableData: VariableData {
         [
             "id": id,
-            "tweets": tweets
-        ]
-    }
-}
-
-
-struct TweetEdit: VariableDataConvertible {
-    var body: String
-    var mediaURLs: [String]?
-
-    var variableData: VariableData {
-        [
             "body": body,
             "mediaURLs": mediaURLs
         ]
     }
 }
 
+extension PostTweetMutation {
+    public struct Data: Decodable {
+        public var postTweet: PostTweetPayload_postTweet
 
-extension EditTweetMutation {
-    struct Data: Decodable {
-        var editTweet: EditTweetPayload_editTweet
+        public struct PostTweetPayload_postTweet: Decodable {
+            public var tweetGroup: TweetGroup_tweetGroup
 
-        struct EditTweetPayload_editTweet: Decodable {
-            var tweetGroup: TweetGroup_tweetGroup
+            public struct TweetGroup_tweetGroup: Decodable, Identifiable {
+                public var id: String
+                public var tweets: [Tweet_tweets]
+                public var status: TweetStatus
+                public var postedAt: String?
+                public var postAfter: String?
 
-            struct TweetGroup_tweetGroup: Decodable, Identifiable {
-                var id: String
-                var tweets: [Tweet_tweets]
-
-                struct Tweet_tweets: Decodable {
-                    var body: String
-                    var mediaURLs: [String]
+                public struct Tweet_tweets: Decodable {
+                    public var body: String
+                    public var mediaURLs: [String]
+                    public var postedTweetID: String?
                 }
             }
         }
     }
 }
-
-extension EditTweetMutation: Relay.Operation {}
+extension PostTweetMutation: Relay.Operation {}

@@ -2,14 +2,14 @@
 
 import Relay
 
-struct DetailedTweetActions_tweetGroup {
-    var fragmentPointer: FragmentPointer
+public struct DetailedTweetActions_tweetGroup {
+    public var fragmentPointer: FragmentPointer
 
-    init(key: DetailedTweetActions_tweetGroup_Key) {
+    public init(key: DetailedTweetActions_tweetGroup_Key) {
         fragmentPointer = key.fragment_DetailedTweetActions_tweetGroup
     }
 
-    static var node: ReaderFragment {
+    public static var node: ReaderFragment {
         ReaderFragment(
             name: "DetailedTweetActions_tweetGroup",
             type: "TweetGroup",
@@ -45,32 +45,30 @@ struct DetailedTweetActions_tweetGroup {
 }
 
 extension DetailedTweetActions_tweetGroup {
-    struct Data: Decodable, Identifiable {
-        var tweets: [Tweet_tweets]
-        var id: String
-        var status: TweetStatus
-        var postAfter: String?
-        var postedAt: String?
-        var postedRetweetID: String?
+    public struct Data: Decodable, Identifiable {
+        public var tweets: [Tweet_tweets]
+        public var id: String
+        public var status: TweetStatus
+        public var postAfter: String?
+        public var postedAt: String?
+        public var postedRetweetID: String?
 
-        struct Tweet_tweets: Decodable {
-            var postedTweetID: String?
+        public struct Tweet_tweets: Decodable {
+            public var postedTweetID: String?
         }
     }
 }
 
-protocol DetailedTweetActions_tweetGroup_Key {
+public protocol DetailedTweetActions_tweetGroup_Key {
     var fragment_DetailedTweetActions_tweetGroup: FragmentPointer { get }
 }
-
 extension DetailedTweetActions_tweetGroup: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
-
 extension DetailedTweetActions_tweetGroup_Key {
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    func asFragment() -> RelaySwiftUI.FragmentNext<DetailedTweetActions_tweetGroup> {
+    public func asFragment() -> RelaySwiftUI.FragmentNext<DetailedTweetActions_tweetGroup> {
         RelaySwiftUI.FragmentNext<DetailedTweetActions_tweetGroup>(self)
     }
 }

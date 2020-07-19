@@ -1,5 +1,6 @@
 import SwiftUI
 import RelaySwiftUI
+import CourierGenerated
 
 private let query = graphql("""
 query TweetDetailScreenQuery($id: ID!) {

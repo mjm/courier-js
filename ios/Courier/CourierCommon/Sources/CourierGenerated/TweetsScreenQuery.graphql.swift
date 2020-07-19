@@ -2,17 +2,17 @@
 
 import Relay
 
-struct TweetsListPaginationQuery {
-    var variables: Variables
+public struct TweetsScreenQuery {
+    public var variables: Variables
 
-    init(variables: Variables) {
+    public init(variables: Variables) {
         self.variables = variables
     }
 
-    static var node: ConcreteRequest {
+    public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "TweetsListPaginationQuery",
+                name: "TweetsScreenQuery",
                 type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
@@ -23,8 +23,6 @@ struct TweetsListPaginationQuery {
                             .fragmentSpread(ReaderFragmentSpread(
                                 name: "TweetsList_tweets",
                                 args: [
-                                    VariableArgument(name: "count", variableName: "count"),
-                                    VariableArgument(name: "cursor", variableName: "cursor"),
                                     VariableArgument(name: "filter", variableName: "filter")
                                 ]
                             ))
@@ -33,7 +31,7 @@ struct TweetsListPaginationQuery {
                 ]
             ),
             operation: NormalizationOperation(
-                name: "TweetsListPaginationQuery",
+                name: "TweetsScreenQuery",
                 selections: [
                     .field(NormalizationLinkedField(
                         name: "viewer",
@@ -43,9 +41,8 @@ struct TweetsListPaginationQuery {
                             .field(NormalizationLinkedField(
                                 name: "allTweets",
                                 args: [
-                                    VariableArgument(name: "after", variableName: "cursor"),
                                     VariableArgument(name: "filter", variableName: "filter"),
-                                    VariableArgument(name: "first", variableName: "count")
+                                    LiteralArgument(name: "first", value: 10)
                                 ],
                                 concreteType: "TweetGroupConnection",
                                 plural: false,
@@ -114,9 +111,8 @@ struct TweetsListPaginationQuery {
                                 kind: .linked,
                                 name: "allTweets",
                                 args: [
-                                    VariableArgument(name: "after", variableName: "cursor"),
                                     VariableArgument(name: "filter", variableName: "filter"),
-                                    VariableArgument(name: "first", variableName: "count")
+                                    LiteralArgument(name: "first", value: 10)
                                 ],
                                 handle: "connection",
                                 key: "TweetsList_allTweets",
@@ -127,16 +123,14 @@ struct TweetsListPaginationQuery {
                 ]
             ),
             params: RequestParameters(
-                name: "TweetsListPaginationQuery",
+                name: "TweetsScreenQuery",
                 operationKind: .query,
                 text: """
-query TweetsListPaginationQuery(
-  $filter: TweetFilter
-  $count: Int = 10
-  $cursor: Cursor
+query TweetsScreenQuery(
+  $filter: TweetFilter!
 ) {
   viewer {
-    ...TweetsList_tweets_3KQYpM
+    ...TweetsList_tweets_Vt7Yj
   }
 }
 
@@ -151,8 +145,8 @@ fragment TweetRow_tweetGroup on TweetGroup {
   }
 }
 
-fragment TweetsList_tweets_3KQYpM on Viewer {
-  allTweets(filter: $filter, first: $count, after: $cursor) {
+fragment TweetsList_tweets_Vt7Yj on Viewer {
+  allTweets(filter: $filter, first: 10) {
     edges {
       node {
         id
@@ -173,45 +167,50 @@ fragment TweetsList_tweets_3KQYpM on Viewer {
     }
 }
 
-extension TweetsListPaginationQuery {
-    struct Variables: VariableDataConvertible {
-        var filter: TweetFilter?
-        var count: Int?
-        var cursor: String?
+extension TweetsScreenQuery {
+    public struct Variables: VariableDataConvertible {
+        public var filter: TweetFilter
 
-        var variableData: VariableData {
+        public init(filter: TweetFilter) {
+            self.filter = filter
+        }
+
+        public var variableData: VariableData {
             [
-                "filter": filter,
-                "count": count,
-                "cursor": cursor
+                "filter": filter
             ]
         }
     }
 
-    init(filter: TweetFilter? = nil, count: Int? = nil, cursor: String? = nil) {
-        self.init(variables: .init(filter: filter, count: count, cursor: cursor))
+    public init(filter: TweetFilter) {
+        self.init(variables: .init(filter: filter))
     }
 }
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetsListPaginationQuery {
-    func get(filter: TweetFilter? = nil, count: Int? = nil, cursor: String? = nil, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetsListPaginationQuery>.Result {
-        self.get(.init(filter: filter, count: count, cursor: cursor), fetchKey: fetchKey)
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetsScreenQuery {
+    public func get(filter: TweetFilter, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetsScreenQuery>.Result {
+        self.get(.init(filter: filter), fetchKey: fetchKey)
     }
 }
 #endif
+extension TweetsScreenQuery {
+    public struct Data: Decodable {
+        public var viewer: Viewer_viewer?
 
-extension TweetsListPaginationQuery {
-    struct Data: Decodable {
-        var viewer: Viewer_viewer?
-
-        struct Viewer_viewer: Decodable, TweetsList_tweets_Key {
-            var fragment_TweetsList_tweets: FragmentPointer
+        public struct Viewer_viewer: Decodable, TweetsList_tweets_Key {
+            public var fragment_TweetsList_tweets: FragmentPointer
         }
     }
 }
 
-extension TweetsListPaginationQuery: Relay.Operation {}
+public enum TweetFilter: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
+    case upcoming = "UPCOMING"
+    case past = "PAST"
+    public var description: String {
+        rawValue
+    }
+}
+extension TweetsScreenQuery: Relay.Operation {}

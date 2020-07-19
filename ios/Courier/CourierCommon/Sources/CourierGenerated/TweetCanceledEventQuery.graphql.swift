@@ -2,17 +2,17 @@
 
 import Relay
 
-struct TweetUncanceledEventQuery {
-    var variables: Variables
+public struct TweetCanceledEventQuery {
+    public var variables: Variables
 
-    init(variables: Variables) {
+    public init(variables: Variables) {
         self.variables = variables
     }
 
-    static var node: ConcreteRequest {
+    public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "TweetUncanceledEventQuery",
+                name: "TweetCanceledEventQuery",
                 type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
@@ -34,7 +34,7 @@ struct TweetUncanceledEventQuery {
                 ]
             ),
             operation: NormalizationOperation(
-                name: "TweetUncanceledEventQuery",
+                name: "TweetCanceledEventQuery",
                 selections: [
                     .field(NormalizationLinkedField(
                         name: "tweetGroup",
@@ -55,10 +55,10 @@ struct TweetUncanceledEventQuery {
                 ]
             ),
             params: RequestParameters(
-                name: "TweetUncanceledEventQuery",
+                name: "TweetCanceledEventQuery",
                 operationKind: .query,
                 text: """
-query TweetUncanceledEventQuery(
+query TweetCanceledEventQuery(
   $id: ID!
 ) {
   tweetGroup(id: $id) {
@@ -72,18 +72,22 @@ query TweetUncanceledEventQuery(
     }
 }
 
-extension TweetUncanceledEventQuery {
-    struct Variables: VariableDataConvertible {
-        var id: String
+extension TweetCanceledEventQuery {
+    public struct Variables: VariableDataConvertible {
+        public var id: String
 
-        var variableData: VariableData {
+        public init(id: String) {
+            self.id = id
+        }
+
+        public var variableData: VariableData {
             [
                 "id": id
             ]
         }
     }
 
-    init(id: String) {
+    public init(id: String) {
         self.init(variables: .init(id: id))
     }
 }
@@ -91,23 +95,20 @@ extension TweetUncanceledEventQuery {
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetUncanceledEventQuery {
-    func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetUncanceledEventQuery>.Result {
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetCanceledEventQuery {
+    public func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetCanceledEventQuery>.Result {
         self.get(.init(id: id), fetchKey: fetchKey)
     }
 }
 #endif
+extension TweetCanceledEventQuery {
+    public struct Data: Decodable {
+        public var tweetGroup: TweetGroup_tweetGroup?
 
-extension TweetUncanceledEventQuery {
-    struct Data: Decodable {
-        var tweetGroup: TweetGroup_tweetGroup?
-
-        struct TweetGroup_tweetGroup: Decodable, Identifiable {
-            var id: String
-            var status: TweetStatus
+        public struct TweetGroup_tweetGroup: Decodable, Identifiable {
+            public var id: String
+            public var status: TweetStatus
         }
     }
 }
-
-extension TweetUncanceledEventQuery: Relay.Operation {}
+extension TweetCanceledEventQuery: Relay.Operation {}

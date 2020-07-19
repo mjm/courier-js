@@ -2,14 +2,14 @@
 
 import Relay
 
-struct EditTweetForm_tweetGroup {
-    var fragmentPointer: FragmentPointer
+public struct EditTweetForm_tweetGroup {
+    public var fragmentPointer: FragmentPointer
 
-    init(key: EditTweetForm_tweetGroup_Key) {
+    public init(key: EditTweetForm_tweetGroup_Key) {
         fragmentPointer = key.fragment_EditTweetForm_tweetGroup
     }
 
-    static var node: ReaderFragment {
+    public static var node: ReaderFragment {
         ReaderFragment(
             name: "EditTweetForm_tweetGroup",
             type: "TweetGroup",
@@ -36,29 +36,27 @@ struct EditTweetForm_tweetGroup {
 }
 
 extension EditTweetForm_tweetGroup {
-    struct Data: Decodable, Identifiable {
-        var id: String
-        var tweets: [Tweet_tweets]
+    public struct Data: Decodable, Identifiable {
+        public var id: String
+        public var tweets: [Tweet_tweets]
 
-        struct Tweet_tweets: Decodable {
-            var body: String
-            var mediaURLs: [String]
+        public struct Tweet_tweets: Decodable {
+            public var body: String
+            public var mediaURLs: [String]
         }
     }
 }
 
-protocol EditTweetForm_tweetGroup_Key {
+public protocol EditTweetForm_tweetGroup_Key {
     var fragment_EditTweetForm_tweetGroup: FragmentPointer { get }
 }
-
 extension EditTweetForm_tweetGroup: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
-
 extension EditTweetForm_tweetGroup_Key {
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    func asFragment() -> RelaySwiftUI.FragmentNext<EditTweetForm_tweetGroup> {
+    public func asFragment() -> RelaySwiftUI.FragmentNext<EditTweetForm_tweetGroup> {
         RelaySwiftUI.FragmentNext<EditTweetForm_tweetGroup>(self)
     }
 }

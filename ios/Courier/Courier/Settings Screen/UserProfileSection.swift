@@ -1,5 +1,6 @@
 import SwiftUI
 import RelaySwiftUI
+import CourierGenerated
 
 private let userFragment = graphql("""
 fragment UserProfileSection_user on Viewer {
