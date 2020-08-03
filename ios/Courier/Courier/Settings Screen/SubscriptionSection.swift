@@ -22,70 +22,64 @@ struct SubscriptionSection: View {
     @Fragment<SubscriptionSection_user> var user
 
     var body: some View {
-        Group {
-            if user == nil {
-                EmptyView()
-            } else {
-                if user!.subscription == nil && user!.subscriptionStatusOverride == nil {
-                    Section(
-                        footer: Text("Posting imported tweets to Twitter requires an active subscription.")
-                    ) {
-                        Button("Subscribe to Courier") {}
-                    }
-                } else {
-                    subscriptionStatusView
-                }
-            }
-        }
-    }
-
-    var subscriptionStatusView: some View {
-        let status = user!.subscription?.status ?? user!.subscriptionStatusOverride!
-        return Group {
-            if status == .active {
-                activeSubscriptionView
-            }
-        }
-    }
-
-    var activeSubscriptionView: some View {
-        Group {
-            if user!.subscription != nil {
+        if let user = user {
+            if user.subscription == nil && user.subscriptionStatusOverride == nil {
                 Section(
-                    header: Text("YOUR SUBSCRIPTION"),
-                    footer: Text("If you cancel, you can keep using Courier until your existing subscription expires.")
+                    footer: Text("Posting imported tweets to Twitter requires an active subscription.")
                 ) {
-                    HStack{
-                        Text("Status")
-                        Spacer()
-                        Text("Active")
-                            .foregroundColor(.secondary)
-                    }
+                    Button("Subscribe to Courier") {}
+                }
+            } else {
+                subscriptionStatusView(user)
+            }
+        } else {
+            EmptyView()
+        }
+    }
+
+    @ViewBuilder func subscriptionStatusView(_ user: SubscriptionSection_user.Data) -> some View {
+        let status = user.subscription?.status ?? user.subscriptionStatusOverride!
+        if status == .active {
+            activeSubscriptionView(user)
+        }
+    }
+
+    @ViewBuilder func activeSubscriptionView(_ user: SubscriptionSection_user.Data) -> some View {
+        if let subscription = user.subscription {
+            Section(
+                header: Text("YOUR SUBSCRIPTION"),
+                footer: Text("If you cancel, you can keep using Courier until your existing subscription expires.")
+            ) {
+                HStack{
+                    Text("Status")
+                    Spacer()
+                    Text("Active")
+                        .foregroundColor(.secondary)
+                }
+                HStack {
+                    Text("Renews")
+                    Spacer()
+                    (Text("in ") + Text(subscription.periodEnd.asDate!, style: .relative))
+                        .foregroundColor(.secondary)
+                }
+                Button(action: {}, label: {
                     HStack {
-                        Text("Renews")
                         Spacer()
-                        Text(verbatim: "\(user!.subscription!.periodEnd.asDate!, relativeTo: Date())")
-                            .foregroundColor(.secondary)
-                    }
-                    Button(action: {}, label: {
-                        HStack {
-                            Spacer()
-                            Text("Cancel Subscription")
-                            Spacer()
-                        }
-                    })
-                }
-            } else {
-                Section(
-                    header: Text("YOUR SUBSCRIPTION"),
-                    footer: Text("You are subscribed indefinitely.")
-                ) {
-                    HStack{
-                        Text("Status")
+                        Text("Cancel Subscription")
                         Spacer()
-                        Text("Active")
-                            .foregroundColor(.secondary)
                     }
+                })
+            }
+        } else {
+            Section(
+                header: Text("YOUR SUBSCRIPTION"),
+                footer: Text("You are subscribed indefinitely.")
+            ) {
+                HStack{
+                    Text("Status")
+                    Spacer()
+                    Text("Active")
+                        .foregroundColor(.secondary)
                 }
             }
         }

@@ -56,7 +56,7 @@ struct TweetRow: View {
                   color: .purple)
         case .draft:
             if let postAfter = tweetGroup.postAfter {
-                Badge(label: Text("Posting ") + Text(verbatim: "\(postAfter.asDate!, relativeTo: now)"),
+                Badge(label: Text("Posting in ") + Text(postAfter.asDate!, style: .relative),
                       image: Image(systemName: "clock.fill"),
                       color: .purple)
             } else {
@@ -69,7 +69,7 @@ struct TweetRow: View {
 
     private func postedAtTimeText(_ tweetGroup: TweetRow_tweetGroup.Data) -> Text {
         Text("Posted ") + (tweetGroup.postedAt?.asDate.map { date in
-            Text(verbatim: "\(date, relativeTo: now)")
+            Text(date, style: .relative) + Text(" ago")
         } ?? Text("some unknown time ago"))
     }
 }
@@ -79,22 +79,6 @@ extension String {
 
     var asDate: Date? {
         String.isoFormatter.date(from: self)
-    }
-
-    func reformatTime(formatter: DateFormatter) -> String? {
-        asDate.map { formatter.string(from: $0) }
-    }
-}
-
-let defaultRelativeTimeFormatter: RelativeDateTimeFormatter = {
-    let formatter = RelativeDateTimeFormatter()
-    formatter.dateTimeStyle = .named
-    return formatter
-}()
-
-extension String.StringInterpolation {
-    mutating func appendInterpolation(_ value: Date, relativeTo other: Date, formatter: RelativeDateTimeFormatter = defaultRelativeTimeFormatter) {
-        appendLiteral(formatter.localizedString(for: value, relativeTo: other))
     }
 }
 

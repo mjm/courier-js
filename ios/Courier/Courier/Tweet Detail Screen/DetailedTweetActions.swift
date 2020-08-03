@@ -94,7 +94,7 @@ struct DetailedTweetActions: View {
             HStack {
                 Text("Posted")
                 Spacer()
-                Text(verbatim: "\(tweetGroup!.postedAt!.asDate!, relativeTo: Date())")
+                (Text(tweetGroup!.postedAt!.asDate!, style: .relative) + Text(" ago"))
                     .foregroundColor(.secondary)
             }
             Button(action: {
@@ -114,7 +114,7 @@ struct DetailedTweetActions: View {
     var sectionFooter: some View {
         Group {
             if tweetGroup != nil && tweetGroup!.status == .draft && tweetGroup!.postAfter != nil {
-                Text("This tweet will post automatically ") + Text(verbatim: "\(tweetGroup!.postAfter!.asDate!, relativeTo: Date())")
+                Text("This tweet will post automatically in ") + Text(tweetGroup!.postAfter!.asDate!, style: .relative)
             }
         }
     }
