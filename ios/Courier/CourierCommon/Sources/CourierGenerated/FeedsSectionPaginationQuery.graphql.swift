@@ -2,7 +2,7 @@
 
 import Relay
 
-public struct TweetsScreenQuery {
+public struct FeedsSectionPaginationQuery {
     public var variables: Variables
 
     public init(variables: Variables) {
@@ -12,7 +12,7 @@ public struct TweetsScreenQuery {
     public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "TweetsScreenQuery",
+                name: "FeedsSectionPaginationQuery",
                 type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
@@ -21,9 +21,10 @@ public struct TweetsScreenQuery {
                         plural: false,
                         selections: [
                             .fragmentSpread(ReaderFragmentSpread(
-                                name: "TweetsList_tweets",
+                                name: "FeedsSection_feeds",
                                 args: [
-                                    VariableArgument(name: "filter", variableName: "filter")
+                                    VariableArgument(name: "count", variableName: "count"),
+                                    VariableArgument(name: "cursor", variableName: "cursor")
                                 ]
                             ))
                         ]
@@ -31,7 +32,7 @@ public struct TweetsScreenQuery {
                 ]
             ),
             operation: NormalizationOperation(
-                name: "TweetsScreenQuery",
+                name: "FeedsSectionPaginationQuery",
                 selections: [
                     .field(NormalizationLinkedField(
                         name: "viewer",
@@ -39,48 +40,41 @@ public struct TweetsScreenQuery {
                         plural: false,
                         selections: [
                             .field(NormalizationLinkedField(
-                                name: "allTweets",
+                                name: "allFeeds",
                                 args: [
-                                    VariableArgument(name: "filter", variableName: "filter"),
-                                    LiteralArgument(name: "first", value: 10)
+                                    VariableArgument(name: "after", variableName: "cursor"),
+                                    VariableArgument(name: "first", variableName: "count")
                                 ],
-                                concreteType: "TweetGroupConnection",
+                                concreteType: "FeedConnection",
                                 plural: false,
                                 selections: [
                                     .field(NormalizationLinkedField(
                                         name: "edges",
-                                        concreteType: "TweetGroupEdge",
+                                        concreteType: "FeedEdge",
                                         plural: true,
                                         selections: [
                                             .field(NormalizationLinkedField(
                                                 name: "node",
-                                                concreteType: "TweetGroup",
+                                                concreteType: "Feed",
                                                 plural: false,
                                                 selections: [
                                                     .field(NormalizationScalarField(
                                                         name: "id"
                                                     )),
                                                     .field(NormalizationScalarField(
-                                                        name: "status"
+                                                        name: "title"
                                                     )),
                                                     .field(NormalizationScalarField(
-                                                        name: "postedAt"
+                                                        name: "homePageURL"
                                                     )),
                                                     .field(NormalizationScalarField(
-                                                        name: "postAfter"
+                                                        name: "refreshedAt"
                                                     )),
-                                                    .field(NormalizationLinkedField(
-                                                        name: "tweets",
-                                                        concreteType: "Tweet",
-                                                        plural: true,
-                                                        selections: [
-                                                            .field(NormalizationScalarField(
-                                                                name: "body"
-                                                            )),
-                                                            .field(NormalizationScalarField(
-                                                                name: "mediaURLs"
-                                                            ))
-                                                        ]
+                                                    .field(NormalizationScalarField(
+                                                        name: "refreshing"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "autopost"
                                                     )),
                                                     .field(NormalizationScalarField(
                                                         name: "__typename"
@@ -109,48 +103,46 @@ public struct TweetsScreenQuery {
                             )),
                             .handle(NormalizationHandle(
                                 kind: .linked,
-                                name: "allTweets",
+                                name: "allFeeds",
                                 args: [
-                                    VariableArgument(name: "filter", variableName: "filter"),
-                                    LiteralArgument(name: "first", value: 10)
+                                    VariableArgument(name: "after", variableName: "cursor"),
+                                    VariableArgument(name: "first", variableName: "count")
                                 ],
                                 handle: "connection",
-                                key: "TweetsList_allTweets",
-                                filters: ["filter"]
+                                key: "FeedsSection_allFeeds"
                             ))
                         ]
                     ))
                 ]
             ),
             params: RequestParameters(
-                name: "TweetsScreenQuery",
+                name: "FeedsSectionPaginationQuery",
                 operationKind: .query,
                 text: """
-query TweetsScreenQuery(
-  $filter: TweetFilter!
+query FeedsSectionPaginationQuery(
+  $count: Int = 10
+  $cursor: Cursor
 ) {
   viewer {
-    ...TweetsList_tweets_Vt7Yj
+    ...FeedsSection_feeds_1G22uz
   }
 }
 
-fragment TweetRow_tweetGroup on TweetGroup {
+fragment FeedRow_feed on Feed {
   id
-  status
-  postedAt
-  postAfter
-  tweets {
-    body
-    mediaURLs
-  }
+  title
+  homePageURL
+  refreshedAt
+  refreshing
+  autopost
 }
 
-fragment TweetsList_tweets_Vt7Yj on Viewer {
-  allTweets(filter: $filter, first: 10) {
+fragment FeedsSection_feeds_1G22uz on Viewer {
+  allFeeds(first: $count, after: $cursor) {
     edges {
       node {
         id
-        ...TweetRow_tweetGroup
+        ...FeedRow_feed
         __typename
       }
       cursor
@@ -167,23 +159,26 @@ fragment TweetsList_tweets_Vt7Yj on Viewer {
     }
 }
 
-extension TweetsScreenQuery {
+extension FeedsSectionPaginationQuery {
     public struct Variables: VariableDataConvertible {
-        public var filter: TweetFilter
+        public var count: Int?
+        public var cursor: String?
 
-        public init(filter: TweetFilter) {
-            self.filter = filter
+        public init(count: Int? = nil, cursor: String? = nil) {
+            self.count = count
+            self.cursor = cursor
         }
 
         public var variableData: VariableData {
             [
-                "filter": filter
+                "count": count,
+                "cursor": cursor
             ]
         }
     }
 
-    public init(filter: TweetFilter) {
-        self.init(variables: .init(filter: filter))
+    public init(count: Int? = nil, cursor: String? = nil) {
+        self.init(variables: .init(count: count, cursor: cursor))
     }
 }
 
@@ -191,9 +186,9 @@ extension TweetsScreenQuery {
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetsScreenQuery {
-    public func get(filter: TweetFilter, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetsScreenQuery>.Result {
-        self.get(.init(filter: filter), fetchKey: fetchKey)
+extension RelaySwiftUI.QueryNext.WrappedValue where O == FeedsSectionPaginationQuery {
+    public func get(count: Int? = nil, cursor: String? = nil, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<FeedsSectionPaginationQuery>.Result {
+        self.get(.init(count: count, cursor: cursor), fetchKey: fetchKey)
     }
 }
 #endif
@@ -202,29 +197,21 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetsScreenQuery {
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == TweetsScreenQuery {
-    public func refetch(filter: TweetFilter) {
-        self.refetch(.init(filter: filter))
+extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == FeedsSectionPaginationQuery {
+    public func refetch(count: Int? = nil, cursor: String? = nil) {
+        self.refetch(.init(count: count, cursor: cursor))
     }
 }
 #endif
 
-extension TweetsScreenQuery {
+extension FeedsSectionPaginationQuery {
     public struct Data: Decodable {
         public var viewer: Viewer_viewer?
 
-        public struct Viewer_viewer: Decodable, TweetsList_tweets_Key {
-            public var fragment_TweetsList_tweets: FragmentPointer
+        public struct Viewer_viewer: Decodable, FeedsSection_feeds_Key {
+            public var fragment_FeedsSection_feeds: FragmentPointer
         }
     }
 }
 
-public enum TweetFilter: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
-    case upcoming = "UPCOMING"
-    case past = "PAST"
-    public var description: String {
-        rawValue
-    }
-}
-
-extension TweetsScreenQuery: Relay.Operation {}
+extension FeedsSectionPaginationQuery: Relay.Operation {}

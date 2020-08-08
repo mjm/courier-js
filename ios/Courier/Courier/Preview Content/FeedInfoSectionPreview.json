@@ -1,0 +1,16 @@
+{
+    "data": {
+        "feed1": {
+            "id": "1",
+            "refreshedAt": "2020-04-28T02:21:21Z",
+            "refreshing": true,
+            "autopost": true
+        },
+        "feed2": {
+            "id": "2",
+            "refreshedAt": "2020-04-28T02:21:21Z",
+            "refreshing": false,
+            "autopost": false
+        }
+    }
+}

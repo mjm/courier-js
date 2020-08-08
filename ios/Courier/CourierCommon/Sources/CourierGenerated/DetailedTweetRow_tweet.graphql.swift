@@ -35,10 +35,12 @@ extension DetailedTweetRow_tweet {
 public protocol DetailedTweetRow_tweet_Key {
     var fragment_DetailedTweetRow_tweet: FragmentPointer { get }
 }
+
 extension DetailedTweetRow_tweet: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
+
 extension DetailedTweetRow_tweet_Key {
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
     public func asFragment() -> RelaySwiftUI.FragmentNext<DetailedTweetRow_tweet> {

@@ -46,10 +46,12 @@ extension DetailedTweetList_tweetGroup {
 public protocol DetailedTweetList_tweetGroup_Key {
     var fragment_DetailedTweetList_tweetGroup: FragmentPointer { get }
 }
+
 extension DetailedTweetList_tweetGroup: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
+
 extension DetailedTweetList_tweetGroup_Key {
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
     public func asFragment() -> RelaySwiftUI.FragmentNext<DetailedTweetList_tweetGroup> {

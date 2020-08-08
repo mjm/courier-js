@@ -2,35 +2,32 @@
 
 import Relay
 
-public struct TweetsList_tweets {
+public struct FeedsSection_feeds {
     public var fragmentPointer: FragmentPointer
 
-    public init(key: TweetsList_tweets_Key) {
-        fragmentPointer = key.fragment_TweetsList_tweets
+    public init(key: FeedsSection_feeds_Key) {
+        fragmentPointer = key.fragment_FeedsSection_feeds
     }
 
     public static var node: ReaderFragment {
         ReaderFragment(
-            name: "TweetsList_tweets",
+            name: "FeedsSection_feeds",
             type: "Viewer",
             selections: [
                 .field(ReaderLinkedField(
-                    name: "__TweetsList_allTweets_connection",
-                    alias: "allTweets",
-                    args: [
-                        VariableArgument(name: "filter", variableName: "filter")
-                    ],
-                    concreteType: "TweetGroupConnection",
+                    name: "__FeedsSection_allFeeds_connection",
+                    alias: "allFeeds",
+                    concreteType: "FeedConnection",
                     plural: false,
                     selections: [
                         .field(ReaderLinkedField(
                             name: "edges",
-                            concreteType: "TweetGroupEdge",
+                            concreteType: "FeedEdge",
                             plural: true,
                             selections: [
                                 .field(ReaderLinkedField(
                                     name: "node",
-                                    concreteType: "TweetGroup",
+                                    concreteType: "Feed",
                                     plural: false,
                                     selections: [
                                         .field(ReaderScalarField(
@@ -40,7 +37,7 @@ public struct TweetsList_tweets {
                                             name: "__typename"
                                         )),
                                         .fragmentSpread(ReaderFragmentSpread(
-                                            name: "TweetRow_tweetGroup"
+                                            name: "FeedRow_feed"
                                         ))
                                     ]
                                 )),
@@ -69,39 +66,39 @@ public struct TweetsList_tweets {
     }
 }
 
-extension TweetsList_tweets {
+extension FeedsSection_feeds {
     public struct Data: Decodable {
-        public var allTweets: TweetGroupConnection_allTweets
+        public var allFeeds: FeedConnection_allFeeds
 
-        public struct TweetGroupConnection_allTweets: Decodable, ConnectionCollection {
-            public var edges: [TweetGroupEdge_edges]
+        public struct FeedConnection_allFeeds: Decodable, ConnectionCollection {
+            public var edges: [FeedEdge_edges]
 
-            public struct TweetGroupEdge_edges: Decodable, ConnectionEdge {
-                public var node: TweetGroup_node
+            public struct FeedEdge_edges: Decodable, ConnectionEdge {
+                public var node: Feed_node
 
-                public struct TweetGroup_node: Decodable, Identifiable, TweetRow_tweetGroup_Key, ConnectionNode {
+                public struct Feed_node: Decodable, Identifiable, FeedRow_feed_Key, ConnectionNode {
                     public var id: String
-                    public var fragment_TweetRow_tweetGroup: FragmentPointer
+                    public var fragment_FeedRow_feed: FragmentPointer
                 }
             }
         }
     }
 }
 
-public protocol TweetsList_tweets_Key {
-    var fragment_TweetsList_tweets: FragmentPointer { get }
+public protocol FeedsSection_feeds_Key {
+    var fragment_FeedsSection_feeds: FragmentPointer { get }
 }
 
-extension TweetsList_tweets: Relay.Fragment {}
+extension FeedsSection_feeds: Relay.Fragment {}
 
-extension TweetsList_tweets: Relay.PaginationFragment {
-    public typealias Operation = TweetsListPaginationQuery
+extension FeedsSection_feeds: Relay.PaginationFragment {
+    public typealias Operation = FeedsSectionPaginationQuery
     public static var metadata: Metadata {
         RefetchMetadata(
             path: ["viewer"],
             operation: Operation.self,
             connection: ConnectionMetadata(
-                path: ["allTweets"],
+                path: ["allFeeds"],
                 forward: ConnectionVariableConfig(count: "count", cursor: "cursor")
             )
         )
@@ -111,20 +108,20 @@ extension TweetsList_tweets: Relay.PaginationFragment {
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-extension TweetsList_tweets_Key {
+extension FeedsSection_feeds_Key {
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    public func asFragment() -> RelaySwiftUI.FragmentNext<TweetsList_tweets> {
-        RelaySwiftUI.FragmentNext<TweetsList_tweets>(self)
+    public func asFragment() -> RelaySwiftUI.FragmentNext<FeedsSection_feeds> {
+        RelaySwiftUI.FragmentNext<FeedsSection_feeds>(self)
     }
 
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    public func asFragment() -> RelaySwiftUI.RefetchableFragment<TweetsList_tweets> {
-        RelaySwiftUI.RefetchableFragment<TweetsList_tweets>(self)
+    public func asFragment() -> RelaySwiftUI.RefetchableFragment<FeedsSection_feeds> {
+        RelaySwiftUI.RefetchableFragment<FeedsSection_feeds>(self)
     }
 
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    public func asFragment() -> RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets> {
-        RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets>(self)
+    public func asFragment() -> RelaySwiftUI.PaginationFragmentNext<FeedsSection_feeds> {
+        RelaySwiftUI.PaginationFragmentNext<FeedsSection_feeds>(self)
     }
 }
 #endif

@@ -162,9 +162,21 @@ extension PostTweetMutation {
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)extension RelaySwiftUI.QueryNext.WrappedValue where O == PostTweetMutation {
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+extension RelaySwiftUI.QueryNext.WrappedValue where O == PostTweetMutation {
     public func get(input: PostTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<PostTweetMutation>.Result {
         self.get(.init(input: input), fetchKey: fetchKey)
+    }
+}
+#endif
+
+#if swift(>=5.3) && canImport(RelaySwiftUI)
+import RelaySwiftUI
+
+@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
+extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == PostTweetMutation {
+    public func refetch(input: PostTweetInput) {
+        self.refetch(.init(input: input))
     }
 }
 #endif
@@ -189,6 +201,7 @@ public struct PostTweetInput: VariableDataConvertible {
     }
 }
 
+
 extension PostTweetMutation {
     public struct Data: Decodable {
         public var postTweet: PostTweetPayload_postTweet
@@ -212,4 +225,5 @@ extension PostTweetMutation {
         }
     }
 }
+
 extension PostTweetMutation: Relay.Operation {}

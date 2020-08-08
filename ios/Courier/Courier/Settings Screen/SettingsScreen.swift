@@ -7,6 +7,7 @@ query SettingsScreenQuery {
   viewer {
     ...UserProfileSection_user
     ...SubscriptionSection_user
+    ...FeedsSection_feeds
   }
 }
 """)
@@ -34,6 +35,7 @@ struct SettingsScreen: View {
                                 authContext.logout()
                             })
                             SubscriptionSection(user: viewer.asFragment())
+                            FeedsSection(feeds: viewer.asFragment())
                             #if DEBUG
                             EnvironmentSection(isPresented: $isPresented)
                             #endif

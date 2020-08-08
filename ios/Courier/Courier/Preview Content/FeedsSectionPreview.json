@@ -1,0 +1,38 @@
+{
+  "data": {
+    "viewer": {
+      "allFeeds": {
+        "edges": [
+          {
+            "node": {
+              "id": "ZmVlZDoiMWIwYncyZndYaVJub3IyMXNUU3pPMHptdVJzIg==",
+              "title": "Dan Abramov's Overreacted Blog RSS Feed",
+              "homePageURL": "https://overreacted.io/",
+              "refreshedAt": "2020-04-28T02:21:21Z",
+              "refreshing": false,
+              "autopost": false,
+              "__typename": "Feed"
+            },
+            "cursor": "RkVFRCMxYjBidzJmd1hpUm5vcjIxc1RTek8wem11UnMjIyNGRUVEI0RhbiBBYnJhbW92J3MgT3ZlcnJlYWN0ZWQgQmxvZyBSU1MgRmVlZA=="
+          },
+          {
+            "node": {
+              "id": "ZmVlZDoiMWIwYnZ5UHlGQkV5VHFOQmp1NmRRTWt3SXE0Ig==",
+              "title": "Matt Moriarity",
+              "homePageURL": "https://www.mattmoriarity.com/",
+              "refreshedAt": "2020-08-08T17:44:21Z",
+              "refreshing": false,
+              "autopost": false,
+              "__typename": "Feed"
+            },
+            "cursor": "RkVFRCMxYjBidnlQeUZCRXlUcU5CanU2ZFFNa3dJcTQjIyNGRUVEI01hdHQgTW9yaWFyaXR5"
+          }
+        ],
+        "pageInfo": {
+          "endCursor": "RkVFRCMxYjBidnlQeUZCRXlUcU5CanU2ZFFNa3dJcTQjIyNGRUVEI01hdHQgTW9yaWFyaXR5",
+          "hasNextPage": false
+        }
+      }
+    }
+  }
+}

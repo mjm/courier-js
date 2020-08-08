@@ -2,7 +2,7 @@
 
 import Relay
 
-public struct TweetUncanceledEventQuery {
+public struct FeedRefreshedEventQuery {
     public var variables: Variables
 
     public init(variables: Variables) {
@@ -12,58 +12,86 @@ public struct TweetUncanceledEventQuery {
     public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "TweetUncanceledEventQuery",
+                name: "FeedRefreshedEventQuery",
                 type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
-                        name: "tweetGroup",
+                        name: "feed",
                         args: [
                             VariableArgument(name: "id", variableName: "id")
                         ],
-                        concreteType: "TweetGroup",
+                        concreteType: "Feed",
                         plural: false,
                         selections: [
                             .field(ReaderScalarField(
                                 name: "id"
                             )),
                             .field(ReaderScalarField(
-                                name: "status"
+                                name: "title"
+                            )),
+                            .field(ReaderScalarField(
+                                name: "homePageURL"
+                            )),
+                            .field(ReaderScalarField(
+                                name: "micropubEndpoint"
+                            )),
+                            .field(ReaderScalarField(
+                                name: "refreshedAt"
+                            )),
+                            .field(ReaderScalarField(
+                                name: "refreshing"
                             ))
                         ]
                     ))
                 ]
             ),
             operation: NormalizationOperation(
-                name: "TweetUncanceledEventQuery",
+                name: "FeedRefreshedEventQuery",
                 selections: [
                     .field(NormalizationLinkedField(
-                        name: "tweetGroup",
+                        name: "feed",
                         args: [
                             VariableArgument(name: "id", variableName: "id")
                         ],
-                        concreteType: "TweetGroup",
+                        concreteType: "Feed",
                         plural: false,
                         selections: [
                             .field(NormalizationScalarField(
                                 name: "id"
                             )),
                             .field(NormalizationScalarField(
-                                name: "status"
+                                name: "title"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "homePageURL"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "micropubEndpoint"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "refreshedAt"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "refreshing"
                             ))
                         ]
                     ))
                 ]
             ),
             params: RequestParameters(
-                name: "TweetUncanceledEventQuery",
+                name: "FeedRefreshedEventQuery",
                 operationKind: .query,
                 text: """
-query TweetUncanceledEventQuery(
+query FeedRefreshedEventQuery(
   $id: ID!
 ) {
-  tweetGroup(id: $id) {
+  feed(id: $id) {
     id
-    status
+    title
+    homePageURL
+    micropubEndpoint
+    refreshedAt
+    refreshing
   }
 }
 """
@@ -72,7 +100,7 @@ query TweetUncanceledEventQuery(
     }
 }
 
-extension TweetUncanceledEventQuery {
+extension FeedRefreshedEventQuery {
     public struct Variables: VariableDataConvertible {
         public var id: String
 
@@ -96,8 +124,8 @@ extension TweetUncanceledEventQuery {
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetUncanceledEventQuery {
-    public func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetUncanceledEventQuery>.Result {
+extension RelaySwiftUI.QueryNext.WrappedValue where O == FeedRefreshedEventQuery {
+    public func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<FeedRefreshedEventQuery>.Result {
         self.get(.init(id: id), fetchKey: fetchKey)
     }
 }
@@ -107,22 +135,26 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetUncanceledEventQue
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == TweetUncanceledEventQuery {
+extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == FeedRefreshedEventQuery {
     public func refetch(id: String) {
         self.refetch(.init(id: id))
     }
 }
 #endif
 
-extension TweetUncanceledEventQuery {
+extension FeedRefreshedEventQuery {
     public struct Data: Decodable {
-        public var tweetGroup: TweetGroup_tweetGroup?
+        public var feed: Feed_feed?
 
-        public struct TweetGroup_tweetGroup: Decodable, Identifiable {
+        public struct Feed_feed: Decodable, Identifiable {
             public var id: String
-            public var status: TweetStatus
+            public var title: String
+            public var homePageURL: String
+            public var micropubEndpoint: String
+            public var refreshedAt: String?
+            public var refreshing: Bool
         }
     }
 }
 
-extension TweetUncanceledEventQuery: Relay.Operation {}
+extension FeedRefreshedEventQuery: Relay.Operation {}

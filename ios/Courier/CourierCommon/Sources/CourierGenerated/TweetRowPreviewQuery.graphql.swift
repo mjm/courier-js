@@ -273,6 +273,8 @@ extension TweetRowPreviewQuery {
     public typealias Variables = EmptyVariables
 }
 
+
+
 extension TweetRowPreviewQuery {
     public struct Data: Decodable {
         public var draftTweet: TweetGroup_draftTweet?
@@ -297,4 +299,5 @@ extension TweetRowPreviewQuery {
         }
     }
 }
+
 extension TweetRowPreviewQuery: Relay.Operation {}

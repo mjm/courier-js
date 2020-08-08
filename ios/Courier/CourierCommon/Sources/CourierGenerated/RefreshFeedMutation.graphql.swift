@@ -2,7 +2,7 @@
 
 import Relay
 
-public struct UncancelTweetMutation {
+public struct RefreshFeedMutation {
     public var variables: Variables
 
     public init(variables: Variables) {
@@ -12,27 +12,27 @@ public struct UncancelTweetMutation {
     public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "UncancelTweetMutation",
+                name: "RefreshFeedMutation",
                 type: "Mutation",
                 selections: [
                     .field(ReaderLinkedField(
-                        name: "uncancelTweet",
+                        name: "refreshFeed",
                         args: [
                             VariableArgument(name: "input", variableName: "input")
                         ],
-                        concreteType: "UncancelTweetPayload",
+                        concreteType: "RefreshFeedPayload",
                         plural: false,
                         selections: [
                             .field(ReaderLinkedField(
-                                name: "tweetGroup",
-                                concreteType: "TweetGroup",
+                                name: "feed",
+                                concreteType: "Feed",
                                 plural: false,
                                 selections: [
                                     .field(ReaderScalarField(
                                         name: "id"
                                     )),
                                     .field(ReaderScalarField(
-                                        name: "status"
+                                        name: "refreshing"
                                     ))
                                 ]
                             ))
@@ -41,26 +41,26 @@ public struct UncancelTweetMutation {
                 ]
             ),
             operation: NormalizationOperation(
-                name: "UncancelTweetMutation",
+                name: "RefreshFeedMutation",
                 selections: [
                     .field(NormalizationLinkedField(
-                        name: "uncancelTweet",
+                        name: "refreshFeed",
                         args: [
                             VariableArgument(name: "input", variableName: "input")
                         ],
-                        concreteType: "UncancelTweetPayload",
+                        concreteType: "RefreshFeedPayload",
                         plural: false,
                         selections: [
                             .field(NormalizationLinkedField(
-                                name: "tweetGroup",
-                                concreteType: "TweetGroup",
+                                name: "feed",
+                                concreteType: "Feed",
                                 plural: false,
                                 selections: [
                                     .field(NormalizationScalarField(
                                         name: "id"
                                     )),
                                     .field(NormalizationScalarField(
-                                        name: "status"
+                                        name: "refreshing"
                                     ))
                                 ]
                             ))
@@ -69,16 +69,16 @@ public struct UncancelTweetMutation {
                 ]
             ),
             params: RequestParameters(
-                name: "UncancelTweetMutation",
+                name: "RefreshFeedMutation",
                 operationKind: .mutation,
                 text: """
-mutation UncancelTweetMutation(
-  $input: UncancelTweetInput!
+mutation RefreshFeedMutation(
+  $input: RefreshFeedInput!
 ) {
-  uncancelTweet(input: $input) {
-    tweetGroup {
+  refreshFeed(input: $input) {
+    feed {
       id
-      status
+      refreshing
     }
   }
 }
@@ -88,11 +88,11 @@ mutation UncancelTweetMutation(
     }
 }
 
-extension UncancelTweetMutation {
+extension RefreshFeedMutation {
     public struct Variables: VariableDataConvertible {
-        public var input: UncancelTweetInput
+        public var input: RefreshFeedInput
 
-        public init(input: UncancelTweetInput) {
+        public init(input: RefreshFeedInput) {
             self.input = input
         }
 
@@ -103,7 +103,7 @@ extension UncancelTweetMutation {
         }
     }
 
-    public init(input: UncancelTweetInput) {
+    public init(input: RefreshFeedInput) {
         self.init(variables: .init(input: input))
     }
 }
@@ -112,8 +112,8 @@ extension UncancelTweetMutation {
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == UncancelTweetMutation {
-    public func get(input: UncancelTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<UncancelTweetMutation>.Result {
+extension RelaySwiftUI.QueryNext.WrappedValue where O == RefreshFeedMutation {
+    public func get(input: RefreshFeedInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<RefreshFeedMutation>.Result {
         self.get(.init(input: input), fetchKey: fetchKey)
     }
 }
@@ -123,14 +123,14 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == UncancelTweetMutation {
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == UncancelTweetMutation {
-    public func refetch(input: UncancelTweetInput) {
+extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == RefreshFeedMutation {
+    public func refetch(input: RefreshFeedInput) {
         self.refetch(.init(input: input))
     }
 }
 #endif
 
-public struct UncancelTweetInput: VariableDataConvertible {
+public struct RefreshFeedInput: VariableDataConvertible {
     public var id: String
 
     public init(id: String) {
@@ -145,28 +145,19 @@ public struct UncancelTweetInput: VariableDataConvertible {
 }
 
 
-extension UncancelTweetMutation {
+extension RefreshFeedMutation {
     public struct Data: Decodable {
-        public var uncancelTweet: UncancelTweetPayload_uncancelTweet
+        public var refreshFeed: RefreshFeedPayload_refreshFeed
 
-        public struct UncancelTweetPayload_uncancelTweet: Decodable {
-            public var tweetGroup: TweetGroup_tweetGroup
+        public struct RefreshFeedPayload_refreshFeed: Decodable {
+            public var feed: Feed_feed
 
-            public struct TweetGroup_tweetGroup: Decodable, Identifiable {
+            public struct Feed_feed: Decodable, Identifiable {
                 public var id: String
-                public var status: TweetStatus
+                public var refreshing: Bool
             }
         }
     }
 }
 
-public enum TweetStatus: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
-    case draft = "DRAFT"
-    case canceled = "CANCELED"
-    case posted = "POSTED"
-    public var description: String {
-        rawValue
-    }
-}
-
-extension UncancelTweetMutation: Relay.Operation {}
+extension RefreshFeedMutation: Relay.Operation {}

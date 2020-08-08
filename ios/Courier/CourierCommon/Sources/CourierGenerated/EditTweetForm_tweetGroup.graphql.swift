@@ -50,10 +50,12 @@ extension EditTweetForm_tweetGroup {
 public protocol EditTweetForm_tweetGroup_Key {
     var fragment_EditTweetForm_tweetGroup: FragmentPointer { get }
 }
+
 extension EditTweetForm_tweetGroup: Relay.Fragment {}
 
 #if swift(>=5.3) && canImport(RelaySwiftUI)
 import RelaySwiftUI
+
 extension EditTweetForm_tweetGroup_Key {
     @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
     public func asFragment() -> RelaySwiftUI.FragmentNext<EditTweetForm_tweetGroup> {

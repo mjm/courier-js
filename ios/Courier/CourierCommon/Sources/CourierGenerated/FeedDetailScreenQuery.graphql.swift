@@ -2,7 +2,7 @@
 
 import Relay
 
-public struct TweetUncanceledEventQuery {
+public struct FeedDetailScreenQuery {
     public var variables: Variables
 
     public init(variables: Variables) {
@@ -12,59 +12,76 @@ public struct TweetUncanceledEventQuery {
     public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "TweetUncanceledEventQuery",
+                name: "FeedDetailScreenQuery",
                 type: "Query",
                 selections: [
                     .field(ReaderLinkedField(
-                        name: "tweetGroup",
+                        name: "feed",
                         args: [
                             VariableArgument(name: "id", variableName: "id")
                         ],
-                        concreteType: "TweetGroup",
+                        concreteType: "Feed",
                         plural: false,
                         selections: [
                             .field(ReaderScalarField(
-                                name: "id"
+                                name: "title"
                             )),
-                            .field(ReaderScalarField(
-                                name: "status"
+                            .fragmentSpread(ReaderFragmentSpread(
+                                name: "FeedInfoSection_feed"
                             ))
                         ]
                     ))
                 ]
             ),
             operation: NormalizationOperation(
-                name: "TweetUncanceledEventQuery",
+                name: "FeedDetailScreenQuery",
                 selections: [
                     .field(NormalizationLinkedField(
-                        name: "tweetGroup",
+                        name: "feed",
                         args: [
                             VariableArgument(name: "id", variableName: "id")
                         ],
-                        concreteType: "TweetGroup",
+                        concreteType: "Feed",
                         plural: false,
                         selections: [
+                            .field(NormalizationScalarField(
+                                name: "title"
+                            )),
                             .field(NormalizationScalarField(
                                 name: "id"
                             )),
                             .field(NormalizationScalarField(
-                                name: "status"
+                                name: "refreshedAt"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "refreshing"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "autopost"
                             ))
                         ]
                     ))
                 ]
             ),
             params: RequestParameters(
-                name: "TweetUncanceledEventQuery",
+                name: "FeedDetailScreenQuery",
                 operationKind: .query,
                 text: """
-query TweetUncanceledEventQuery(
+query FeedDetailScreenQuery(
   $id: ID!
 ) {
-  tweetGroup(id: $id) {
+  feed(id: $id) {
+    title
+    ...FeedInfoSection_feed
     id
-    status
   }
+}
+
+fragment FeedInfoSection_feed on Feed {
+  id
+  refreshedAt
+  refreshing
+  autopost
 }
 """
             )
@@ -72,7 +89,7 @@ query TweetUncanceledEventQuery(
     }
 }
 
-extension TweetUncanceledEventQuery {
+extension FeedDetailScreenQuery {
     public struct Variables: VariableDataConvertible {
         public var id: String
 
@@ -96,8 +113,8 @@ extension TweetUncanceledEventQuery {
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetUncanceledEventQuery {
-    public func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<TweetUncanceledEventQuery>.Result {
+extension RelaySwiftUI.QueryNext.WrappedValue where O == FeedDetailScreenQuery {
+    public func get(id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<FeedDetailScreenQuery>.Result {
         self.get(.init(id: id), fetchKey: fetchKey)
     }
 }
@@ -107,22 +124,22 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == TweetUncanceledEventQue
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == TweetUncanceledEventQuery {
+extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == FeedDetailScreenQuery {
     public func refetch(id: String) {
         self.refetch(.init(id: id))
     }
 }
 #endif
 
-extension TweetUncanceledEventQuery {
+extension FeedDetailScreenQuery {
     public struct Data: Decodable {
-        public var tweetGroup: TweetGroup_tweetGroup?
+        public var feed: Feed_feed?
 
-        public struct TweetGroup_tweetGroup: Decodable, Identifiable {
-            public var id: String
-            public var status: TweetStatus
+        public struct Feed_feed: Decodable, FeedInfoSection_feed_Key {
+            public var title: String
+            public var fragment_FeedInfoSection_feed: FragmentPointer
         }
     }
 }
 
-extension TweetUncanceledEventQuery: Relay.Operation {}
+extension FeedDetailScreenQuery: Relay.Operation {}

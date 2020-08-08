@@ -22,8 +22,7 @@ func moveTweetGroup(
     }
 
     if var toTweets = handler.getConnection(viewer, key: "TweetsList_allTweets", filters: ["filter": toFilter]) {
-        var store2 = store as RecordSourceProxy
-        let edge = handler.createEdge(&store2, connection: toTweets, node: tweetGroup, type: "TweetGroupEdge")
+        let edge = handler.createEdge(&store, connection: toTweets, node: tweetGroup, type: "TweetGroupEdge")
         handler.insert(connection: &toTweets, edge: edge, before: nil)
     }
 }

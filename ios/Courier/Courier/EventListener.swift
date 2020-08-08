@@ -63,6 +63,7 @@ class EventListener {
         registerEventHandler(handleTweetCanceled)
         registerEventHandler(handleTweetUncanceled)
         registerEventHandler(handleTweetEdited)
+        registerEventHandler(handleFeedRefreshed)
     }
 
     private func registerEventHandler<Event: Decodable>(_ handler: @escaping (Environment, Event) -> AnyPublisher<Never, Error>) {

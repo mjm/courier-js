@@ -2,7 +2,7 @@
 
 import Relay
 
-public struct UncancelTweetMutation {
+public struct SetFeedOptionsMutation {
     public var variables: Variables
 
     public init(variables: Variables) {
@@ -12,27 +12,27 @@ public struct UncancelTweetMutation {
     public static var node: ConcreteRequest {
         ConcreteRequest(
             fragment: ReaderFragment(
-                name: "UncancelTweetMutation",
+                name: "SetFeedOptionsMutation",
                 type: "Mutation",
                 selections: [
                     .field(ReaderLinkedField(
-                        name: "uncancelTweet",
+                        name: "setFeedOptions",
                         args: [
                             VariableArgument(name: "input", variableName: "input")
                         ],
-                        concreteType: "UncancelTweetPayload",
+                        concreteType: "SetFeedOptionsPayload",
                         plural: false,
                         selections: [
                             .field(ReaderLinkedField(
-                                name: "tweetGroup",
-                                concreteType: "TweetGroup",
+                                name: "feed",
+                                concreteType: "Feed",
                                 plural: false,
                                 selections: [
                                     .field(ReaderScalarField(
                                         name: "id"
                                     )),
                                     .field(ReaderScalarField(
-                                        name: "status"
+                                        name: "autopost"
                                     ))
                                 ]
                             ))
@@ -41,26 +41,26 @@ public struct UncancelTweetMutation {
                 ]
             ),
             operation: NormalizationOperation(
-                name: "UncancelTweetMutation",
+                name: "SetFeedOptionsMutation",
                 selections: [
                     .field(NormalizationLinkedField(
-                        name: "uncancelTweet",
+                        name: "setFeedOptions",
                         args: [
                             VariableArgument(name: "input", variableName: "input")
                         ],
-                        concreteType: "UncancelTweetPayload",
+                        concreteType: "SetFeedOptionsPayload",
                         plural: false,
                         selections: [
                             .field(NormalizationLinkedField(
-                                name: "tweetGroup",
-                                concreteType: "TweetGroup",
+                                name: "feed",
+                                concreteType: "Feed",
                                 plural: false,
                                 selections: [
                                     .field(NormalizationScalarField(
                                         name: "id"
                                     )),
                                     .field(NormalizationScalarField(
-                                        name: "status"
+                                        name: "autopost"
                                     ))
                                 ]
                             ))
@@ -69,16 +69,16 @@ public struct UncancelTweetMutation {
                 ]
             ),
             params: RequestParameters(
-                name: "UncancelTweetMutation",
+                name: "SetFeedOptionsMutation",
                 operationKind: .mutation,
                 text: """
-mutation UncancelTweetMutation(
-  $input: UncancelTweetInput!
+mutation SetFeedOptionsMutation(
+  $input: SetFeedOptionsInput!
 ) {
-  uncancelTweet(input: $input) {
-    tweetGroup {
+  setFeedOptions(input: $input) {
+    feed {
       id
-      status
+      autopost
     }
   }
 }
@@ -88,11 +88,11 @@ mutation UncancelTweetMutation(
     }
 }
 
-extension UncancelTweetMutation {
+extension SetFeedOptionsMutation {
     public struct Variables: VariableDataConvertible {
-        public var input: UncancelTweetInput
+        public var input: SetFeedOptionsInput
 
-        public init(input: UncancelTweetInput) {
+        public init(input: SetFeedOptionsInput) {
             self.input = input
         }
 
@@ -103,7 +103,7 @@ extension UncancelTweetMutation {
         }
     }
 
-    public init(input: UncancelTweetInput) {
+    public init(input: SetFeedOptionsInput) {
         self.init(variables: .init(input: input))
     }
 }
@@ -112,8 +112,8 @@ extension UncancelTweetMutation {
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == UncancelTweetMutation {
-    public func get(input: UncancelTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<UncancelTweetMutation>.Result {
+extension RelaySwiftUI.QueryNext.WrappedValue where O == SetFeedOptionsMutation {
+    public func get(input: SetFeedOptionsInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<SetFeedOptionsMutation>.Result {
         self.get(.init(input: input), fetchKey: fetchKey)
     }
 }
@@ -123,50 +123,44 @@ extension RelaySwiftUI.QueryNext.WrappedValue where O == UncancelTweetMutation {
 import RelaySwiftUI
 
 @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == UncancelTweetMutation {
-    public func refetch(input: UncancelTweetInput) {
+extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == SetFeedOptionsMutation {
+    public func refetch(input: SetFeedOptionsInput) {
         self.refetch(.init(input: input))
     }
 }
 #endif
 
-public struct UncancelTweetInput: VariableDataConvertible {
+public struct SetFeedOptionsInput: VariableDataConvertible {
     public var id: String
+    public var autopost: Bool?
 
-    public init(id: String) {
+    public init(id: String, autopost: Bool? = nil) {
         self.id = id
+        self.autopost = autopost
     }
 
     public var variableData: VariableData {
         [
-            "id": id
+            "id": id,
+            "autopost": autopost
         ]
     }
 }
 
 
-extension UncancelTweetMutation {
+extension SetFeedOptionsMutation {
     public struct Data: Decodable {
-        public var uncancelTweet: UncancelTweetPayload_uncancelTweet
+        public var setFeedOptions: SetFeedOptionsPayload_setFeedOptions
 
-        public struct UncancelTweetPayload_uncancelTweet: Decodable {
-            public var tweetGroup: TweetGroup_tweetGroup
+        public struct SetFeedOptionsPayload_setFeedOptions: Decodable {
+            public var feed: Feed_feed
 
-            public struct TweetGroup_tweetGroup: Decodable, Identifiable {
+            public struct Feed_feed: Decodable, Identifiable {
                 public var id: String
-                public var status: TweetStatus
+                public var autopost: Bool
             }
         }
     }
 }
 
-public enum TweetStatus: String, Decodable, Hashable, VariableValueConvertible, ReadableScalar, CustomStringConvertible {
-    case draft = "DRAFT"
-    case canceled = "CANCELED"
-    case posted = "POSTED"
-    public var description: String {
-        rawValue
-    }
-}
-
-extension UncancelTweetMutation: Relay.Operation {}
+extension SetFeedOptionsMutation: Relay.Operation {}

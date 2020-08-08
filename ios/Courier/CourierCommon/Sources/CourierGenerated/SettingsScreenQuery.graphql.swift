@@ -25,6 +25,9 @@ public struct SettingsScreenQuery {
                             )),
                             .fragmentSpread(ReaderFragmentSpread(
                                 name: "SubscriptionSection_user"
+                            )),
+                            .fragmentSpread(ReaderFragmentSpread(
+                                name: "FeedsSection_feeds"
                             ))
                         ]
                     ))
@@ -79,6 +82,77 @@ public struct SettingsScreenQuery {
                             )),
                             .field(NormalizationScalarField(
                                 name: "subscriptionStatusOverride"
+                            )),
+                            .field(NormalizationLinkedField(
+                                name: "allFeeds",
+                                args: [
+                                    LiteralArgument(name: "first", value: 10)
+                                ],
+                                storageKey: "allFeeds(first:10)",
+                                concreteType: "FeedConnection",
+                                plural: false,
+                                selections: [
+                                    .field(NormalizationLinkedField(
+                                        name: "edges",
+                                        concreteType: "FeedEdge",
+                                        plural: true,
+                                        selections: [
+                                            .field(NormalizationLinkedField(
+                                                name: "node",
+                                                concreteType: "Feed",
+                                                plural: false,
+                                                selections: [
+                                                    .field(NormalizationScalarField(
+                                                        name: "id"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "title"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "homePageURL"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "refreshedAt"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "refreshing"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "autopost"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "__typename"
+                                                    ))
+                                                ]
+                                            )),
+                                            .field(NormalizationScalarField(
+                                                name: "cursor"
+                                            ))
+                                        ]
+                                    )),
+                                    .field(NormalizationLinkedField(
+                                        name: "pageInfo",
+                                        concreteType: "PageInfo",
+                                        plural: false,
+                                        selections: [
+                                            .field(NormalizationScalarField(
+                                                name: "endCursor"
+                                            )),
+                                            .field(NormalizationScalarField(
+                                                name: "hasNextPage"
+                                            ))
+                                        ]
+                                    ))
+                                ]
+                            )),
+                            .handle(NormalizationHandle(
+                                kind: .linked,
+                                name: "allFeeds",
+                                args: [
+                                    LiteralArgument(name: "first", value: 10)
+                                ],
+                                handle: "connection",
+                                key: "FeedsSection_allFeeds"
                             ))
                         ]
                     ))
@@ -92,6 +166,33 @@ query SettingsScreenQuery {
   viewer {
     ...UserProfileSection_user
     ...SubscriptionSection_user
+    ...FeedsSection_feeds
+  }
+}
+
+fragment FeedRow_feed on Feed {
+  id
+  title
+  homePageURL
+  refreshedAt
+  refreshing
+  autopost
+}
+
+fragment FeedsSection_feeds on Viewer {
+  allFeeds(first: 10) {
+    edges {
+      node {
+        id
+        ...FeedRow_feed
+        __typename
+      }
+      cursor
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
   }
 }
 
@@ -123,14 +224,18 @@ extension SettingsScreenQuery {
     public typealias Variables = EmptyVariables
 }
 
+
+
 extension SettingsScreenQuery {
     public struct Data: Decodable {
         public var viewer: Viewer_viewer?
 
-        public struct Viewer_viewer: Decodable, UserProfileSection_user_Key, SubscriptionSection_user_Key {
+        public struct Viewer_viewer: Decodable, UserProfileSection_user_Key, SubscriptionSection_user_Key, FeedsSection_feeds_Key {
             public var fragment_UserProfileSection_user: FragmentPointer
             public var fragment_SubscriptionSection_user: FragmentPointer
+            public var fragment_FeedsSection_feeds: FragmentPointer
         }
     }
 }
+
 extension SettingsScreenQuery: Relay.Operation {}
