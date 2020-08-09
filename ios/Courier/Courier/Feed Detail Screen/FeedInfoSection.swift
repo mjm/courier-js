@@ -5,6 +5,7 @@ import CourierGenerated
 private let feedFragment = graphql("""
 fragment FeedInfoSection_feed on Feed {
     id
+    title
     refreshedAt
     refreshing
     autopost
@@ -15,12 +16,15 @@ struct FeedInfoSection: View {
     @Fragment<FeedInfoSection_feed> var feed
     @Mutation<RefreshFeedMutation> var refreshFeed
     @Mutation<SetFeedOptionsMutation> var setOptions
+    @Mutation<DeleteFeedMutation> var deleteFeed
 
     // It's important that the toggle binding's state updates in the same
     // run of the event loop, otherwise the UI stutters. An optimistic
     // response doesn't do this, so we use this state for the value to show
     // while the request is in-flight.
     @State private var tempAutopost = false
+
+    @State private var isConfirmingDelete = false
 
     var body: some View {
         if let feed = feed {
@@ -29,7 +33,7 @@ struct FeedInfoSection: View {
                     Label {
                         Text("Checking now…")
                     } icon: {
-                        Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
+                        Image(systemName: "arrow.triangle.2.circlepath")
                             .spinning()
                             .foregroundColor(.accentColor)
                     }
@@ -38,10 +42,10 @@ struct FeedInfoSection: View {
                         refreshFeed.commit(id: feed.id)
                     } label: {
                         Label {
-                            (Text("Last checked ") + Text(refreshedAt, style: .relative) + Text(" ago"))
+                            (Text("Checked ") + Text(refreshedAt, style: .relative) + Text(" ago"))
                                 .foregroundColor(.primary)
                         } icon: {
-                            Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
+                            Image(systemName: "arrow.triangle.2.circlepath")
                                 .foregroundColor(.accentColor)
                         }
                     }
@@ -50,6 +54,25 @@ struct FeedInfoSection: View {
 
                 Toggle("Post automatically", isOn: autopostBinding)
                     .disabled(setOptions.isInFlight)
+            }
+
+            Section {
+                Button {
+                    isConfirmingDelete = true
+                } label: {
+                    Label("Stop Watching", systemImage: "trash")
+                        .foregroundColor(.red)
+                }
+                .alert(isPresented: $isConfirmingDelete) {
+                    Alert(
+                        title: Text("Stop Watching Feed"),
+                        message: Text("Courier will not import any new posts from this feed."),
+                        primaryButton: .destructive(Text("Stop Watching")) {
+                            deleteFeed.commit(id: feed.id)
+                        },
+                        secondaryButton: .cancel()
+                    )
+                }
             }
         }
     }

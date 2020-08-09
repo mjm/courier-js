@@ -64,6 +64,9 @@ public struct FeedInfoSectionPreviewQuery {
                                 name: "id"
                             )),
                             .field(NormalizationScalarField(
+                                name: "title"
+                            )),
+                            .field(NormalizationScalarField(
                                 name: "refreshedAt"
                             )),
                             .field(NormalizationScalarField(
@@ -86,6 +89,9 @@ public struct FeedInfoSectionPreviewQuery {
                         selections: [
                             .field(NormalizationScalarField(
                                 name: "id"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "title"
                             )),
                             .field(NormalizationScalarField(
                                 name: "refreshedAt"
@@ -117,6 +123,7 @@ query FeedInfoSectionPreviewQuery {
 
 fragment FeedInfoSection_feed on Feed {
   id
+  title
   refreshedAt
   refreshing
   autopost

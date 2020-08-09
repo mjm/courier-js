@@ -18,6 +18,9 @@ public struct FeedInfoSection_feed {
                     name: "id"
                 )),
                 .field(ReaderScalarField(
+                    name: "title"
+                )),
+                .field(ReaderScalarField(
                     name: "refreshedAt"
                 )),
                 .field(ReaderScalarField(
@@ -34,6 +37,7 @@ public struct FeedInfoSection_feed {
 extension FeedInfoSection_feed {
     public struct Data: Decodable, Identifiable {
         public var id: String
+        public var title: String
         public var refreshedAt: String?
         public var refreshing: Bool
         public var autopost: Bool

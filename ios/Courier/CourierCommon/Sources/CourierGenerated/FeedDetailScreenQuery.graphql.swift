@@ -151,6 +151,7 @@ query FeedDetailScreenQuery(
 
 fragment FeedInfoSection_feed on Feed {
   id
+  title
   refreshedAt
   refreshing
   autopost
