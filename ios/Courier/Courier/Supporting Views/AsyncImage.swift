@@ -17,15 +17,13 @@ struct AsyncImage<Placeholder: View>: View {
         return image
     }
 
-    private var image: some View {
-        Group {
-            if loader.image != nil {
-                Image(uiImage: loader.image!)
-                    .resizable()
-                    .renderingMode(.original)
-            } else {
-                placeholder
-            }
+    @ViewBuilder private var image: some View {
+        if let image = loader.image {
+            Image(uiImage: image)
+                .resizable()
+                .renderingMode(.original)
+        } else {
+            placeholder
         }
     }
 }

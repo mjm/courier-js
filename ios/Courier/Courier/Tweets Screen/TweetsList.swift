@@ -86,16 +86,16 @@ struct TweetsList: View {
         .padding(.horizontal, 30)
     }
 
-    var pagingView: some View {
-        Group {
-            if tweets!.isLoadingNext {
+    @ViewBuilder var pagingView: some View {
+        if let tweets = tweets {
+            if tweets.isLoadingNext {
                 Text("Loading…")
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 20)
-            } else if tweets!.hasNext {
+            } else if tweets.hasNext {
                 Button {
-                    tweets!.loadNext(10)
+                    tweets.loadNext(10)
                 } label: {
                     Text("Load more tweets…")
                         .fontWeight(.bold)

@@ -29,93 +29,91 @@ struct DetailedTweetActions: View {
     @State private var isPresentingPostAlert = false
 
     var body: some View {
-        Section(footer: sectionFooter) {
-            if let tweetGroup = tweetGroup {
+        if let tweetGroup = tweetGroup {
+            Section(footer: sectionFooter(tweetGroup)) {
                 switch tweetGroup.status {
                 case .draft:
-                    draftActions
+                    draftActions(tweetGroup)
                 case .canceled:
-                    canceledActions
+                    canceledActions(tweetGroup)
                 case .posted:
-                    postedActions
+                    postedActions(tweetGroup)
                 }
             }
         }
     }
 
-    var draftActions: some View {
-        Group {
-            Button(action: {
-                self.cancelTweet.commit(id: self.tweetGroup!.id)
-            }) {
-                HStack {
-                    Spacer()
-                    Text("Don't Post").foregroundColor(self.cancelTweet.isInFlight ? .secondary : .red)
-                    Spacer()
-                }
-            }.disabled(self.cancelTweet.isInFlight)
-
-            Button(action: {
-                self.isPresentingPostAlert = true
-            }) {
-                HStack {
-                    Spacer()
-                    Text("Post Now")
-                    Spacer()
-                }
+    @ViewBuilder func draftActions(_ tweetGroup: DetailedTweetActions_tweetGroup.Data) -> some View {
+        Button {
+            cancelTweet.commit(id: tweetGroup.id)
+        } label: {
+            HStack {
+                Spacer()
+                Text("Don't Post").foregroundColor(cancelTweet.isInFlight ? .secondary : .red)
+                Spacer()
             }
-                .disabled(self.postTweet.isInFlight)
-                .alert(isPresented: $isPresentingPostAlert) {
-                    Alert(
-                        title: Text("Post Tweet Now?"),
-                        message: Text("Do you want to post this tweet to Twitter?"),
-                        primaryButton: .default(Text("Post Now")) {
-                            self.postTweet.commit(id: self.tweetGroup!.id)
-                        },
-                        secondaryButton: .cancel())
-                }
+        }
+        .disabled(cancelTweet.isInFlight)
+
+        Button {
+            isPresentingPostAlert = true
+        } label: {
+            HStack {
+                Spacer()
+                Text("Post Now")
+                Spacer()
+            }
+        }
+        .disabled(postTweet.isInFlight)
+        .alert(isPresented: $isPresentingPostAlert) {
+            Alert(
+                title: Text("Post Tweet Now?"),
+                message: Text("Do you want to post this tweet to Twitter?"),
+                primaryButton: .default(Text("Post Now")) {
+                    postTweet.commit(id: tweetGroup.id)
+                },
+                secondaryButton: .cancel()
+            )
         }
     }
 
-    var canceledActions: some View {
-        Button(action: {
-            self.uncancelTweet.commit(id: self.tweetGroup!.id)
-        }) {
+    @ViewBuilder func canceledActions(_ tweetGroup: DetailedTweetActions_tweetGroup.Data) -> some View {
+        Button {
+            uncancelTweet.commit(id: tweetGroup.id)
+        } label: {
             HStack {
                 Spacer()
                 Text("Restore Draft")
                 Spacer()
             }
-        }.disabled(self.uncancelTweet.isInFlight)
+        }
+        .disabled(uncancelTweet.isInFlight)
     }
 
-    var postedActions: some View {
-        Group {
+    @ViewBuilder func postedActions(_ tweetGroup: DetailedTweetActions_tweetGroup.Data) -> some View {
+        HStack {
+            Text("Posted")
+            Spacer()
+            (Text(tweetGroup.postedAt!.asDate!, style: .relative) + Text(" ago"))
+                .foregroundColor(.secondary)
+        }
+
+        Button {
+            let postedID = tweetGroup.postedRetweetID ?? tweetGroup.tweets[0].postedTweetID!
+            let url = URL(string: "https://twitter.com/\(authContext.userInfo?.nickname ?? "unknown")/status/\(postedID)")!
+            openURL(url)
+        } label: {
             HStack {
-                Text("Posted")
                 Spacer()
-                (Text(tweetGroup!.postedAt!.asDate!, style: .relative) + Text(" ago"))
-                    .foregroundColor(.secondary)
-            }
-            Button(action: {
-                let postedID = self.tweetGroup!.postedRetweetID ?? self.tweetGroup!.tweets[0].postedTweetID!
-                let url = URL(string: "https://twitter.com/\(self.authContext.userInfo?.nickname ?? "unknown")/status/\(postedID)")!
-                openURL(url)
-            }) {
-                HStack {
-                    Spacer()
-                    Text("View on Twitter")
-                    Spacer()
-                }
+                Text("View on Twitter")
+                Spacer()
             }
         }
     }
 
-    var sectionFooter: some View {
-        Group {
-            if tweetGroup != nil && tweetGroup!.status == .draft && tweetGroup!.postAfter != nil {
-                Text("This tweet will post automatically in ") + Text(tweetGroup!.postAfter!.asDate!, style: .relative)
-            }
+    @ViewBuilder func sectionFooter(_ tweetGroup: DetailedTweetActions_tweetGroup.Data) -> some View {
+        if tweetGroup.status == .draft && tweetGroup.postAfter != nil {
+            Text("This tweet will post automatically in ") + Text(tweetGroup.postAfter!.asDate!, style: .relative)
         }
     }
 }

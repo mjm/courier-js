@@ -46,25 +46,25 @@ struct EditTweetList: View {
         Form {
             ForEach(draft.tweets.indices, id: \.self) { idx in
                 Section(header: Text("TWEET #\(idx + 1)")) {
-                    EditTweetSection(tweet: self.draftBinding.tweets[idx])
+                    EditTweetSection(tweet: draftBinding.tweets[idx])
                 }
             }
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(
             leading: Button("Cancel") {
-                self.isEditing = false
+                isEditing = false
             },
             trailing: Button("Done") {
-                self.editTweet.commit(self.draft)
-                self.isEditing = false
+                editTweet.commit(draft)
+                isEditing = false
             }.disabled(!hasChanges || editTweet.isInFlight)
         )
         #else
         Form {
             ForEach(draft.tweets.indices, id: \.self) { idx in
                 Section(header: Text("TWEET #\(idx + 1)")) {
-                    EditTweetSection(tweet: self.draftBinding.tweets[idx])
+                    EditTweetSection(tweet: draftBinding.tweets[idx])
                 }
             }
         }
@@ -72,13 +72,11 @@ struct EditTweetList: View {
         #endif
     }
 
-    var savingOverlay: some View {
-        Group {
-            if editTweet.isInFlight {
-                LoadingView(text: "Saving tweets…")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color.black.opacity(0.15))
-            }
+    @ViewBuilder var savingOverlay: some View {
+        if editTweet.isInFlight {
+            LoadingView(text: "Saving tweets…")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black.opacity(0.15))
         }
     }
 }
@@ -87,33 +85,35 @@ struct EditTweetSection: View {
     @Binding var tweet: TweetEdit
 
     var body: some View {
-        Group {
-            VStack {
-                TextEditor(text: $tweet.body)
-                    .padding(.all, -5)
-                    .frame(minHeight: 200)
-            }
-
-            ForEach(tweet.theMediaURLs.indices, id: \.self) { mediaIdx in
-                HStack {
-                    TextField("Image #\(mediaIdx + 1)", text: self.$tweet.theMediaURLs[mediaIdx])
-                    Button(action: {
-                        self.tweet.theMediaURLs.remove(at: mediaIdx)
-                    }) {
-                        Image(systemName: "minus.circle.fill")
-                            .foregroundColor(.red)
-                    }.buttonStyle(BorderlessButtonStyle())
-                }
-            }
-            Button(action: {
-                self.tweet.theMediaURLs.append("")
-            }) {
-                HStack {
-                    Image(systemName: "plus")
-                    Text("Add Image")
-                }
-            }.disabled(tweet.theMediaURLs.count >= 4 || tweet.theMediaURLs.contains(where: { $0 == "" }))
+        VStack {
+            TextEditor(text: $tweet.body)
+                .padding(.all, -5)
+                .frame(minHeight: 200)
         }
+
+        ForEach(tweet.theMediaURLs.indices, id: \.self) { mediaIdx in
+            HStack {
+                TextField("Image #\(mediaIdx + 1)", text: $tweet.theMediaURLs[mediaIdx])
+
+                Button {
+                    tweet.theMediaURLs.remove(at: mediaIdx)
+                } label: {
+                    Image(systemName: "minus.circle.fill")
+                        .foregroundColor(.red)
+                }
+                .buttonStyle(BorderlessButtonStyle())
+            }
+        }
+
+        Button {
+            tweet.theMediaURLs.append("")
+        } label: {
+            HStack {
+                Image(systemName: "plus")
+                Text("Add Image")
+            }
+        }
+        .disabled(tweet.theMediaURLs.count >= 4 || tweet.theMediaURLs.contains(where: { $0 == "" }))
     }
 }
 

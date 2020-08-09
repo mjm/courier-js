@@ -14,20 +14,15 @@ struct UserProfileSection: View {
     @EnvironmentObject var authContext: AuthContext
     let onLogout: () -> Void
 
-    init(user: Fragment<UserProfileSection_user>, onLogout: @escaping () -> Void) {
-        self.onLogout = onLogout
-        self._user = user
-    }
-
     var body: some View {
         Section {
-            if user != nil {
+            if let user = user {
                 HStack(spacing: 16) {
-                    AsyncImage(url: URL(string: user!.picture)!, placeholder: Rectangle())
+                    AsyncImage(url: URL(string: user.picture)!, placeholder: Rectangle())
                         .frame(width: 50, height: 50)
                         .cornerRadius(8)
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(user!.name)
+                        Text(user.name)
                             .font(.headline)
                         Text(authContext.userInfo?.nickname.map { "@" + $0 } ?? "Screen name unknown")
                             .font(.subheadline)

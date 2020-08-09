@@ -15,7 +15,8 @@ struct EnvironmentSection: View {
             #if os(iOS)
             NavigationLink("Inspect Relay Store", destination: RelaySwiftUI.Inspector())
             #endif
-        }.onChange(of: endpoint.environment) { newValue in
+        }
+        .onChange(of: endpoint.environment) { newValue in
             if newValue != endpoint.environment {
                 isPresented = false
             }

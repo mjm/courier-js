@@ -5,16 +5,12 @@ struct AsyncImageGrid<Placeholder: View>: View {
     let placeholder: () -> Placeholder
 
     var body: some View {
-        Group {
-            if urls.isEmpty {
-                EmptyView()
-            } else {
-                VStack {
-                    ForEach(urls, id: \.self) { url in
-                        AsyncImage(url: url, placeholder: self.placeholder())
-                            .aspectRatio(contentMode: .fit)
-                            .cornerRadius(8)
-                    }
+        if !urls.isEmpty {
+            VStack {
+                ForEach(urls, id: \.self) { url in
+                    AsyncImage(url: url, placeholder: self.placeholder())
+                        .aspectRatio(contentMode: .fit)
+                        .cornerRadius(8)
                 }
             }
         }

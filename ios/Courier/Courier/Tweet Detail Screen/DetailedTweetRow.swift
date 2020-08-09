@@ -13,17 +13,17 @@ struct DetailedTweetRow: View {
     @Fragment<DetailedTweetRow_tweet> var tweet
 
     var body: some View {
-        Group {
-            if tweet != nil {
-                VStack(alignment: .leading, spacing: 8) {
-                    LinkedText(tweet!.body)
-                        .font(.body)
-                    AsyncImageGrid(
-                        urls: tweet!.mediaURLs.compactMap { URL(string: $0) },
-                        placeholder: { ImagePlaceholder() }
-                    )
-                }.padding(.vertical, 4)
+        if let tweet = tweet {
+            VStack(alignment: .leading, spacing: 8) {
+                LinkedText(tweet.body)
+                    .font(.body)
+
+                AsyncImageGrid(
+                    urls: tweet.mediaURLs.compactMap { URL(string: $0) },
+                    placeholder: { ImagePlaceholder() }
+                )
             }
+            .padding(.vertical, 4)
         }
     }
 }

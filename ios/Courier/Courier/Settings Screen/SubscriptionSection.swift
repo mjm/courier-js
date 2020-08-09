@@ -32,8 +32,6 @@ struct SubscriptionSection: View {
             } else {
                 subscriptionStatusView(user)
             }
-        } else {
-            EmptyView()
         }
     }
 
