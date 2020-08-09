@@ -28,6 +28,9 @@ public struct FeedDetailScreenQuery {
                             )),
                             .fragmentSpread(ReaderFragmentSpread(
                                 name: "FeedInfoSection_feed"
+                            )),
+                            .fragmentSpread(ReaderFragmentSpread(
+                                name: "FeedPostsSection_posts"
                             ))
                         ]
                     ))
@@ -58,6 +61,74 @@ public struct FeedDetailScreenQuery {
                             )),
                             .field(NormalizationScalarField(
                                 name: "autopost"
+                            )),
+                            .field(NormalizationLinkedField(
+                                name: "posts",
+                                args: [
+                                    LiteralArgument(name: "first", value: 10)
+                                ],
+                                storageKey: "posts(first:10)",
+                                concreteType: "PostConnection",
+                                plural: false,
+                                selections: [
+                                    .field(NormalizationLinkedField(
+                                        name: "edges",
+                                        concreteType: "PostEdge",
+                                        plural: true,
+                                        selections: [
+                                            .field(NormalizationLinkedField(
+                                                name: "node",
+                                                concreteType: "Post",
+                                                plural: false,
+                                                selections: [
+                                                    .field(NormalizationScalarField(
+                                                        name: "id"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "url"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "title"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "htmlContent"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "publishedAt"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "__typename"
+                                                    ))
+                                                ]
+                                            )),
+                                            .field(NormalizationScalarField(
+                                                name: "cursor"
+                                            ))
+                                        ]
+                                    )),
+                                    .field(NormalizationLinkedField(
+                                        name: "pageInfo",
+                                        concreteType: "PageInfo",
+                                        plural: false,
+                                        selections: [
+                                            .field(NormalizationScalarField(
+                                                name: "endCursor"
+                                            )),
+                                            .field(NormalizationScalarField(
+                                                name: "hasNextPage"
+                                            ))
+                                        ]
+                                    ))
+                                ]
+                            )),
+                            .handle(NormalizationHandle(
+                                kind: .linked,
+                                name: "posts",
+                                args: [
+                                    LiteralArgument(name: "first", value: 10)
+                                ],
+                                handle: "connection",
+                                key: "FeedPostsSection_posts"
                             ))
                         ]
                     ))
@@ -73,6 +144,7 @@ query FeedDetailScreenQuery(
   feed(id: $id) {
     title
     ...FeedInfoSection_feed
+    ...FeedPostsSection_posts
     id
   }
 }
@@ -82,6 +154,32 @@ fragment FeedInfoSection_feed on Feed {
   refreshedAt
   refreshing
   autopost
+}
+
+fragment FeedPostRow_post on Post {
+  id
+  url
+  title
+  htmlContent
+  publishedAt
+}
+
+fragment FeedPostsSection_posts on Feed {
+  posts(first: 10) {
+    edges {
+      node {
+        id
+        ...FeedPostRow_post
+        __typename
+      }
+      cursor
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+  id
 }
 """
             )
@@ -135,9 +233,10 @@ extension FeedDetailScreenQuery {
     public struct Data: Decodable {
         public var feed: Feed_feed?
 
-        public struct Feed_feed: Decodable, FeedInfoSection_feed_Key {
+        public struct Feed_feed: Decodable, FeedInfoSection_feed_Key, FeedPostsSection_posts_Key {
             public var title: String
             public var fragment_FeedInfoSection_feed: FragmentPointer
+            public var fragment_FeedPostsSection_posts: FragmentPointer
         }
     }
 }

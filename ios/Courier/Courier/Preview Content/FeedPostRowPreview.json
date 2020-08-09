@@ -1,0 +1,32 @@
+{
+    "data": {
+        "feed": {
+            "id": "foo",
+            "posts": {
+                "edges": [
+                    {
+                        "node": {
+                            "id": "cG9zdDp7ImZlZWRJZCI6IjFiMGJ3MmZ3WGlSbm9yMjFzVFN6TzB6bXVScyIsIml0ZW1JZCI6Imh0dHBzOi8vb3ZlcnJlYWN0ZWQuaW8vdGhlLXdldC1jb2RlYmFzZS8ifQ==",
+                            "url": "https://overreacted.io/the-wet-codebase/",
+                            "title": "The WET Codebase",
+                            "htmlContent": "",
+                            "publishedAt": "2020-07-13T00:00:00Z",
+                            "__typename": "Post"
+                        }
+                    },
+                    {
+                        "node": {
+                            "id": "cG9zdDp7ImZlZWRJZCI6IjFiMGJ2eVB5RkJFeVRxTkJqdTZkUU1rd0lxNCIsIml0ZW1JZCI6Imh0dHBzOi8vd3d3Lm1hdHRtb3JpYXJpdHkuY29tLzIwMjAtMDgtMDgtanVzdC1yZWxlYXNlZC1yZWxheS1zd2lmdC12MC01LTAtd2l0aC8ifQ==",
+                            "url": "https://www.mattmoriarity.com/2020-08-08-just-released-relay-swift-v0-5-0-with/",
+                            "title": "",
+                            "htmlContent": "<p>Just released <a href=\"https://www.notion.so/0-5-0-1d04620cea2140b7911ed19d22e86a67\">Relay.swift v0.5.0</a> with some small improvements, a few bug fixes, and better logging and test coverage.</p>",
+                            "publishedAt": "2020-08-08T17:32:22Z",
+                            "__typename": "Post"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}
+

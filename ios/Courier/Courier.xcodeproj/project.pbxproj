@@ -17,6 +17,10 @@
 		C906544224DF30390025003B /* RefreshFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = C906544124DF30390025003B /* RefreshFeed.swift */; };
 		C906544424DF31130025003B /* FeedRefreshedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C906544324DF31130025003B /* FeedRefreshedEvent.swift */; };
 		C906544624DF32C70025003B /* SetFeedOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C906544524DF32C70025003B /* SetFeedOptions.swift */; };
+		C906544824DFB3AB0025003B /* FeedPostsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C906544724DFB3AB0025003B /* FeedPostsSection.swift */; };
+		C906544A24DFB5D80025003B /* FeedPostRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C906544924DFB5D80025003B /* FeedPostRow.swift */; };
+		C906544C24DFB6B70025003B /* FeedPostRowPreview.json in Resources */ = {isa = PBXBuildFile; fileRef = C906544B24DFB6B70025003B /* FeedPostRowPreview.json */; };
+		C906544F24DFBCE70025003B /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = C906544E24DFBCE70025003B /* SwiftSoup */; };
 		C9172F2424B10ADE00C453B6 /* Sidebar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9172F2224B10ADE00C453B6 /* Sidebar.swift */; };
 		C9172F2724B1108000C453B6 /* TweetsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9172F2524B1108000C453B6 /* TweetsScreen.swift */; };
 		C95AD85224687B2C00691417 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C95AD85124687B2C00691417 /* AppDelegate.swift */; };
@@ -159,6 +163,9 @@
 		C906544124DF30390025003B /* RefreshFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RefreshFeed.swift; sourceTree = "<group>"; };
 		C906544324DF31130025003B /* FeedRefreshedEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedRefreshedEvent.swift; sourceTree = "<group>"; };
 		C906544524DF32C70025003B /* SetFeedOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetFeedOptions.swift; sourceTree = "<group>"; };
+		C906544724DFB3AB0025003B /* FeedPostsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPostsSection.swift; sourceTree = "<group>"; };
+		C906544924DFB5D80025003B /* FeedPostRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPostRow.swift; sourceTree = "<group>"; };
+		C906544B24DFB6B70025003B /* FeedPostRowPreview.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = FeedPostRowPreview.json; sourceTree = "<group>"; };
 		C9159852247229AE00E7FE03 /* Relay.swift */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Relay.swift; path = ../../../Relay.swift; sourceTree = "<group>"; };
 		C9172F2224B10ADE00C453B6 /* Sidebar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sidebar.swift; sourceTree = "<group>"; };
 		C9172F2524B1108000C453B6 /* TweetsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetsScreen.swift; sourceTree = "<group>"; };
@@ -245,6 +252,7 @@
 				C9C34776247081E6004027DE /* PushNotifications in Frameworks */,
 				C9C61DBD2479C43500B344A3 /* PusherSwift in Frameworks */,
 				C9DC5E7D2476340700FF31BC /* Auth0.framework in Frameworks */,
+				C906544F24DFBCE70025003B /* SwiftSoup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +282,8 @@
 			children = (
 				C906543924DF26770025003B /* FeedDetailScreen.swift */,
 				C906543B24DF27E60025003B /* FeedInfoSection.swift */,
+				C906544724DFB3AB0025003B /* FeedPostsSection.swift */,
+				C906544924DFB5D80025003B /* FeedPostRow.swift */,
 			);
 			path = "Feed Detail Screen";
 			sourceTree = "<group>";
@@ -314,6 +324,7 @@
 				C9A151BF24BB8C8B0032E550 /* TweetRowPreview.json */,
 				C906543624DF23DC0025003B /* FeedsSectionPreview.json */,
 				C906543F24DF2B530025003B /* FeedInfoSectionPreview.json */,
+				C906544B24DFB6B70025003B /* FeedPostRowPreview.json */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -508,6 +519,7 @@
 				C9C34775247081E6004027DE /* PushNotifications */,
 				C9C61DBC2479C43500B344A3 /* PusherSwift */,
 				C9D63CF524C40E1B0053FD34 /* CourierGenerated */,
+				C906544E24DFBCE70025003B /* SwiftSoup */,
 			);
 			productName = CourierNext;
 			productReference = C95AD84F24687B2C00691417 /* Courier.app */;
@@ -588,6 +600,7 @@
 				C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */,
 				C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */,
 				C9C61DBB2479C43500B344A3 /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */,
+				C906544D24DFBCE70025003B /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 			);
 			productRefGroup = C9A7496B237852430046E924 /* Products */;
 			projectDirPath = "";
@@ -609,6 +622,7 @@
 				C906544024DF2B530025003B /* FeedInfoSectionPreview.json in Resources */,
 				C9A151C024BB8C8B0032E550 /* TweetRowPreview.json in Resources */,
 				C95AD85E24687B2D00691417 /* LaunchScreen.storyboard in Resources */,
+				C906544C24DFB6B70025003B /* FeedPostRowPreview.json in Resources */,
 				C9C3477924708A68004027DE /* Localizable.stringsdict in Resources */,
 				C95AD85B24687B2D00691417 /* Preview Assets.xcassets in Resources */,
 				C95AD85824687B2D00691417 /* Assets.xcassets in Resources */,
@@ -725,11 +739,13 @@
 				C95AD85224687B2C00691417 /* AppDelegate.swift in Sources */,
 				C96F4CEB246D129F0096B5ED /* PostTweet.swift in Sources */,
 				C96F4CE3246D07D60096B5ED /* DetailedTweetActions.swift in Sources */,
+				C906544A24DFB5D80025003B /* FeedPostRow.swift in Sources */,
 				C95AD87A24687DD700691417 /* TweetsScreen.swift in Sources */,
 				C9C61DBF2479C4CD00B344A3 /* EventListener.swift in Sources */,
 				C9C61DB62477857700B344A3 /* ScreenCoordinator.swift in Sources */,
 				C906543A24DF26770025003B /* FeedDetailScreen.swift in Sources */,
 				C96F4CE7246D0E4E0096B5ED /* UncancelTweet.swift in Sources */,
+				C906544824DFB3AB0025003B /* FeedPostsSection.swift in Sources */,
 				C906543524DF22070025003B /* FeedRow.swift in Sources */,
 				C906543324DF203A0025003B /* FeedsSection.swift in Sources */,
 				C95AD88824688E3D00691417 /* TweetsList.swift in Sources */,
@@ -1148,6 +1164,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		C906544D24DFBCE70025003B /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.3.2;
+			};
+		};
 		C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pusher/push-notifications-swift";
@@ -1175,6 +1199,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C906544E24DFBCE70025003B /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C906544D24DFBCE70025003B /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
+		};
 		C9C34775247081E6004027DE /* PushNotifications */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C97232682401ED6100C400EA /* XCRemoteSwiftPackageReference "push-notifications-swift" */;

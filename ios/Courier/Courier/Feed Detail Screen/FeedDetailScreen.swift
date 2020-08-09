@@ -7,6 +7,7 @@ query FeedDetailScreenQuery($id: ID!) {
     feed(id: $id) {
         title
         ...FeedInfoSection_feed
+        ...FeedPostsSection_posts
     }
 }
 """)
@@ -25,6 +26,7 @@ struct FeedDetailScreen: View {
             if let feed = data?.feed {
                 List {
                     FeedInfoSection(feed: feed.asFragment())
+                    FeedPostsSection(posts: feed.asFragment())
                 }
                 .listStyle(InsetGroupedListStyle())
                 .navigationTitle(feed.title)
