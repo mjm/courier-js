@@ -1,8 +1,11 @@
 import Auth0
 import Foundation
+import os
 #if os(iOS)
 import PushNotifications
 #endif
+
+private let notificationsLogger = Logger(subsystem: "blog.courier.Courier", category: "notifications")
 
 struct Endpoint {
     var environment: String
@@ -45,9 +48,10 @@ struct Endpoint {
 
             credentialsManager.credentials { error, creds in
                 if let error = error {
-                    NSLog("failed to get credentials for push notifications: \(error)")
+                    notificationsLogger.error("Get credentials failure:  \(error as NSError)")
                 } else if let creds = creds {
                     token = creds.accessToken ?? ""
+                    notificationsLogger.info("Get credentials success")
                 }
                 sema.signal()
             }

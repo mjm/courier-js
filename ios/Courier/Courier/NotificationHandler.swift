@@ -1,7 +1,10 @@
 import Combine
+import os
 import Relay
 import UserNotifications
 import CourierGenerated
+
+private let logger = Logger(subsystem: "blog.courier.Courier", category: "notifications")
 
 class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationHandler()
@@ -15,7 +18,7 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
         let data = userInfo["data"] as? [String: Any]
         guard let tweetId = data?["tweetId"] as? String else {
-            NSLog("No tweet ID present in notification.")
+            logger.error("No tweet ID present in notification, doing nothing")
             completionHandler()
             return
         }
@@ -45,7 +48,7 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
 
     private func performMutation<O: Relay.Operation>(_ mutation: O, completion: @escaping () -> Void) {
         guard let environment = environment else {
-            NSLog("No saved Relay environment for handling notifications.")
+            logger.error("Relay environment is not set on NotificationHandler, cannot perform mutation")
             completion()
             return
         }
@@ -53,9 +56,9 @@ class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
         environment.commitMutation(mutation).sink(receiveCompletion: { result in
             switch result {
             case .failure(let error):
-                NSLog("Mutation \(type(of: mutation)) failed: \(error)")
+                logger.error("Mutation failure:  \(type(of: mutation), privacy: .public)  \(error as NSError)")
             case .finished:
-                NSLog("Mutation \(type(of: mutation)) succeeded.")
+                logger.info("Mutation success:  \(type(of: mutation), privacy: .public)")
             }
 
             completion()

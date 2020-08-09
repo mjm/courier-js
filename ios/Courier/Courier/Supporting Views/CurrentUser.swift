@@ -4,6 +4,9 @@ import Combine
 import PushNotifications
 #endif
 import SwiftUI
+import os
+
+private let logger = Logger(subsystem: "blog.courier.Courier", category: "auth")
 
 struct CurrentUser<Content: View>: View {
     @CurrentEndpoint var endpoint
@@ -146,7 +149,7 @@ class AuthContext: ObservableObject {
         credentialsManager.credentials { error, creds in
             DispatchQueue.main.async {
                 if let error = error {
-                    NSLog("Could not load existing credentials: \(error)")
+                    logger.error("Load credentials failure:  \(error as NSError)")
                     self.state = .loginNeeded
                 } else if let creds = creds {
                     self.setLoggedIn(with: creds)
@@ -193,13 +196,13 @@ class AuthContext: ObservableObject {
                 case .failure(error: let error):
                     self.state = .loginFailed(error)
                 case .success(result: let userInfo):
-                    NSLog("user info: name=\(userInfo.name ?? "<none>") nickname=\(userInfo.nickname ?? "<none>")")
+                    logger.debug("User info:  \(userInfo.name ?? "<none>") / \(userInfo.nickname ?? "<none>")")
                     #if os(iOS)
                     self.endpoint.pushNotifications.setUserId(userInfo.sub, tokenProvider: self.endpoint.beamsTokenProvider) { error in
                         if let error = error {
-                            NSLog("failed to set user ID for push notifications: \(error)")
+                            logger.error("Set push user ID failure:  \(error as NSError)")
                         } else {
-                            NSLog("set user ID for push notifications")
+                            logger.debug("Set push user ID:  \(userInfo.sub)")
                         }
                     }
                     #endif

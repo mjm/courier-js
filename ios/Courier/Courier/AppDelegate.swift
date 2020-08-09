@@ -1,5 +1,8 @@
 import UIKit
 import UserNotifications
+import os
+
+private let logger = Logger(subsystem: "blog.courier.Courier", category: "notifications")
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -12,7 +15,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         userNotifications.delegate = NotificationHandler.shared
         userNotifications.setNotificationCategories(NotificationCategory.all)
         userNotifications.requestAuthorization(options: [.alert, .badge, .sound]) { authorized, error in
-            NSLog("requested notification permission, authorized=\(authorized) error=\(String(describing: error))")
+            if let error = error {
+                logger.error("Permission request failure:  \(error as NSError)")
+            } else if authorized {
+                logger.info("Permissions granted")
+            } else {
+                logger.notice("Permissions denied")
+            }
             Endpoint.current.pushNotifications.registerForRemoteNotifications()
         }
 
@@ -21,11 +30,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Endpoint.current.pushNotifications.registerDeviceToken(deviceToken)
-        NSLog("registered for remote notifications")
+        logger.info("Device registration success")
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        NSLog("failed to register for remote notifications: \(error)")
+        logger.error("Device registration failure:  \(error as NSError)")
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {

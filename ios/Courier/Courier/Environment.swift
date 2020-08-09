@@ -82,13 +82,9 @@ class Network: Relay.Network {
                 return Fail(error: error).eraseToAnyPublisher()
             }
 
-            NSLog("Executing \(request.operationKind) \(request.name)")
             return URLSession.shared.dataTaskPublisher(for: req)
                 .map { $0.data }
                 .mapError { $0 as Error }
-                .handleEvents(receiveOutput: { _ in
-                    NSLog("Received response for \(request.operationKind) \(request.name)")
-                })
                 .eraseToAnyPublisher()
         }.eraseToAnyPublisher()
     }
