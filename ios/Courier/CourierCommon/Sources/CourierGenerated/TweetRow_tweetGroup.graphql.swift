@@ -12,20 +12,8 @@ public struct TweetRow_tweetGroup {
     public static var node: ReaderFragment {
         ReaderFragment(
             name: "TweetRow_tweetGroup",
-            type: "TweetGroup",
+            type: "TweetContent",
             selections: [
-                .field(ReaderScalarField(
-                    name: "id"
-                )),
-                .field(ReaderScalarField(
-                    name: "status"
-                )),
-                .field(ReaderScalarField(
-                    name: "postedAt"
-                )),
-                .field(ReaderScalarField(
-                    name: "postAfter"
-                )),
                 .field(ReaderLinkedField(
                     name: "tweets",
                     concreteType: "Tweet",
@@ -38,6 +26,23 @@ public struct TweetRow_tweetGroup {
                             name: "mediaURLs"
                         ))
                     ]
+                )),
+                .inlineFragment(ReaderInlineFragment(
+                    type: "TweetGroup",
+                    selections: [
+                        .field(ReaderScalarField(
+                            name: "id"
+                        )),
+                        .field(ReaderScalarField(
+                            name: "status"
+                        )),
+                        .field(ReaderScalarField(
+                            name: "postedAt"
+                        )),
+                        .field(ReaderScalarField(
+                            name: "postAfter"
+                        ))
+                    ]
                 ))
             ]
         )
@@ -45,16 +50,56 @@ public struct TweetRow_tweetGroup {
 }
 
 extension TweetRow_tweetGroup {
-    public struct Data: Decodable, Identifiable {
-        public var id: String
-        public var status: TweetStatus
-        public var postedAt: String?
-        public var postAfter: String?
-        public var tweets: [Tweet_tweets]
+    public enum Data: Decodable {
+        case tweetGroup(TweetGroup)
+        case tweetContent(TweetContent)
+
+        private enum TypeKeys: String, CodingKey {
+            case __typename
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: TypeKeys.self)
+            let typeName = try container.decode(String.self, forKey: .__typename)
+            switch typeName {
+            case "TweetGroup":
+                self = .tweetGroup(try TweetGroup(from: decoder))
+            default:
+                self = .tweetContent(try TweetContent(from: decoder))
+            }
+        }
+
+        public var asTweetGroup: TweetGroup? {
+            if case .tweetGroup(let val) = self {
+                return val
+            }
+            return nil
+        }
+
+        public var tweets: [Tweet_tweets] {
+            switch self {
+            case .tweetGroup(let val):
+                return val.tweets
+            case .tweetContent(let val):
+                return val.tweets
+            }
+        }
 
         public struct Tweet_tweets: Decodable {
             public var body: String
             public var mediaURLs: [String]
+        }
+
+        public struct TweetGroup: Decodable, Identifiable {
+            public var tweets: [Tweet_tweets]
+            public var id: String
+            public var status: TweetStatus
+            public var postedAt: String?
+            public var postAfter: String?
+        }
+
+        public struct TweetContent: Decodable {
+            public var tweets: [Tweet_tweets]
         }
     }
 }

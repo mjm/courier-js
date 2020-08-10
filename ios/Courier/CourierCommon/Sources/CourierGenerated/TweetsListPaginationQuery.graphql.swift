@@ -63,15 +63,6 @@ public struct TweetsListPaginationQuery {
                                                     .field(NormalizationScalarField(
                                                         name: "id"
                                                     )),
-                                                    .field(NormalizationScalarField(
-                                                        name: "status"
-                                                    )),
-                                                    .field(NormalizationScalarField(
-                                                        name: "postedAt"
-                                                    )),
-                                                    .field(NormalizationScalarField(
-                                                        name: "postAfter"
-                                                    )),
                                                     .field(NormalizationLinkedField(
                                                         name: "tweets",
                                                         concreteType: "Tweet",
@@ -84,6 +75,15 @@ public struct TweetsListPaginationQuery {
                                                                 name: "mediaURLs"
                                                             ))
                                                         ]
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "status"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "postedAt"
+                                                    )),
+                                                    .field(NormalizationScalarField(
+                                                        name: "postAfter"
                                                     )),
                                                     .field(NormalizationScalarField(
                                                         name: "__typename"
@@ -140,14 +140,16 @@ query TweetsListPaginationQuery(
   }
 }
 
-fragment TweetRow_tweetGroup on TweetGroup {
-  id
-  status
-  postedAt
-  postAfter
+fragment TweetRow_tweetGroup on TweetContent {
   tweets {
     body
     mediaURLs
+  }
+  ... on TweetGroup {
+    id
+    status
+    postedAt
+    postAfter
   }
 }
 

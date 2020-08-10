@@ -51,6 +51,19 @@
               }
             ],
             "__typename": "TweetGroup"
+          },
+          "feedPreview": {
+              "tweets": [
+                  {
+                    "tweets": [
+                      {
+                        "body": "I finished the main story of Celeste last night. I love Madeline and all I want in this world is for her to be okay.",
+                        "mediaURLs": []
+                      }
+                    ],
+                    "__typename": "TweetPreview"
+                  }
+              ]
           }
     }
 }

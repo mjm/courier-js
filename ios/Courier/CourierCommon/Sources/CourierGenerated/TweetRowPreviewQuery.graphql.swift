@@ -74,6 +74,27 @@ public struct TweetRowPreviewQuery {
                                 name: "TweetRow_tweetGroup"
                             ))
                         ]
+                    )),
+                    .field(ReaderLinkedField(
+                        name: "feedPreview",
+                        storageKey: "feedPreview(url:\"doesn't matter\")",
+                        args: [
+                            LiteralArgument(name: "url", value: "doesn't matter")
+                        ],
+                        concreteType: "FeedPreview",
+                        plural: false,
+                        selections: [
+                            .field(ReaderLinkedField(
+                                name: "tweets",
+                                concreteType: "TweetPreview",
+                                plural: true,
+                                selections: [
+                                    .fragmentSpread(ReaderFragmentSpread(
+                                        name: "TweetRow_tweetGroup"
+                                    ))
+                                ]
+                            ))
+                        ]
                     ))
                 ]
             ),
@@ -90,18 +111,6 @@ public struct TweetRowPreviewQuery {
                         concreteType: "TweetGroup",
                         plural: false,
                         selections: [
-                            .field(NormalizationScalarField(
-                                name: "id"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "status"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "postedAt"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "postAfter"
-                            )),
                             .field(NormalizationLinkedField(
                                 name: "tweets",
                                 concreteType: "Tweet",
@@ -114,6 +123,18 @@ public struct TweetRowPreviewQuery {
                                         name: "mediaURLs"
                                     ))
                                 ]
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "id"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "status"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "postedAt"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "postAfter"
                             ))
                         ]
                     )),
@@ -127,18 +148,6 @@ public struct TweetRowPreviewQuery {
                         concreteType: "TweetGroup",
                         plural: false,
                         selections: [
-                            .field(NormalizationScalarField(
-                                name: "id"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "status"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "postedAt"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "postAfter"
-                            )),
                             .field(NormalizationLinkedField(
                                 name: "tweets",
                                 concreteType: "Tweet",
@@ -151,6 +160,18 @@ public struct TweetRowPreviewQuery {
                                         name: "mediaURLs"
                                     ))
                                 ]
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "id"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "status"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "postedAt"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "postAfter"
                             ))
                         ]
                     )),
@@ -164,18 +185,6 @@ public struct TweetRowPreviewQuery {
                         concreteType: "TweetGroup",
                         plural: false,
                         selections: [
-                            .field(NormalizationScalarField(
-                                name: "id"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "status"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "postedAt"
-                            )),
-                            .field(NormalizationScalarField(
-                                name: "postAfter"
-                            )),
                             .field(NormalizationLinkedField(
                                 name: "tweets",
                                 concreteType: "Tweet",
@@ -188,6 +197,18 @@ public struct TweetRowPreviewQuery {
                                         name: "mediaURLs"
                                     ))
                                 ]
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "id"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "status"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "postedAt"
+                            )),
+                            .field(NormalizationScalarField(
+                                name: "postAfter"
                             ))
                         ]
                     )),
@@ -201,6 +222,19 @@ public struct TweetRowPreviewQuery {
                         concreteType: "TweetGroup",
                         plural: false,
                         selections: [
+                            .field(NormalizationLinkedField(
+                                name: "tweets",
+                                concreteType: "Tweet",
+                                plural: true,
+                                selections: [
+                                    .field(NormalizationScalarField(
+                                        name: "body"
+                                    )),
+                                    .field(NormalizationScalarField(
+                                        name: "mediaURLs"
+                                    ))
+                                ]
+                            )),
                             .field(NormalizationScalarField(
                                 name: "id"
                             )),
@@ -212,17 +246,52 @@ public struct TweetRowPreviewQuery {
                             )),
                             .field(NormalizationScalarField(
                                 name: "postAfter"
-                            )),
+                            ))
+                        ]
+                    )),
+                    .field(NormalizationLinkedField(
+                        name: "feedPreview",
+                        args: [
+                            LiteralArgument(name: "url", value: "doesn't matter")
+                        ],
+                        storageKey: "feedPreview(url:\"doesn't matter\")",
+                        concreteType: "FeedPreview",
+                        plural: false,
+                        selections: [
                             .field(NormalizationLinkedField(
                                 name: "tweets",
-                                concreteType: "Tweet",
+                                concreteType: "TweetPreview",
                                 plural: true,
                                 selections: [
-                                    .field(NormalizationScalarField(
-                                        name: "body"
+                                    .field(NormalizationLinkedField(
+                                        name: "tweets",
+                                        concreteType: "Tweet",
+                                        plural: true,
+                                        selections: [
+                                            .field(NormalizationScalarField(
+                                                name: "body"
+                                            )),
+                                            .field(NormalizationScalarField(
+                                                name: "mediaURLs"
+                                            ))
+                                        ]
                                     )),
-                                    .field(NormalizationScalarField(
-                                        name: "mediaURLs"
+                                    .inlineFragment(NormalizationInlineFragment(
+                                        type: "TweetGroup",
+                                        selections: [
+                                            .field(NormalizationScalarField(
+                                                name: "id"
+                                            )),
+                                            .field(NormalizationScalarField(
+                                                name: "status"
+                                            )),
+                                            .field(NormalizationScalarField(
+                                                name: "postedAt"
+                                            )),
+                                            .field(NormalizationScalarField(
+                                                name: "postAfter"
+                                            ))
+                                        ]
                                     ))
                                 ]
                             ))
@@ -251,16 +320,23 @@ query TweetRowPreviewQuery {
     ...TweetRow_tweetGroup
     id
   }
+  feedPreview(url: "doesn't matter") {
+    tweets {
+      ...TweetRow_tweetGroup
+    }
+  }
 }
 
-fragment TweetRow_tweetGroup on TweetGroup {
-  id
-  status
-  postedAt
-  postAfter
+fragment TweetRow_tweetGroup on TweetContent {
   tweets {
     body
     mediaURLs
+  }
+  ... on TweetGroup {
+    id
+    status
+    postedAt
+    postAfter
   }
 }
 """
@@ -281,6 +357,7 @@ extension TweetRowPreviewQuery {
         public var autopostingTweet: TweetGroup_autopostingTweet?
         public var canceledTweet: TweetGroup_canceledTweet?
         public var postedTweet: TweetGroup_postedTweet?
+        public var feedPreview: FeedPreview_feedPreview?
 
         public struct TweetGroup_draftTweet: Decodable, TweetRow_tweetGroup_Key {
             public var fragment_TweetRow_tweetGroup: FragmentPointer
@@ -296,6 +373,14 @@ extension TweetRowPreviewQuery {
 
         public struct TweetGroup_postedTweet: Decodable, TweetRow_tweetGroup_Key {
             public var fragment_TweetRow_tweetGroup: FragmentPointer
+        }
+
+        public struct FeedPreview_feedPreview: Decodable {
+            public var tweets: [TweetPreview_tweets]
+
+            public struct TweetPreview_tweets: Decodable, TweetRow_tweetGroup_Key {
+                public var fragment_TweetRow_tweetGroup: FragmentPointer
+            }
         }
     }
 }

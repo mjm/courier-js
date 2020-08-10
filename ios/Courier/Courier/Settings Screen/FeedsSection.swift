@@ -24,11 +24,21 @@ fragment FeedsSection_feeds on Viewer
 struct FeedsSection: View {
     @PaginationFragment<FeedsSection_feeds> var feeds
 
+    @State private var isNewFeedPresented = false
+
     var body: some View {
         if let feeds = feeds {
             Section(header: Text("Your Feeds")) {
                 ForEach(feeds.allFeeds) { feed in
                     FeedRow(feed: feed.asFragment())
+                }
+
+                NavigationLink(
+                    destination: NewFeedScreen(isPresented: $isNewFeedPresented),
+                    isActive: $isNewFeedPresented
+                ) {
+                    Label("Watch New Feed", systemImage: "plus")
+                        .foregroundColor(.accentColor)
                 }
             }
         }

@@ -3,14 +3,17 @@ import RelaySwiftUI
 import CourierGenerated
 
 private let tweetGroupFragment = graphql("""
-fragment TweetRow_tweetGroup on TweetGroup {
-  id
-  status
-  postedAt
-  postAfter
+fragment TweetRow_tweetGroup on TweetContent {
   tweets {
     body
     mediaURLs
+  }
+
+  ...on TweetGroup {
+    id
+    status
+    postedAt
+    postAfter
   }
 }
 """)
@@ -46,28 +49,30 @@ struct TweetRow: View {
     }
 
     @ViewBuilder private func statusBadge(_ tweetGroup: TweetRow_tweetGroup.Data) -> some View {
-        switch tweetGroup.status {
-        case .canceled:
-            Badge(label: Text("Canceled"),
-                  image: Image(systemName: "trash.fill"))
-        case .posted:
-            Badge(label: postedAtTimeText(tweetGroup),
-                  image: Image(systemName: "checkmark.circle.fill"),
-                  color: .purple)
-        case .draft:
-            if let postAfter = tweetGroup.postAfter {
-                Badge(label: Text("Posting in ") + Text(postAfter.asDate!, style: .relative),
-                      image: Image(systemName: "clock.fill"),
+        if let tweetGroup = tweetGroup.asTweetGroup {
+            switch tweetGroup.status {
+            case .canceled:
+                Badge(label: Text("Canceled"),
+                      image: Image(systemName: "trash.fill"))
+            case .posted:
+                Badge(label: postedAtTimeText(tweetGroup),
+                      image: Image(systemName: "checkmark.circle.fill"),
                       color: .purple)
-            } else {
-                Badge(label: Text("Draft"),
-                      image: Image(systemName: "questionmark.folder.fill"),
-                      color: .green)
+            case .draft:
+                if let postAfter = tweetGroup.postAfter {
+                    Badge(label: Text("Posting in ") + Text(postAfter.asDate!, style: .relative),
+                          image: Image(systemName: "clock.fill"),
+                          color: .purple)
+                } else {
+                    Badge(label: Text("Draft"),
+                          image: Image(systemName: "questionmark.folder.fill"),
+                          color: .green)
+                }
             }
         }
     }
 
-    private func postedAtTimeText(_ tweetGroup: TweetRow_tweetGroup.Data) -> Text {
+    private func postedAtTimeText(_ tweetGroup: TweetRow_tweetGroup.Data.TweetGroup) -> Text {
         Text("Posted ") + (tweetGroup.postedAt?.asDate.map { date in
             Text(date, style: .relative) + Text(" ago")
         } ?? Text("some unknown time ago"))
@@ -96,6 +101,12 @@ query TweetRowPreviewQuery {
     postedTweet: tweetGroup(id: "posted_tweet_id") {
         ...TweetRow_tweetGroup
     }
+
+    feedPreview(url: "doesn't matter") {
+        tweets {
+            ...TweetRow_tweetGroup
+        }
+    }
 }
 """)
 
@@ -110,6 +121,7 @@ struct TweetRow_Previews: PreviewProvider {
                 TweetRow(tweetGroup: data.autopostingTweet!.asFragment(), selectedTweetID: .constant(nil), now: now)
                 TweetRow(tweetGroup: data.canceledTweet!.asFragment(), selectedTweetID: .constant(nil), now: now)
                 TweetRow(tweetGroup: data.postedTweet!.asFragment(), selectedTweetID: .constant(nil), now: now)
+                TweetRow(tweetGroup: data.feedPreview!.tweets[0].asFragment(), selectedTweetID: .constant(nil), now: now)
             }
         }.previewPayload(op, resource: "TweetRowPreview")
     }
