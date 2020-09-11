@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
@@ -17,7 +17,7 @@ import (
 const maxPostLength = 15000
 
 var (
-	entryCountKey = key.New("import.entry_count").Int
+	entryCountKey = kv.Key("import.entry_count").Int
 )
 
 // ImportPostsCommand is a request to import posts that were scraped from a feed into
@@ -46,7 +46,7 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 	var oldestPublishedStr string
 	if oldestPublished != nil {
 		oldestPublishedStr = oldestPublished.Format(time.RFC3339)
-		span.SetAttributes(key.String("import.oldest_published", oldestPublishedStr))
+		span.SetAttributes(kv.String("import.oldest_published", oldestPublishedStr))
 	} else {
 		return nil
 	}
@@ -117,7 +117,7 @@ func (h *CommandHandler) handleImportPosts(ctx context.Context, cmd ImportPostsC
 	oldestPublishedStr = ""
 	if oldestPublished != nil {
 		oldestPublishedStr = oldestPublished.Format(time.RFC3339)
-		span.SetAttributes(key.String("import.changed.oldest_published", oldestPublishedStr))
+		span.SetAttributes(kv.String("import.changed.oldest_published", oldestPublishedStr))
 	}
 
 	if err := h.postRepo.Write(ctx, ps); err != nil {

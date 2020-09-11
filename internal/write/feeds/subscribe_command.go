@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/url"
 
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
@@ -39,7 +39,7 @@ func (h *CommandHandler) handleSubscribe(ctx context.Context, cmd SubscribeComma
 		return err
 	}
 
-	span.SetAttributes(key.String("feed.resolved_url", u.String()))
+	span.SetAttributes(kv.String("feed.resolved_url", u.String()))
 
 	if err := h.feedRepo.Create(ctx, cmd.UserID, cmd.FeedID, u.String()); err != nil {
 		return err

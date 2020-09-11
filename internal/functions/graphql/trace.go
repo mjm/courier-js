@@ -7,7 +7,7 @@ import (
 	"github.com/mjm/graphql-go/introspection"
 	gqltrace "github.com/mjm/graphql-go/trace"
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,10 +16,10 @@ import (
 var tracer = global.TraceProvider().Tracer("courier.blog/internal/functions/graphql")
 
 var (
-	queryKey         = key.New("gql.query")
-	operationNameKey = key.New("gql.operation_name")
-	typeKey          = key.New("gql.type")
-	fieldKey         = key.New("gql.field")
+	queryKey         = kv.Key("gql.query")
+	operationNameKey = kv.Key("gql.operation_name")
+	typeKey          = kv.Key("gql.type")
+	fieldKey         = kv.Key("gql.field")
 )
 
 // GraphQLTracer implements gqltrace.Tracer for tracing GraphQL requests

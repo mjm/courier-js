@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/dghubble/go-twitter/twitter"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/model"
@@ -22,7 +22,7 @@ func (h *CommandHandler) handleSendTweet(ctx context.Context, cmd SendTweetComma
 	span.SetAttributes(keys.TweetGroupID(cmd.TweetGroup.ID)...)
 
 	tg := cmd.TweetGroup
-	span.SetAttributes(key.String("tweet.action", string(tg.Action)))
+	span.SetAttributes(kv.String("tweet.action", string(tg.Action)))
 
 	var postedURLs []string
 
@@ -41,8 +41,8 @@ func (h *CommandHandler) handleSendTweet(ctx context.Context, cmd SendTweetComma
 				}
 
 				span.SetAttributes(
-					key.Int64("tweet.posted_tweet_id", postedTweet.ID),
-					key.Int64("tweet.in_reply_to", lastPostedID))
+					kv.Int64("tweet.posted_tweet_id", postedTweet.ID),
+					kv.Int64("tweet.in_reply_to", lastPostedID))
 
 				lastPostedID = postedTweet.ID
 				postedIDs = append(postedIDs, lastPostedID)
@@ -73,7 +73,7 @@ func (h *CommandHandler) handleSendTweet(ctx context.Context, cmd SendTweetComma
 			return err
 		}
 
-		span.SetAttributes(key.Int64("tweet.posted_tweet_id", postedTweet.ID))
+		span.SetAttributes(kv.Int64("tweet.posted_tweet_id", postedTweet.ID))
 
 		tweetURL := urlFromTweet(postedTweet)
 		span.SetAttributes(keys.TweetURL(tweetURL))

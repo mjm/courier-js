@@ -9,7 +9,7 @@ import (
 	"github.com/mjm/graphql-go/relay"
 	"github.com/pusher/pusher-http-go"
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
@@ -35,17 +35,17 @@ func NewPusher(events event.Source, client *pusher.Client) *Pusher {
 
 func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
 	ctx, span := tracer.Start(ctx, "Pusher.HandleEvent",
-		trace.WithAttributes(key.String("pusher.app_id", p.client.AppID)))
+		trace.WithAttributes(kv.String("pusher.app_id", p.client.AppID)))
 	defer span.End()
 
 	var pushed bool
 	defer func() {
-		span.SetAttributes(key.Bool("event.pushed", pushed))
+		span.SetAttributes(kv.Bool("event.pushed", pushed))
 	}()
 
 	t := reflect.TypeOf(evt)
 	eventName := t.Name()
-	span.SetAttributes(key.String("event.name", eventName))
+	span.SetAttributes(kv.String("event.name", eventName))
 
 	// only send events when a user ID matches
 	userIDField := reflect.ValueOf(evt).FieldByName("UserId")
@@ -60,7 +60,7 @@ func (p *Pusher) HandleEvent(ctx context.Context, evt interface{}) {
 	span.SetAttributes(keys.UserID(userID))
 
 	channelName := fmt.Sprintf("private-events-%s", strings.ReplaceAll(userID, "|", "_"))
-	span.SetAttributes(key.String("event.channel_name", channelName))
+	span.SetAttributes(kv.String("event.channel_name", channelName))
 
 	evt = convertIDsToGraphQL(evt)
 

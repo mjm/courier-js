@@ -11,7 +11,7 @@ import (
 
 	pushnotifications "github.com/pusher/push-notifications-go"
 	"github.com/pusher/pusher-http-go"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -75,7 +75,7 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 	switch r.Method {
 	case http.MethodGet:
 		expectedUserID := r.FormValue("user_id")
-		span.SetAttributes(key.String("user_id_expected", expectedUserID))
+		span.SetAttributes(kv.String("user_id_expected", expectedUserID))
 
 		if expectedUserID != userID {
 			return ErrNoMatch
@@ -100,12 +100,12 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 		r.Body.Close()
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(params))
 
-		span.SetAttributes(key.Int("auth.params_length", len(params)))
+		span.SetAttributes(kv.Int("auth.params_length", len(params)))
 
 		sanitizedUserID := strings.ReplaceAll(userID, "|", "_")
-		span.SetAttributes(key.String("user_id_sanitized", sanitizedUserID))
+		span.SetAttributes(kv.String("user_id_sanitized", sanitizedUserID))
 		channelName := r.FormValue("channel_name")
-		span.SetAttributes(key.String("event.channel_name", channelName))
+		span.SetAttributes(kv.String("event.channel_name", channelName))
 
 		if channelName != fmt.Sprintf("private-events-%s", sanitizedUserID) {
 			return status.Errorf(codes.PermissionDenied, "user %q cannot subscribe to channel %q", userID, channelName)
@@ -116,7 +116,7 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 			return err
 		}
 
-		span.SetAttributes(key.Int("auth.response_length", len(res)))
+		span.SetAttributes(kv.Int("auth.response_length", len(res)))
 
 		fmt.Fprintf(w, string(res))
 		return nil

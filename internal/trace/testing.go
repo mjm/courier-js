@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"go.opentelemetry.io/otel/exporters/otlp"
 	exporttrace "go.opentelemetry.io/otel/sdk/export/trace"
@@ -32,9 +32,9 @@ func InitForTesting() {
 		sdktrace.WithConfig(sdktrace.Config{
 			DefaultSampler: sdktrace.AlwaysSample(),
 			Resource: resource.New(
-				key.String("service.name", "courier"),
-				key.String("service.version", "git:"+ServiceVersion),
-				key.String("env", "test")),
+				kv.String("service.name", "courier"),
+				kv.String("service.version", "git:"+ServiceVersion),
+				kv.String("env", "test")),
 		}),
 		// sdktrace.WithSyncer(stdoutExporter),
 		sdktrace.WithSyncer(testExporter))

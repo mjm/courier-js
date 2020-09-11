@@ -5,7 +5,7 @@ import (
 
 	"github.com/honeycombio/opentelemetry-exporter-go/honeycomb"
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	exporttrace "go.opentelemetry.io/otel/sdk/export/trace"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -28,9 +28,9 @@ func newProvider(exporter exporttrace.SpanSyncer, svcname ServiceName) (*sdktrac
 		sdktrace.WithConfig(sdktrace.Config{
 			DefaultSampler: sdktrace.AlwaysSample(),
 			Resource: resource.New(
-				key.String("service.name", string(svcname)),
-				key.String("service.version", "git:"+ServiceVersion),
-				key.String("env", os.Getenv("APP_ENV"))),
+				kv.String("service.name", string(svcname)),
+				kv.String("service.version", "git:"+ServiceVersion),
+				kv.String("env", os.Getenv("APP_ENV"))),
 		}),
 		sdktrace.WithSyncer(exporter))
 }

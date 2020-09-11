@@ -7,17 +7,17 @@ import (
 
 	"github.com/graph-gophers/dataloader"
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 )
 
 var tracer = global.TraceProvider().Tracer("courier.blog/internal/loader")
 
 var (
-	loaderKey       = key.New("loader.key")
-	loaderKeyCount  = key.New("loader.key_count")
-	successCountKey = key.New("loader.success_count")
-	errorCountKey   = key.New("loader.error_count")
+	loaderKey       = kv.Key("loader.key")
+	loaderKeyCount  = kv.Key("loader.key_count")
+	successCountKey = kv.Key("loader.success_count")
+	errorCountKey   = kv.Key("loader.error_count")
 )
 
 type DataloaderTracer struct {

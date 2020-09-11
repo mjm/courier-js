@@ -3,7 +3,7 @@ package feeds
 import (
 	"context"
 
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/feeds"
@@ -23,7 +23,7 @@ func (h *CommandHandler) handleUpdateOptions(ctx context.Context, cmd UpdateOpti
 	span.SetAttributes(
 		keys.UserID(cmd.UserID),
 		keys.FeedID(cmd.FeedID),
-		key.Bool("feed.autopost", cmd.Autopost))
+		kv.Bool("feed.autopost", cmd.Autopost))
 
 	if err := h.feedRepo.UpdateSettings(ctx, shared.UpdateFeedSettingsParams{
 		ID:       cmd.FeedID,

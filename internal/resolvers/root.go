@@ -7,7 +7,7 @@ import (
 	"github.com/google/wire"
 	"github.com/mjm/graphql-go"
 	"github.com/mjm/graphql-go/relay"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"golang.org/x/net/context/ctxhttp"
 	"google.golang.org/grpc/codes"
@@ -52,7 +52,7 @@ func New(
 // Viewer gets the user who is accessing the API.
 func (r *Root) Viewer(ctx context.Context) *User {
 	u := auth.GetUser(ctx)
-	trace.SpanFromContext(ctx).SetAttributes(key.Bool("authenticated", u.Authenticated()))
+	trace.SpanFromContext(ctx).SetAttributes(kv.Bool("authenticated", u.Authenticated()))
 
 	if !u.Authenticated() {
 		return nil
@@ -149,7 +149,7 @@ func (r *Root) AllEvents(ctx context.Context, args pager.Options) (*EventConnect
 func (r *Root) Microformats(ctx context.Context, args struct {
 	URL string
 }) (*MicroformatPage, error) {
-	trace.SpanFromContext(ctx).SetAttributes(key.String("url", args.URL))
+	trace.SpanFromContext(ctx).SetAttributes(kv.String("url", args.URL))
 
 	u, err := url.Parse(args.URL)
 	if err != nil {

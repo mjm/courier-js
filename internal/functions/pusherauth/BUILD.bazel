@@ -18,7 +18,7 @@ go_library(
         "//internal/trace/keys:go_default_library",
         "@com_github_pusher_push_notifications_go//:go_default_library",
         "@com_github_pusher_pusher_http_go//:go_default_library",
-        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/kv:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
         "@org_golang_google_grpc//codes:go_default_library",
         "@org_golang_google_grpc//status:go_default_library",

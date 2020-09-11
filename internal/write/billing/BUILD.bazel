@@ -23,7 +23,7 @@ go_library(
         "@com_github_stripe_stripe_go//:go_default_library",
         "@com_github_stripe_stripe_go//client:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
-        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/kv:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
     ],
 )

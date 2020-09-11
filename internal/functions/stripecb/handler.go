@@ -9,7 +9,7 @@ import (
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/webhook"
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -46,7 +46,7 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 		return status.Errorf(codes.InvalidArgument, err.Error())
 	}
 
-	span.SetAttributes(key.Int("stripe.payload_length", len(payload)))
+	span.SetAttributes(kv.Int("stripe.payload_length", len(payload)))
 
 	evt, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), h.webhookSecret)
 	if err != nil {
@@ -65,9 +65,9 @@ func (h *Handler) HandleHTTP(ctx context.Context, w http.ResponseWriter, r *http
 func (h *Handler) handleStripeEvent(ctx context.Context, evt *stripe.Event) error {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(
-		key.String("stripe.event_id", evt.ID),
-		key.String("stripe.event_type", evt.Type),
-		key.Bool("stripe.livemode", evt.Livemode))
+		kv.String("stripe.event_id", evt.ID),
+		kv.String("stripe.event_type", evt.Type),
+		kv.Bool("stripe.livemode", evt.Livemode))
 
 	switch evt.Type {
 	case "customer.subscription.updated":
@@ -78,8 +78,8 @@ func (h *Handler) handleStripeEvent(ctx context.Context, evt *stripe.Event) erro
 		prevPeriodEnd := evt.GetPreviousValue("current_period_end")
 		curPeriodEnd := evt.GetObjectValue("current_period_end")
 		span.SetAttributes(
-			key.String("stripe.period_end.previous", prevPeriodEnd),
-			key.String("stripe.period_end.current", curPeriodEnd))
+			kv.String("stripe.period_end.previous", prevPeriodEnd),
+			kv.String("stripe.period_end.current", curPeriodEnd))
 
 		if prevPeriodEnd != "" && prevPeriodEnd != curPeriodEnd {
 			return h.fireSubscriptionEvent(ctx, evt, func(subID string, userID string) interface{} {
@@ -145,7 +145,7 @@ func (h *Handler) fireSubscriptionEvent(ctx context.Context, evt *stripe.Event, 
 	span.SetAttributes(keys.UserID(userID))
 
 	e := f(subID, userID)
-	span.SetAttributes(key.String("stripe.emitted_event_type", fmt.Sprintf("%T", e)))
+	span.SetAttributes(kv.String("stripe.emitted_event_type", fmt.Sprintf("%T", e)))
 	h.events.Fire(ctx, e)
 	return nil
 }

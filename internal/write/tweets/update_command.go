@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/model"
@@ -26,7 +26,7 @@ func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) er
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(keys.TweetGroupID(cmd.TweetGroupID)...)
 	span.SetAttributes(
-		key.Int("tweet.count", len(cmd.Tweets)))
+		kv.Int("tweet.count", len(cmd.Tweets)))
 
 	// fetch the existing tweet so we can do some validation
 	tg, err := h.tweetRepo.Get(ctx, cmd.TweetGroupID)
@@ -36,7 +36,7 @@ func (h *CommandHandler) handleUpdate(ctx context.Context, cmd UpdateCommand) er
 
 	span.SetAttributes(
 		keys.TweetStatus(string(tg.Status)),
-		key.String("tweet.action", string(tg.Action)))
+		kv.String("tweet.action", string(tg.Action)))
 
 	if tg.Status != model.Draft {
 		return shared.ErrCannotUpdate

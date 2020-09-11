@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strings"
 
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"golang.org/x/net/html"
 )
@@ -35,7 +35,7 @@ func handleHTML(ctx context.Context, u *url.URL, res *http.Response) (*url.URL, 
 	}
 
 	links := linkNodes(doc)
-	span.SetAttributes(key.Int("link_count", len(links)))
+	span.SetAttributes(kv.Int("link_count", len(links)))
 
 	for _, feedType := range feedTypes {
 		for _, link := range links {

@@ -12,7 +12,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/wire"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/config"
@@ -51,10 +51,10 @@ func (p *SQSPublisher) Fire(ctx context.Context, evt interface{}) {
 		trace.WithSpanKind(trace.SpanKindProducer),
 		trace.WithAttributes(
 			typeKey(reflect.TypeOf(evt).String()),
-			key.String("messaging.system", "sqs"),
-			key.String("messaging.operation", "send"),
-			key.String("messaging.destination_kind", "queue"),
-			key.String("messaging.destination", p.cfg.QueueURL)))
+			kv.String("messaging.system", "sqs"),
+			kv.String("messaging.operation", "send"),
+			kv.String("messaging.destination_kind", "queue"),
+			kv.String("messaging.destination", p.cfg.QueueURL)))
 	defer span.End()
 
 	evtPtr := reflect.New(reflect.TypeOf(evt))
@@ -91,11 +91,11 @@ func (p *SQSPublisher) Fire(ctx context.Context, evt interface{}) {
 		MessageAttributes: map[string]*sqs.MessageAttributeValue{
 			"TraceID": {
 				DataType:    aws.String("String"),
-				StringValue: aws.String(sc.TraceIDString()),
+				StringValue: aws.String(sc.TraceID.String()),
 			},
 			"SpanID": {
 				DataType:    aws.String("String"),
-				StringValue: aws.String(sc.SpanIDString()),
+				StringValue: aws.String(sc.SpanID.String()),
 			},
 		},
 	})
@@ -107,5 +107,5 @@ func (p *SQSPublisher) Fire(ctx context.Context, evt interface{}) {
 	id := aws.StringValue(res.MessageId)
 	span.SetAttributes(
 		publishedIDKey(id),
-		key.String("messaging.message_id", id))
+		kv.String("messaging.message_id", id))
 }

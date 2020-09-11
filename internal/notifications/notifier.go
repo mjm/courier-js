@@ -9,7 +9,7 @@ import (
 	"github.com/mjm/graphql-go/relay"
 	pushnotifications "github.com/pusher/push-notifications-go"
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
@@ -23,7 +23,7 @@ import (
 var tr = global.TraceProvider().Tracer("courier.blog/internal/notifications")
 
 var (
-	publishIDKey = key.New("notification.publish_id").String
+	publishIDKey = kv.Key("notification.publish_id").String
 )
 
 type Notifier struct {
@@ -53,7 +53,7 @@ func (n *Notifier) handleTweetsImported(ctx context.Context, evt tweets.TweetsIm
 	ctx, span := tr.Start(ctx, "Notifier.handleTweetsImported",
 		trace.WithAttributes(
 			keys.UserID(evt.UserId),
-			key.Int("tweet.count", len(evt.CreatedItemIds))))
+			kv.Int("tweet.count", len(evt.CreatedItemIds))))
 	defer span.End()
 
 	if len(evt.CreatedItemIds) == 0 {

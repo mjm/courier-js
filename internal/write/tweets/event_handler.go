@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/wire"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
@@ -35,7 +35,7 @@ func NewEventHandler(
 
 func (h *EventHandler) HandleEvent(ctx context.Context, evt interface{}) {
 	ctx, span := tracer.Start(ctx, "tweets.HandleEvent",
-		trace.WithAttributes(key.String("event.type", fmt.Sprintf("%T", evt))))
+		trace.WithAttributes(kv.String("event.type", fmt.Sprintf("%T", evt))))
 	defer span.End()
 
 	switch evt := evt.(type) {

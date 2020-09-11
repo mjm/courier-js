@@ -46,7 +46,7 @@ go_library(
         "@com_github_stripe_stripe_go//client:go_default_library",
         "@in_gopkg_auth0_v3//management:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
-        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/kv:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
         "@org_golang_google_grpc//status:go_default_library",
         "@org_golang_x_oauth2//:go_default_library",

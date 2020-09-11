@@ -13,7 +13,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/wire"
 	"github.com/segmentio/ksuid"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
@@ -64,10 +64,10 @@ func (t *Tasks) Enqueue(ctx context.Context, task proto.Message, opts ...taskOpt
 	ctx, span := tracer.Start(ctx, "Tasks.Enqueue",
 		trace.WithSpanKind(trace.SpanKindProducer),
 		trace.WithAttributes(
-			key.String("messaging.system", "sqs"),
-			key.String("messaging.destination_kind", "queue"),
-			key.String("messaging.destination", t.cfg.QueueURL),
-			key.String("messaging.operation", "send")))
+			kv.String("messaging.system", "sqs"),
+			kv.String("messaging.destination_kind", "queue"),
+			kv.String("messaging.destination", t.cfg.QueueURL),
+			kv.String("messaging.operation", "send")))
 	defer span.End()
 
 	evt := &FireTaskEvent{
@@ -86,11 +86,11 @@ func (t *Tasks) Enqueue(ctx context.Context, task proto.Message, opts ...taskOpt
 		MessageAttributes: map[string]*sqs.MessageAttributeValue{
 			"TraceID": {
 				DataType:    aws.String("String"),
-				StringValue: aws.String(span.SpanContext().TraceIDString()),
+				StringValue: aws.String(span.SpanContext().TraceID.String()),
 			},
 			"SpanID": {
 				DataType:    aws.String("String"),
-				StringValue: aws.String(span.SpanContext().SpanIDString()),
+				StringValue: aws.String(span.SpanContext().SpanID.String()),
 			},
 		},
 	}
@@ -122,6 +122,6 @@ func (t *Tasks) Enqueue(ctx context.Context, task proto.Message, opts ...taskOpt
 
 	span.SetAttributes(
 		nameKey.String(evt.Name),
-		key.String("messaging.message_id", aws.StringValue(res.MessageId)))
+		kv.String("messaging.message_id", aws.StringValue(res.MessageId)))
 	return aws.StringValue(res.MessageId), nil
 }

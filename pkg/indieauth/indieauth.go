@@ -8,7 +8,7 @@ import (
 	"net/url"
 
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 )
 
@@ -36,15 +36,15 @@ var (
 var tracer = global.TraceProvider().Tracer("courier.blog/pkg/indieauth")
 
 var (
-	codeLenKey  = key.New("code_length").Int
-	stateLenKey = key.New("state_length").Int
-	dataLenKey  = key.New("data_length").Int
+	codeLenKey  = kv.Key("code_length").Int
+	stateLenKey = kv.Key("state_length").Int
+	dataLenKey  = kv.Key("data_length").Int
 
-	tokenEndpointKey = key.New("data.token_endpoint").String
-	meKey            = key.New("data.me").String
-	clientIDKey      = key.New("data.client_id").String
-	redirectURIKey   = key.New("data.redirect_uri").String
-	originKey        = key.New("data.origin").String
+	tokenEndpointKey = kv.Key("data.token_endpoint").String
+	meKey            = kv.Key("data.me").String
+	clientIDKey      = kv.Key("data.client_id").String
+	redirectURIKey   = kv.Key("data.redirect_uri").String
+	originKey        = kv.Key("data.origin").String
 )
 
 func CompleteRequest(ctx context.Context, r *http.Request) (*Result, error) {

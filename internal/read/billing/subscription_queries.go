@@ -8,7 +8,7 @@ import (
 	"github.com/graph-gophers/dataloader"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/client"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"gopkg.in/auth0.v3/management"
 
@@ -72,7 +72,7 @@ func (q *subscriptionQueries) GetUserID(ctx context.Context, subID string) (stri
 		return "", err
 	}
 
-	span.SetAttributes(key.Int("user_count", len(users.Users)))
+	span.SetAttributes(kv.Int("user_count", len(users.Users)))
 	if len(users.Users) == 0 {
 		span.RecordError(ctx, ErrNoUser)
 		return "", ErrNoUser

@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"gopkg.in/dgrijalva/jwt-go.v3"
 )
@@ -25,8 +25,8 @@ var (
 )
 
 var (
-	urlKey      = key.New("url")
-	keyCountKey = key.New("jwks.key_count")
+	urlKey      = kv.Key("url")
+	keyCountKey = kv.Key("jwks.key_count")
 )
 
 // JWKSClient fetches signing keys in JSON Web Key Set format and finds a public key that
@@ -77,12 +77,12 @@ func (c *JWKSClient) getKeySet(ctx context.Context) (*jsonWebKeySet, error) {
 
 	if c.cachedKeySet != nil && c.expireAt.After(time.Now()) {
 		span.SetAttributes(
-			key.Bool("jwks.cached", true),
-			key.String("jwks.expire_at", c.expireAt.Format(time.RFC3339)))
+			kv.Bool("jwks.cached", true),
+			kv.String("jwks.expire_at", c.expireAt.Format(time.RFC3339)))
 		return c.cachedKeySet, nil
 	}
 
-	span.SetAttributes(key.Bool("jwks.cached", false))
+	span.SetAttributes(kv.Bool("jwks.cached", false))
 
 	url := fmt.Sprintf("https://%s/.well-known/jwks.json", c.AuthDomain)
 	span.SetAttributes(urlKey.String(url))

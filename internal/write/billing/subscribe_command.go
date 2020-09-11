@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/stripe/stripe-go"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/auth"
@@ -20,12 +20,12 @@ type SubscribeCommand struct {
 }
 
 var (
-	newCustomerKey     = key.New("billing.create_new_customer").Bool
-	hasSubscriptionKey = key.New("billing.has_subscription").Bool
+	newCustomerKey     = kv.Key("billing.create_new_customer").Bool
+	hasSubscriptionKey = kv.Key("billing.has_subscription").Bool
 
-	existingSubIDKey = key.New("billing.existing_subscription_id").String
-	statusKey        = key.New("billing.status").String
-	cancelAtEndKey   = key.New("billing.cancel_at_period_end").Bool
+	existingSubIDKey = kv.Key("billing.existing_subscription_id").String
+	statusKey        = kv.Key("billing.status").String
+	cancelAtEndKey   = kv.Key("billing.cancel_at_period_end").Bool
 )
 
 var (

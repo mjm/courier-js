@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/ptypes"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
@@ -42,7 +42,7 @@ func (h *TaskHandler) HandleEvent(ctx context.Context, evt interface{}) {
 	}
 
 	ctx, span := tracer.Start(ctx, "tasks.HandleEvent",
-		trace.WithAttributes(key.String("task.type_url", e.Task.TypeUrl)))
+		trace.WithAttributes(kv.String("task.type_url", e.Task.TypeUrl)))
 	defer span.End()
 
 	var msg ptypes.DynamicAny
@@ -51,7 +51,7 @@ func (h *TaskHandler) HandleEvent(ctx context.Context, evt interface{}) {
 		return
 	}
 
-	span.SetAttributes(key.String("task.type", fmt.Sprintf("%T", msg.Message)))
+	span.SetAttributes(kv.String("task.type", fmt.Sprintf("%T", msg.Message)))
 
 	var err error
 

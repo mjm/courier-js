@@ -2,19 +2,19 @@ package tracehttp
 
 import (
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 )
 
 var tracer = global.TraceProvider().Tracer("courier.blog/pkg/tracehttp")
 
 var (
-	MethodKey     = key.New("http.method").String
-	URLKey        = key.New("http.url").String
-	TargetKey     = key.New("http.target").String
-	HostKey       = key.New("http.host").String
-	SchemeKey     = key.New("http.scheme").String
-	StatusCodeKey = key.New("http.status_code").Int
-	StatusTextKey = key.New("http.status_text").String
-	FlavorKey     = key.New("http.flavor").String
-	UserAgentKey  = key.New("http.user_agent").String
+	MethodKey     = kv.Key("http.method").String
+	URLKey        = kv.Key("http.url").String
+	TargetKey     = kv.Key("http.target").String
+	HostKey       = kv.Key("http.host").String
+	SchemeKey     = kv.Key("http.scheme").String
+	StatusCodeKey = kv.Key("http.status_code").Int
+	StatusTextKey = kv.Key("http.status_text").String
+	FlavorKey     = kv.Key("http.flavor").String
+	UserAgentKey  = kv.Key("http.user_agent").String
 )

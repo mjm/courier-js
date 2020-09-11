@@ -11,8 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/google/wire"
-	"go.opentelemetry.io/otel/api/core"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/config"
@@ -337,7 +336,7 @@ func (d *DynamoDB) QueryWithContext(ctx context.Context, input *dynamodb.QueryIn
 	span.SetAttributes(itemCountKey(len(out.Items)))
 
 	for k, v := range out.LastEvaluatedKey {
-		span.SetAttributes(key.String("db.last_evaluated_key."+k, v.String()))
+		span.SetAttributes(kv.String("db.last_evaluated_key."+k, v.String()))
 	}
 
 	recordConsumedCapacity(span, out.ConsumedCapacity)
@@ -367,13 +366,13 @@ func (d *DynamoDB) QueryPagesWithContext(ctx context.Context, input *dynamodb.Qu
 	input.SetReturnConsumedCapacity(dynamodb.ReturnConsumedCapacityIndexes)
 
 	err := d.real.QueryPagesWithContext(ctx, input, func(out *dynamodb.QueryOutput, lastPage bool) bool {
-		attrs := []core.KeyValue{
+		attrs := []kv.KeyValue{
 			itemCountKey(len(out.Items)),
 		}
 		attrs = append(attrs, consumedCapacityAttrs(out.ConsumedCapacity)...)
 
 		for k, v := range out.LastEvaluatedKey {
-			attrs = append(attrs, key.String("db.last_evaluated_key."+k, v.String()))
+			attrs = append(attrs, kv.String("db.last_evaluated_key."+k, v.String()))
 		}
 
 		span.AddEvent(ctx, "dynamodb.QueryPage", attrs...)
@@ -448,12 +447,12 @@ func (d *DynamoDB) TransactWriteItemsWithContext(ctx context.Context, input *dyn
 	return out, nil
 }
 
-func consumedCapacityAttrs(capacity *dynamodb.ConsumedCapacity) []core.KeyValue {
+func consumedCapacityAttrs(capacity *dynamodb.ConsumedCapacity) []kv.KeyValue {
 	if capacity == nil {
 		return nil
 	}
 
-	return []core.KeyValue{
+	return []kv.KeyValue{
 		unitsConsumedKey(fmt.Sprintf("%.1f", aws.Float64Value(capacity.CapacityUnits))),
 		readsConsumedKey(fmt.Sprintf("%.1f", aws.Float64Value(capacity.ReadCapacityUnits))),
 		writesConsumedKey(fmt.Sprintf("%.1f", aws.Float64Value(capacity.WriteCapacityUnits))),

@@ -14,8 +14,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/any"
 	"github.com/honeycombio/libhoney-go"
-	"go.opentelemetry.io/otel/api/core"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
@@ -49,9 +48,9 @@ func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
 
 	ctx, span := tracer.Start(ctx, "events.HandleSQS",
 		trace.WithAttributes(
-			key.String("messaging.system", "sqs"),
-			key.String("messaging.destination_kind", "queue"),
-			key.String("messaging.operation", "process")))
+			kv.String("messaging.system", "sqs"),
+			kv.String("messaging.destination_kind", "queue"),
+			kv.String("messaging.operation", "process")))
 	defer span.End()
 
 	for _, evt := range event.Records {
@@ -61,8 +60,8 @@ func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
 			span := trace.SpanFromContext(ctx)
 
 			span.SetAttributes(
-				key.String("messaging.message_id", evt.MessageId),
-				key.String("messaging.destination", evt.EventSourceARN))
+				kv.String("messaging.message_id", evt.MessageId),
+				kv.String("messaging.destination", evt.EventSourceARN))
 
 			data, err := base64.StdEncoding.DecodeString(evt.Body)
 			if err != nil {
@@ -76,7 +75,7 @@ func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
 				return err
 			}
 
-			span.SetAttributes(key.String("event.type_url", a.TypeUrl))
+			span.SetAttributes(kv.String("event.type_url", a.TypeUrl))
 
 			var msg ptypes.DynamicAny
 			if err := ptypes.UnmarshalAny(&a, &msg); err != nil {
@@ -84,7 +83,7 @@ func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
 				return err
 			}
 
-			span.SetAttributes(key.String("event.type", fmt.Sprintf("%T", msg.Message)))
+			span.SetAttributes(kv.String("event.type", fmt.Sprintf("%T", msg.Message)))
 
 			h.bus.Fire(ctx, reflect.ValueOf(msg.Message).Elem().Interface())
 			return nil
@@ -99,19 +98,19 @@ func (h *Handler) HandleSQS(ctx context.Context, event events.SQSEvent) error {
 	return nil
 }
 
-func extractLinkedSpanContext(msg events.SQSMessage) core.SpanContext {
-	var sc core.SpanContext
+func extractLinkedSpanContext(msg events.SQSMessage) trace.SpanContext {
+	var sc trace.SpanContext
 	var err error
 
 	if traceIDAttr, ok := msg.MessageAttributes["TraceID"]; ok {
-		sc.TraceID, err = core.TraceIDFromHex(aws.StringValue(traceIDAttr.StringValue))
+		sc.TraceID, err = trace.IDFromHex(aws.StringValue(traceIDAttr.StringValue))
 		if err != nil {
 			log.Println(err)
 		}
 	}
 
 	if spanIDAttr, ok := msg.MessageAttributes["SpanID"]; ok {
-		sc.SpanID, err = core.SpanIDFromHex(aws.StringValue(spanIDAttr.StringValue))
+		sc.SpanID, err = trace.SpanIDFromHex(aws.StringValue(spanIDAttr.StringValue))
 		if err != nil {
 			log.Println(err)
 		}

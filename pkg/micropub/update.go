@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 )
 
@@ -30,7 +30,7 @@ func (u Update) Valid() bool {
 
 func (c *Client) Update(ctx context.Context, update Update) (interface{}, error) {
 	ctx, span := tracer.Start(ctx, "micropub.Update",
-		trace.WithAttributes(key.String("micropub.entry_url", update.URL)))
+		trace.WithAttributes(kv.String("micropub.entry_url", update.URL)))
 	defer span.End()
 
 	if !update.Valid() {
@@ -58,7 +58,7 @@ func (c *Client) Update(ctx context.Context, update Update) (interface{}, error)
 		return nil, err
 	}
 
-	span.SetAttributes(key.Int("micropub.token_length", len(c.token)))
+	span.SetAttributes(kv.Int("micropub.token_length", len(c.token)))
 	req.Header.Set("Authorization", "Bearer "+c.token)
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")

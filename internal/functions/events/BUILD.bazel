@@ -39,9 +39,8 @@ go_library(
         "@com_github_mjm_graphql_go//relay:go_default_library",
         "@com_github_pusher_pusher_http_go//:go_default_library",
         "@io_bazel_rules_go//proto/wkt:any_go_proto",
-        "@io_opentelemetry_go_otel//api/core:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
-        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/kv:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
     ],
 )

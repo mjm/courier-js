@@ -1,40 +1,39 @@
 package keys
 
 import (
-	"go.opentelemetry.io/otel/api/core"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 
 	"github.com/mjm/courier-js/internal/shared/model"
 )
 
 var (
-	UserID     = key.New("user_id").String
-	AuthDomain = key.New("auth.domain").String
+	UserID     = kv.Key("user_id").String
+	AuthDomain = kv.Key("auth.domain").String
 
-	TaskName = key.New("task.name").String
+	TaskName = kv.Key("task.name").String
 
-	FeedURL         = key.New("feed.url").String
-	FeedHomePageURL = key.New("feed.home_page_url").String
-	TweetURL        = key.New("tweet.url").String
-	TweetStatus     = key.New("tweet.status").String
+	FeedURL         = kv.Key("feed.url").String
+	FeedHomePageURL = kv.Key("feed.home_page_url").String
+	TweetURL        = kv.Key("tweet.url").String
+	TweetStatus     = kv.Key("tweet.status").String
 
-	CustomerID     = key.New("billing.customer_id").String
-	SubscriptionID = key.New("billing.subscription_id").String
-	Subscribed     = key.New("user.subscribed").Bool
+	CustomerID     = kv.Key("billing.customer_id").String
+	SubscriptionID = kv.Key("billing.subscription_id").String
+	Subscribed     = kv.Key("user.subscribed").Bool
 )
 
-func FeedID(id model.FeedID) core.KeyValue {
-	return key.String("feed.id", string(id))
+func FeedID(id model.FeedID) kv.KeyValue {
+	return kv.String("feed.id", string(id))
 }
 
-func PostID(id model.PostID) []core.KeyValue {
-	return []core.KeyValue{
+func PostID(id model.PostID) []kv.KeyValue {
+	return []kv.KeyValue{
 		FeedID(id.FeedID),
-		key.String("post.id", id.ItemID),
+		kv.String("post.id", id.ItemID),
 	}
 }
 
-func TweetGroupID(id model.TweetGroupID) []core.KeyValue {
+func TweetGroupID(id model.TweetGroupID) []kv.KeyValue {
 	kvs := PostID(id.PostID)
 	kvs = append(kvs, UserID(id.UserID))
 	return kvs

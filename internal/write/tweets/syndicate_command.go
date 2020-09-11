@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/url"
 
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/model"
@@ -21,8 +21,8 @@ func (h *CommandHandler) handleSyndicate(ctx context.Context, cmd SyndicateComma
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(keys.TweetGroupID(cmd.TweetGroup.ID)...)
 	span.SetAttributes(
-		key.String("post.url", cmd.TweetGroup.URL),
-		key.Int("tweet.url_count", len(cmd.TweetURLs)))
+		kv.String("post.url", cmd.TweetGroup.URL),
+		kv.Int("tweet.url_count", len(cmd.TweetURLs)))
 
 	if cmd.TweetGroup.URL == "" {
 		return nil
@@ -35,7 +35,7 @@ func (h *CommandHandler) handleSyndicate(ctx context.Context, cmd SyndicateComma
 
 	span.SetAttributes(
 		keys.FeedHomePageURL(f.HomePageURL),
-		key.String("feed.micropub_endpoint", f.MicropubEndpoint))
+		kv.String("feed.micropub_endpoint", f.MicropubEndpoint))
 
 	if f.MicropubEndpoint == "" {
 		return nil
@@ -46,7 +46,7 @@ func (h *CommandHandler) handleSyndicate(ctx context.Context, cmd SyndicateComma
 		return err
 	}
 
-	span.SetAttributes(key.Int("micropub.token_length", len(token)))
+	span.SetAttributes(kv.Int("micropub.token_length", len(token)))
 
 	if token == "" {
 		return nil

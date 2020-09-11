@@ -11,7 +11,7 @@ import (
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -77,7 +77,7 @@ func (r *ExternalTweetRepository) Create(ctx context.Context, userID string, twe
 	ctx, span := tracer.Start(ctx, "ExternalTweetRepository.Create",
 		trace.WithAttributes(
 			keys.UserID(userID),
-			key.Int64("tweet.in_reply_to", inReplyTo)))
+			kv.Int64("tweet.in_reply_to", inReplyTo)))
 	defer span.End()
 
 	client, err := r.newClient(ctx, userID)
@@ -92,7 +92,7 @@ func (r *ExternalTweetRepository) Create(ctx context.Context, userID string, twe
 		return nil, err
 	}
 
-	span.SetAttributes(key.Int("tweet.media_id_count", len(mediaIDs)))
+	span.SetAttributes(kv.Int("tweet.media_id_count", len(mediaIDs)))
 
 	postedTweet, res, err := client.Statuses.Update(tweet.Body, &twitter.StatusUpdateParams{
 		MediaIds:          mediaIDs,
@@ -111,7 +111,7 @@ func (r *ExternalTweetRepository) Retweet(ctx context.Context, userID string, re
 	ctx, span := tracer.Start(ctx, "ExternalTweetRepository.Retweet",
 		trace.WithAttributes(
 			keys.UserID(userID),
-			key.Int64("tweet.retweet_id", retweetID)))
+			kv.Int64("tweet.retweet_id", retweetID)))
 	defer span.End()
 
 	client, err := r.newClient(ctx, userID)
@@ -188,7 +188,7 @@ func (r *ExternalTweetRepository) getTwitterCredentials(ctx context.Context, use
 		return "", "", err
 	}
 
-	span.SetAttributes(key.Int("auth.identity_count", len(user.Identities)))
+	span.SetAttributes(kv.Int("auth.identity_count", len(user.Identities)))
 
 	for _, ident := range user.Identities {
 		if ident.Provider != nil && *ident.Provider == "twitter" {
@@ -209,7 +209,7 @@ func (r *ExternalTweetRepository) getTwitterCredentials(ctx context.Context, use
 
 func (r *ExternalTweetRepository) uploadMediaURLs(ctx context.Context, client *twitterClient, urls []string) ([]int64, error) {
 	ctx, span := tracer.Start(ctx, "ExternalTweetRepository.uploadMediaURLs",
-		trace.WithAttributes(key.Int("tweet.media_url_count", len(urls))))
+		trace.WithAttributes(kv.Int("tweet.media_url_count", len(urls))))
 	defer span.End()
 
 	group, subCtx := errgroup.WithContext(ctx)
@@ -238,7 +238,7 @@ func (r *ExternalTweetRepository) uploadMediaURLs(ctx context.Context, client *t
 
 func (r *ExternalTweetRepository) uploadMediaURL(ctx context.Context, client *twitterClient, url string) (int64, error) {
 	ctx, span := tracer.Start(ctx, "ExternalTweetRepository.uploadMediaURL",
-		trace.WithAttributes(key.String("media.url", url)))
+		trace.WithAttributes(kv.String("media.url", url)))
 	defer span.End()
 
 	data, mediaType, err := r.fetchMedia(ctx, url)
@@ -258,7 +258,7 @@ func (r *ExternalTweetRepository) uploadMediaURL(ctx context.Context, client *tw
 
 func (r *ExternalTweetRepository) fetchMedia(ctx context.Context, url string) ([]byte, string, error) {
 	ctx, span := tracer.Start(ctx, "ExternalTweetRepository.fetchMedia",
-		trace.WithAttributes(key.String("media.url", url)))
+		trace.WithAttributes(kv.String("media.url", url)))
 	defer span.End()
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
@@ -285,10 +285,10 @@ func (r *ExternalTweetRepository) fetchMedia(ctx context.Context, url string) ([
 		return nil, "", err
 	}
 
-	span.SetAttributes(key.Int("media.data_length", len(data)))
+	span.SetAttributes(kv.Int("media.data_length", len(data)))
 
 	mediaType := res.Header.Get("Content-Type")
-	span.SetAttributes(key.String("media.type", mediaType))
+	span.SetAttributes(kv.String("media.type", mediaType))
 	if mediaType == "" {
 		span.RecordError(ctx, ErrNoContentType)
 		return nil, "", ErrNoContentType
@@ -300,8 +300,8 @@ func (r *ExternalTweetRepository) fetchMedia(ctx context.Context, url string) ([
 func (r *ExternalTweetRepository) doUploadMedia(ctx context.Context, client *twitterClient, data []byte, mediaType string) (int64, error) {
 	ctx, span := tracer.Start(ctx, "ExternalTweetRepository.doUploadMedia",
 		trace.WithAttributes(
-			key.Int("media.data_length", len(data)),
-			key.String("media.type", mediaType)))
+			kv.Int("media.data_length", len(data)),
+			kv.String("media.type", mediaType)))
 	defer span.End()
 
 	result, _, err := client.Media.Upload(data, mediaType)
@@ -310,7 +310,7 @@ func (r *ExternalTweetRepository) doUploadMedia(ctx context.Context, client *twi
 		return 0, err
 	}
 
-	span.SetAttributes(key.Int64("media.id", result.MediaID))
+	span.SetAttributes(kv.Int64("media.id", result.MediaID))
 
 	return result.MediaID, nil
 }

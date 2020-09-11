@@ -30,7 +30,7 @@ go_library(
         "@com_github_segmentio_ksuid//:go_default_library",
         "@com_willnorris_go_microformats//:go_default_library",
         "@io_opentelemetry_go_otel//api/global:go_default_library",
-        "@io_opentelemetry_go_otel//api/key:go_default_library",
+        "@io_opentelemetry_go_otel//api/kv:go_default_library",
         "@io_opentelemetry_go_otel//api/trace:go_default_library",
         "@org_golang_x_net//context/ctxhttp:go_default_library",
     ],

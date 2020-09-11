@@ -2,18 +2,18 @@ package tasks
 
 import (
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 )
 
 var tracer = global.TraceProvider().Tracer("courier.blog/internal/tasks")
 
 var (
-	nameKey           = key.New("task.name")
-	typeKey           = key.New("task.type")
-	queueKey          = key.New("task.queue")
-	urlKey            = key.New("task.url")
-	serviceAccountKey = key.New("task.service_account")
-	dataLenKey        = key.New("task.data_length")
+	nameKey           = kv.Key("task.name")
+	typeKey           = kv.Key("task.type")
+	queueKey          = kv.Key("task.queue")
+	urlKey            = kv.Key("task.url")
+	serviceAccountKey = kv.Key("task.service_account")
+	dataLenKey        = kv.Key("task.data_length")
 )
 
 type taskHeaders map[string]string

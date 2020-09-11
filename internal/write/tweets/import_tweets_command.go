@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/segmentio/ksuid"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/shared/model"
@@ -38,7 +38,7 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 		return err
 	}
 
-	span.SetAttributes(key.Int("import.post_count", len(feed.Posts)))
+	span.SetAttributes(kv.Int("import.post_count", len(feed.Posts)))
 
 	var toCreate []shared.CreateTweetParams
 	var toUpdate []shared.UpdateTweetParams
@@ -58,8 +58,8 @@ func (h *CommandHandler) handleImportTweets(ctx context.Context, cmd ImportTweet
 	}
 
 	span.SetAttributes(
-		key.Int("import.tweet_create_count", len(toCreate)),
-		key.Int("import.tweet_update_count", len(toUpdate)))
+		kv.Int("import.tweet_create_count", len(toCreate)),
+		kv.Int("import.tweet_update_count", len(toUpdate)))
 
 	wg, subCtx := errgroup.WithContext(ctx)
 
@@ -118,14 +118,14 @@ func (h *CommandHandler) planTweet(ctx context.Context, userID string, autopost 
 		trace.WithAttributes(keys.PostID(post.ID)...),
 		trace.WithAttributes(
 			keys.UserID(userID),
-			key.Bool("feed.autopost", autopost),
-			key.Bool("import.existing_tweet.present", post.TweetGroup != nil)))
+			kv.Bool("feed.autopost", autopost),
+			kv.Bool("import.existing_tweet.present", post.TweetGroup != nil)))
 	defer span.End()
 
 	if post.TweetGroup != nil {
 		span.SetAttributes(
-			key.String("import.existing_tweet.status", string(post.TweetGroup.Status)),
-			key.Int("import.existing_tweet.count", len(post.TweetGroup.Tweets)))
+			kv.String("import.existing_tweet.status", string(post.TweetGroup.Status)),
+			kv.Int("import.existing_tweet.count", len(post.TweetGroup.Tweets)))
 
 		if post.TweetGroup.Status == model.Posted {
 			// do nothing if there's a tweet group and it's been posted to Twitter already
@@ -143,7 +143,7 @@ func (h *CommandHandler) planTweet(ctx context.Context, userID string, autopost 
 		return nil, nil, err
 	}
 
-	span.SetAttributes(key.Int("import.translated_tweet.count", len(translated)))
+	span.SetAttributes(kv.Int("import.translated_tweet.count", len(translated)))
 
 	var retweetID string
 	var ts []*model.Tweet

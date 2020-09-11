@@ -5,7 +5,7 @@ import (
 	"reflect"
 
 	"github.com/jonboulle/clockwork"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 
 	"github.com/mjm/courier-js/internal/event"
@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	internalTypeKey = key.New("event.type_internal").String
-	externalTypeKey = key.New("event.type_external").String
+	internalTypeKey = kv.Key("event.type_internal").String
+	externalTypeKey = kv.Key("event.type_external").String
 )
 
 type EventRecorder struct {

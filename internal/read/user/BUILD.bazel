@@ -5,7 +5,6 @@ go_library(
     srcs = [
         "event_pager.go",
         "event_queries.go",
-        "trace.go",
     ],
     importpath = "github.com/mjm/courier-js/internal/read/user",
     visibility = ["//:__subpackages__"],
@@ -16,8 +15,6 @@ go_library(
         "@com_github_aws_aws_sdk_go//aws:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb:go_default_library",
         "@com_github_aws_aws_sdk_go//service/dynamodb/dynamodbiface:go_default_library",
-        "@io_opentelemetry_go_otel//api/global:go_default_library",
-        "@io_opentelemetry_go_otel//api/key:go_default_library",
     ],
 )
 

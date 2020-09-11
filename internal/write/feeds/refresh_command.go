@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/url"
 
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"golang.org/x/net/context/ctxhttp"
 	"willnorris.com/go/microformats"
@@ -26,8 +26,8 @@ type RefreshCommand struct {
 }
 
 var (
-	upToDateKey = key.New("feed.up_to_date").Bool
-	skippedKey  = key.New("task.skipped").Bool
+	upToDateKey = kv.Key("feed.up_to_date").Bool
+	skippedKey  = kv.Key("task.skipped").Bool
 )
 
 func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) error {
@@ -36,14 +36,14 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 		keys.UserID(cmd.UserID),
 		keys.FeedID(cmd.FeedID),
 		keys.TaskName(cmd.TaskName),
-		key.Bool("feed.force_refresh", cmd.Force))
+		kv.Bool("feed.force_refresh", cmd.Force))
 
 	f, err := h.feedRepo.Get(ctx, cmd.UserID, cmd.FeedID)
 	if err != nil {
 		return err
 	}
 
-	span.SetAttributes(key.String("feed.expected_task_name", f.RefreshTaskName))
+	span.SetAttributes(kv.String("feed.expected_task_name", f.RefreshTaskName))
 
 	if cmd.TaskName != "" && f.RefreshTaskName != cmd.TaskName {
 		span.SetAttributes(skippedKey(true))
@@ -133,7 +133,7 @@ func (h *CommandHandler) handleRefresh(ctx context.Context, cmd RefreshCommand) 
 
 func getMicropubEndpoint(ctx context.Context, urlStr string) (string, error) {
 	ctx, span := tracer.Start(ctx, "getMicropubEndpoint",
-		trace.WithAttributes(key.String("url", urlStr)))
+		trace.WithAttributes(kv.String("url", urlStr)))
 	defer span.End()
 
 	u, err := url.Parse(urlStr)
@@ -155,7 +155,7 @@ func getMicropubEndpoint(ctx context.Context, urlStr string) (string, error) {
 		return "", nil
 	}
 
-	span.SetAttributes(key.Int("microformats.micropub_count", len(micropubs)))
+	span.SetAttributes(kv.Int("microformats.micropub_count", len(micropubs)))
 
 	if len(micropubs) == 0 {
 		return "", nil

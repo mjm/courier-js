@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"google.golang.org/grpc/status"
 
@@ -19,7 +19,7 @@ var (
 )
 
 var (
-	skippedKey = key.New("task.skipped").Bool
+	skippedKey = kv.Key("task.skipped").Bool
 )
 
 type PostCommand struct {
@@ -48,7 +48,7 @@ func (h *CommandHandler) handlePost(ctx context.Context, cmd PostCommand) error 
 	}
 
 	span.SetAttributes(
-		key.String("tweet.expected_task_name", tg.PostTaskName),
+		kv.String("tweet.expected_task_name", tg.PostTaskName),
 		keys.TweetStatus(string(tg.Status)))
 
 	if cmd.TaskName != "" && tg.PostTaskName != cmd.TaskName {

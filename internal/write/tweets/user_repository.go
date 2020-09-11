@@ -11,7 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/kms/kmsiface"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/client"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"gopkg.in/auth0.v3/management"
 
@@ -24,12 +24,12 @@ var (
 )
 
 var (
-	hasMetadataKey = key.New("user.has_metadata").Bool
-	encTokenLenKey = key.New("micropub.encrypted_token_length").Int
-	decTokenLenKey = key.New("micropub.decrypted_token_length").Int
-	tokenKeyKey    = key.New("micropub.token_key").String
-	tokenCountKey  = key.New("micropub.token_count").Int
-	keyIDKey       = key.New("kms.key_id").String
+	hasMetadataKey = kv.Key("user.has_metadata").Bool
+	encTokenLenKey = kv.Key("micropub.encrypted_token_length").Int
+	decTokenLenKey = kv.Key("micropub.decrypted_token_length").Int
+	tokenKeyKey    = kv.Key("micropub.token_key").String
+	tokenCountKey  = kv.Key("micropub.token_count").Int
+	keyIDKey       = kv.Key("kms.key_id").String
 )
 
 type UserRepository struct {

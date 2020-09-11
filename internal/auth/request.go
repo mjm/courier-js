@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/api/global"
-	"go.opentelemetry.io/otel/api/key"
+	"go.opentelemetry.io/otel/api/kv"
 	"go.opentelemetry.io/otel/api/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,8 +24,8 @@ type userContextKey struct{}
 var tracer = global.TraceProvider().Tracer("courier.blog/internal/auth")
 
 var (
-	apiIdentifierKey = key.New("auth.api_identifier")
-	tokenPresentKey  = key.New("auth.token_present")
+	apiIdentifierKey = kv.Key("auth.api_identifier")
+	tokenPresentKey  = kv.Key("auth.token_present")
 )
 
 // Authenticator is responsible for populating a context with a User that can be used by
