@@ -11,7 +11,7 @@ executors:
         type: string
     docker:
       - image: mmoriarity/circleci-bazel
-      - image: circleci/dynamodb:16-oracle
+      - image: circleci/dynamodb@sha256:1cc607ce904cc5d0110530e9589835fecabcfabafe41ba9e4a98c05fff0a7f51
     environment:
       LAMBDA_BUCKET: << parameters.bucket >>
   terraform:
