@@ -73,11 +73,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Now CLI
-          command: sudo npm install -g --unsafe-perm now
+          name: Install Vercel CLI
+          command: sudo npm install -g --unsafe-perm vercel
       - run:
-          name: Deploy to Now
-          command: now --token $NOW_TOKEN --prod -A '<< parameters.now_config_file >>' --confirm
+          name: Deploy to Vercel
+          command: vercel --token $NOW_TOKEN --prod -A '<< parameters.now_config_file >>' --confirm
 
   update_auth0:
     parameters:
