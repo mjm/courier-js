@@ -50,13 +50,12 @@ public protocol FeedPostRow_post_Key {
 
 extension FeedPostRow_post: Relay.Fragment {}
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
 extension FeedPostRow_post_Key {
-    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    public func asFragment() -> RelaySwiftUI.FragmentNext<FeedPostRow_post> {
-        RelaySwiftUI.FragmentNext<FeedPostRow_post>(self)
+    public func asFragment() -> RelaySwiftUI.Fragment<FeedPostRow_post> {
+        RelaySwiftUI.Fragment<FeedPostRow_post>(self)
     }
 }
 #endif

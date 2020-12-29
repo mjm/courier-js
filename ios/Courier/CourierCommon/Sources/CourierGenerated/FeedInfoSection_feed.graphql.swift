@@ -50,13 +50,12 @@ public protocol FeedInfoSection_feed_Key {
 
 extension FeedInfoSection_feed: Relay.Fragment {}
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
 extension FeedInfoSection_feed_Key {
-    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    public func asFragment() -> RelaySwiftUI.FragmentNext<FeedInfoSection_feed> {
-        RelaySwiftUI.FragmentNext<FeedInfoSection_feed>(self)
+    public func asFragment() -> RelaySwiftUI.Fragment<FeedInfoSection_feed> {
+        RelaySwiftUI.Fragment<FeedInfoSection_feed>(self)
     }
 }
 #endif

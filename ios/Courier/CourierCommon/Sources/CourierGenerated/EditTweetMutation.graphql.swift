@@ -131,21 +131,19 @@ extension EditTweetMutation {
     }
 }
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == EditTweetMutation {
-    public func get(input: EditTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<EditTweetMutation>.Result {
+extension RelaySwiftUI.Query.WrappedValue where O == EditTweetMutation {
+    public func get(input: EditTweetInput, fetchKey: Any? = nil) -> RelaySwiftUI.Query<EditTweetMutation>.Result {
         self.get(.init(input: input), fetchKey: fetchKey)
     }
 }
 #endif
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
 extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == EditTweetMutation {
     public func refetch(input: EditTweetInput) {
         self.refetch(.init(input: input))

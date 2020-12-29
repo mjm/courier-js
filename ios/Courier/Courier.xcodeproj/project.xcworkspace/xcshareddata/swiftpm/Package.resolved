@@ -2,12 +2,57 @@
   "object": {
     "pins": [
       {
+        "package": "Auth0",
+        "repositoryURL": "https://github.com/auth0/Auth0.swift",
+        "state": {
+          "branch": null,
+          "revision": "e9a4a6a41dda385eb34e7dac32aa39db64ad5f22",
+          "version": "1.30.1"
+        }
+      },
+      {
+        "package": "CwlCatchException",
+        "repositoryURL": "https://github.com/mattgallagher/CwlCatchException.git",
+        "state": {
+          "branch": null,
+          "revision": "f809deb30dc5c9d9b78c872e553261a61177721a",
+          "version": "2.0.0"
+        }
+      },
+      {
+        "package": "CwlPreconditionTesting",
+        "repositoryURL": "https://github.com/mattgallagher/CwlPreconditionTesting.git",
+        "state": {
+          "branch": null,
+          "revision": "02b7a39a99c4da27abe03cab2053a9034379639f",
+          "version": "2.0.0"
+        }
+      },
+      {
+        "package": "JWTDecode",
+        "repositoryURL": "https://github.com/auth0/JWTDecode.swift.git",
+        "state": {
+          "branch": null,
+          "revision": "ee8c8edcb966a8fa123a25532ed3f189371da739",
+          "version": "2.5.0"
+        }
+      },
+      {
         "package": "Nimble",
         "repositoryURL": "https://github.com/Quick/Nimble.git",
         "state": {
           "branch": null,
-          "revision": "2b1809051b4a65c1d7f5233331daa24572cd7fca",
-          "version": "8.1.1"
+          "revision": "e491a6731307bb23783bf664d003be9b2fa59ab5",
+          "version": "9.0.0"
+        }
+      },
+      {
+        "package": "OHHTTPStubs",
+        "repositoryURL": "https://github.com/AliSoftware/OHHTTPStubs.git",
+        "state": {
+          "branch": null,
+          "revision": "12f19662426d0434d6c330c6974d53e2eb10ecd9",
+          "version": "9.1.0"
         }
       },
       {
@@ -29,12 +74,30 @@
         }
       },
       {
+        "package": "Quick",
+        "repositoryURL": "https://github.com/Quick/Quick.git",
+        "state": {
+          "branch": null,
+          "revision": "0038bcbab4292f3b028632556507c124e5ba69f3",
+          "version": "3.0.0"
+        }
+      },
+      {
         "package": "Reachability",
         "repositoryURL": "https://github.com/ashleymills/Reachability.swift.git",
         "state": {
           "branch": null,
           "revision": "98e968e7b6c1318fb61df23e347bc319761e8acb",
           "version": "5.0.0"
+        }
+      },
+      {
+        "package": "SimpleKeychain",
+        "repositoryURL": "https://github.com/auth0/SimpleKeychain.git",
+        "state": {
+          "branch": null,
+          "revision": "d1ec816cbe4afd2ed54591bc53fe281f778e5c3b",
+          "version": "0.12.1"
         }
       },
       {
@@ -69,8 +132,8 @@
         "repositoryURL": "https://github.com/apple/swift-syntax.git",
         "state": {
           "branch": null,
-          "revision": "0688b9cfc4c3dd234e4f55f1f056b2affc849873",
-          "version": "0.50200.0"
+          "revision": "844574d683f53d0737a9c6d706c3ef31ed2955eb",
+          "version": "0.50300.0"
         }
       },
       {

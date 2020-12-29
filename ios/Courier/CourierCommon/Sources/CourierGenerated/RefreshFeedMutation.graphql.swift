@@ -108,21 +108,19 @@ extension RefreshFeedMutation {
     }
 }
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == RefreshFeedMutation {
-    public func get(input: RefreshFeedInput, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<RefreshFeedMutation>.Result {
+extension RelaySwiftUI.Query.WrappedValue where O == RefreshFeedMutation {
+    public func get(input: RefreshFeedInput, fetchKey: Any? = nil) -> RelaySwiftUI.Query<RefreshFeedMutation>.Result {
         self.get(.init(input: input), fetchKey: fetchKey)
     }
 }
 #endif
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
 extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == RefreshFeedMutation {
     public func refetch(input: RefreshFeedInput) {
         self.refetch(.init(input: input))

@@ -204,21 +204,19 @@ extension FeedPostsSectionPaginationQuery {
     }
 }
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == FeedPostsSectionPaginationQuery {
-    public func get(filter: TweetFilter? = nil, count: Int? = nil, cursor: String? = nil, id: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<FeedPostsSectionPaginationQuery>.Result {
+extension RelaySwiftUI.Query.WrappedValue where O == FeedPostsSectionPaginationQuery {
+    public func get(filter: TweetFilter? = nil, count: Int? = nil, cursor: String? = nil, id: String, fetchKey: Any? = nil) -> RelaySwiftUI.Query<FeedPostsSectionPaginationQuery>.Result {
         self.get(.init(filter: filter, count: count, cursor: cursor, id: id), fetchKey: fetchKey)
     }
 }
 #endif
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
 extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == FeedPostsSectionPaginationQuery {
     public func refetch(filter: TweetFilter? = nil, count: Int? = nil, cursor: String? = nil, id: String) {
         self.refetch(.init(filter: filter, count: count, cursor: cursor, id: id))

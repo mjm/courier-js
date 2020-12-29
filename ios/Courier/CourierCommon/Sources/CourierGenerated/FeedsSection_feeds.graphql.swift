@@ -105,23 +105,20 @@ extension FeedsSection_feeds: Relay.PaginationFragment {
     }
 }
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
 extension FeedsSection_feeds_Key {
-    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    public func asFragment() -> RelaySwiftUI.FragmentNext<FeedsSection_feeds> {
-        RelaySwiftUI.FragmentNext<FeedsSection_feeds>(self)
+    public func asFragment() -> RelaySwiftUI.Fragment<FeedsSection_feeds> {
+        RelaySwiftUI.Fragment<FeedsSection_feeds>(self)
     }
 
-    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
     public func asFragment() -> RelaySwiftUI.RefetchableFragment<FeedsSection_feeds> {
         RelaySwiftUI.RefetchableFragment<FeedsSection_feeds>(self)
     }
 
-    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    public func asFragment() -> RelaySwiftUI.PaginationFragmentNext<FeedsSection_feeds> {
-        RelaySwiftUI.PaginationFragmentNext<FeedsSection_feeds>(self)
+    public func asFragment() -> RelaySwiftUI.PaginationFragment<FeedsSection_feeds> {
+        RelaySwiftUI.PaginationFragment<FeedsSection_feeds>(self)
     }
 }
 #endif

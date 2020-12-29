@@ -59,6 +59,7 @@
 		C96F4CEF246E19F50096B5ED /* CurrentEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CEE246E19F50096B5ED /* CurrentEndpoint.swift */; };
 		C9A151BA24BB838B0032E550 /* Badge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A151B924BB838B0032E550 /* Badge.swift */; };
 		C9A151C024BB8C8B0032E550 /* TweetRowPreview.json in Resources */ = {isa = PBXBuildFile; fileRef = C9A151BF24BB8C8B0032E550 /* TweetRowPreview.json */; };
+		C9BAB97B259AB04E000C9BDB /* Auth0 in Frameworks */ = {isa = PBXBuildFile; productRef = C9BAB97A259AB04E000C9BDB /* Auth0 */; };
 		C9C34762246E2C48004027DE /* EnvironmentSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34761246E2C48004027DE /* EnvironmentSection.swift */; };
 		C9C34764246FBB9D004027DE /* ViewTweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34763246FBB9D004027DE /* ViewTweet.swift */; };
 		C9C34768246FBCE3004027DE /* EditTweetForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C34767246FBCE3004027DE /* EditTweetForm.swift */; };
@@ -78,11 +79,7 @@
 		C9C61DCA2479E37500B344A3 /* TweetUncanceledEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DC92479E37500B344A3 /* TweetUncanceledEvent.swift */; };
 		C9C61DCE2479E4D100B344A3 /* TweetEditedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DCD2479E4D100B344A3 /* TweetEditedEvent.swift */; };
 		C9C9C01C24A46EE2005BF960 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C9C01B24A46EE2005BF960 /* App.swift */; };
-		C9C9C01E24A59B4F005BF960 /* RelaySwiftUINext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C9C01D24A59B4F005BF960 /* RelaySwiftUINext.swift */; };
 		C9D63CF624C40E1B0053FD34 /* CourierGenerated in Frameworks */ = {isa = PBXBuildFile; productRef = C9D63CF524C40E1B0053FD34 /* CourierGenerated */; };
-		C9DC5E7C2476340700FF31BC /* JWTDecode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E792476340700FF31BC /* JWTDecode.framework */; };
-		C9DC5E7D2476340700FF31BC /* Auth0.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7A2476340700FF31BC /* Auth0.framework */; };
-		C9DC5E7E2476340700FF31BC /* SimpleKeychain.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9DC5E7B2476340700FF31BC /* SimpleKeychain.framework */; };
 		C9FE85D024B0CD0200B4CB45 /* Courier_macOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FE85CF24B0CD0200B4CB45 /* Courier_macOSApp.swift */; };
 		C9FE85D224B0CD0200B4CB45 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FE85D124B0CD0200B4CB45 /* ContentView.swift */; };
 		C9FE85D424B0CD0300B4CB45 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C9FE85D324B0CD0300B4CB45 /* Assets.xcassets */; };
@@ -115,7 +112,6 @@
 		C9FE861724B0D5A300B4CB45 /* TweetPostedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DC12479CF7C00B344A3 /* TweetPostedEvent.swift */; };
 		C9FE861824B0D5A300B4CB45 /* TweetUncanceledEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DC92479E37500B344A3 /* TweetUncanceledEvent.swift */; };
 		C9FE861924B0D5A300B4CB45 /* TweetEditedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DCD2479E4D100B344A3 /* TweetEditedEvent.swift */; };
-		C9FE861A24B0D5A600B4CB45 /* RelaySwiftUINext.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C9C01D24A59B4F005BF960 /* RelaySwiftUINext.swift */; };
 		C9FE861B24B0D5AB00B4CB45 /* ScreenCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */; };
 		C9FE861D24B0D5D700B4CB45 /* AsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FE861C24B0D5D700B4CB45 /* AsyncImage.swift */; };
 		C9FE861E24B0D68300B4CB45 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C96F4CD1246A635B0096B5ED /* SettingsScreen.swift */; };
@@ -233,7 +229,6 @@
 		C9C61DC92479E37500B344A3 /* TweetUncanceledEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetUncanceledEvent.swift; sourceTree = "<group>"; };
 		C9C61DCD2479E4D100B344A3 /* TweetEditedEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetEditedEvent.swift; sourceTree = "<group>"; };
 		C9C9C01B24A46EE2005BF960 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
-		C9C9C01D24A59B4F005BF960 /* RelaySwiftUINext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelaySwiftUINext.swift; sourceTree = "<group>"; };
 		C9D63CF424C40C160053FD34 /* CourierCommon */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CourierCommon; sourceTree = "<group>"; };
 		C9DC5E792476340700FF31BC /* JWTDecode.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JWTDecode.framework; path = Carthage/Build/iOS/JWTDecode.framework; sourceTree = "<group>"; };
 		C9DC5E7A2476340700FF31BC /* Auth0.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Auth0.framework; path = Carthage/Build/iOS/Auth0.framework; sourceTree = "<group>"; };
@@ -256,13 +251,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9DC5E7C2476340700FF31BC /* JWTDecode.framework in Frameworks */,
 				C9D63CF624C40E1B0053FD34 /* CourierGenerated in Frameworks */,
-				C9DC5E7E2476340700FF31BC /* SimpleKeychain.framework in Frameworks */,
 				C9C34776247081E6004027DE /* PushNotifications in Frameworks */,
 				C9C61DBD2479C43500B344A3 /* PusherSwift in Frameworks */,
-				C9DC5E7D2476340700FF31BC /* Auth0.framework in Frameworks */,
 				C906544F24DFBCE70025003B /* SwiftSoup in Frameworks */,
+				C9BAB97B259AB04E000C9BDB /* Auth0 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -317,7 +310,6 @@
 				C9C3477D24708D88004027DE /* NotificationHandler.swift */,
 				C9C61DB52477857700B344A3 /* ScreenCoordinator.swift */,
 				C9C61DBE2479C4CD00B344A3 /* EventListener.swift */,
-				C9C9C01D24A59B4F005BF960 /* RelaySwiftUINext.swift */,
 				C9C61DC02479CF6C00B344A3 /* Events */,
 				C96F4CDD246B76220096B5ED /* Mutations */,
 				C95AD89C246A446500691417 /* Supporting Views */,
@@ -531,7 +523,6 @@
 				C95AD84B24687B2C00691417 /* Sources */,
 				C95AD84C24687B2C00691417 /* Frameworks */,
 				C95AD84D24687B2C00691417 /* Resources */,
-				C95AD8822468843800691417 /* Copy Carthage Frameworks */,
 			);
 			buildRules = (
 			);
@@ -543,6 +534,7 @@
 				C9C61DBC2479C43500B344A3 /* PusherSwift */,
 				C9D63CF524C40E1B0053FD34 /* CourierGenerated */,
 				C906544E24DFBCE70025003B /* SwiftSoup */,
+				C9BAB97A259AB04E000C9BDB /* Auth0 */,
 			);
 			productName = CourierNext;
 			productReference = C95AD84F24687B2C00691417 /* Courier.app */;
@@ -595,7 +587,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1200;
-				LastUpgradeCheck = 1120;
+				LastUpgradeCheck = 1220;
 				ORGANIZATIONNAME = "Matt Moriarity";
 				TargetAttributes = {
 					C95AD84E24687B2C00691417 = {
@@ -624,6 +616,7 @@
 				C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */,
 				C9C61DBB2479C43500B344A3 /* XCRemoteSwiftPackageReference "pusher-websocket-swift" */,
 				C906544D24DFBCE70025003B /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+				C9BAB979259AB04E000C9BDB /* XCRemoteSwiftPackageReference "Auth0" */,
 			);
 			productRefGroup = C9A7496B237852430046E924 /* Products */;
 			projectDirPath = "";
@@ -673,30 +666,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		C95AD8822468843800691417 /* Copy Carthage Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Auth0.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/SimpleKeychain.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/JWTDecode.framework",
-			);
-			name = "Copy Carthage Frameworks";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Auth0.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SimpleKeychain.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/JWTDecode.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks\n";
-		};
 		C9A151BB24BB8B780032E550 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -745,7 +714,6 @@
 				C906543C24DF27E60025003B /* FeedInfoSection.swift in Sources */,
 				C906545124E05A630025003B /* DeleteFeed.swift in Sources */,
 				C906543E24DF2A2E0025003B /* Spinning.swift in Sources */,
-				C9C9C01E24A59B4F005BF960 /* RelaySwiftUINext.swift in Sources */,
 				C9C61DB8247797A900B344A3 /* ConnectionHelpers.swift in Sources */,
 				C906545624E0B2FB0025003B /* FeedPreviewContent.swift in Sources */,
 				C96F4CD2246A635B0096B5ED /* SettingsScreen.swift in Sources */,
@@ -831,7 +799,6 @@
 				C9FE85F324B0D52300B4CB45 /* TweetRow.swift in Sources */,
 				C9FE85EE24B0D4D900B4CB45 /* CurrentUser.swift in Sources */,
 				C9FE860B24B0D59000B4CB45 /* ErrorView.swift in Sources */,
-				C9FE861A24B0D5A600B4CB45 /* RelaySwiftUINext.swift in Sources */,
 				C9FE861F24B0D68700B4CB45 /* UserProfileSection.swift in Sources */,
 				C9FE861924B0D5A300B4CB45 /* TweetEditedEvent.swift in Sources */,
 				C9FE861424B0D59F00B4CB45 /* UncancelTweet.swift in Sources */,
@@ -892,7 +859,7 @@
 				CODE_SIGN_ENTITLEMENTS = Courier/Courier.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Courier/Preview Content\"";
-				DEVELOPMENT_TEAM = PE8BN56Z28;
+				DEVELOPMENT_TEAM = 5772C2QGRJ;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -904,7 +871,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.Courier;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.Courier2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -919,7 +886,7 @@
 				CODE_SIGN_ENTITLEMENTS = Courier/Courier.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"Courier/Preview Content\"";
-				DEVELOPMENT_TEAM = PE8BN56Z28;
+				DEVELOPMENT_TEAM = 5772C2QGRJ;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -931,7 +898,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.Courier;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mattmoriarity.Courier2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1008,6 +975,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1068,6 +1036,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1103,6 +1072,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = "Courier macOS/Courier_macOS.entitlements";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Courier macOS/Preview Content\"";
@@ -1130,6 +1100,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CODE_SIGN_ENTITLEMENTS = "Courier macOS/Courier_macOS.entitlements";
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Courier macOS/Preview Content\"";
@@ -1208,6 +1179,14 @@
 				minimumVersion = 3.0.4;
 			};
 		};
+		C9BAB979259AB04E000C9BDB /* XCRemoteSwiftPackageReference "Auth0" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/auth0/Auth0.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.30.1;
+			};
+		};
 		C9C347812471FA9D004027DE /* XCRemoteSwiftPackageReference "Relay.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mjm/Relay.swift.git";
@@ -1231,6 +1210,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C906544D24DFBCE70025003B /* XCRemoteSwiftPackageReference "SwiftSoup" */;
 			productName = SwiftSoup;
+		};
+		C9BAB97A259AB04E000C9BDB /* Auth0 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C9BAB979259AB04E000C9BDB /* XCRemoteSwiftPackageReference "Auth0" */;
+			productName = Auth0;
 		};
 		C9C34775247081E6004027DE /* PushNotifications */ = {
 			isa = XCSwiftPackageProductDependency;

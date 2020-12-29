@@ -155,21 +155,19 @@ extension FeedPreviewContentQuery {
     }
 }
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-extension RelaySwiftUI.QueryNext.WrappedValue where O == FeedPreviewContentQuery {
-    public func get(url: String, fetchKey: Any? = nil) -> RelaySwiftUI.QueryNext<FeedPreviewContentQuery>.Result {
+extension RelaySwiftUI.Query.WrappedValue where O == FeedPreviewContentQuery {
+    public func get(url: String, fetchKey: Any? = nil) -> RelaySwiftUI.Query<FeedPreviewContentQuery>.Result {
         self.get(.init(url: url), fetchKey: fetchKey)
     }
 }
 #endif
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
-@available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
 extension RelaySwiftUI.RefetchableFragment.Wrapper where F.Operation == FeedPreviewContentQuery {
     public func refetch(url: String) {
         self.refetch(.init(url: url))

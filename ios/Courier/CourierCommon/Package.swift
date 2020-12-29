@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "CourierCommon",
     platforms: [
-        .macOS(.v10_16),
+        .macOS(.v11),
         .iOS(.v14),
         .tvOS(.v14),
         .watchOS(.v7),

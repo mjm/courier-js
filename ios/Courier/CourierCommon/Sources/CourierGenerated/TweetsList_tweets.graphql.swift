@@ -108,23 +108,20 @@ extension TweetsList_tweets: Relay.PaginationFragment {
     }
 }
 
-#if swift(>=5.3) && canImport(RelaySwiftUI)
+#if canImport(RelaySwiftUI)
 import RelaySwiftUI
 
 extension TweetsList_tweets_Key {
-    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    public func asFragment() -> RelaySwiftUI.FragmentNext<TweetsList_tweets> {
-        RelaySwiftUI.FragmentNext<TweetsList_tweets>(self)
+    public func asFragment() -> RelaySwiftUI.Fragment<TweetsList_tweets> {
+        RelaySwiftUI.Fragment<TweetsList_tweets>(self)
     }
 
-    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
     public func asFragment() -> RelaySwiftUI.RefetchableFragment<TweetsList_tweets> {
         RelaySwiftUI.RefetchableFragment<TweetsList_tweets>(self)
     }
 
-    @available(iOS 14.0, macOS 10.16, tvOS 14.0, watchOS 7.0, *)
-    public func asFragment() -> RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets> {
-        RelaySwiftUI.PaginationFragmentNext<TweetsList_tweets>(self)
+    public func asFragment() -> RelaySwiftUI.PaginationFragment<TweetsList_tweets> {
+        RelaySwiftUI.PaginationFragment<TweetsList_tweets>(self)
     }
 }
 #endif
